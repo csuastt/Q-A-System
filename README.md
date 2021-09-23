@@ -56,7 +56,7 @@
 
 **(TBD)**
 
-在组员沟通后，请后端同学在[protocol.md](https://gitlab.secoder.net/HardEng/prj2a-repo/-/tree/master/protocol.md)文档中写明后端API的使用方法。具体格式参见该文档。
+在组员沟通后，请后端同学在[docs/api](docs/api/)文件夹中写明后端API的使用方法。具体格式参见目录下的[README.md](docs/api/README.md)。
 
 ## CI/CD与部署
 
