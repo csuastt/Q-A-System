@@ -11,12 +11,14 @@
 - `/api/user/register`: 用户注册
   - Method: `POST`
   - Params:
+    
     | Name     | Type   | Description             |
     | -------- | ------ | ----------------------- |
     | username | string |                         |
     | email    | string | should be a valid email |
     | password | string |                         |
   - Response:
+    
     | Name    | Type   | Description  |
     | ------- | ------ | ------------ |
     | rt_code | int    |              |
