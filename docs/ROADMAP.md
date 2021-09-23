@@ -7,7 +7,7 @@
 | 符号                    | 代码                      | 含义                                                   |
 | ----------------------- | ------------------------- | ------------------------------------------------------ |
 | :white_circle:          | `:white_circle:`          | 该部分还未开始，不在当前计划的范围内                   |
-| :yellow_circle:         | `:yellow_circle:`         | 该部分的子任务正在进行或已经完成                       |
+| :large_orange_diamond:  | `:large_orange_diamond:`  | 该部分的子任务正在进行或已经完成                       |
 | :o:                     | `:o:`                     | 该部分还未开始，但在当前计划范围内，请组员尽快认领任务 |
 | :construction:          | `:construction:`          | 该部分已经开始，正在施工                               |
 | :eight_spoked_asterisk: | `:eight_spoked_asterisk:` | 该部分已经初步完成，已提交PR并等待合并                 |
