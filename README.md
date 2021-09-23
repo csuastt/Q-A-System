@@ -47,7 +47,7 @@
 
 ## 工作流程
 
-1. [ROADMAP.md](https://gitlab.secoder.net/HardEng/prj2a-repo/-/tree/master/ROADMAP.md)中包含了项目的整体计划与待办事项。
+1. [docs/ROADMAP.md](docs/ROADMAP.md)中包含了项目的整体计划与待办事项。
 2. 当前应当进行和正在进行的工作应当在[Issues](https://gitlab.secoder.net/HardEng/prj2a-repo/-/issues)中进行进度跟踪和管理。请对应工作的负责人将`issue`关联(`assign`)给自己。
 3. 一切正在进行中的工作都应在单独的分支中进行。对于某项工作的疑问、建议等都应在对应`issue`中进行讨论。工作完成后应当提起`pull request`，等待各位组员都审核通过、CI测试顺利后，合并入`master`分支。鉴于项目规模，目前不采用额外的`dev`分支进行合并操作。
 4. 某项工作完成后，应当关闭对应Issue（应当由GitLab自动关闭），在ROADMAP.md中进行标记。
