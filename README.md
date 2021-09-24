@@ -67,6 +67,7 @@
    - `development`：说明这是一个开发进程的issue。
    - `docs`：说明这个issue的内容是要修改或新增某个文档，例如API文档。
    - `enhancement`：说明这个issue是在已有的基础上进行改进，例如im系统需要支持传图片和视频的功能。
+   - `discussion`：说明这个issue是要讨论某个事项。
 
    issue必须要在审核完成和合并到master分支后并且确认无问题才能关闭。
 
