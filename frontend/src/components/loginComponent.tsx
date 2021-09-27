@@ -71,25 +71,25 @@ export default class Login extends Component {
             error = validate_length(value);
         }
         // set new state
-        const nextState = {type: value};
+        const nextState = {};
+        // @ts-ignore
+        nextState[type] = value;
         // @ts-ignore
         nextState['error_msg_' + type] = error;
         this.setState(nextState);
+        return error === '';
     }
 
     handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        if ((
+        // validate all the info
+        if (
             // @ts-ignore
-            validate_required(this.state.username) +
+            this.onChangeValue({target: {value: this.state.username}}, 'username') &&
             // @ts-ignore
-            validate_length(this.state.username) +
-            // @ts-ignore
-            validate_required(this.state.password) +
-            // @ts-ignore
-            validate_length(this.state.password)
-        ).length === 0) {
+            this.onChangeValue({target: {value: this.state.password}}, 'password')
+        ) {
             // @ts-ignore
             AuthService.login(this.state.username, this.state.password).then(
                 () => {

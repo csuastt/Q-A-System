@@ -56,6 +56,7 @@ export default class Register extends Component {
             username: '',
             password: '',
             email: '',
+            ensure_password: '',
             error_msg_username: '',
             error_msg_password: '',
             error_msg_email: '',
@@ -90,25 +91,23 @@ export default class Register extends Component {
         // @ts-ignore
         nextState['error_msg_' + type] = error;
         this.setState(nextState);
+        return error === '';
     }
 
     handleRegister(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        if ((
+        // validate all the info
+        if (
             // @ts-ignore
-            validate_required(this.state.username) +
+            this.onChangeValue({target: {value: this.state.username}}, 'username') &&
             // @ts-ignore
-            validate_length(this.state.username) +
+            this.onChangeValue({target: {value: this.state.email}}, 'email') &&
             // @ts-ignore
-            validate_required(this.state.password) +
+            this.onChangeValue({target: {value: this.state.password}}, 'password') &&
             // @ts-ignore
-            validate_length(this.state.password) +
-            // @ts-ignore
-            validate_required(this.state.email) +
-            // @ts-ignore
-            validate_email(this.state.email)
-        ).length === 0) {
+            this.onChangeValue({target: {value: this.state.ensure_password}}, 'ensure_password')
+        ) {
             // @ts-ignore
             AuthService.register(this.state.username,
                 // @ts-ignore
