@@ -14,15 +14,12 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {Alert} from "@mui/material";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 // email checker
 // @ts-ignore
 import {isEmail} from "validator";
 // other validators
 import {validate_required, validate_length} from './loginComponent'
 
-// theme
-const theme = createTheme();
 
 // some validators
 // email validator
@@ -138,7 +135,6 @@ export default class Register extends Component {
 
     render() {
         return (
-            <ThemeProvider theme={theme}>
                 <Container component="main" maxWidth="xs">
                     <CssBaseline />
                     <Box
@@ -250,7 +246,6 @@ export default class Register extends Component {
                     </Box>
                     {this.alert ? <Alert severity='error'>{this.alertContent}</Alert> : <></> }
                 </Container>
-            </ThemeProvider>
         );
     }
 }

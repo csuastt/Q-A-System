@@ -14,10 +14,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {Alert} from "@mui/material";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// theme
-const theme = createTheme();
 
 // some validators
 // not empty
@@ -118,7 +115,6 @@ export default class Login extends Component {
 
     render() {
         return (
-            <ThemeProvider theme={theme}>
                 <Container component="main" maxWidth="xs">
                     <CssBaseline />
                     <Box
@@ -198,7 +194,6 @@ export default class Login extends Component {
                     </Box>
                     {this.alert ? <Alert severity='error'>{this.alertContent}</Alert> : <></> }
                 </Container>
-            </ThemeProvider>
         );
     }
 }
