@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
 // mui
+import Snackbar from "@mui/material/Snackbar";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -40,7 +41,18 @@ export const validate_length = (value: any) => {
     }
 };
 
-export default class Login extends Component {
+// state interface
+interface LoginState {
+    username: string,
+    password: string,
+    error_msg_username: string,
+    error_msg_password: string,
+    alert: boolean,
+    alertType: "success" | "info" | "warning" | "error",
+    alertContent: string
+}
+
+export default class Login extends Component<any, LoginState> {
 
     constructor(props: any) {
         super(props);
@@ -51,13 +63,12 @@ export default class Login extends Component {
             username: '',
             password: '',
             error_msg_username: '',
-            error_msg_password: ''
+            error_msg_password: '',
+            alert: false,
+            alertContent: '',
+            alertType: 'error'
         };
     }
-    // if alert
-    private alert = false;
-    // alert msg
-    private alertContent = '';
 
     // listener on username/password
     onChangeValue(e: any, type: 'username' | 'password') {
@@ -93,8 +104,11 @@ export default class Login extends Component {
                     // login success
                     // todo jump to sw
                     // alert
-                    this.alert = true;
-                    this.alertContent = 'Login success!';
+                    this.setState({
+                        alert: true,
+                        alertType: 'success',
+                        alertContent: 'Login success!'
+                    })
                 },
                 error => {
                     // retrieve error
@@ -105,9 +119,11 @@ export default class Login extends Component {
                         error.message ||
                         error.toString();
                     // show the error message
-                    // todo alert dialog vanishes when timeout
-                    this.alert = true;
-                    this.alertContent = resMessage;
+                    this.setState({
+                        alert: true,
+                        alertType: 'error',
+                        alertContent: resMessage
+                    })
                 }
             );
         }
@@ -192,7 +208,16 @@ export default class Login extends Component {
                             </Grid>
                         </Box>
                     </Box>
-                    {this.alert ? <Alert severity='error'>{this.alertContent}</Alert> : <></> }
+                    <Snackbar autoHideDuration={2000} open={this.state.alert}
+                              onClose={() => {this.setState({alert: false})}}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'center'
+                                }} sx={{ width: '30%' }}>
+                        <Alert severity={this.state.alertType} sx={{ width: '100%' }}>
+                            {this.state.alertContent}
+                        </Alert>
+                    </Snackbar>
                 </Container>
         );
     }
