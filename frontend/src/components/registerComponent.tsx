@@ -54,7 +54,8 @@ interface RegisterState {
     error_msg_ensure_password: string,
     alert: boolean,
     alertType: "success" | "info" | "warning" | "error",
-    alertContent: string
+    alertContent: string,
+    readPolicy: boolean
 }
 
 export default class Register extends Component<any, RegisterState> {
@@ -75,7 +76,8 @@ export default class Register extends Component<any, RegisterState> {
             error_msg_ensure_password: '',
             alert: false,
             alertContent: '',
-            alertType: 'error'
+            alertType: 'error',
+            readPolicy: false
         };
     }
     // if alert
@@ -114,18 +116,24 @@ export default class Register extends Component<any, RegisterState> {
 
         // validate all the info
         if (
-            // @ts-ignore
             this.onChangeValue({target: {value: this.state.username}}, 'username') &&
-            // @ts-ignore
             this.onChangeValue({target: {value: this.state.email}}, 'email') &&
-            // @ts-ignore
             this.onChangeValue({target: {value: this.state.password}}, 'password') &&
-            // @ts-ignore
             this.onChangeValue({target: {value: this.state.ensure_password}}, 'ensure_password')
         ) {
-            // @ts-ignore
+            // make sure the user has read about policy
+            if (!this.state.readPolicy)
+            {
+                // alert
+                this.setState({
+                    alert: true,
+                    alertType: 'error',
+                    alertContent: 'Please read the user policy!'
+                })
+                return;
+            }
+            // register request
             AuthService.register(this.state.username,
-                // @ts-ignore
                 this.state.email, this.state.password).then(
                 () => {
                     // login success
@@ -242,7 +250,9 @@ export default class Register extends Component<any, RegisterState> {
                                 inputProps={{ maxLength: 15 }}
                             />
                             <FormControlLabel
-                                control={<Checkbox value="agree" color="primary" />}
+                                control={<Checkbox value="agree" color="primary"
+                                                   checked={this.state.readPolicy}
+                                                   onChange={() => {this.setState({readPolicy: !this.state.readPolicy})}}/>}
                                 label={
                                     <div>
                                         <span>我已阅读并同意</span>

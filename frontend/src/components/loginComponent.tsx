@@ -93,12 +93,10 @@ export default class Login extends Component<any, LoginState> {
 
         // validate all the info
         if (
-            // @ts-ignore
             this.onChangeValue({target: {value: this.state.username}}, 'username') &&
-            // @ts-ignore
             this.onChangeValue({target: {value: this.state.password}}, 'password')
         ) {
-            // @ts-ignore
+            // login request
             AuthService.login(this.state.username, this.state.password).then(
                 () => {
                     // login success
