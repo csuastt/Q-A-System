@@ -24,15 +24,25 @@ import {validate_required, validate_length} from './loginComponent'
 // theme
 const theme = createTheme();
 
+// some validators
 // email validator
 // to ensure a valid email
-const validate_email = (value: any) => {
+export const validate_email = (value: any) => {
     if (!isEmail(value.toString().trim())) {
         return '请输入合法的邮箱';
     } else {
         return '';
     }
 };
+// second password validator
+// to ensure the second password is identical to the first one
+export const validate_second_password = (value: any, old_password: string) => {
+    if (value !== old_password) {
+        return '两次密码输入不一致';
+    } else {
+        return '';
+    }
+}
 
 
 export default class Register extends Component {
@@ -48,7 +58,8 @@ export default class Register extends Component {
             email: '',
             error_msg_username: '',
             error_msg_password: '',
-            error_msg_email: ''
+            error_msg_email: '',
+            error_msg_ensure_password: ''
         };
     }
     // if alert
@@ -57,18 +68,25 @@ export default class Register extends Component {
     private alertContent = '';
 
     // listener on email/username/password
-    onChangeValue(e: any, type: 'username' | 'password' | 'email') {
+    onChangeValue(e: any, type: 'username' | 'password' | 'ensure_password' | 'email') {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
+        // then validate other requirements
         if (error === '' && type === 'email'){
             error = validate_email(value);
+        }
+        else if(error === '' && type === 'ensure_password'){
+            // @ts-ignore
+            error = validate_second_password(value, this.state.password)
         }
         else if(error === '') {
             error = validate_length(value);
         }
         // set new state
-        const nextState = {type: value};
+        const nextState = {};
+        // @ts-ignore
+        nextState[type] = value;
         // @ts-ignore
         nextState['error_msg_' + type] = error;
         this.setState(nextState);
@@ -181,12 +199,28 @@ export default class Register extends Component {
                                 label="密码"
                                 type="password"
                                 id="reg_password"
-                                autoComplete="current-password"
+                                autoComplete="new-password"
                                 onChange={e => this.onChangeValue(e, 'password')}
                                 // @ts-ignore
                                 error={this.state.error_msg_password.length !== 0}
                                 // @ts-ignore
                                 helperText={this.state.error_msg_password}
+                                inputProps={{ maxLength: 15 }}
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="ensure_password"
+                                label="确认密码"
+                                type="password"
+                                id="reg_ensure_password"
+                                autoComplete="new-password"
+                                onChange={e => this.onChangeValue(e, 'ensure_password')}
+                                // @ts-ignore
+                                error={this.state.error_msg_ensure_password.length !== 0}
+                                // @ts-ignore
+                                helperText={this.state.error_msg_ensure_password}
                                 inputProps={{ maxLength: 15 }}
                             />
                             <FormControlLabel
