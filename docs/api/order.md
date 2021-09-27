@@ -125,7 +125,7 @@ PUT /api/order/:id
 ### 查询订单列表
 
 ```
-GET /api/order/list
+GET /api/orders
 ```
 
 公共参数：
