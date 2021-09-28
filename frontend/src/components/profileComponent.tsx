@@ -12,6 +12,7 @@ import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid'
 import TextField from "@mui/material/TextField";
 import {InputAdornment} from "@mui/material";
+import MuiPhoneNumber from "material-ui-phone-number";
 
 // interface for user info
 export interface UserInfo {
@@ -58,22 +59,22 @@ export default class AccountProfile extends Component<any, ProfileState> {
     // if user not found
     // redirect
     componentDidMount() {
-        const currentUser = AuthService.getCurrentUser();
+        // const currentUser = AuthService.getCurrentUser();
         // mock code
-        // const currentUser = {
-        //     token: '',
-        //     user:{
-        //         username: "test123",
-        //         nickname: "",
-        //         email: "12345@qq.com",
-        //         password: "-----",
-        //         gender: "female",
-        //         phone: "12344545",
-        //         permission: "q",
-        //         money: "100",
-        //         description: ""
-        //     }
-        // }
+        const currentUser = {
+            token: '',
+            user:{
+                username: "test123",
+                nickname: "",
+                email: "12345@qq.com",
+                password: "-----",
+                gender: "female",
+                phone: "",
+                permission: "q",
+                money: "100",
+                description: ""
+            }
+        }
 
         if (!currentUser) this.setState({redirect: "/"});
         this.setState({
@@ -91,8 +92,12 @@ export default class AccountProfile extends Component<any, ProfileState> {
             return;
         // set new state
         const new_user_info = {...this.state.user}
-        // @ts-ignore
-        new_user_info[e.target.name] = e.target.value;
+        if (typeof e === 'string')
+            new_user_info['phone'] = e;
+        else
+            // @ts-ignore
+            new_user_info[e.target.name] = e.target.value;
+        console.log(new_user_info['phone']);
         this.setState({user: new_user_info});
     };
 
@@ -206,13 +211,13 @@ export default class AccountProfile extends Component<any, ProfileState> {
                                 md={6}
                                 xs={12}
                             >
-                                <TextField
+                                <MuiPhoneNumber
                                     fullWidth
                                     label="电话"
                                     name="phone"
                                     required
+                                    defaultCountry={"cn"}
                                     onChange={this.handleChange}
-                                    type="number"
                                     value={this.state.user?.phone}
                                     variant="outlined"
                                 />
