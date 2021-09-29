@@ -11,8 +11,9 @@ import Divider from '@mui/material/Divider'
 import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid'
 import TextField from "@mui/material/TextField";
-import {InputAdornment} from "@mui/material";
+import {Alert, InputAdornment} from "@mui/material";
 import MuiPhoneNumber from "material-ui-phone-number";
+import Snackbar from "@mui/material/Snackbar";
 
 // interface for user info
 export interface UserInfo {
@@ -31,7 +32,10 @@ interface ProfileState {
     redirect: string | null,
     userReady: boolean,
     token: string,
-    user: UserInfo | null
+    user: UserInfo | null,
+    alert: boolean,
+    alertType: "success" | "info" | "warning" | "error",
+    alertContent: string
 }
 
 // gender options
@@ -49,7 +53,10 @@ export default class AccountProfile extends Component<any, ProfileState> {
             redirect: null,
             userReady: false,
             token: '',
-            user: null
+            user: null,
+            alert: false,
+            alertContent: '',
+            alertType: 'error'
         };
     }
 
@@ -59,24 +66,33 @@ export default class AccountProfile extends Component<any, ProfileState> {
     // if user not found
     // redirect
     componentDidMount() {
-        // const currentUser = AuthService.getCurrentUser();
+        const currentUser = AuthService.getCurrentUser();
         // mock code
-        const currentUser = {
-            token: '',
-            user:{
-                username: "test123",
-                nickname: "",
-                email: "12345@qq.com",
-                password: "-----",
-                gender: "female",
-                phone: "",
-                permission: "q",
-                money: "100",
-                description: ""
-            }
-        }
+        // const currentUser = {
+        //     token: '',
+        //     user:{
+        //         username: "test123",
+        //         nickname: "",
+        //         email: "12345@qq.com",
+        //         password: "-----",
+        //         gender: "female",
+        //         phone: "",
+        //         permission: "q",
+        //         money: "100",
+        //         description: ""
+        //     }
+        // }
 
-        if (!currentUser) this.setState({redirect: "/"});
+        if (!currentUser) {
+            // redirect and alert
+            this.setState({
+                redirect: "/",
+                alert: true,
+                alertType: 'error',
+                alertContent: 'Network error'
+            })
+            return;
+        }
         this.setState({
             token: currentUser.token,
             user: currentUser.user,
@@ -100,6 +116,50 @@ export default class AccountProfile extends Component<any, ProfileState> {
         console.log(new_user_info['phone']);
         this.setState({user: new_user_info});
     };
+
+    // submit handler
+    handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        // modify info request
+        let temp = this.state.user;
+        // if network error, return
+        if (temp === null)
+            return;
+        // modify phone
+        if (temp.phone === "+"){
+            temp.phone = "";
+        }
+        AuthService.modifyUserInfo(temp).then(
+            () => {
+                // modify success
+                // refresh nickname
+                // @ts-ignore
+                this.now_nickname = temp.nickname;
+                // alert
+                this.setState({
+                    alert: true,
+                    alertType: 'success',
+                    alertContent: 'Modify success!'
+                })
+            },
+            error => {
+                // retrieve error
+                const resMessage =
+                    (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                // show the error message
+                this.setState({
+                    alert: true,
+                    alertType: 'error',
+                    alertContent: resMessage
+                })
+            }
+        );
+    }
 
     render() {
         if (this.state.redirect) {
@@ -292,7 +352,18 @@ export default class AccountProfile extends Component<any, ProfileState> {
                 </Card>
             </form>
             </Grid>
+                <Snackbar autoHideDuration={2000} open={this.state.alert}
+                          onClose={() => {this.setState({alert: false})}}
+                          anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'center'
+                          }} sx={{ width: '30%' }}>
+                    <Alert severity={this.state.alertType} sx={{ width: '100%' }}>
+                        {this.state.alertContent}
+                    </Alert>
+                </Snackbar>
             </Grid>
+
         );
     }
 }

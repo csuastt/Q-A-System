@@ -1,3 +1,4 @@
+import AuthService from "../services/auth.service";
 // mui
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -52,7 +53,7 @@ const AccountBriefProfile = (props: AccountBriefProfileProps) => (
         <Divider />
         <CardActions>
             <Button
-                color="primary"
+                color="error"
                 fullWidth
                 variant="text"
             >

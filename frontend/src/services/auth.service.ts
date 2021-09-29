@@ -1,4 +1,5 @@
 import axios from "axios";
+import {UserInfo} from "../components/profileComponent";
 
 // temporary local server
 const API_URL = "http://localhost:8080/api/user/";
@@ -22,8 +23,6 @@ class AuthService {
         localStorage.removeItem("user");
         return axios.post(API_URL + "logout", {
             username: username,
-        }).then(response => {
-            return response.data;
         });
     }
 
@@ -41,6 +40,15 @@ class AuthService {
             return JSON.parse(user_raw);
         else
             return null
+    }
+
+    modifyUserInfo(info: UserInfo) {
+        return axios.put(API_URL + info.username + "/modify/info", {
+            nickname: info.nickname,
+            gender: info.gender,
+            phone: info.phone,
+            description: info.description
+        });
     }
 }
 
