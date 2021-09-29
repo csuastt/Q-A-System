@@ -5,6 +5,7 @@ import {UserInfo} from "../components/profileComponent";
 const API_URL = "http://localhost:8080/api/user/";
 
 class AuthService {
+    // Here are some request maker
     login(username: string, password: string) {
         return axios
             .post(API_URL + "login", {
@@ -48,6 +49,13 @@ class AuthService {
             gender: info.gender,
             phone: info.phone,
             description: info.description
+        });
+    }
+
+    modifyPassword(username: string, old_password: string, password: string) {
+        return axios.put(API_URL + username + "/modify/password", {
+            origin: old_password,
+            password: password
         });
     }
 }

@@ -80,10 +80,6 @@ export default class Register extends Component<any, RegisterState> {
             readPolicy: false
         };
     }
-    // if alert
-    private alert = false;
-    // alert msg
-    private alertContent = '';
 
     // listener on email/username/password
     onChangeValue(e: any, type: 'username' | 'password' | 'ensure_password' | 'email') {
