@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {UserListItem} from "../services/userDefination";
-import userListService from "../services/userList.service"
+import {UserBasicInfo} from "../services/definations";
+import userService from "../services/user.service"
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -11,10 +11,10 @@ import _ from "lodash";
 import {Divider} from "@mui/material";
 
 const UserList: React.FC<{ type: string }> = props => {
-    const [userList, setUserList] = useState<Array<UserListItem>>();
+    const [userList, setUserList] = useState<Array<UserBasicInfo>>();
     useEffect(() => {
-        userListService.get(props.type).then(list => setUserList(list));
-    }, [props.type]);
+        userService.get_users_of_type(props.type).then(list => setUserList(list));
+    }, []);
 
     const renderPlaceholder = () => (
         <ListItem alignItems="flex-start">
@@ -33,7 +33,7 @@ const UserList: React.FC<{ type: string }> = props => {
     const renderUserList = () => {
         const list = _.flatten(_.zip(userList!, _.fill(Array(userList!.length - 1), undefined)));
         return (<>
-            {list.map((user: UserListItem | undefined, index: number) => {
+            {list.map((user: UserBasicInfo | undefined, index: number) => {
                 return user === undefined ? (<Divider variant="inset" component="li" key={index}/>) : (
                     <ListItem alignItems="flex-start" key={index}>
                         <ListItemAvatar>
