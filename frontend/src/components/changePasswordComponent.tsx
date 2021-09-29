@@ -62,21 +62,6 @@ export default class ChangePassword extends
     // redirect
     componentDidMount() {
         const currentUser = AuthService.getCurrentUser();
-        // mock code
-        // const currentUser = {
-        //     token: '',
-        //     user:{
-        //         username: "test123",
-        //         nickname: "",
-        //         email: "12345@qq.com",
-        //         password: "-----",
-        //         gender: "female",
-        //         phone: "",
-        //         permission: "q",
-        //         money: "100",
-        //         description: ""
-        //     }
-        // }
 
         if (!currentUser) {
             // that means a bug occur

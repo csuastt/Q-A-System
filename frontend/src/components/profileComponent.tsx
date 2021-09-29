@@ -87,21 +87,6 @@ export default class AccountProfile extends Component<any, ProfileState> {
     // redirect
     componentDidMount() {
         const currentUser = AuthService.getCurrentUser();
-        // mock code
-        // const currentUser = {
-        //     token: '',
-        //     user:{
-        //         username: "test123",
-        //         nickname: "",
-        //         email: "12345@qq.com",
-        //         password: "-----",
-        //         gender: "female",
-        //         phone: "",
-        //         permission: "q",
-        //         money: "100",
-        //         description: ""
-        //     }
-        // }
 
         if (!currentUser) {
             // redirect and alert
