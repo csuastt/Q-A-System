@@ -164,7 +164,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
             >
                 <Grid item md={4} xs={4}>
                     <AccountBriefProfile
-                        avatar={'/static/images/avatar_default.png'}
+                        avatar={''}
                         nickname={this.now_nickname}
                         username={this.state.user?.username}
                         permission={this.state.user?.permission}
