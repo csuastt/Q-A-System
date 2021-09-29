@@ -58,39 +58,55 @@ export default class AccountProfile extends Component<any, ProfileState> {
             alertContent: '',
             alertType: 'error'
         };
+        this.handleAlert = this.handleAlert.bind(this)
     }
 
     // now nickname
     private now_nickname = ""
 
+    // alert handler
+    handleAlert(_alertType: "success" | "info" | "warning" | "error",
+                _alertContent: string
+    ) {
+        this.setState({
+            alert: true,
+            alertType: _alertType,
+            alertContent: _alertContent
+        })
+    }
+
+    // redirect handler
+    handleRedirect(target: string)
+    {
+        this.setState({
+            redirect: target
+        })
+    }
+
     // if user not found
     // redirect
     componentDidMount() {
-        const currentUser = AuthService.getCurrentUser();
+        // const currentUser = AuthService.getCurrentUser();
         // mock code
-        // const currentUser = {
-        //     token: '',
-        //     user:{
-        //         username: "test123",
-        //         nickname: "",
-        //         email: "12345@qq.com",
-        //         password: "-----",
-        //         gender: "female",
-        //         phone: "",
-        //         permission: "q",
-        //         money: "100",
-        //         description: ""
-        //     }
-        // }
+        const currentUser = {
+            token: '',
+            user:{
+                username: "test123",
+                nickname: "",
+                email: "12345@qq.com",
+                password: "-----",
+                gender: "female",
+                phone: "",
+                permission: "q",
+                money: "100",
+                description: ""
+            }
+        }
 
         if (!currentUser) {
             // redirect and alert
-            this.setState({
-                redirect: "/",
-                alert: true,
-                alertType: 'error',
-                alertContent: 'Network error'
-            })
+            this.handleAlert('error', 'Network error');
+            this.handleRedirect("#");
             return;
         }
         this.setState({
@@ -101,7 +117,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
         this.now_nickname = currentUser.user.nickname;
     }
 
-    // change handler
+    // text change handler
     handleChange = (e: any) => {
         // avoid null
         if (this.state.user === null)
@@ -118,14 +134,12 @@ export default class AccountProfile extends Component<any, ProfileState> {
     };
 
     // submit handler
-    handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-
+    handleSubmit() {
+        // avoid null
+        if (this.state.user === null)
+            return;
         // modify info request
         let temp = this.state.user;
-        // if network error, return
-        if (temp === null)
-            return;
         // modify phone
         if (temp.phone === "+"){
             temp.phone = "";
@@ -137,11 +151,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
                 // @ts-ignore
                 this.now_nickname = temp.nickname;
                 // alert
-                this.setState({
-                    alert: true,
-                    alertType: 'success',
-                    alertContent: 'Modify success!'
-                })
+                this.handleAlert('success', 'Modify success!');
             },
             error => {
                 // retrieve error
@@ -152,11 +162,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
                     error.message ||
                     error.toString();
                 // show the error message
-                this.setState({
-                    alert: true,
-                    alertType: 'error',
-                    alertContent: resMessage
-                })
+                this.handleAlert('error', resMessage);
             }
         );
     }
@@ -173,8 +179,12 @@ export default class AccountProfile extends Component<any, ProfileState> {
             >
                 <Grid item md={4} xs={4}>
                     <AccountBriefProfile
+                        avatar={'/static/images/avatar_default.png'}
                         nickname={this.now_nickname}
+                        username={this.state.user?.username}
                         permission={this.state.user?.permission}
+                        alertHandler={this.handleAlert}
+                        redirectHandler={this.handleRedirect}
                     />
                 </Grid>
             <Grid item md={8} xs={8}>
@@ -342,6 +352,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
                             <Grid item>
                                 <Button
                                     color="primary"
+                                    onClick={this.handleSubmit.bind(this)}
                                     variant="contained"
                                 >
                                     保存信息
