@@ -14,12 +14,13 @@ import Box from "@mui/material/Box";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { Alert } from "@mui/material";
+import Alert from "@mui/material/Alert";
 // email checker
 // @ts-ignore
 import { isEmail } from "validator";
 // other validators
 import { validate_required, validate_length } from "./loginComponent";
+import { Link as RouterLink } from "react-router-dom";
 
 // some validators
 // email validator
@@ -302,8 +303,12 @@ export default class Register extends Component<any, RegisterState> {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"已有账号？快速登录"}
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/login"
+                                >
+                                    已有账号？快速登录
                                 </Link>
                             </Grid>
                         </Grid>

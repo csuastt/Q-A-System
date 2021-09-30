@@ -14,7 +14,9 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { Alert } from "@mui/material";
+import Alert from "@mui/material/Alert";
+
+import { Link as RouterLink } from "react-router-dom";
 
 // some validators
 // not empty
@@ -206,8 +208,12 @@ export default class Login extends Component<any, LoginState> {
                                 </Link>
                             </Grid>
                             <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"还没有账号？快速注册"}
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/register"
+                                >
+                                    还没有账号？快速注册
                                 </Link>
                             </Grid>
                         </Grid>
