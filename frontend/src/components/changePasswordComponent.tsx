@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { Alert } from "@mui/material";
+import Alert from "@mui/material/Alert";
 // validators
 import { validate_required, validate_length } from "./loginComponent";
 import { validate_second_password } from "./registerComponent";
