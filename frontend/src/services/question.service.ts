@@ -5,7 +5,10 @@ import authHeader from "./auth-header";
 class QuestionService {
     get_questions_for_user(userId: number): Promise<QuestionInfoList> {
         return axios
-            .get("/questions", { params: { user: userId } })
+            .get("/questions", {
+                params: { user: userId },
+                headers: authHeader(),
+            })
             .then((response) => response.data);
     }
 

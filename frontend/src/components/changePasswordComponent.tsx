@@ -149,7 +149,7 @@ export default class ChangePassword extends Component<
                         alertContent: "Modify success!",
                     });
                     // then logout
-                    AuthService.logout(this.state.username).then(
+                    AuthService.logout().then(
                         () => {
                             this.setState({
                                 redirect: "/",

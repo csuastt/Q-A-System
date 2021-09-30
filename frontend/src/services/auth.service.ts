@@ -1,5 +1,6 @@
 import axios from "axios";
 import { UserInfo } from "./definations";
+import authHeader from "./auth-header";
 
 class AuthService {
     // Here are some request maker
@@ -17,10 +18,10 @@ class AuthService {
             });
     }
 
-    logout(username: string) {
+    logout() {
         localStorage.removeItem("user");
         return axios.post("/user/logout", {
-            username: username,
+            header: authHeader(),
         });
     }
 
@@ -39,19 +40,31 @@ class AuthService {
     }
 
     modifyUserInfo(info: UserInfo) {
-        return axios.put(`/user/${info.username}/modify/info`, {
-            nickname: info.nickname,
-            gender: info.gender,
-            phone: info.phone,
-            description: info.description,
-        });
+        return axios.put(
+            `/user/${info.username}/modify/info`,
+            {
+                nickname: info.nickname,
+                gender: info.gender,
+                phone: info.phone,
+                description: info.description,
+            },
+            {
+                headers: authHeader(),
+            }
+        );
     }
 
     modifyPassword(username: string, old_password: string, password: string) {
-        return axios.put(`/user/${username}/modify/password`, {
-            origin: old_password,
-            password: password,
-        });
+        return axios.put(
+            `/user/${username}/modify/password`,
+            {
+                origin: old_password,
+                password: password,
+            },
+            {
+                headers: authHeader(),
+            }
+        );
     }
 }
 

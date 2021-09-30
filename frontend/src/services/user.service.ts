@@ -1,10 +1,11 @@
 import axios from "axios";
 import { UserBasicInfo, UserInfoList } from "./definations";
+import authHeader from "./auth-header";
 
 class UserService {
     get_users_of_type(type: string): Promise<UserInfoList> {
         return axios
-            .get("/users", { params: { type } })
+            .get("/users", { params: { type }, headers: authHeader() })
             .then((response) => response.data);
     }
 
