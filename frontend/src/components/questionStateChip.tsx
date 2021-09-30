@@ -20,11 +20,11 @@ const QuestionStateChip: React.FC<any & { state: QS }> = (props) => {
         "未知",
         "default",
     ]);
-    // @ts-ignore
     // According to Material-UI document, color accepts any string. However it doesn't in my code.
     return (
         <Chip
             label={label}
+            // @ts-ignore
             color={style}
             variant="outlined"
             sx={{ my: "auto" }}
