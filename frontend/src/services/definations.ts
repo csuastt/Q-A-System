@@ -8,7 +8,7 @@ export interface UserBasicInfo {
     avatarUrl: string;
     name: string;
     introduction: string;
-    type: UserType
+    type: UserType;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
@@ -27,7 +27,7 @@ export enum QuestionState {
 
 export interface QuestionBasicInfo {
     id: number;
-    state: QuestionState
+    state: QuestionState;
     questionerId: number;
     questionerName: string;
     answererId: number;
@@ -38,3 +38,14 @@ export interface QuestionBasicInfo {
 }
 
 export type QuestionInfoList = Array<QuestionBasicInfo>;
+
+export enum CreationResultType {
+    SUCCESS,
+    INVALID_INPUT
+}
+
+export interface CreationResult {
+    type: CreationResultType;
+    created_id: number;
+    err_msg?: string;
+}

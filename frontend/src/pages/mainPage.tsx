@@ -4,12 +4,14 @@ import {Container} from "@mui/material";
 import Welcome from "../components/welcomeComponent";
 import UserList from "../components/userListComponent";
 import QuestionList from "../components/questionListComponent";
+import QuestionCreationWizard from "../components/questionCreationWizard";
 
 export default function MainPage() {
 
     const routes = [
         ["/answerers", <UserList type="answerers"/>],
         ["/questions", <QuestionList userId={1}/>],
+        ["/question/create", <QuestionCreationWizard answererId={1}/>],
         ["/", <Welcome/>]
     ]
 
