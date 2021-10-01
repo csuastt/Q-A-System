@@ -9,10 +9,7 @@ import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
@@ -23,7 +20,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity
 public class AppUser implements UserDetails {
-	@Id
+	@Id @GeneratedValue
+	private Long id;
+	@Column(unique = true)
 	private String username;
 	private String nickname = "";
 	private String ava_url = "";

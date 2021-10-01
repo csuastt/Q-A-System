@@ -4,11 +4,9 @@ import lombok.Data;
 
 @Data
 public class ModifyPassResponse {
-    public String code;
     public String message;
 
-    public ModifyPassResponse(String code, String message){
-        this.code = code;
+    public ModifyPassResponse(String message){
         this.message = message;
     }
 }

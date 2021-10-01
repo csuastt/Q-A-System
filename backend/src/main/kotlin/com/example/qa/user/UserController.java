@@ -1,5 +1,8 @@
 package com.example.qa.user;
 
+import com.example.qa.user.exception.DeleteException;
+import com.example.qa.user.exception.NotFoundException;
+import com.example.qa.user.exception.NotMatchException;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.AppUser;
 import com.talanlabs.avatargenerator.Avatar;
@@ -38,32 +41,32 @@ public class UserController {
 
 
 
-    @GetMapping("/api/user/{username}")
-    public UserData getUser(@PathVariable(value = "username") String username) {
-        Optional<AppUser> optionalUser = userRepository.findById(username);
+    @GetMapping("/api/users/{id}")
+    public UserData getUser(@PathVariable(value = "id") Long id) {
+        Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         return new UserData(optionalUser.get());
     }
 
-    @GetMapping("/api/user/{username}/permission")
-    public QuestPermit permitQuest(@PathVariable(value = "username") String username){
-        String permit = userRepository.findById(username).get().getPermit();
+    @GetMapping("/api/users/{id}/permission")
+    public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
+        String permit = userRepository.findById(id).get().getPermit();
         return new QuestPermit("200", permit);
     }
 
-    @DeleteMapping("/api/user/delete")
-    public DeleteResponse deleteUser(@RequestParam(value = "username") String username){
-        if(userRepository.existsById(username)){
+    @DeleteMapping("/api/users")
+    public DeleteResponse deleteUser(@RequestParam(value = "id") Long id) throws DeleteException, NotFoundException {
+        if(userRepository.existsById(id)){
             try{
-                userRepository.deleteById(username);
-                return new DeleteResponse("200", "Successfully delete");
+                userRepository.deleteById(id);
+                return new DeleteResponse("Successfully delete");
             }catch (Exception e){
-                return new DeleteResponse("400", e.getMessage());
+                throw new DeleteException(e.getMessage());
             }
 
         }else{
-            return new DeleteResponse("403", "User not found");
+            throw new NotFoundException("No Such Method");
         }
     }
 
@@ -80,9 +83,9 @@ public class UserController {
         }
     }
 
-    @PostMapping("/api/user/register")
+    @PostMapping("/api/users")
     public RedirectView register(@RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
-        if (userRepository.existsById(username))
+        if (userRepository.existsByUsername(username))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
@@ -93,28 +96,28 @@ public class UserController {
         return redirectView;
     }
 
-    @PutMapping("/api/user/{username}/modify/info")
-    public UserData modifyUser(@PathVariable(value = "username") String username, @RequestBody ModifyUserAttribute modifiedUser){
-        Optional<AppUser> optionalUser = userRepository.findById(username);
+    @PutMapping("/api/users/{id}")
+    public UserData modifyUser(@PathVariable(value = "id") Long id, @RequestBody ModifyUserAttribute modifiedUser){
+        Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         optionalUser.get().updateUserInfo(modifiedUser);
         userRepository.save(optionalUser.get());
         return new UserData(optionalUser.get());
     }
 
-    @PutMapping("/api/user/{username}/modify/password")
-    public ModifyPassResponse modifyPass(@PathVariable(value = "username") String username, @RequestBody ModifyPasswordAttribute modifiedUser){
-        Optional<AppUser> optionalUser = userRepository.findById(username);
+    @PutMapping("/api/users/{id}/password")
+    public ModifyPassResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyPasswordAttribute modifiedUser) throws NotMatchException {
+        Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         if(optionalUser.get().getPassword() .equals(passwordEncoder.encode(modifiedUser.getOrigin()))){
             optionalUser.get().setPassword(passwordEncoder.encode(modifiedUser.getPassword()));
             userRepository.save(optionalUser.get());
-            return new ModifyPassResponse("200", "修改密码成功");
+            return new ModifyPassResponse("修改密码成功");
         }
 
         userRepository.save(optionalUser.get());
-        return new ModifyPassResponse("403","原密码不正确");
+        throw new NotMatchException("原密码不正确");
     }
 }

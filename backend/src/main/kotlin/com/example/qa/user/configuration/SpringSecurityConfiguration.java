@@ -36,7 +36,7 @@ public class SpringSecurityConfiguration {
             http.cors().and()
                     .csrf().disable()
                     .authorizeRequests()
-                    .antMatchers("/api/user/register").permitAll()
+                    .antMatchers("/api/users").permitAll()
                     .antMatchers("/api/user/login").permitAll()
                     .anyRequest().authenticated()
                     .and()
