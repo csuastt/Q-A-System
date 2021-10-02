@@ -30,7 +30,7 @@ build-backend:
 # Frontend tests
 
 .frontend-test:
-  image: node:alpine
+  image: node:latest
   stage: test
 
   cache:
@@ -67,6 +67,7 @@ frontend-code-test:
 backend-test:
   image: maven:3.8.2-adoptopenjdk-16
   script:
+    - cd backend
     - mvn -s ./settings.xml test
   after_script:
     - SUFFIX=$RANDOM
