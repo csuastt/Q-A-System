@@ -46,13 +46,11 @@ build-backend:
 frontend-style-test:
   extends: .frontend-test
   script:
-    - cd frontend
     - yarn prettier --check src
 
 frontend-code-test:
   extends: .frontend-test
   script:
-    - cd frontend
     - yarn ci-test
     - yarn eslint src -f json -o checks/eslint.json
   after_script:
@@ -68,7 +66,7 @@ backend-test:
   image: maven:3.8.2-adoptopenjdk-16
   script:
     - cd backend
-    - mvn -s ./settings.xml test
+    - mvn -s ./ci/maven-settings.xml test
   after_script:
     - SUFFIX=$RANDOM
     - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
