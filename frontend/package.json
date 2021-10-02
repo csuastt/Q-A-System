@@ -37,9 +37,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "ci-test": "JEST_JUNIT_OUTPUT_DIR=checks react-scripts test --watchAll=false --coverage --coverageDirectory=checks --reporters=default --reporters=jest-junit",
-    "eject": "react-scripts eject",
-    "style-check": "react-scripts prettier src --check",
-    "format": "react-scripts prettier src --write"
+    "eject": "react-scripts eject"
   },
   "jest": {
     "collectCoverageFrom": [
