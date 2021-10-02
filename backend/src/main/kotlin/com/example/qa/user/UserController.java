@@ -5,9 +5,9 @@ import com.example.qa.user.exception.NotFoundException;
 import com.example.qa.user.exception.NotMatchException;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.AppUser;
+import com.example.qa.user.repository.UserRepository;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
-import com.example.qa.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,6 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Optional;
 
