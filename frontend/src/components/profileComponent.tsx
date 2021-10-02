@@ -13,7 +13,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
-import MuiPhoneNumber from "material-ui-phone-number";
+import MuiPhoneNumber from 'mui-phone-number';
 import Snackbar from "@mui/material/Snackbar";
 import { UserInfo } from "../services/definations";
 
@@ -228,6 +228,11 @@ export default class AccountProfile extends Component<any, ProfileState> {
                                             label="电话"
                                             name="phone"
                                             required
+                                            sx={{
+                                                '& .MuiPhoneNumber-flagButton': {
+                                                     "min-width": "30px"
+                                                },
+                                            }}
                                             defaultCountry={"cn"}
                                             onChange={this.handleChange}
                                             value={this.state.user?.phone}
