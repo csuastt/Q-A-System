@@ -32,6 +32,7 @@ build-backend:
 .frontend-test:
   image: node:latest
   stage: test
+  needs: ["build-frontend"]
 
   cache:
     key: ${CI_COMMIT_REF_SLUG}
@@ -53,32 +54,37 @@ frontend-code-test:
   script:
     - yarn ci-test
     - yarn eslint src -f json -o checks/eslint.json
-  after_script:
-    - SUFFIX=$RANDOM
-    - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
-    - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
-    - cd frontend
-    - /opt/sonar-scanner/bin/sonar-scanner
+  artifacts:
+    paths:
+      - frontend/checks/*
 
 # Backend tests
 
 backend-test:
   image: maven:3.8.2-adoptopenjdk-16
+  needs: ["build-backend"]
   script:
     - cd backend
     - mvn -s ./ci/maven-settings.xml test
-  after_script:
-    - SUFFIX=$RANDOM
-    - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
-    - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
-    - cd backend
-    - /opt/sonar-scanner/bin/sonar-scanner
+  artifacts:
+    paths:
+      - backend/target/*
 
 # Deploy
 
-# TODO: test script
+sonar-scan:
+  dependencies:
+    - frontend-code-test
+    - backend-test
+  script:
+    - SUFFIX=$RANDOM
+    - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
+    - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
+    - /opt/sonar-scanner/bin/sonar-scanner
+
 deploy:
   stage: deploy
+  needs: ["frontend-style-test", "frontend-style-test", "backend-test"]
   script:
     - deployer dyno replace $CI_PROJECT_NAME "$CI_REGISTRY_IMAGE:frontend-$CI_COMMIT_REF_SLUG" "$REGISTRY_USER" "$REGISTRY_PWD"
     - deployer dyno replace $CI_PROJECT_NAME "$CI_REGISTRY_IMAGE:backend-$CI_COMMIT_REF_SLUG" "$REGISTRY_USER" "$REGISTRY_PWD"
