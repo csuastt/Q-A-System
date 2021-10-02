@@ -1,6 +1,6 @@
 export enum UserType {
     Normal,
-    Answerer
+    Answerer,
 }
 
 export interface UserBasicInfo {
@@ -13,6 +13,18 @@ export interface UserBasicInfo {
 
 export type UserInfoList = Array<UserBasicInfo>;
 
+export interface UserInfo {
+    username: string;
+    nickname: string;
+    email: string;
+    password: string;
+    gender: string;
+    phone: string;
+    permission: string;
+    money: string;
+    description: string;
+}
+
 export enum QuestionState {
     WAITING_FOR_REVIEW,
     REJECTED_BY_REVIEWER,
@@ -22,7 +34,7 @@ export enum QuestionState {
     COMMUNICATING,
     CANCELLED,
     SOLVED,
-    TRANSACTION_COMPLETE
+    TRANSACTION_COMPLETE,
 }
 
 export interface QuestionBasicInfo {
@@ -41,7 +53,7 @@ export type QuestionInfoList = Array<QuestionBasicInfo>;
 
 export enum CreationResultType {
     SUCCESS,
-    INVALID_INPUT
+    INVALID_INPUT,
 }
 
 export interface CreationResult {
