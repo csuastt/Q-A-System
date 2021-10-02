@@ -61,6 +61,7 @@ frontend-code-test:
 # Backend tests
 
 backend-test:
+  stage: test
   image: maven:3.8.2-adoptopenjdk-16
   needs: ["build-backend"]
   script:
@@ -73,6 +74,7 @@ backend-test:
 # Deploy
 
 sonar-scan:
+  stage: deploy
   dependencies:
     - frontend-code-test
     - backend-test
