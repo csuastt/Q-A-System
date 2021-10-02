@@ -61,7 +61,7 @@
   
   - Method: `Post`
 
-  - RequestBody:
+  - Params:
 
     | Name     | Type   | Description             |
     | -------- | ------ | ----------------------- |
@@ -98,14 +98,15 @@
 
     | Name     | Type   | Description             |
     | -------- | ------ | ----------------------- |
-    | username | string |                         |
+    | id       | long   |                         |
   
   - Response:
     - `200`: 成功删除
+    - `500`: 后台数据库出错
     - `400`: 没有该用户
     
     
-- `api/users/:username` : 获取详细信息
+- `api/users/:id` : 获取详细信息
     
     - Method: `Get`
   
@@ -116,7 +117,7 @@
         - `400`: 没有该用户
 
 
-- `api/users/:username/permission` : 获取用户权限
+- `api/users/:id/permission` : 获取用户权限
   
   - Method: `Get`
   
@@ -131,7 +132,7 @@
     - `400`: 没有该用户
     
 
-- `api/users/:username` : 修改详细信息
+- `api/users/:id` : 修改详细信息
   
   - Method: `Put`
   
@@ -140,20 +141,17 @@
     | Name     | Type   | Description                       |
     | -------- | ------ | -----------------------           |
     | username | string | not empty, unique       `optional`|
+    | nickname | string | not empty               `optional`|
     | email    | string | should be a valid email `optional`|
     | gender   | string | male/female             `optional`|
     | birthday | string | yy/mm/dd                `optional`|
   
   - Response:
     - `200`:
-
-      | Name    | Type   | Description  |
-      | ------- | ------ | ------------ |
-      | user  | string    | [User]      |
     - `400`: 没有该用户
 
 
-- `api/users/:username/password` : 修改密码
+- `api/users/:id/password` : 修改密码
   
   - Method: `Put`
   
@@ -167,22 +165,23 @@
   - Response:
     - `200`: 修改成功
     - `400`: 没有该用户
+    - `403`: 原密码不正确
 
 
-- `api/users/:username/permission` : 修改用户权限
+- `api/users/:id/permission` : 修改用户权限
     ```
   TODO
   ```
 
 
-- `api/users/:username/apply` : 申请成为回答者
+- `api/users/:id/apply` : 申请成为回答者
 
     ```
   TODO
   ```
 
 
-- `api/users/:username/income` : 查询收入
+- `api/users/:id/income` : 查询收入
 
     ```
   TODO

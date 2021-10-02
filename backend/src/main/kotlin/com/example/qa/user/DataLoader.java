@@ -27,9 +27,9 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new AppUser("testUser", passwordEncoder.encode("password"), authorities);
-        userRepository.save(user);
+//        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+//        authorities.add(new SimpleGrantedAuthority("user"));
+//        var user = new AppUser("testUser", passwordEncoder.encode("password"), authorities);
+//        userRepository.save(user);
     }
 }

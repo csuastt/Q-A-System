@@ -30,10 +30,10 @@ public class AppUser implements UserDetails {
 	private String email = "";
 	private String phone = "";
 	private String birthday = "";
-	private String gend = "Unknown";
+	private String gend = "unknown";
 	private boolean enable = true;
 	private String permit = "q";
-	private String money = "100";
+	private int money = 100;
 	private String description = "";
 	public Long sign_up_timestamp;
 
@@ -56,7 +56,7 @@ public class AppUser implements UserDetails {
 				   Collection<GrantedAuthority> authorities,
 				   String mail,
 				   String gend,
-				   String money,
+				   int money,
 				   String description,
 				   String nickname,
 				   String permission,

@@ -8,6 +8,8 @@ import com.example.qa.user.model.AppUser;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
 import com.example.qa.user.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,11 +23,14 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Optional;
 
 @RestController
 public class UserController {
+
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private UserRepository userRepository;
 
@@ -45,14 +50,17 @@ public class UserController {
     public UserData getUser(@PathVariable(value = "id") Long id) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Found");
         return new UserData(optionalUser.get());
     }
 
     @GetMapping("/api/users/{id}/permission")
     public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
-        String permit = userRepository.findById(id).get().getPermit();
-        return new QuestPermit("200", permit);
+        Optional<AppUser> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Found");
+        String permit = optionalUser.get().getPermit();
+        return new QuestPermit(permit);
     }
 
     @DeleteMapping("/api/users")
@@ -97,13 +105,13 @@ public class UserController {
     }
 
     @PutMapping("/api/users/{id}")
-    public UserData modifyUser(@PathVariable(value = "id") Long id, @RequestBody ModifyUserAttribute modifiedUser){
+    public HttpStatus modifyUser(@PathVariable(value = "id") Long id, @RequestBody ModifyUserAttribute modifiedUser){
         Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"User not found");
         optionalUser.get().updateUserInfo(modifiedUser);
         userRepository.save(optionalUser.get());
-        return new UserData(optionalUser.get());
+        return HttpStatus.ACCEPTED;
     }
 
     @PutMapping("/api/users/{id}/password")
@@ -111,7 +119,7 @@ public class UserController {
         Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        if(optionalUser.get().getPassword() .equals(passwordEncoder.encode(modifiedUser.getOrigin()))){
+        if(passwordEncoder.matches(modifiedUser.getOrigin(),optionalUser.get().getPassword())){
             optionalUser.get().setPassword(passwordEncoder.encode(modifiedUser.getPassword()));
             userRepository.save(optionalUser.get());
             return new ModifyPassResponse("修改密码成功");
