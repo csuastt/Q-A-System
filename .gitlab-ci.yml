@@ -32,7 +32,6 @@ build-backend:
 .frontend-test:
   image: node:latest
   stage: test
-  needs: ["build-frontend"]
 
   cache:
     key: ${CI_COMMIT_REF_SLUG}
@@ -63,7 +62,6 @@ frontend-code-test:
 backend-test:
   stage: test
   image: maven:3.8.2-adoptopenjdk-16
-  needs: ["build-backend"]
   script:
     - cd backend
     - mvn -s ./ci/maven-settings.xml test
@@ -86,7 +84,6 @@ sonar-scan:
 
 deploy:
   stage: deploy
-  needs: ["frontend-style-test", "frontend-style-test", "backend-test"]
   script:
     - deployer dyno replace $CI_PROJECT_NAME "$CI_REGISTRY_IMAGE:frontend-$CI_COMMIT_REF_SLUG" "$REGISTRY_USER" "$REGISTRY_PWD"
     - deployer dyno replace "$CI_PROJECT_NAME-backend" "$CI_REGISTRY_IMAGE:backend-$CI_COMMIT_REF_SLUG" "$REGISTRY_USER" "$REGISTRY_PWD"
