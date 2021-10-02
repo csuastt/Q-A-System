@@ -19,6 +19,7 @@
     "@types/react-router-dom": "^5.3.0",
     "@types/validator": "^13.6.3",
     "axios": "^0.21.4",
+    "jest-junit": "^12.3.0",
     "lodash": "^4.17.21",
     "material-ui-phone-number": "^2.2.6",
     "prettier": "^2.4.1",
@@ -35,10 +36,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "ci-test": "react-scripts test --watchAll=false --coverage",
+    "ci-test": "JEST_JUNIT_OUTPUT_DIR=checks react-scripts test --watchAll=false --coverage --coverageDirectory=checks --reporters=default --reporters=jest-junit",
     "eject": "react-scripts eject",
     "style-check": "react-scripts prettier src --check",
-    "code-check": "react-scripts eslint src",
     "format": "react-scripts prettier src --write"
   },
   "jest": {
