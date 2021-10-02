@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
-import MainPage from "./mainPage";
+import App from "./App";
 import axios from "axios";
 
 axios.defaults.baseURL = "http://localhost:8080/api";
 
 ReactDOM.render(
     <React.StrictMode>
-        <MainPage />
+        <App />
     </React.StrictMode>,
     document.getElementById("root")
 );

@@ -35,7 +35,20 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "ci-test": "react-scripts test --watchAll=false --coverage",
+    "eject": "react-scripts eject",
+    "style-check": "react-scripts prettier src --check",
+    "code-check": "react-scripts eslint src",
+    "format": "react-scripts prettier src --write"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ]
   },
   "eslintConfig": {
     "extends": [
