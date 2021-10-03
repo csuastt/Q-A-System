@@ -1,6 +1,9 @@
 package com.example.qa.manager;
 
 
+import com.example.qa.manager.exception.DeleteException;
+import com.example.qa.manager.exception.NotFoundException;
+import com.example.qa.manager.exception.NotMatchException;
 import com.example.qa.manager.exchange.*;
 import com.example.qa.manager.model.AppManager;
 import com.example.qa.manager.repository.ManagerRepository;
@@ -32,41 +35,50 @@ public class ManagerController {
     private PasswordEncoder passwordEncoder;
 
     @GetMapping("/api/managers")
-    public Iterable<AppManager> getManagers(){
+    public Iterable<AppManager> getManagers() {
         return managerRepository.findAll();
     }
 
-    @GetMapping("/api/manager/{managername}")
-    public ManagerData getManager(@PathVariable(value = "managername") String managername) {
-        Optional<AppManager> optionalManager = managerRepository.findById(managername);
+
+    @GetMapping("/api/managers/{id}")
+    public ManagerData getManager(@PathVariable(value = "id") Long id) {
+        Optional<AppManager> optionalManager = managerRepository.findById(id);
+
         if (optionalManager.isEmpty())
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ManagerData(optionalManager.get());
     }
-    @GetMapping("/api/manager/{managername}/permission")
-    public QuestPermission permitQuest(@PathVariable(value = "managername") String managername){
-        String permission = managerRepository.findById(managername).get().getPermission();
+
+
+    @GetMapping("/api/managers/{id}/permission")
+    public QuestPermission permitQuest(@PathVariable(value = "id") Long id) {
+        String permission = managerRepository.findById(id).get().getPermission();
+
         return new QuestPermission("200", permission);
     }
 
-    @DeleteMapping("/api/manager/delete")
-    public DeleteResponse deleteManager(@RequestParam(value = "managername") String managername){
-        if(managerRepository.existsById(managername)){
-            try{
-                managerRepository.deleteById(managername);
-                return new DeleteResponse("200", "Successfully delete");
-            }catch (Exception e){
-                return new DeleteResponse("400", e.getMessage());
+
+    @DeleteMapping("/api/managers")
+    public DeleteResponse deleteUser(@RequestParam(value = "id") Long id) throws DeleteException, NotFoundException {
+        if (managerRepository.existsById(id)) {
+
+            try {
+                managerRepository.deleteById(id);
+                return new DeleteResponse("Successfully delete");
+            } catch (Exception e) {
+
+                throw new DeleteException(e.getMessage());
             }
 
-        }else{
-            return new DeleteResponse("403", "Manager not found");
+        } else {
+
+            throw new NotFoundException("No Such Method");
         }
     }
 
-    @PostMapping("/api/manager/create")
+    @PostMapping("/api/managers")
     public RedirectView register(@RequestParam(value = "managername") String managername, @RequestParam(value = "password") String password) {
-        if (managerRepository.existsById(managername))
+        if (managerRepository.existsByManagername(managername))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("manager"));
@@ -77,31 +89,34 @@ public class ManagerController {
         return redirectView;
     }
 
-    @PutMapping("/api/manager/{managername}/modify/info")
-    public ManagerData modifyManager(@PathVariable(value = "managername") String managername, @RequestBody ModifyManagerAttribute modifiedManager){
-        Optional<AppManager> optionalManager = managerRepository.findById(managername);
+
+    @PutMapping("/api/managers/{id}")
+    public ManagerData modifyUser(@PathVariable(value = "id") Long id, @RequestBody ModifyManagerAttribute modifiedManager) {
+        Optional<AppManager> optionalManager = managerRepository.findById(id);
+
         if (optionalManager.isEmpty())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         optionalManager.get().updateManagerInfo(modifiedManager);
         managerRepository.save(optionalManager.get());
         return new ManagerData(optionalManager.get());
     }
 
-    @PutMapping("/api/manager/{managername}/modify/password")
-    public ModifyPassResponse modifyPass(@PathVariable(value = "managername") String managername, @RequestBody ModifyManagerPasswordAttribute modifiedManager){
-        Optional<AppManager> optionalManager = managerRepository.findById(managername);
+
+    @PutMapping("/api/managers/{id}/password")
+    public ModifyPassResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyManagerPasswordAttribute modifiedManager) throws NotMatchException {
+        Optional<AppManager> optionalManager = managerRepository.findById(id);
+
         if (optionalManager.isEmpty())
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        if(optionalManager.get().getPassword() .equals(passwordEncoder.encode(modifiedManager.getOrigin_password()))){
+        if (optionalManager.get().getPassword().equals(passwordEncoder.encode(modifiedManager.getOrigin_password()))) {
             optionalManager.get().setPassword(passwordEncoder.encode(modifiedManager.getNew_password()));
             managerRepository.save(optionalManager.get());
-            return new ModifyPassResponse("200", "修改密码成功");
+            return new ModifyPassResponse("修改密码成功");
         }
 
         managerRepository.save(optionalManager.get());
-        return new ModifyPassResponse("400","原密码不正确");
+        return new ModifyPassResponse("原密码不正确");
     }
-
 
 
 }

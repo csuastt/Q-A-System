@@ -3,6 +3,7 @@ package com.example.qa.manager.exchange;
 import com.example.qa.manager.model.AppManager;
 
 public class ManagerData {
+    public Long id;
     public String managername;
     public String nickname;
     public Long create_up_timestamp;
@@ -11,6 +12,7 @@ public class ManagerData {
     public String permission;
 
     public ManagerData(AppManager appManager) {
+        this.id = appManager.getId();
         this.nickname = appManager.getNickname();
         this.managername = appManager.getManagername();
         this.create_up_timestamp = appManager.create_up_timestamp;

@@ -10,13 +10,10 @@ import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
-import javax.persistence.Id;
 
 
 @Getter
@@ -25,7 +22,9 @@ import javax.persistence.Id;
 @RequiredArgsConstructor
 @Entity
 public class AppManager implements UserDetails {
-    @Id
+    @Id @GeneratedValue
+    private Long id;
+    @Column(unique = true)
     private String managername;
     private String password;
     private String nickname = "";
