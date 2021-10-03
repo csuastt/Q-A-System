@@ -11,14 +11,13 @@
   | permission  | string | admin/auditor/observer  |
   | email       | string | should be a valid email |
   | phone       | string | should be a valid phone |
-  |             |        |                         |
-  |             |        |                         |
-
+  | id          | Long   | unique, auto generated  |
   
+
 
 ## API
 
-- `/api/manager/login`: 管理员登陆
+- `/api/manager/login`: 管理员登录
 
   - Method: `Post`
 
@@ -33,11 +32,12 @@
 
     - `200`：成功
 
-    | Name  | Type   | Description |
-    | ----- | ------ | ----------- |
-    | token | string |             |
-
-    - `400`：失败
+    | Name    | Type   | Description |
+    | ------- | ------ | ----------- |
+    | token   | string |             |
+    | manager | string | [manager]   |
+    
+    - `400`：失败：密码错误
 
 - `/api/manager/logout`: 管理员登出
 
@@ -45,54 +45,51 @@
 
   - Parameters:
 
-    | Name        | Type   | Description |
-    | ----------- | ------ | ----------- |
-    | managername | string |             |
-
   - Response:
-
+  
     - `200`：成功登出
 
-- `/api/manager/create`: 创建管理员
+- `/api/managers`: 创建管理员
 
   - Method: `Post`
 
-  - Parameters:
+  - RequestBody:
 
-    | Name        | Type   | Description |
-    | ----------- | ------ | ----------- |
-    | managername | string |             |
-    | permission  | string |             |
+    | Name        | Type   | Description             | Necessity |
+    | ----------- | ------ | ----------------------- | --------- |
+    | managername | string | not empty, unique       | essential |
+    | permission  | string | auditor/observer        | essential |
+    | email       | string | should be a valid email | optional  |
+    | phone       | string | should be a valid phone | optional  |
 
   - Response:
 
     - `200`：成功
 
-    | Name        | Type   | Description |
-    | ----------- | ------ | ----------- |
-    | managername | string |             |
-    | permission  | string |             |
-    | password    | string | random init |
+    | Name    | Type   | Description |
+    | ------- | ------ | ----------- |
+    | token   | string |             |
+    | manager | string | [manager]   |
+    
+  - `403 Forbidden   `：管理员名已注册
 
-    - `400`：失败
-
-- `/api/manager/delete`: 删除管理员
+- `/api/managers`: 删除管理员
 
   - Method: `Delete`
 
   - Parameters:
 
-    | Name        | Type   | Description |
-    | ----------- | ------ | ----------- |
-    | managername | string |             |
+    | Name | Type | Description |
+    | ---- | ---- | ----------- |
+    | id   | long |             |
 
   - Response:
 
     - `200`：成功
+  - `500`：后台数据库出错
+    - `400`：没有该管理员
 
-    - `400`：失败
-
-- `/api/manager/:managername`: 获取管理员详细信息
+- `/api/managers/:id`: 获取管理员详细信息
 
   - Method: `Get`
 
@@ -104,7 +101,7 @@
 
     - `400`：失败
 
-- `api/manager/:managername/permission` : 获取管理员权限
+- `api/managers/:id/permission` : 获取管理员权限
 
   - Method: `Get`
 
@@ -118,25 +115,27 @@
       | ---------- | ------ | ---------------------- |
       | permission | string | admin/auditor/observer |
 
-    - `400`：失败
+    - `400`：没有该用户
 
-- `/api/manager/:managername/modify/info`: 修改管理员信息
+- `/api/managers/:id`: 修改管理员信息
 
   - Method: `Put`
 
   - RequestBody:
 
-    | Name  | Type   | Description             |
-    | ----- | ------ | ----------------------- |
-    | email | string | should be a valid email |
-    | phone | string | should be a valid phone |
+    | Name        | Type   | Description             |
+    | ----------- | ------ | ----------------------- |
+    | email       | string | should be a valid email |
+    | phone       | string | should be a valid phone |
+    | managername | string | not empty, unique       |
+    |             |        |                         |
 
     Response:
-
+    
     - `200`: 修改成功
-    - `400`: 修改失败
+    - `400`: 没有该用户
 
-- `/api/manager/:managername/modify/password`: 修改管理员密码
+- `/api/managers/:id/password`: 修改管理员密码
 
   Method: `Put`
 
@@ -150,9 +149,10 @@
   Response:
 
   - `200`: 修改成功
-  - `400`: 修改失败（密码不符合标准或与原密码一致）
+  - `400`: 没有该用户
+  - `403`：原密码不正确 
 
-- `/api/manager/:managername/modify/permission`: 修改管理员权限
+- `/api/managers/:id/permission`: 修改管理员权限
 
   - Method: `Put`
 
@@ -174,10 +174,18 @@
 
   - Parameters:
 
+    | Name    | Type    | Description |
+    | ------- | ------- | ----------- |
+    | auditor | boolean | true/false  |
+    | page    | int     |             |
+    | maxitem | int     |             |
+  
+    
+  
   - Response:
-
+  
     - `200`:
-
+  
       | Name        | Type   | Description         |
       | ----------- | ------ | ------------------- |
       | managerlist | string | list of `[manager]` |
