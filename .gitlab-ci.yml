@@ -73,7 +73,7 @@ backend-test:
 
 sonar-scan:
   stage: deploy
-  image: ubuntu:latest
+  image: node:latest
   dependencies:
     - frontend-code-test
     - backend-test
