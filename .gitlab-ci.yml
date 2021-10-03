@@ -78,7 +78,6 @@ sonar-scan:
     - frontend-code-test
     - backend-test
   script:
-    - apt-get update && apt-get install curl -y
     - SUFFIX=$RANDOM
     - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
     - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
