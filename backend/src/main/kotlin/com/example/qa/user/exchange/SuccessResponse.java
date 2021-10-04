@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Data
 @ResponseBody
-public class DeleteResponse {
+public class SuccessResponse {
     public String message;
 
-    public DeleteResponse(String message) {
+    public SuccessResponse(String message){
         this.message = message;
     }
 }

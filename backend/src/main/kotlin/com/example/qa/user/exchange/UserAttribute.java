@@ -3,7 +3,7 @@ package com.example.qa.user.exchange;
 import lombok.Data;
 
 @Data
-public class ModifyUserAttribute {
+public class UserAttribute {
     public String username;
     public String password;
     public String email;

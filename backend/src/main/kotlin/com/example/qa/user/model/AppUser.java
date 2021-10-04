@@ -1,6 +1,6 @@
 package com.example.qa.user.model;
 
-import com.example.qa.user.exchange.ModifyUserAttribute;
+import com.example.qa.user.exchange.UserAttribute;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -51,6 +51,25 @@ public class AppUser implements UserDetails {
 		this.sign_up_timestamp = Instant.now().getEpochSecond();
 	}
 
+	public AppUser(UserAttribute register){
+		if (register.username != null)
+			this.username = register.username;
+		if (register.password != null)
+			this.password = register.password;
+		if (register.birthday != null)
+			this.birthday = register.birthday;
+		if (register.gender != null)
+			this.gend = register.gender;
+		if (register.email != null)
+			this.email = register.email;
+		if (register.nickname != null)
+			this.nickname = register.nickname;
+		if(register.phone != null)
+			this.phone = register.phone;
+		if(register.description != null)
+			this.description = register.description;
+	}
+
 	public AppUser(String username,
 				   String password,
 				   Collection<GrantedAuthority> authorities,
@@ -79,7 +98,7 @@ public class AppUser implements UserDetails {
 		this.birthday = birthday;
 	}
 
-	public void updateUserInfo(ModifyUserAttribute newInfo) {
+	public void updateUserInfo(UserAttribute newInfo) {
 		if (newInfo.username != null)
 			this.username = newInfo.username;
 		if (newInfo.password != null)
