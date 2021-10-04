@@ -2,6 +2,8 @@ package com.example.qa.user;
 
 import com.example.qa.user.repository.UserRepository;
 import com.example.qa.user.response.GetAllResponse;
+import com.example.qa.user.response.GetPermitResponse;
+import com.example.qa.user.response.GetUserResponse;
 import com.example.qa.user.response.LoginResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -60,39 +62,75 @@ class UserControllerTest {
     @Test
     void getAllUsers() throws Exception {
         MvcResult getAllResult = this.mockMvc.perform(get("/api/users")
-                            .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andReturn();
+                                                      .header("Authorization", "Bearer " + token))
+                                             .andExpect(status().isOk())
+                                             .andReturn();
 
         GetAllResponse response = fromJson(objectMapper, getAllResult.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(response.getUsers().size(), repository.count());
     }
 
     @Test
-    void getUser() {
+    void getUser() throws Exception{
+        MvcResult getUserResult = this.mockMvc.perform(get("/api/users/1")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        GetUserResponse response = fromJson(objectMapper, getUserResult.getResponse().getContentAsString(), GetUserResponse.class);
+        assertNotNull(response.getAvatarUrl(),"不能为空");
+        assertNotNull(response.getBirthday(),"不能为空");
+        assertNotNull(response.getUsername(),"不能为空");
+        assertNotNull(response.getGender(),"不能为空");
+        assertNotNull(response.getId(),"不能为空");
+        assertNotNull(response.getMail(),"不能为空");
+        assertNotNull(response.getNickname(),"不能为空");
+        assertNotNull(response.getSignUpTimestamp(),"不能为空");
+        if(repository.findById(1L).isEmpty()){
+            throw new Exception("用户不存在");
+        }
+        var user = repository.findById(1L).get();
+        assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
+        assertEquals(response.getAvatarUrl(), user.getAva_url(),"头像路径不正确");
+        assertEquals(response.getBirthday(), user.getBirthday(),"生日不正确");
+        assertEquals(response.getGender(), user.getGend(),"性别不正确");
+        assertEquals(response.getId(), user.getId() ,"id不正确");
+        assertEquals(response.getMail(), user.getEmail(), "邮件不正确");
+        assertEquals(response.getNickname(), user.getNickname(), "昵称不正确");
+        assertEquals(response.getSignUpTimestamp(), user.getSign_up_timestamp(), "时间戳不正确");
     }
 
     @Test
-    void permitQuest() {
+    void permitQuest() throws Exception{
+        MvcResult getPermissionResult = this.mockMvc.perform(get("/api/users/1/permission")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        GetPermitResponse response = fromJson(objectMapper, getPermissionResult.getResponse().getContentAsString(), GetPermitResponse.class);
+        if(repository.findById(1L).isEmpty()){
+            throw new Exception("用户不存在");
+        }
+        var user = repository.findById(1L).get();
+        assertEquals(response.getPermit(), user.getPermit());
     }
 
     @Test
-    void deleteUser() {
+    void deleteUser() throws Exception{
     }
 
     @Test
-    void genAvatar() {
+    void genAvatar() throws Exception{
     }
 
     @Test
-    void register() {
+    void register() throws Exception{
+
     }
 
     @Test
-    void modifyUser() {
+    void modifyUser() throws Exception{
     }
 
     @Test
-    void modifyPass() {
+    void modifyPass() throws Exception{
     }
 }

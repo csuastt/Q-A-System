@@ -44,11 +44,15 @@ public class AppUser implements UserDetails {
 	public AppUser(String username,
 				   String password,
 				   Collection<GrantedAuthority> authorities){
+		this.ava_url = "api/users/avatar/" + 1 + ".png";
 		this.username = username;
 		this.password = password;
 		this.authorities = authorities;
-		this.ava_url = "/avatar/" + username + ".png";
 		this.sign_up_timestamp = Instant.now().getEpochSecond();
+	}
+
+	public void setAva(){
+		this.ava_url = "api/users/avatar/" + id + ".png";
 	}
 
 	public AppUser(UserAttribute register){
@@ -85,7 +89,7 @@ public class AppUser implements UserDetails {
 		this.username = username;
 		this.password = password;
 		this.authorities = authorities;
-		this.ava_url = "/avatar/" + username + ".png";
+		this.ava_url = "/avatar/" + id + ".png";
 		this.sign_up_timestamp = Instant.now().getEpochSecond();
 		this.email = mail;
 		this.gend = gend;

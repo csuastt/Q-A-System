@@ -8,8 +8,6 @@ import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,7 +25,6 @@ import java.util.Optional;
 @RestController
 public class UserController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserRepository userRepository;
 
 
@@ -82,11 +79,11 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/avatar/{username}.png", method = RequestMethod.GET, produces = "image/png")
-    public @ResponseBody byte[] genAvatar(@PathVariable(value = "username") String username)  {
+    @GetMapping(value = "/api/users/avatar/{id}.png", produces = "image/png")
+    public @ResponseBody byte[] genAvatar(@PathVariable(value = "id") Long id)  {
         try {
             Avatar avatar = IdenticonAvatar.newAvatarBuilder().build();
-            var img = avatar.create((username + "thu_summer_java_potato").hashCode());
+            var img = avatar.create((id + "Q & A backend").hashCode());
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             ImageIO.write(img, "png", bao);
             return bao.toByteArray();
@@ -103,6 +100,9 @@ public class UserController {
         authorities.add(new SimpleGrantedAuthority("user"));
         AppUser appUser = new AppUser(registeredUser);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setAuthorities(authorities);
+        userRepository.save(appUser);
+        appUser.setAva();
         userRepository.save(appUser);
         return new SuccessResponse("注册成功");
     }
