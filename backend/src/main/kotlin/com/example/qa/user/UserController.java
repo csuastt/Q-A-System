@@ -1,8 +1,5 @@
 package com.example.qa.user;
 
-import com.example.qa.user.exception.DeleteException;
-import com.example.qa.user.exception.NotFoundException;
-import com.example.qa.user.exception.NotMatchException;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
@@ -51,7 +48,7 @@ public class UserController {
     public UserData getUser(@PathVariable(value = "id") Long id) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
         return new UserData(optionalUser.get());
     }
 
@@ -59,23 +56,23 @@ public class UserController {
     public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
         Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
         String permit = optionalUser.get().getPermit();
         return new QuestPermit(permit);
     }
 
     @DeleteMapping("/api/users")
-    public SuccessResponse deleteUser(@RequestParam(value = "id") Long id) throws DeleteException, NotFoundException {
+    public SuccessResponse deleteUser(@RequestParam(value = "id") Long id) {
         if(userRepository.existsById(id)){
             try{
                 userRepository.deleteById(id);
-                return new SuccessResponse("Successfully delete");
+                return new SuccessResponse("删除成功");
             }catch (Exception e){
-                throw new DeleteException(e.getMessage());
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "数据库出错");
             }
 
         }else{
-            throw new NotFoundException("No Such Method");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
         }
     }
 
@@ -111,14 +108,14 @@ public class UserController {
     public SuccessResponse modifyUser(@PathVariable(value = "id") Long id, @RequestBody UserAttribute modifiedUser){
         Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"User not found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"未找到用户");
         optionalUser.get().updateUserInfo(modifiedUser);
         userRepository.save(optionalUser.get());
         return new SuccessResponse("修改成功");
     }
 
     @PutMapping("/api/users/{id}/password")
-    public SuccessResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyPasswordAttribute modifiedUser) throws NotMatchException {
+    public SuccessResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyPasswordAttribute modifiedUser) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -129,6 +126,6 @@ public class UserController {
         }
 
         userRepository.save(optionalUser.get());
-        throw new NotMatchException("原密码不正确");
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "原密码不正确");
     }
 }
