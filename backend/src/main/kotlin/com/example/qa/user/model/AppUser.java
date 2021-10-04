@@ -105,8 +105,6 @@ public class AppUser implements UserDetails {
 	public void updateUserInfo(UserAttribute newInfo) {
 		if (newInfo.username != null)
 			this.username = newInfo.username;
-		if (newInfo.password != null)
-			this.password = newInfo.password;
 		if (newInfo.birthday != null)
 			this.birthday = newInfo.birthday;
 		if (newInfo.gender != null)
