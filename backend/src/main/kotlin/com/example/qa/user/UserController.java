@@ -40,8 +40,12 @@ public class UserController {
 
 
     @GetMapping("/api/users")
-    public Iterable<AppUser> getUsers(){
-        return userRepository.findAll();
+    public GetAllData getUsers(){
+        var response = new GetAllData();
+        for(var user : userRepository.findAll()){
+            response.getUsers().add(user);
+        }
+        return response;
     }
 
 
