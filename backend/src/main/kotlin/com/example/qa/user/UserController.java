@@ -32,7 +32,10 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-
+    /**
+     * @permission Authentication
+     * @return     GetAllData with detailed info of all users
+     */
     @GetMapping("/api/users")
     public GetAllData getUsers(){
         var response = new GetAllData();
@@ -43,7 +46,11 @@ public class UserController {
     }
 
 
-
+    /**
+     * @permission Authentication
+     * @param id   unique to specify a user
+     * @return     detailed information for required user
+     */
     @GetMapping("/api/users/{id}")
     public UserData getUser(@PathVariable(value = "id") Long id) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
@@ -52,6 +59,11 @@ public class UserController {
         return new UserData(optionalUser.get());
     }
 
+    /**
+     * @permission Authentication
+     * @param id   unique to specify a user
+     * @return     permission of the required user
+     */
     @GetMapping("/api/users/{id}/permission")
     public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
         Optional<AppUser> optionalUser = userRepository.findById(id);
@@ -61,6 +73,11 @@ public class UserController {
         return new QuestPermit(permit);
     }
 
+    /**
+     * @permission Authentication
+     * @param id   unique to specify a user
+     * @return     Success or Not Found
+     */
     @DeleteMapping("/api/users")
     public SuccessResponse deleteUser(@RequestParam(value = "id") Long id) {
         if(userRepository.existsById(id)){
@@ -89,6 +106,11 @@ public class UserController {
         }
     }
 
+    /**
+     * @permission            Public
+     * @param registeredUser  Body to register
+     * @return                Success or not
+     */
     @PostMapping("/api/users")
     public SuccessResponse register( @RequestBody UserAttribute registeredUser) {
         if (userRepository.existsByUsername(registeredUser.username))
@@ -104,6 +126,11 @@ public class UserController {
         return new SuccessResponse("注册成功");
     }
 
+    /**
+     * @param id            Unique to specify a user
+     * @param modifiedUser  Body for modification
+     * @return              Success or not
+     */
     @PutMapping("/api/users/{id}")
     public SuccessResponse modifyUser(@PathVariable(value = "id") Long id, @RequestBody UserAttribute modifiedUser){
         Optional<AppUser> optionalUser = userRepository.findById(id);
@@ -114,6 +141,11 @@ public class UserController {
         return new SuccessResponse("修改成功");
     }
 
+    /**
+     * @param id            Unique to specify a user
+     * @param modifiedUser  Body for password modification
+     * @return              Success or Origin not match
+     */
     @PutMapping("/api/users/{id}/password")
     public SuccessResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyPasswordAttribute modifiedUser) {
         Optional<AppUser> optionalUser = userRepository.findById(id);

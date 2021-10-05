@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
+/**
+ * Switch between String and JSON
+ */
 public class JsonHelper {
 
     public static <T> String toJson(ObjectMapper objectMapper, T object) throws JsonProcessingException {

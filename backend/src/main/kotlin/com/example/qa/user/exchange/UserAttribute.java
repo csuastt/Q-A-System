@@ -2,6 +2,10 @@ package com.example.qa.user.exchange;
 
 import lombok.Data;
 
+/**
+ *  Request Body visiting /api/users/{id}
+ *  METHOD:PUT
+ */
 @Data
 public class UserAttribute {
     public String username;

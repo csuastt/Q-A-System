@@ -8,7 +8,6 @@ import com.example.qa.user.response.GetPermitResponse;
 import com.example.qa.user.response.GetUserResponse;
 import com.example.qa.user.response.LoginResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-
 import static com.example.qa.user.JsonHelper.fromJson;
 import static com.example.qa.user.JsonHelper.toJson;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +44,7 @@ class UserControllerTest {
     @BeforeEach
     @Test
     void login() throws Exception {
-        //注册成功测试
+        //test for login success
         MvcResult loginResult = this.mockMvc
                 .perform(post("/api/user/login?username=testUser&password=" + password)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +57,7 @@ class UserControllerTest {
         assertNotNull(response.getToken(), "Token must not be null!");
         assertEquals(response.getUser().getUsername(), "testUser");
 
-        //注册失败测试
+        //test for wrong password login
         this.mockMvc.perform(post("/api/user/login?username=testUser&password=pa")
                                                      .contentType(MediaType.APPLICATION_JSON)
                                                      .content(""))
@@ -69,7 +68,7 @@ class UserControllerTest {
     @Test
     void getAllUsers() throws Exception {
 
-        //获取全部用户成功测试
+        //test for getAllUser success
         MvcResult getAllResult = this.mockMvc.perform(get("/api/users")
                                                       .header("Authorization", "Bearer " + token))
                                              .andExpect(status().isOk())
@@ -78,7 +77,7 @@ class UserControllerTest {
         GetAllResponse response = fromJson(objectMapper, getAllResult.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(response.getUsers().size(), repository.count());
 
-        //未加验证头测试
+        //test for not authenticated
         this.mockMvc.perform(get("/api/users"))
                 .andExpect(status().isForbidden())
                 .andReturn();
@@ -87,7 +86,7 @@ class UserControllerTest {
     @Test
     void getUser() throws Exception{
 
-        //获取用户成功测试
+        //test for success get user detail
         MvcResult getUserResult = this.mockMvc.perform(get("/api/users/1")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
@@ -116,17 +115,22 @@ class UserControllerTest {
 
         long id = repository.count() + 1;
 
-        //获取不存在的用户失败测试
+        //test for not existed user
         this.mockMvc.perform(get("/api/users/" + id)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isBadRequest())
+                .andReturn();
+
+        //test for not authenticated
+        this.mockMvc.perform(get("/api/users/1"))
+                .andExpect(status().isForbidden())
                 .andReturn();
     }
 
     @Test
     void permitQuest() throws Exception{
 
-        //获取用户权限成功测试
+        //test for success get user permission
         MvcResult getPermissionResult = this.mockMvc.perform(get("/api/users/1/permission")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
@@ -138,18 +142,23 @@ class UserControllerTest {
         var user = repository.findById(1L).get();
         assertEquals(response.getPermit(), user.getPermit());
 
-        //获取不存在的用户的权限失败测试
+        //test for get user not existed permission
         long id = repository.count() + 1;
         this.mockMvc.perform(get("/api/users/" + id + "/permission")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isBadRequest())
+                .andReturn();
+
+        //test for not authenticated
+        this.mockMvc.perform(get("/api/users/1/permission"))
+                .andExpect(status().isForbidden())
                 .andReturn();
     }
 
     @Test
     void deleteUser() throws Exception{
 
-        //测试删除成功
+        //test for success delete user
         long expected = repository.count() - 1;
         this.mockMvc.perform(delete("/api/users")
                         .header("Authorization", "Bearer " + token)
@@ -158,20 +167,26 @@ class UserControllerTest {
                 .andReturn();
         assertEquals(expected, repository.count());
 
-        //测试删除不存在的用户
+        //test for user not existed delete
         this.mockMvc.perform(delete("/api/users")
                         .header("Authorization", "Bearer " + token)
                         .param("id", "2"))
                 .andExpect(status().isBadRequest())
                 .andReturn();
         assertEquals(expected, repository.count());
+
+        //test for not authenticated
+        this.mockMvc.perform(delete("/api/users")
+                        .param("id", "1"))
+                .andExpect(status().isForbidden())
+                .andReturn();
     }
 
 
     @Test
     void genAvatar() throws Exception{
 
-        //测试获取头像
+        //test getting avatar
         this.mockMvc.perform(get("/api/users/avatar/" + 1 + ".png")
                              .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
@@ -187,7 +202,7 @@ class UserControllerTest {
         register.setUsername("e");
         register.setPassword("e");
 
-        //测试注册成功
+        //test register success
         this.mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(objectMapper, register)))
@@ -196,7 +211,7 @@ class UserControllerTest {
 
         assertEquals(expected, repository.count());
 
-        //测试注册失败
+        //test register existed user name
         this.mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(objectMapper, register)))
@@ -217,7 +232,7 @@ class UserControllerTest {
         modify.setPhone("1010");
         modify.setNickname("little");
 
-        //测试注册成功
+        //test modify success
         this.mockMvc.perform(put("/api/users/2")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -238,13 +253,20 @@ class UserControllerTest {
         assertEquals(user.getPhone(),"1010");
         assertEquals(user.getNickname(), "little");
 
-        //测试修改不存在的用户
+        //test modify user not existed
         long id = repository.count() + 1;
         this.mockMvc.perform(put("/api/users/" + id)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(objectMapper, modify)))
                 .andExpect(status().isBadRequest())
+                .andReturn();
+
+        //test not authenticated
+        this.mockMvc.perform(put("/api/users/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(objectMapper, modify)))
+                .andExpect(status().isForbidden())
                 .andReturn();
     }
 
@@ -254,6 +276,7 @@ class UserControllerTest {
         modify.setOrigin("password");
         modify.setPassword("pass");
 
+        //test success modify password
         this.mockMvc.perform(put("/api/users/1/password")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -263,7 +286,7 @@ class UserControllerTest {
         this.password = "pass";
         login();
 
-        //测试修改密码时原密码错误
+        //test wrong origin
         modify.setOrigin("password");
         modify.setPassword("password");
         this.mockMvc.perform(put("/api/users/1/password")
@@ -273,9 +296,16 @@ class UserControllerTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
 
-        //改回原密码
+        //test not authenticated
         modify.setOrigin("pass");
         modify.setPassword("password");
+        this.mockMvc.perform(put("/api/users/1/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(objectMapper, modify)))
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+        //change back to origin
         this.mockMvc.perform(put("/api/users/1/password")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)

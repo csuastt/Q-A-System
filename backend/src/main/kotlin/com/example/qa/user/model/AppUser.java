@@ -14,6 +14,9 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
 
+/**
+ * Entity restored in the repository
+ */
 @Getter
 @Setter
 @ToString
@@ -41,6 +44,12 @@ public class AppUser implements UserDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Collection<GrantedAuthority> authorities;
 
+	/**
+	 * Construct User from username and password
+	 * @param username    User name
+	 * @param password    Initial password
+	 * @param authorities Initial authorities
+	 */
 	public AppUser(String username,
 				   String password,
 				   Collection<GrantedAuthority> authorities){
@@ -51,10 +60,17 @@ public class AppUser implements UserDetails {
 		this.sign_up_timestamp = Instant.now().getEpochSecond();
 	}
 
+	/**
+	 * init ava path
+	 */
 	public void setAva(){
 		this.ava_url = "api/users/avatar/" + id + ".png";
 	}
 
+	/**
+	 * Construct User from registration
+	 * @param register Request Body when register
+	 */
 	public AppUser(UserAttribute register){
 		if (register.username != null)
 			this.username = register.username;
@@ -74,34 +90,10 @@ public class AppUser implements UserDetails {
 			this.description = register.description;
 	}
 
-	public AppUser(String username,
-				   String password,
-				   Collection<GrantedAuthority> authorities,
-				   String mail,
-				   String gend,
-				   int money,
-				   String description,
-				   String nickname,
-				   String permission,
-				   Boolean enable,
-				   String phone,
-				   String birthday) {
-		this.username = username;
-		this.password = password;
-		this.authorities = authorities;
-		this.ava_url = "/avatar/" + id + ".png";
-		this.sign_up_timestamp = Instant.now().getEpochSecond();
-		this.email = mail;
-		this.gend = gend;
-		this.money = money;
-		this.description = description;
-		this.nickname = nickname;
-		this.permit = permission;
-		this.phone = phone;
-		this.enable = enable;
-		this.birthday = birthday;
-	}
-
+	/**
+	 * Update info from modification
+	 * @param newInfo Request Body when modify
+	 */
 	public void updateUserInfo(UserAttribute newInfo) {
 		if (newInfo.username != null)
 			this.username = newInfo.username;

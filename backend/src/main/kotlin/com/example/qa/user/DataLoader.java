@@ -16,8 +16,8 @@ import java.util.Collection;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public DataLoader(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -26,7 +26,7 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
         var user = new AppUser("testUser", passwordEncoder.encode("password"), authorities);
         userRepository.save(user);
