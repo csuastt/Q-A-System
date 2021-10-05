@@ -3,6 +3,8 @@ package com.example.qa.user.configuration;
 import com.example.qa.user.security.JwtAuthenticationFilter;
 import com.example.qa.user.security.JwtAuthorizationFilter;
 import com.example.qa.user.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -28,9 +30,12 @@ public class SpringSecurityConfiguration {
     public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         private final UserService userService;
+        private final ObjectMapper objectMapper;
 
-        public SecurityConfiguration(UserService userService) {
+        @Autowired
+        public SecurityConfiguration(UserService userService, ObjectMapper objectMapper) {
             this.userService = userService;
+            this.objectMapper = objectMapper;
         }
 
         /**
@@ -48,7 +53,7 @@ public class SpringSecurityConfiguration {
                     .antMatchers(HttpMethod.POST,"/api/user/login").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper))
                     .addFilter(new JwtAuthorizationFilter(authenticationManager()))
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

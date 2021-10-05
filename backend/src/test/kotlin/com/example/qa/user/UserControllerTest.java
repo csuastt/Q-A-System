@@ -1,5 +1,6 @@
 package com.example.qa.user;
 
+import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.exchange.ModifyPasswordAttribute;
 import com.example.qa.user.exchange.UserAttribute;
 import com.example.qa.user.repository.UserRepository;
@@ -45,10 +46,13 @@ class UserControllerTest {
     @Test
     void login() throws Exception {
         //test for login success
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("testUser");
+        loginRequest.setPassword(password);
         MvcResult loginResult = this.mockMvc
-                .perform(post("/api/user/login?username=testUser&password=" + password)
+                .perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(""))
+                        .content(toJson(objectMapper, loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -57,10 +61,11 @@ class UserControllerTest {
         assertNotNull(response.getToken(), "Token must not be null!");
         assertEquals(response.getUser().getUsername(), "testUser");
 
+        loginRequest.setPassword("pa");
         //test for wrong password login
-        this.mockMvc.perform(post("/api/user/login?username=testUser&password=pa")
+        this.mockMvc.perform(post("/api/user/login")
                                                      .contentType(MediaType.APPLICATION_JSON)
-                                                     .content(""))
+                                                     .content(toJson(objectMapper, loginRequest)))
                                              .andExpect(status().isUnauthorized())
                                              .andReturn();
     }
@@ -211,7 +216,7 @@ class UserControllerTest {
 
         assertEquals(expected, repository.count());
 
-        //test register existed user name
+        //test register existed username
         this.mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(objectMapper, register)))
