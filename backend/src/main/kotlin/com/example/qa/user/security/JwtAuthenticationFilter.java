@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,14 +23,12 @@ import java.util.stream.Collectors;
 
 import static com.example.qa.user.HttpServletRequestReader.ReadAsChars;
 import static com.example.qa.user.JsonHelper.fromJson;
-import static com.example.qa.user.JsonHelper.toJson;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final ObjectMapper objectMapper;
 
-    @Autowired
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
         this.authenticationManager = authenticationManager;
         this.objectMapper = objectMapper;

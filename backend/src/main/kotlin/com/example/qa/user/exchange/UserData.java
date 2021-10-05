@@ -27,7 +27,7 @@ public class UserData {
 		this.avatar_url = appUser.getAva_url();
 		this.sign_up_timestamp = appUser.sign_up_timestamp;
 		this.mail = appUser.getEmail();
-		this.gender = appUser.getGend();
+		this.gender = appUser.getGender();
 		this.birthday = appUser.getBirthday();
 
 	}

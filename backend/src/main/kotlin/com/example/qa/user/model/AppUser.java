@@ -33,7 +33,7 @@ public class AppUser implements UserDetails {
 	private String email = "";
 	private String phone = "";
 	private String birthday = "";
-	private String gend = "unknown";
+	private String gender = "unknown";
 	private boolean enable = true;
 	private String permit = "q";
 	private int money = 100;
@@ -79,7 +79,7 @@ public class AppUser implements UserDetails {
 		if (register.birthday != null)
 			this.birthday = register.birthday;
 		if (register.gender != null)
-			this.gend = register.gender;
+			this.gender = register.gender;
 		if (register.email != null)
 			this.email = register.email;
 		if (register.nickname != null)
@@ -88,6 +88,7 @@ public class AppUser implements UserDetails {
 			this.phone = register.phone;
 		if(register.description != null)
 			this.description = register.description;
+		this.sign_up_timestamp = Instant.now().getEpochSecond();
 	}
 
 	/**
@@ -100,7 +101,7 @@ public class AppUser implements UserDetails {
 		if (newInfo.birthday != null)
 			this.birthday = newInfo.birthday;
 		if (newInfo.gender != null)
-			this.gend = newInfo.gender;
+			this.gender = newInfo.gender;
 		if (newInfo.email != null)
 			this.email = newInfo.email;
 		if (newInfo.nickname != null)
@@ -147,6 +148,6 @@ public class AppUser implements UserDetails {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(username,password, email, phone, birthday, gend, nickname);
+		return Objects.hash(username,password, email, phone, birthday, gender, nickname);
 	}
 }

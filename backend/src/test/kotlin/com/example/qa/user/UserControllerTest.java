@@ -112,7 +112,7 @@ class UserControllerTest {
         assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
         assertEquals(response.getAvatarUrl(), user.getAva_url(),"头像路径不正确");
         assertEquals(response.getBirthday(), user.getBirthday(),"生日不正确");
-        assertEquals(response.getGender(), user.getGend(),"性别不正确");
+        assertEquals(response.getGender(), user.getGender(),"性别不正确");
         assertEquals(response.getId(), user.getId() ,"id不正确");
         assertEquals(response.getMail(), user.getEmail(), "邮件不正确");
         assertEquals(response.getNickname(), user.getNickname(), "昵称不正确");
@@ -254,7 +254,7 @@ class UserControllerTest {
         assertEquals(user.getBirthday(), "2040/15/32");
         assertEquals(user.getEmail(), "@mails.tsinghua.edu.cn");
         assertEquals(user.getDescription(), "A student");
-        assertEquals(user.getGend(),"male");
+        assertEquals(user.getGender(),"male");
         assertEquals(user.getPhone(),"1010");
         assertEquals(user.getNickname(), "little");
 

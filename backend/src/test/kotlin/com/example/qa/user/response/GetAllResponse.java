@@ -32,8 +32,8 @@ public class GetAllResponse {
         private String phone;
         @JsonProperty("birthday")
         private String birthday;
-        @JsonProperty("gend")
-        private String gend;
+        @JsonProperty("gender")
+        private String gender;
         @JsonProperty("enable")
         private Boolean enable;
         @JsonProperty("permit")
