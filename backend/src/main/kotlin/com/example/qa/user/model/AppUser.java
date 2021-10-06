@@ -22,6 +22,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Entity
+@Table(name = "APPUSER")
 public class AppUser implements UserDetails {
 	@Id @GeneratedValue
 	private Long id;

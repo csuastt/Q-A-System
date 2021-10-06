@@ -33,18 +33,29 @@ public class UserController {
     }
 
     /**
-     * @permission Authentication
-     * @return     GetAllData with detailed info of all users
+     * @permission          Authenticated
+     * @param is_answerer   Whether answerers
+     * @param page          Page Number
+     * @param limit         Item Number
+     * @return              A List of AppUser requested
      */
     @GetMapping("/api/users")
-    public GetAllData getUsers(){
+    public GetAllData getUsers(@RequestParam(value = "answerer", defaultValue = "false")Boolean is_answerer,
+                               @RequestParam(value = "page", defaultValue = "1")Integer page,
+                               @RequestParam(value = "limit", defaultValue = "20")Integer limit)
+    {
         var response = new GetAllData();
-        for(var user : userRepository.findAll()){
-            response.getUsers().add(user);
+        if(!is_answerer) {
+            for (var user : userRepository.findAll(limit, (page - 1) * limit)) {
+                response.getUsers().add(user);
+            }
+        }else{
+            for (var user : userRepository.findAllByPermit(limit, (page - 1) * limit, "a")) {
+                response.getUsers().add(user);
+            }
         }
         return response;
     }
-
 
     /**
      * @permission Authentication
