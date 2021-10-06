@@ -3,6 +3,7 @@ package com.example.qa.user;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.exchange.ModifyPasswordAttribute;
 import com.example.qa.user.exchange.UserAttribute;
+import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.example.qa.user.response.GetAllResponse;
 import com.example.qa.user.response.GetPermitResponse;
@@ -15,8 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static com.example.qa.user.JsonHelper.fromJson;
 import static com.example.qa.user.JsonHelper.toJson;
@@ -35,11 +42,13 @@ class UserControllerTest {
     private String password = "password";
     @Autowired
     private UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper) {
+    public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @BeforeEach
@@ -70,22 +79,101 @@ class UserControllerTest {
                                              .andReturn();
     }
 
+    void generateUser(String username){
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("user"));
+        var user = new AppUser(username, passwordEncoder.encode("password"),authorities);
+        repository.save(user);
+    }
+
+    void generateAnswerer(String username){
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("user"));
+        var user = new AppUser(username, passwordEncoder.encode("password"),authorities);
+        user.setPermit("a");
+        repository.save(user);
+    }
+
     @Test
     void getAllUsers() throws Exception {
 
-        //test for getAllUser success
+        //init testUsers
+        for(int i = 0; i < 40; i++){
+            generateUser("user" + i);
+        }
+        for(int i = 0; i < 20; i++){
+            generateAnswerer("answerer" + i);
+        }
+
+        //test for default values
         MvcResult getAllResult = this.mockMvc.perform(get("/api/users")
                                                       .header("Authorization", "Bearer " + token))
                                              .andExpect(status().isOk())
                                              .andReturn();
 
         GetAllResponse response = fromJson(objectMapper, getAllResult.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(response.getUsers().size(), repository.count());
+        assertEquals(response.getUsers().size(), 20);
+        assertEquals(response.getUsers().get(0).getId(), 1);
+
+        //test for page feature
+
+        MvcResult page_one = this.mockMvc.perform(get("/api/users")
+                        .header("Authorization", "Bearer " + token)
+                        .param("page", "1")
+                        .param("limit", "30"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        GetAllResponse res_one = fromJson(objectMapper, page_one.getResponse().getContentAsString(), GetAllResponse.class);
+        assertEquals(res_one.getUsers().size(), 30);
+        assertEquals(res_one.getUsers().get(0).getId(), 1);
+        assertEquals(res_one.getUsers().get(29).getId(), 30);
+
+        MvcResult page_two = this.mockMvc.perform(get("/api/users")
+                        .header("Authorization", "Bearer " + token)
+                        .param("page", "2")
+                        .param("limit", "30"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        GetAllResponse res_two = fromJson(objectMapper, page_two.getResponse().getContentAsString(), GetAllResponse.class);
+        assertEquals(res_two.getUsers().size(), 30);
+        assertEquals(res_two.getUsers().get(0).getId(), 31);
+        assertEquals(res_two.getUsers().get(29).getId(), 60);
+
+        MvcResult page_three = this.mockMvc.perform(get("/api/users")
+                        .header("Authorization", "Bearer " + token)
+                        .param("page", "3")
+                        .param("limit", "30"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        GetAllResponse res_three = fromJson(objectMapper, page_three.getResponse().getContentAsString(), GetAllResponse.class);
+        assertEquals(res_three.getUsers().size(), repository.count() - 60);
+        assertEquals(res_three.getUsers().get(0).getId(), 61);
+
+        //test for answerer filter
+        MvcResult page_ans = this.mockMvc.perform(get("/api/users")
+                        .header("Authorization", "Bearer " + token)
+                        .param("answerer", "true"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        GetAllResponse res_ans = fromJson(objectMapper, page_ans.getResponse().getContentAsString(), GetAllResponse.class);
+        assertEquals(res_ans.getUsers().size(), 20);
+        for(var res : res_ans.getUsers()){
+            assertEquals(res.getPermit(), "a");
+        }
 
         //test for not authenticated
         this.mockMvc.perform(get("/api/users"))
                 .andExpect(status().isForbidden())
                 .andReturn();
+
+        //delete testUsers
+        for(int i = 3; i <= 62; i++){
+            repository.deleteById((long) i);
+        }
     }
 
     @Test

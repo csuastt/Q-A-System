@@ -59,7 +59,7 @@
 
 - `api/user/login` : 用户登录
   
-  - Method: `Post`
+  - Method: `POST`
 
   - Params:
 
@@ -82,7 +82,7 @@
   
 - `api/user/logout` : 用户登出
   
-  - Method: `Post`
+  - Method: `POST`
   
   - Parameters:
 
@@ -92,7 +92,7 @@
 
 - `api/users` : 删除用户
   
-  - Method: `Delete`
+  - Method: `DELETE`
   
   - Parameters:
 
@@ -108,7 +108,7 @@
     
 - `api/users/:id` : 获取详细信息
     
-    - Method: `Get`
+    - Method: `GET`
   
     - Parameters:
   
@@ -119,7 +119,7 @@
 
 - `api/users/:id/permission` : 获取用户权限
   
-  - Method: `Get`
+  - Method: `GET`
   
   - Parameters:
   
@@ -134,7 +134,7 @@
 
 - `api/users/:id` : 修改详细信息
   
-  - Method: `Put`
+  - Method: `PUT`
   
   - RequestBody:
 
@@ -153,7 +153,7 @@
 
 - `api/users/:id/password` : 修改密码
   
-  - Method: `Put`
+  - Method: `PUT`
   
   - Parameters:
 
@@ -190,15 +190,15 @@
 
 - `api/users` : 用户列表
   
-  - Method: `Get`
+  - Method: `GET`
   
   - Parameters:
 
-    | Name     | Type      | Description      |
-    | -------  | ------    | ------------     |
-    | answerer | boolean   | true/false       |
-    | page     | int       |                  |
-    | maxitem  | int       |                  |
+    | Name     | Type      | Description                |
+    | -------  | ------    | ------------               |
+    | answerer | boolean   | true/false  default `false`|
+    | page     | int       |      default `1`           |
+    | limit    | int       |      default `20`          |
   
 
   - Response:
@@ -206,6 +206,6 @@
       
       | Name     | Type      | Description      |
       | -------  | ------    | ------------     |
-      | userlist | string    | list of `[User]` |
+      | user_list | string    | list of `[User]` |
     
     
