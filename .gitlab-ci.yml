@@ -1,0 +1,93 @@
+image: registry.secoder.net/tool/deployer
+
+stages:
+  - build
+  - test
+  - deploy
+
+# Docker build
+
+build-frontend:
+  stage: build
+  script:
+    - export BUILD_IMAGE_TAG="frontend-$CI_COMMIT_REF_SLUG"
+    - export BUILD_IMAGE_USERNAME=$CI_REGISTRY_USER
+    - export BUILD_IMAGE_PASSWORD=$CI_REGISTRY_PASSWORD
+    - export BUILD_IMAGE_NAME=$CI_REGISTRY_IMAGE
+    - cd frontend
+    - deployer build
+
+build-backend:
+  stage: build
+  script:
+    - export BUILD_IMAGE_TAG="backend-$CI_COMMIT_REF_SLUG"
+    - export BUILD_IMAGE_USERNAME=$CI_REGISTRY_USER
+    - export BUILD_IMAGE_PASSWORD=$CI_REGISTRY_PASSWORD
+    - export BUILD_IMAGE_NAME=$CI_REGISTRY_IMAGE
+    - cd backend
+    - deployer build
+
+# Frontend tests
+
+.frontend-test:
+  image: node:latest
+  stage: test
+
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - frontend/node_modules/
+
+  before_script:
+    - cd frontend
+    - yarn config set registry https://registry.npm.taobao.org
+    - yarn install
+
+frontend-style-test:
+  extends: .frontend-test
+  script:
+    - yarn prettier --check src
+
+frontend-code-test:
+  extends: .frontend-test
+  script:
+    - yarn ci-test
+    - yarn eslint src -f json -o checks/eslint.json
+  artifacts:
+    paths:
+      - frontend/checks/*
+
+# Backend tests
+
+backend-test:
+  stage: test
+  image: maven:3.8.2-adoptopenjdk-16
+  script:
+    - cd backend
+    - mvn -s ./ci/maven-settings.xml test
+  artifacts:
+    paths:
+      - backend/target/*
+
+# Deploy
+
+sonar-scan:
+  extends: .frontend-test
+  stage: deploy
+  dependencies:
+    - frontend-code-test
+    - backend-test
+  script:
+    - cd ..
+    - SUFFIX=$RANDOM
+    - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
+    - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
+    - /opt/sonar-scanner/bin/sonar-scanner
+
+deploy:
+  stage: deploy
+  script:
+    - deployer dyno replace $CI_PROJECT_NAME "$CI_REGISTRY_IMAGE:frontend-$CI_COMMIT_REF_SLUG" "$REGISTRY_USER" "$REGISTRY_PWD"
+    - deployer dyno replace "$CI_PROJECT_NAME-backend" "$CI_REGISTRY_IMAGE:backend-$CI_COMMIT_REF_SLUG" "$REGISTRY_USER" "$REGISTRY_PWD"
+  only:
+    - master
