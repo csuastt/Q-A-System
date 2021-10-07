@@ -1,12 +1,14 @@
 package com.example.qa.user.security;
 
-import com.example.qa.user.constants.SecurityConstants;
+import com.example.qa.user.utils.SecurityConstants;
 import com.example.qa.user.exchange.AuthenticationSuccessResponse;
+import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.model.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,20 +21,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static com.example.qa.user.utils.HttpServletRequestReader.ReadAsChars;
+import static com.example.qa.user.utils.JsonHelper.fromJson;
+
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final ObjectMapper objectMapper;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
         this.authenticationManager = authenticationManager;
+        this.objectMapper = objectMapper;
 
         setFilterProcessesUrl(SecurityConstants.AUTH_LOGIN_URL);
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        var username = request.getParameter("username");
-        var password = request.getParameter("password");
+        LoginRequest login = fromJson( objectMapper, ReadAsChars(request), LoginRequest.class);
+
+        var username = login.getUsername();
+        var password = login.getPassword();
         var authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 
         return authenticationManager.authenticate(authenticationToken);

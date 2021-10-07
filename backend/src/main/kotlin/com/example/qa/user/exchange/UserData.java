@@ -3,6 +3,9 @@ package com.example.qa.user.exchange;
 
 import com.example.qa.user.model.AppUser;
 
+/**
+ * User detail when requested
+ */
 public class UserData {
 	public Long id;
 	public String username;
@@ -13,6 +16,10 @@ public class UserData {
 	public String gender;
 	public String birthday;
 
+	/**
+	 *
+	 * @param appUser Construct from restored user
+	 */
 	public UserData(AppUser appUser) {
 		this.id = appUser.getId();
 		this.nickname = appUser.getNickname();
@@ -20,7 +27,7 @@ public class UserData {
 		this.avatar_url = appUser.getAva_url();
 		this.sign_up_timestamp = appUser.sign_up_timestamp;
 		this.mail = appUser.getEmail();
-		this.gender = appUser.getGend();
+		this.gender = appUser.getGender();
 		this.birthday = appUser.getBirthday();
 
 	}

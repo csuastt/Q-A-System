@@ -27,6 +27,10 @@
 - 在所有和用户相关的 HTTP 请求中的 Header 里设置 `Authorization: Bearer <token>`
   - ref [JWT Token](https://jwt.io/introduction)
 
+## Agreement
+
+- `Parameters` : 用`param`传参
+- `RequestBody` : 用`body`传参
 
 ## API
 
@@ -59,9 +63,9 @@
 
 - `api/user/login` : 用户登录
   
-  - Method: `Post`
+  - Method: `POST`
 
-  - Params:
+  - RequestBody:
 
     | Name     | Type   | Description             |
     | -------- | ------ | ----------------------- |
@@ -75,14 +79,14 @@
     | ------- | ------ | ------------ |
     | token   | string |              |
     | user    | string | [User]       |
-    - `400`:
+    - `401`:
      ```
-    密码错误
+    密码/用户名错误
     ```
   
 - `api/user/logout` : 用户登出
   
-  - Method: `Post`
+  - Method: `POST`
   
   - Parameters:
 
@@ -92,7 +96,7 @@
 
 - `api/users` : 删除用户
   
-  - Method: `Delete`
+  - Method: `DELETE`
   
   - Parameters:
 
@@ -108,7 +112,7 @@
     
 - `api/users/:id` : 获取详细信息
     
-    - Method: `Get`
+    - Method: `GET`
   
     - Parameters:
   
@@ -119,7 +123,7 @@
 
 - `api/users/:id/permission` : 获取用户权限
   
-  - Method: `Get`
+  - Method: `GET`
   
   - Parameters:
   
@@ -134,7 +138,7 @@
 
 - `api/users/:id` : 修改详细信息
   
-  - Method: `Put`
+  - Method: `PUT`
   
   - RequestBody:
 
@@ -153,9 +157,9 @@
 
 - `api/users/:id/password` : 修改密码
   
-  - Method: `Put`
+  - Method: `PUT`
   
-  - Parameters:
+  - RequestBody:
 
     | Name      | Type   | Description             |
     | --------  | ------ | ----------------------- |
@@ -190,15 +194,15 @@
 
 - `api/users` : 用户列表
   
-  - Method: `Get`
+  - Method: `GET`
   
   - Parameters:
 
-    | Name     | Type      | Description      |
-    | -------  | ------    | ------------     |
-    | answerer | boolean   | true/false       |
-    | page     | int       |                  |
-    | maxitem  | int       |                  |
+    | Name     | Type      | Description                |
+    | -------  | ------    | ------------               |
+    | answerer | boolean   | true/false  default `false`|
+    | page     | int       |      default `1`           |
+    | limit    | int       |      default `20`          |
   
 
   - Response:
@@ -206,6 +210,6 @@
       
       | Name     | Type      | Description      |
       | -------  | ------    | ------------     |
-      | userlist | string    | list of `[User]` |
+      | user_list | string    | list of `[User]` |
     
     

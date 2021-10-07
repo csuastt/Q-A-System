@@ -1,6 +1,6 @@
 package com.example.qa.user.security;
 
-import com.example.qa.user.constants.SecurityConstants;
+import com.example.qa.user.utils.SecurityConstants;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -59,7 +59,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .getSubject();
 
                 // a workaround to identify user for user-only operation
-                var url = request.getRequestURI().toString();
+                var url = request.getRequestURI();
                 if (url.startsWith("/user/")) {
                     var components = url.split("/");
                     if (components.length < 3 || !components[2].equals(username))
