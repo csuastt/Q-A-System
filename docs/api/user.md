@@ -27,6 +27,10 @@
 - 在所有和用户相关的 HTTP 请求中的 Header 里设置 `Authorization: Bearer <token>`
   - ref [JWT Token](https://jwt.io/introduction)
 
+## Agreement
+
+- `Parameters` : 用`param`传参
+- `RequestBody` : 用`body`传参
 
 ## API
 
@@ -61,7 +65,7 @@
   
   - Method: `POST`
 
-  - Params:
+  - RequestBody:
 
     | Name     | Type   | Description             |
     | -------- | ------ | ----------------------- |
@@ -77,7 +81,7 @@
     | user    | string | [User]       |
     - `401`:
      ```
-    密码错误
+    密码/用户名错误
     ```
   
 - `api/user/logout` : 用户登出
@@ -155,7 +159,7 @@
   
   - Method: `PUT`
   
-  - Parameters:
+  - RequestBody:
 
     | Name      | Type   | Description             |
     | --------  | ------ | ----------------------- |

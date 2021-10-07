@@ -1,6 +1,6 @@
 package com.example.qa.user.security;
 
-import com.example.qa.user.constants.SecurityConstants;
+import com.example.qa.user.utils.SecurityConstants;
 import com.example.qa.user.exchange.AuthenticationSuccessResponse;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.model.AppUser;
@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static com.example.qa.user.HttpServletRequestReader.ReadAsChars;
-import static com.example.qa.user.JsonHelper.fromJson;
+import static com.example.qa.user.utils.HttpServletRequestReader.ReadAsChars;
+import static com.example.qa.user.utils.JsonHelper.fromJson;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -40,9 +40,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         LoginRequest login = fromJson( objectMapper, ReadAsChars(request), LoginRequest.class);
-//        var username = request.getParameter("username");
-//        var password = request.getParameter("password");
-//        request.getReader()
+
         var username = login.getUsername();
         var password = login.getPassword();
         var authenticationToken = new UsernamePasswordAuthenticationToken(username, password);

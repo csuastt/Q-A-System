@@ -1,4 +1,4 @@
-package com.example.qa.user.constants;
+package com.example.qa.user.utils;
 
 public final class SecurityConstants {
 

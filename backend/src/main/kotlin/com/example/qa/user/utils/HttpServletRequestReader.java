@@ -1,4 +1,4 @@
-package com.example.qa.user;
+package com.example.qa.user.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;

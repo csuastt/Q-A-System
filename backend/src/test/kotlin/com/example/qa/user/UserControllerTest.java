@@ -25,8 +25,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.example.qa.user.JsonHelper.fromJson;
-import static com.example.qa.user.JsonHelper.toJson;
+import static com.example.qa.user.utils.JsonHelper.fromJson;
+import static com.example.qa.user.utils.JsonHelper.toJson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -71,12 +71,20 @@ class UserControllerTest {
         assertEquals(response.getUser().getUsername(), "testUser");
 
         loginRequest.setPassword("pa");
+
         //test for wrong password login
         this.mockMvc.perform(post("/api/user/login")
                                                      .contentType(MediaType.APPLICATION_JSON)
                                                      .content(toJson(objectMapper, loginRequest)))
                                              .andExpect(status().isUnauthorized())
                                              .andReturn();
+        //test for wrong username
+        loginRequest.setUsername("t");
+        this.mockMvc.perform(post("/api/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(objectMapper, loginRequest)))
+                .andExpect(status().isUnauthorized())
+                .andReturn();
     }
 
     void generateUser(String username){
