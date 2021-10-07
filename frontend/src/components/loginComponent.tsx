@@ -137,7 +137,8 @@ export default class Login extends Component<any, LoginState> {
                 <CssBaseline />
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: 3,
+                        marginBottom: 4,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -153,7 +154,7 @@ export default class Login extends Component<any, LoginState> {
                         component="form"
                         onSubmit={this.handleLogin}
                         noValidate
-                        sx={{ mt: 1 }}
+                        sx={{ mt: 0 }}
                     >
                         <TextField
                             margin="normal"

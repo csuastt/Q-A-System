@@ -143,8 +143,10 @@ export default class AccountProfile extends Component<any, ProfileState> {
         }
 
         return (
-            <Grid container spacing={4}>
-                <Grid item md={4} xs={4}>
+            <Grid container spacing={4} sx={{
+                width: "100%"
+            }}>
+                <Grid item md={4} xs={4} mt={2}>
                     <AccountBriefProfile
                         avatar={""}
                         nickname={this.now_nickname}
@@ -154,7 +156,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
                         redirectHandler={this.handleRedirect}
                     />
                 </Grid>
-                <Grid item md={8} xs={8}>
+                <Grid item md={8} xs={8} mt={2}>
                     <form noValidate>
                         <Card>
                             <CardHeader

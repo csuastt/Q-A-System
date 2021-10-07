@@ -86,11 +86,13 @@ export default class AccountBriefProfile extends Component<
                                     : this.props.nickname}
                             </Typography>
                         </Box>
+                        <Box mx={2}>
                         <Typography color="textSecondary" variant="body1">
                             {this.props.permission === "q"
                                 ? "你还不是问答者，快去申请吧~"
                                 : "你已经是问答者了，快去回答问题吧~"}
                         </Typography>
+                        </Box>
                     </Box>
                 </CardContent>
                 <Divider />

@@ -20,11 +20,15 @@ export default function Welcome() {
         title1: string;
         title2: string;
     }> = (props) => (
-        <Card sx={{ display: "flex", margin: theme.spacing(2) }}>
+        <Card sx={{
+            display: "flex",
+            margin: theme.spacing(2) }}>
             <CardActionArea component={RouterLink} to={props.to}>
                 <CardContent>
                     <Box sx={{ display: "flex", flexDirection: "row" }}>
-                        <props.Icon sx={{ margin: theme.spacing("auto", 1) }} />
+                        <props.Icon sx={{
+                            margin: theme.spacing(2, 2, 2, 0)
+                        }} />
                         <Box sx={{ flexDirection: "column" }}>
                             <Typography component="div" variant="h5">
                                 {props.title1}
@@ -48,7 +52,7 @@ export default function Welcome() {
             <Typography
                 align="center"
                 variant="h5"
-                sx={{ margin: theme.spacing(0, 2, 0, 0) }}
+                sx={{ margin: theme.spacing(3, 2, 2, 0) }}
             >
                 欢迎来到付费问答系统
             </Typography>
