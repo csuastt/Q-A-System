@@ -9,6 +9,9 @@ import CardContent from "@mui/material/CardContent";
 import Skeleton from "@mui/material/Skeleton";
 import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
+import Box from "@mui/material/Box";
+import CardActions from "@mui/material/CardActions";
+import Button from "@mui/material/Button";
 
 const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
@@ -32,17 +35,65 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
     return userInfo ? (
         <Card>
             <CardActionWrapper nextUrl={props.nextUrl}>
-                <CardHeader
-                    avatar={
-                        <Avatar alt={userInfo.name} src={userInfo.avatarUrl} />
-                    }
-                    title={userInfo.name}
-                />
                 <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                        {userInfo.introduction}
-                    </Typography>
+                    <Box
+                        sx={{
+                            alignItems: "center",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
+                        <Avatar
+                            alt={userInfo.name}
+                            src={userInfo.avatarUrl}
+                            sx={{
+                                height: 70,
+                                width: 70
+                            }}
+                        />
+                        <Box mt={1}>
+                            <Typography
+                                color="textPrimary"
+                                gutterBottom
+                                variant="h4"
+                            >
+                                {userInfo.name}
+                            </Typography>
+                        </Box>
+                        <Box mx={2} mt={-1}>
+                            <Typography color="textSecondary" variant="body1">
+                                {userInfo.introduction}
+                            </Typography>
+                        </Box>
+                        {userInfo.type === 1 ? (
+                                <Box mt={1}>
+                                    <Typography
+                                        color="secondary"
+                                        variant="h4"
+                                    >
+                                        {"￥49.9/次"}
+                                    </Typography>
+                                </Box>
+                            ):
+                            (<></>)}
+                    </Box>
                 </CardContent>
+                {userInfo.type === 1 ? (
+                <CardActions
+                    style={{justifyContent: 'center'}}
+                >
+                    <Box mb={1} mt={-2}>
+                        <Button
+                            color="secondary"
+                            size="large"
+                            variant="contained"
+                        >
+                            向TA提问
+                        </Button>
+                    </Box>
+                </CardActions>
+                ):
+                (<></>)}
             </CardActionWrapper>
         </Card>
     ) : (
@@ -53,7 +104,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                         <Avatar />
                     </Skeleton>
                 }
-                title={<Skeleton variant="text" />}
+                title={<Skeleton variant="text" height={30}/>}
             />
             <CardContent>
                 <Skeleton variant="rectangular" height={50} />
