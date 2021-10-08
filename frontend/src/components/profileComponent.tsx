@@ -292,7 +292,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
                                 >
                                     <Grid item>
                                         <Button
-                                            color="secondary"
+                                            color="error"
                                             variant="contained"
                                         >
                                             修改密码

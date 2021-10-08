@@ -55,7 +55,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                             <Typography
                                 color="textPrimary"
                                 gutterBottom
-                                variant="h4"
+                                variant="h5"
                             >
                                 {userInfo.name}
                             </Typography>
@@ -68,7 +68,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                         {userInfo.type === 1 ? (
                                 <Box mt={1}>
                                     <Typography
-                                        color="secondary"
+                                        color="primary"
                                         variant="h4"
                                     >
                                         {"￥49.9/次"}
@@ -84,7 +84,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                 >
                     <Box mb={1} mt={-2}>
                         <Button
-                            color="secondary"
+                            color="primary"
                             size="large"
                             variant="contained"
                         >

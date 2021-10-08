@@ -98,7 +98,7 @@ export default class AccountBriefProfile extends Component<
                 <Divider />
                 <CardActions>
                     <Button
-                        color="secondary"
+                        color="error"
                         fullWidth
                         variant="text"
                         onClick={this.handleLogout.bind(this)}
