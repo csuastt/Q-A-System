@@ -1,9 +1,9 @@
 package com.example.qa.user.security;
 
-import com.example.qa.user.utils.SecurityConstants;
 import com.example.qa.user.exchange.AuthenticationSuccessResponse;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.model.AppUser;
+import com.example.qa.user.utils.SecurityConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.jsonwebtoken.Jwts;

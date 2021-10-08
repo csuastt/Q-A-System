@@ -26,7 +26,7 @@ import java.util.Objects;
 public class AppUser implements UserDetails {
 	@Id @GeneratedValue
 	private Long id;
-	@Column(unique = true)
+	@Column
 	private String username;
 	private String nickname = "";
 	private String ava_url = "";
@@ -121,22 +121,22 @@ public class AppUser implements UserDetails {
 
 	@Override 
 	public boolean isAccountNonExpired() {
-		return true;
+		return enable;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return enable;
 	}
 
 	@Override 
 	public boolean isEnabled() {
-		return true;
+		return enable;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return true;
+		return enable;
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +28,7 @@ public class UserController {
 
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -47,11 +49,11 @@ public class UserController {
         var response = new GetAllData();
         if(!is_answerer) {
             for (var user : userRepository.findAll(limit, (page - 1) * limit)) {
-                response.getUsers().add(user);
+                response.getUsers().add(new UserData(user));
             }
         }else{
             for (var user : userRepository.findAllByPermit(limit, (page - 1) * limit, "a")) {
-                response.getUsers().add(user);
+                response.getUsers().add(new UserData(user));
             }
         }
         return response;
@@ -65,7 +67,7 @@ public class UserController {
     @GetMapping("/api/users/{id}")
     public UserData getUser(@PathVariable(value = "id") Long id) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty())
+        if (optionalUser.isEmpty() || !optionalUser.get().isEnable())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
         return new UserData(optionalUser.get());
     }
@@ -78,7 +80,7 @@ public class UserController {
     @GetMapping("/api/users/{id}/permission")
     public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty())
+        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
         String permit = optionalUser.get().getPermit();
         return new QuestPermit(permit);
@@ -91,16 +93,18 @@ public class UserController {
      */
     @DeleteMapping("/api/users")
     public SuccessResponse deleteUser(@RequestParam(value = "id") Long id) {
-        if(userRepository.existsById(id)){
+        if(userRepository.existsByIdAndEnable(id, true)){
+            var user = userRepository.findById(id).get();
+            user.setEnable(false);
             try{
-                userRepository.deleteById(id);
+                userRepository.save(user);
                 return new SuccessResponse("删除成功");
             }catch (Exception e){
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "数据库出错");
             }
 
         }else{
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户不存在");
         }
     }
 
@@ -124,7 +128,7 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public SuccessResponse register( @RequestBody UserAttribute registeredUser) {
-        if (userRepository.existsByUsername(registeredUser.username))
+        if (userRepository.existsByUsernameAndEnable(registeredUser.username, true))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
@@ -145,7 +149,7 @@ public class UserController {
     @PutMapping("/api/users/{id}")
     public SuccessResponse modifyUser(@PathVariable(value = "id") Long id, @RequestBody UserAttribute modifiedUser){
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty())
+        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"未找到用户");
         optionalUser.get().updateUserInfo(modifiedUser);
         userRepository.save(optionalUser.get());
@@ -160,7 +164,7 @@ public class UserController {
     @PutMapping("/api/users/{id}/password")
     public SuccessResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyPasswordAttribute modifiedUser) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty())
+        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         if(passwordEncoder.matches(modifiedUser.getOrigin(),optionalUser.get().getPassword())){
             optionalUser.get().setPassword(passwordEncoder.encode(modifiedUser.getPassword()));

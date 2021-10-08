@@ -15,6 +15,10 @@ public class UserData {
 	public String mail;
 	public String gender;
 	public String birthday;
+	public String description;
+	public String permission;
+	public String phone;
+
 
 	/**
 	 *
@@ -29,6 +33,8 @@ public class UserData {
 		this.mail = appUser.getEmail();
 		this.gender = appUser.getGender();
 		this.birthday = appUser.getBirthday();
-
+		this.description = appUser.getDescription();
+		this.permission = appUser.getPermit();
+		this.phone = appUser.getPhone();
 	}
 }

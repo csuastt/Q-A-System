@@ -8,17 +8,18 @@
   - `username` unique  
 
   | Name        | Type   | Description             |
-  | --------    | ------ | ----------------------- |
-  | id          | Long   | unique, auto generated  | 
-  | username    | string | not empty, unique       |
-  | email       | string | should be a valid email |
-  | phone       | string | should be a valid phone |
-  | password    | string | 6 to 12 in length       |
-  | gender      | string | male/female             |
-  | birthday    | string | yy/mm/dd                |
-  | permission  | string | q/a                     |
-  | money       | int    | `initial` 100           |
-  | description | string |                         |
+  | --------          | ------ | ----------------------- |
+  | id                | Long   | unique, auto generated  | 
+  | username          | string | not empty, unique       |
+  | ava_url           | string |                         |
+  | sign_up_timestamp | Long   | the time signing up     |
+  | mail              | string | should be a valid email |
+  | phone             | string | should be a valid phone |
+  | gender            | string | male/female             |
+  | birthday          | string | yy/mm/dd                |
+  | permission        | string | q/a                     |
+  | money             | int    | `initial` 100           |
+  | description       | string |                         |
  
 
 ## Authentication

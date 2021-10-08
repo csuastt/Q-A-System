@@ -87,6 +87,10 @@ class UserControllerTest {
                 .andReturn();
     }
 
+    /**
+     * generate testUsers
+     * @param username name to create
+     */
     void generateUser(String username){
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
@@ -94,6 +98,10 @@ class UserControllerTest {
         repository.save(user);
     }
 
+    /**
+     * generate testUsers with permission a
+     * @param username name of answerers
+     */
     void generateAnswerer(String username){
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
@@ -170,7 +178,7 @@ class UserControllerTest {
         GetAllResponse res_ans = fromJson(objectMapper, page_ans.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(res_ans.getUsers().size(), 20);
         for(var res : res_ans.getUsers()){
-            assertEquals(res.getPermit(), "a");
+            assertEquals(res.getPermission(), "a");
         }
 
         //test for not authenticated
@@ -266,15 +274,23 @@ class UserControllerTest {
                         .param("id", "2"))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertEquals(expected, repository.count());
+        assertEquals(expected, repository.findAllByEnable(true).size());
 
-        //test for user not existed delete
+        //test for user deleted delete
         this.mockMvc.perform(delete("/api/users")
                         .header("Authorization", "Bearer " + token)
                         .param("id", "2"))
                 .andExpect(status().isBadRequest())
                 .andReturn();
-        assertEquals(expected, repository.count());
+        assertEquals(expected, repository.findAllByEnable(true).size());
+
+        //test for user not existed delete
+        this.mockMvc.perform(delete("/api/users")
+                        .header("Authorization", "Bearer " + token)
+                        .param("id", "10"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertEquals(expected, repository.findAllByEnable(true).size());
 
         //test for not authenticated
         this.mockMvc.perform(delete("/api/users")
