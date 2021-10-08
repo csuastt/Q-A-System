@@ -173,10 +173,54 @@
     - `403`: 原密码不正确
 
 
+- `api/users/:id/price` : 获得用户定价
+  
+  - Method : `GET`
+
+  - Parameters:
+
+  - Response:
+      - `200`:
+
+        | Name      | Type   | Description             |
+        | --------  | ------ | ----------------------- |
+        | price     | int    |                         |
+      - `400`: 没有该用户
+      - `403`: 没有权限
+
+
+- `api/users/:id/price` : 修改用户定价
+
+    - Method: `PUT`
+
+    - RequestBody:
+
+      | Name      | Type   | Description             |
+      | --------  | ------ | ----------------------- |
+      | price     | int    | min 20   max  100       |
+
+    - Response:
+        - `200`: 修改成功
+        - `400`: 没有该用户
+        - `403`: 没有定价权限
+        - `500`: 定价不在允许的范围内
+
+    
 - `api/users/:id/permission` : 修改用户权限
-    ```
-  TODO
-  ```
+
+  - Method: `PUT`
+
+  - RequestBody:
+
+    | Name        | Type   | Description             |
+    | --------    | ------ | ----------------------- |
+    | permission  | string | q/a                     |
+
+  - Response:
+      - `200`: 修改成功
+      - `400`: 没有该用户
+      - `403`: 没有修改权限
+      - `500`: 修改错误(从q修改至q)
 
 
 - `api/users/:id/apply` : 申请成为回答者

@@ -38,6 +38,7 @@ public class AppUser implements UserDetails {
 	private boolean enable = true;
 	private String permit = "q";
 	private int money = 100;
+	private int price = 0;
 	private String description = "";
 	public Long sign_up_timestamp;
 

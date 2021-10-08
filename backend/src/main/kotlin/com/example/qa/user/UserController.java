@@ -67,8 +67,7 @@ public class UserController {
     @GetMapping("/api/users/{id}")
     public UserData getUser(@PathVariable(value = "id") Long id) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty() || !optionalUser.get().isEnable())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
+        checkActivity(optionalUser);
         return new UserData(optionalUser.get());
     }
 
@@ -80,8 +79,7 @@ public class UserController {
     @GetMapping("/api/users/{id}/permission")
     public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
+        checkActivity(optionalUser);
         String permit = optionalUser.get().getPermit();
         return new QuestPermit(permit);
     }
@@ -149,8 +147,7 @@ public class UserController {
     @PutMapping("/api/users/{id}")
     public SuccessResponse modifyUser(@PathVariable(value = "id") Long id, @RequestBody UserAttribute modifiedUser){
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"未找到用户");
+        checkActivity(optionalUser);
         optionalUser.get().updateUserInfo(modifiedUser);
         userRepository.save(optionalUser.get());
         return new SuccessResponse("修改成功");
@@ -164,8 +161,7 @@ public class UserController {
     @PutMapping("/api/users/{id}/password")
     public SuccessResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyPasswordAttribute modifiedUser) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        checkActivity(optionalUser);
         if(passwordEncoder.matches(modifiedUser.getOrigin(),optionalUser.get().getPassword())){
             optionalUser.get().setPassword(passwordEncoder.encode(modifiedUser.getPassword()));
             userRepository.save(optionalUser.get());
@@ -174,5 +170,32 @@ public class UserController {
 
         userRepository.save(optionalUser.get());
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "原密码不正确");
+    }
+
+    @GetMapping("/api/users/{id}/price")
+    public PriceAttribute getPrice(@PathVariable(value = "id") Long id){
+        Optional<AppUser> optionalUser = userRepository.findById(id);
+        checkActivity(optionalUser);
+        var user = optionalUser.get();
+        if(user.getPermit().equals("q"))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        return new PriceAttribute(user.getPrice());
+    }
+
+    @PostMapping("/api/users/{id}/price")
+    public SuccessResponse modify(@PathVariable(value = "id") Long id, @RequestBody PriceAttribute modifyPrice){
+        Optional<AppUser> optionalUser = userRepository.findById(id);
+        checkActivity(optionalUser);
+        var user = optionalUser.get();
+        if(user.getPermit().equals("q"))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        user.setPrice(modifyPrice.getPrice());
+        userRepository.save(user);
+        return new SuccessResponse("修改价格成功");
+    }
+
+    private void checkActivity(Optional<AppUser> optionalUser) {
+        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
     }
 }
