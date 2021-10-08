@@ -42,7 +42,6 @@ public class AppUser implements UserDetails {
 	private String description = "";
 	public Long sign_up_timestamp;
 
-
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Collection<GrantedAuthority> authorities;
 
@@ -113,7 +112,6 @@ public class AppUser implements UserDetails {
 		if(newInfo.description != null)
 			this.description = newInfo.description;
 	}
-
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {

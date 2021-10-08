@@ -25,7 +25,6 @@ public class UserController {
 
     private final UserRepository userRepository;
 
-
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -61,8 +60,8 @@ public class UserController {
 
     /**
      * @permission Authentication
-     * @param id   unique to specify a user
-     * @return     detailed information for required user
+     * @param id   Unique to specify a user
+     * @return     Detailed information for required user
      */
     @GetMapping("/api/users/{id}")
     public UserData getUser(@PathVariable(value = "id") Long id) {
@@ -73,8 +72,8 @@ public class UserController {
 
     /**
      * @permission Authentication
-     * @param id   unique to specify a user
-     * @return     permission of the required user
+     * @param id   Unique to specify a user
+     * @return     Permission of the required user
      */
     @GetMapping("/api/users/{id}/permission")
     public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
@@ -86,7 +85,7 @@ public class UserController {
 
     /**
      * @permission Authentication
-     * @param id   unique to specify a user
+     * @param id   Unique to specify a user
      * @return     Success or Not Found
      */
     @DeleteMapping("/api/users")
@@ -106,6 +105,11 @@ public class UserController {
         }
     }
 
+    /**
+     * @permission Authenticated
+     * @param id   Unique to specify a user
+     * @return     A generated avatar for the specific user
+     */
     @GetMapping(value = "/api/users/avatar/{id}.png", produces = "image/png")
     public @ResponseBody byte[] genAvatar(@PathVariable(value = "id") Long id)  {
         try {
@@ -140,12 +144,14 @@ public class UserController {
     }
 
     /**
+     * @permission          Authenticated
      * @param id            Unique to specify a user
      * @param modifiedUser  Body for modification
      * @return              Success or not
      */
     @PutMapping("/api/users/{id}")
-    public SuccessResponse modifyUser(@PathVariable(value = "id") Long id, @RequestBody UserAttribute modifiedUser){
+    public SuccessResponse modifyUser(@PathVariable(value = "id") Long id,
+                                      @RequestBody UserAttribute modifiedUser){
         Optional<AppUser> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         optionalUser.get().updateUserInfo(modifiedUser);
@@ -154,12 +160,14 @@ public class UserController {
     }
 
     /**
+     * @permission          Authenticated
      * @param id            Unique to specify a user
      * @param modifiedUser  Body for password modification
      * @return              Success or Origin not match
      */
     @PutMapping("/api/users/{id}/password")
-    public SuccessResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyPasswordAttribute modifiedUser) {
+    public SuccessResponse modifyPass(@PathVariable(value = "id") Long id,
+                                      @RequestBody ModifyPasswordAttribute modifiedUser) {
         Optional<AppUser> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         if(passwordEncoder.matches(modifiedUser.getOrigin(),optionalUser.get().getPassword())){
@@ -172,6 +180,11 @@ public class UserController {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "原密码不正确");
     }
 
+    /**
+     * @permission    Authenticated and be an answerer
+     * @param id      Unique to specify a user
+     * @return        Price of the required user
+     */
     @GetMapping("/api/users/{id}/price")
     public PriceAttribute getPrice(@PathVariable(value = "id") Long id){
         Optional<AppUser> optionalUser = userRepository.findById(id);
@@ -182,8 +195,15 @@ public class UserController {
         return new PriceAttribute(user.getPrice());
     }
 
-    @PostMapping("/api/users/{id}/price")
-    public SuccessResponse modify(@PathVariable(value = "id") Long id, @RequestBody PriceAttribute modifyPrice){
+    /**
+     * @permission          Authenticated
+     * @param id            Unique to specify a user
+     * @param modifyPrice   Price to pass
+     * @return              Success or not authenticated
+     */
+    @PutMapping("/api/users/{id}/price")
+    public SuccessResponse modifyPrice(@PathVariable(value = "id") Long id,
+                                       @RequestBody PriceAttribute modifyPrice){
         Optional<AppUser> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         var user = optionalUser.get();
@@ -194,6 +214,10 @@ public class UserController {
         return new SuccessResponse("修改价格成功");
     }
 
+    /**
+     * Check if it is a soft_deleted user or not existed
+     * @param optionalUser   The user to test
+     */
     private void checkActivity(Optional<AppUser> optionalUser) {
         if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");

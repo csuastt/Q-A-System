@@ -7,37 +7,30 @@ import java.io.IOException;
 public class HttpServletRequestReader
 {
 
-    // 字符串读取
-    // 方法一
-    public static String ReadAsChars(HttpServletRequest request)
-    {
-
+    /**
+     * @param request  Http请求包
+     * @return         request中的请求体的字符串
+     */
+    public static String ReadAsChars(HttpServletRequest request) {
         BufferedReader br = null;
         StringBuilder sb = new StringBuilder();
-        try
-        {
+
+        try {
             br = request.getReader();
             String str;
             while ((str = br.readLine()) != null)
-            {
                 sb.append(str);
-            }
             br.close();
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             e.printStackTrace();
         }
-        finally
-        {
-            if (null != br)
-            {
-                try
-                {
+        finally {
+            if (null != br) {
+                try {
                     br.close();
                 }
-                catch (IOException e)
-                {
+                catch (IOException e) {
                     e.printStackTrace();
                 }
             }

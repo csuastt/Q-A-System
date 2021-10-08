@@ -19,9 +19,7 @@ public class UserData {
 	public String permission;
 	public String phone;
 
-
 	/**
-	 *
 	 * @param appUser Construct from restored user
 	 */
 	public UserData(AppUser appUser) {
