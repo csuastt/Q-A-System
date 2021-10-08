@@ -12,6 +12,7 @@ import { Link as RouterLink } from "react-router-dom";
 import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
+import {Grid} from "@mui/material";
 
 const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
@@ -66,14 +67,38 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                             </Typography>
                         </Box>
                         {userInfo.type === 1 ? (
-                                <Box mt={1}>
-                                    <Typography
-                                        color="primary"
-                                        variant="h4"
-                                    >
-                                        {"￥49.9/次"}
-                                    </Typography>
-                                </Box>
+                                <Grid
+                                    container
+                                    mt={0.5}
+                                    direction="row"
+                                    justifyContent="center"
+                                    alignItems="flex-end"
+                                >
+                                    <Grid item>
+                                        <Typography
+                                            color="primary"
+                                            variant="h6"
+                                        >
+                                            ￥
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography
+                                            color="primary"
+                                            variant="h4"
+                                        >
+                                            49.9
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography
+                                            color="primary"
+                                            variant="h6"
+                                        >
+                                            /次
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
                             ):
                             (<></>)}
                     </Box>
@@ -82,7 +107,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                 <CardActions
                     style={{justifyContent: 'center'}}
                 >
-                    <Box mb={1} mt={-2}>
+                    <Box mb={1.5} mt={-2}>
                         <Button
                             color="primary"
                             size="large"
