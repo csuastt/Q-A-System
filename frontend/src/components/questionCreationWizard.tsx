@@ -37,7 +37,7 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         setQuestionText(event.target.value);
-        setQuestionError(false);
+        checkInput(event.target.value);
     };
 
     const handleDescriptionChange = (
@@ -46,11 +46,17 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
         setDescriptionText(event.target.value);
     };
 
-    const checkInputAndNextStep = () => {
-        if (questionText && questionText.length >= 10) {
-            nextStep();
-        } else {
+    const checkInput = (input: string) => {
+        if (input && input.length >= 10) {
+            setQuestionError(false);
+        } else  {
             setQuestionError(true);
+        }
+    }
+
+    const checkInputAndNextStep = () => {
+        if (!questionError) {
+            nextStep();
         }
     };
 
