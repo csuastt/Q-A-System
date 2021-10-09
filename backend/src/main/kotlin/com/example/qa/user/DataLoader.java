@@ -29,6 +29,7 @@ public class DataLoader implements ApplicationRunner {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
         var user = new AppUser("testUser", passwordEncoder.encode("password"),authorities);
+        user.setPermit("a");
         userRepository.save(user);
     }
 }

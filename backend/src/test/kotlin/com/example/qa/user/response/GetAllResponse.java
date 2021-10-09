@@ -36,8 +36,8 @@ public class GetAllResponse {
         private String gender;
         @JsonProperty("enable")
         private Boolean enable;
-        @JsonProperty("permit")
-        private String permit;
+        @JsonProperty("permission")
+        private String permission;
         @JsonProperty("money")
         private Integer money;
         @JsonProperty("description")

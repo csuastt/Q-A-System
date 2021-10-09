@@ -26,7 +26,7 @@ import java.util.Objects;
 public class AppUser implements UserDetails {
 	@Id @GeneratedValue
 	private Long id;
-	@Column(unique = true)
+	@Column
 	private String username;
 	private String nickname = "";
 	private String ava_url = "";
@@ -38,9 +38,9 @@ public class AppUser implements UserDetails {
 	private boolean enable = true;
 	private String permit = "q";
 	private int money = 100;
+	private int price = 0;
 	private String description = "";
 	public Long sign_up_timestamp;
-
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Collection<GrantedAuthority> authorities;
@@ -113,7 +113,6 @@ public class AppUser implements UserDetails {
 			this.description = newInfo.description;
 	}
 
-
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
         return authorities;
@@ -121,22 +120,22 @@ public class AppUser implements UserDetails {
 
 	@Override 
 	public boolean isAccountNonExpired() {
-		return true;
+		return enable;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return enable;
 	}
 
 	@Override 
 	public boolean isEnabled() {
-		return true;
+		return enable;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return true;
+		return enable;
 	}
 
 	@Override
