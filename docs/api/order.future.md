@@ -4,18 +4,27 @@
 
 ### Order
 
-| 属性       | 类型                                   | 说明                                    |
-| ---------- | -------------------------------------- | --------------------------------------- |
-| id         | long                                   |                                         |
-| deleted    | boolean                                | 删除标记                                |
-| asker      | AppUser                                |                                         |
-| answerer   | AppUser                                |                                         |
-| state      | OrderState (string in JSON)            |                                         |
-| active     | boolean                                | 订单结束后设为 false                    |
-| createTime | LocalDateTime (ISO string UTC in JSON) | 创建时间                                |
-| endReason  | OrderEndReason (string in JSON)        |                                         |
-| question   | string                                 | 问题（最长 100 字符，后续交给系统设置） |
-| price      | int                                    |                                         |
+| Order.()         | 类型       | 说明                           |
+| ---------------- | ---------- | ------------------------------ |
+| id               | int        |                                |
+| isDeleted        | boolean    | 删除标记                       |
+| asker            | int        | 用户 ID                        |
+| answerer         | int        | 用户 ID                        |
+| state            | OrderState |                                |
+| isActive         | boolean    | 订单结束后设为 false           |
+| createTime       | int        | 创建时间                       |
+| payTime          | int        | 支付/超时时间                  |
+| reviewTime       | int        | 审核时间                       |
+| respondTime      | int        | 接单/拒绝/超时时间             |
+| answerTime       | int        | 首次回答/超时时间              |
+| endTime          | int        | 聊天结束时间                   |
+| fulfillTime      | int        | 结算时间                       |
+| expireTime       | int        | 用来记录任何限时流程的截止时间 |
+| chatMessageCount | int        | 聊天记录条数（备用）           |
+| endReason        | EndReason  |                                |
+| question         | string     | 问题                           |
+| answerSummary    | string     | 回答（用于问答库）             |
+| price            | int        |                                |
 
 ### OrderState (enum)
 
@@ -31,6 +40,7 @@
 - ANSWER_TIMEOUT - 回答者首次回答超时，已退款  **isActive=false**
 - CHAT_ENDED - 聊天已结束，等待结算（回答者结束服务或者聊天超过时限）  **isActive=false**
 - FULFILLED - 已结单  **isActive=false**
+- 可扩展：投诉……
 
 ### EndReason (enum)
 
@@ -46,16 +56,15 @@
 ### 创建订单
 
 ```
-POST /api/orders
+POST /api/order/create
 ```
 
 参数：
 
-| 名称     | 类型   | 说明                         |
-| -------- | ------ | ---------------------------- |
-| asker    | number | 用户 ID（后续改为 JWT 读取） |
-| answerer | number | 用户 ID                      |
-| question | string | 问题                         |
+| 名称     | 类型   | 说明    |
+| -------- | ------ | ------- |
+| answerer | int    | 用户 ID |
+| question | string | 问题    |
 
 返回值：
 
@@ -64,7 +73,7 @@ POST /api/orders
   
 - `400` 格式错误
 
-- `401` 未登录（未实现）
+- `401` 未登录
 
 - `403` 错误
 

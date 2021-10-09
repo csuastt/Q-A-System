@@ -1,7 +1,9 @@
 package com.example.qa.order.model;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public enum OrderState {
     // 储存时使用编号，添加时务必加在最后
     CREATED(true),
@@ -19,8 +21,4 @@ public enum OrderState {
 
     @Getter
     private final boolean active;
-
-    private OrderState(boolean active) {
-        this.active = active;
-    }
 }
