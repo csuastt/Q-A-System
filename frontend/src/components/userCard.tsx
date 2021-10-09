@@ -12,7 +12,7 @@ import { Link as RouterLink } from "react-router-dom";
 import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
-import {Grid} from "@mui/material";
+import { Grid } from "@mui/material";
 
 const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
@@ -49,7 +49,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                             src={userInfo.avatarUrl}
                             sx={{
                                 height: 70,
-                                width: 70
+                                width: 70,
                             }}
                         />
                         <Box mt={1}>
@@ -67,58 +67,49 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                             </Typography>
                         </Box>
                         {userInfo.type === 1 ? (
-                                <Grid
-                                    container
-                                    mt={0.5}
-                                    direction="row"
-                                    justifyContent="center"
-                                    alignItems="flex-end"
-                                >
-                                    <Grid item>
-                                        <Typography
-                                            color="primary"
-                                            variant="h6"
-                                        >
-                                            ￥
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography
-                                            color="primary"
-                                            variant="h4"
-                                        >
-                                            49.9
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography
-                                            color="primary"
-                                            variant="h6"
-                                        >
-                                            /次
-                                        </Typography>
-                                    </Grid>
+                            <Grid
+                                container
+                                mt={0.5}
+                                direction="row"
+                                justifyContent="center"
+                                alignItems="flex-end"
+                            >
+                                <Grid item>
+                                    <Typography color="primary" variant="h6">
+                                        ￥
+                                    </Typography>
                                 </Grid>
-                            ):
-                            (<></>)}
+                                <Grid item>
+                                    <Typography color="primary" variant="h4">
+                                        49.9
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography color="primary" variant="h6">
+                                        /次
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                        ) : (
+                            <></>
+                        )}
                     </Box>
                 </CardContent>
                 {userInfo.type === 1 ? (
-                <CardActions
-                    style={{justifyContent: 'center'}}
-                >
-                    <Box mb={1.5} mt={-2}>
-                        <Button
-                            color="primary"
-                            size="large"
-                            variant="contained"
-                        >
-                            向TA提问
-                        </Button>
-                    </Box>
-                </CardActions>
-                ):
-                (<></>)}
+                    <CardActions style={{ justifyContent: "center" }}>
+                        <Box mb={1.5} mt={-2}>
+                            <Button
+                                color="primary"
+                                size="large"
+                                variant="contained"
+                            >
+                                向TA提问
+                            </Button>
+                        </Box>
+                    </CardActions>
+                ) : (
+                    <></>
+                )}
             </CardActionWrapper>
         </Card>
     ) : (
@@ -129,7 +120,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                         <Avatar />
                     </Skeleton>
                 }
-                title={<Skeleton variant="text" height={30}/>}
+                title={<Skeleton variant="text" height={30} />}
             />
             <CardContent>
                 <Skeleton variant="rectangular" height={50} />

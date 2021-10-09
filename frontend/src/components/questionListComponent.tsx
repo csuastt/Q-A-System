@@ -6,7 +6,7 @@ import _ from "lodash";
 import {
     QuestionBasicInfo,
     QuestionInfoList,
-    UserBasicInfo
+    UserBasicInfo,
 } from "../services/definations";
 import questionService from "../services/question.service";
 import userService from "../services/user.service";
@@ -62,8 +62,8 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
 
     const renderPlaceholder = () => (
         <>
-        {renderCardPlaceholder()}
-        {renderCardPlaceholder()}
+            {renderCardPlaceholder()}
+            {renderCardPlaceholder()}
         </>
     );
 
@@ -90,7 +90,8 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
                                 <Typography
                                     variant="h6"
                                     noWrap
-                                    style={{ fontWeight: 600 }}>
+                                    style={{ fontWeight: 600 }}
+                                >
                                     {question.stem}
                                 </Typography>
                                 <Box sx={{ flexGrow: 1 }} />
@@ -105,15 +106,14 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
                             </Typography>
                             <Box
                                 sx={{ display: "flex", flexDirection: "row" }}
-                                mt={1}>
+                                mt={1}
+                            >
                                 <AvatarWrapper id={question.answererId} />
                                 <Typography variant="h6" sx={{ ml: 1 }}>
                                     {question.answererName}
                                 </Typography>
                             </Box>
-                            <Typography
-                                variant="caption"
-                                mb={-1} mt={1}>
+                            <Typography variant="caption" mb={-1} mt={1}>
                                 创建时间：{formatTimestamp(question.createTime)}
                             </Typography>
                         </Box>

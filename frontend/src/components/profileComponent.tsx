@@ -143,9 +143,13 @@ export default class AccountProfile extends Component<any, ProfileState> {
         }
 
         return (
-            <Grid container spacing={4} sx={{
-                width: "100%"
-            }}>
+            <Grid
+                container
+                spacing={4}
+                sx={{
+                    width: "100%",
+                }}
+            >
                 <Grid item md={4} xs={4} mt={2}>
                     <AccountBriefProfile
                         avatar={""}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {UserBasicInfo} from "../services/definations";
+import { UserBasicInfo } from "../services/definations";
 import userService from "../services/user.service";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -14,43 +14,39 @@ const AnswerList: React.FC<{ type: string }> = (props) => {
     }, []);
 
     const renderAnswerList = () => {
-        const list = (answerList == null ?
-            (new Array(6)).fill({
-                id: -1,
-                avatarUrl: "",
-                name: "",
-                introduction: "",
-                type: 1
-            })
-            : answerList);
+        const list =
+            answerList == null
+                ? new Array(6).fill({
+                      id: -1,
+                      avatarUrl: "",
+                      name: "",
+                      introduction: "",
+                      type: 1,
+                  })
+                : answerList;
 
         return (
             <>
-                {
-                    list.filter((user: UserBasicInfo) => {return user.type === 1;})
-                        .map((user: UserBasicInfo, index: number) => {
+                {list
+                    .filter((user: UserBasicInfo) => {
+                        return user.type === 1;
+                    })
+                    .map((user: UserBasicInfo, index: number) => {
                         return (
-                            <Grid
-                                item
-                                key={index}
-                                lg={4}
-                                md={6}
-                                xs={12}
-                            >
-                                <UserCard userId={user.id}/>
+                            <Grid item key={index} lg={4} md={6} xs={12}>
+                                <UserCard userId={user.id} />
                             </Grid>
                         );
-                })}
+                    })}
             </>
         );
     };
 
     return (
         <Box sx={{ pt: 3 }} mt={1}>
-            <Grid
-                container
-                spacing={3}
-            > {renderAnswerList()}
+            <Grid container spacing={3}>
+                {" "}
+                {renderAnswerList()}
             </Grid>
         </Box>
     );
