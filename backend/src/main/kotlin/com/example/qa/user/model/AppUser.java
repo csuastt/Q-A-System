@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -38,6 +39,8 @@ public class AppUser implements UserDetails {
 	private boolean enable = true;
 	private String permit = "q";
 	private int money = 100;
+    // TODO: It may not be the best way to deal with database updates. We will change it after the stabilization of data models
+	@ColumnDefault("0")
 	private int price = 0;
 	private String description = "";
 	public Long sign_up_timestamp;
@@ -118,7 +121,7 @@ public class AppUser implements UserDetails {
         return authorities;
     }
 
-	@Override 
+	@Override
 	public boolean isAccountNonExpired() {
 		return enable;
 	}
@@ -128,7 +131,7 @@ public class AppUser implements UserDetails {
 		return enable;
 	}
 
-	@Override 
+	@Override
 	public boolean isEnabled() {
 		return enable;
 	}
