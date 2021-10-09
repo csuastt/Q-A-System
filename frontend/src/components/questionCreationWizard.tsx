@@ -55,8 +55,10 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
     };
 
     const checkInputAndNextStep = () => {
-        if (!questionError) {
+        if (!questionError && questionText && questionText.length >= 10) {
             nextStep();
+        } else {
+            checkInput(questionText);
         }
     };
 
