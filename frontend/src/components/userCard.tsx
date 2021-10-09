@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
-import { UserBasicInfo } from "../services/definations";
+import { UserInfo, UserType } from "../services/definations";
 import userService from "../services/user.service";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
@@ -15,12 +15,10 @@ import Button from "@mui/material/Button";
 import { Grid } from "@mui/material";
 
 const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
-    const [userInfo, setUserInfo] = useState<UserBasicInfo>();
+    const [userInfo, setUserInfo] = useState<UserInfo>();
 
     useEffect(() => {
-        userService
-            .getUserInfo(props.userId)
-            .then((user) => setUserInfo(user));
+        userService.getUserInfo(props.userId).then((user) => setUserInfo(user));
     }, []);
 
     const CardActionWrapper: React.FC<{ nextUrl?: string }> = (props) => {
@@ -45,8 +43,8 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                         }}
                     >
                         <Avatar
-                            alt={userInfo.name}
-                            src={userInfo.avatarUrl}
+                            alt={userInfo.username}
+                            src={userInfo.ava_url}
                             sx={{
                                 height: 70,
                                 width: 70,
@@ -58,12 +56,12 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                                 gutterBottom
                                 variant="h5"
                             >
-                                {userInfo.name}
+                                {userInfo.username}
                             </Typography>
                         </Box>
                         <Box mx={2} mt={-1}>
                             <Typography color="textSecondary" variant="body1">
-                                {userInfo.introduction}
+                                {userInfo.description}
                             </Typography>
                         </Box>
                         {userInfo.type === 1 ? (
@@ -95,7 +93,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                         )}
                     </Box>
                 </CardContent>
-                {userInfo.type === 1 ? (
+                {userInfo.type === UserType.Answerer ? (
                     <CardActions style={{ justifyContent: "center" }}>
                         <Box mb={1.5} mt={-2}>
                             <Button

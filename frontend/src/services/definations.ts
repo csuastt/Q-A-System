@@ -26,6 +26,7 @@ export interface UserInfo {
     permission: string;
     money: number;
     description: string;
+    type: UserType;
 }
 
 export enum QuestionState {
