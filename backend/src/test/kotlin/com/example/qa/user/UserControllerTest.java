@@ -8,6 +8,7 @@ import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.example.qa.user.response.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +35,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerTest {
 
-    private final MockMvc mockMvc;
-    private final ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private String token;
     private String password = "password";
     @Autowired
     private UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = objectMapper;
-        this.passwordEncoder = passwordEncoder;
+    @BeforeAll
+    static void addTestUser(
+            @Autowired PasswordEncoder passwordEncoder,
+            @Autowired UserRepository repository
+    ) {
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("user"));
+        var user = new AppUser("testUser", passwordEncoder.encode("password"), authorities);
+        user.setPermit("a");
+        repository.save(user);
     }
 
     @BeforeEach
