@@ -40,7 +40,7 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
             });
     }, []);
 
-    const renderPlaceholder = () => (
+    const renderCardPlaceholder = () => (
         <Card>
             <CardContent>
                 <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -58,6 +58,13 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
                 </Box>
             </CardContent>
         </Card>
+    );
+
+    const renderPlaceholder = () => (
+        <>
+            {renderCardPlaceholder()}
+            {renderCardPlaceholder()}
+        </>
     );
 
     const AvatarWrapper: React.FC<{ id: number }> = (props) => {
@@ -80,7 +87,11 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
                     <CardContent>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
                             <Box sx={{ display: "flex", flexDirection: "row" }}>
-                                <Typography variant="h4" noWrap>
+                                <Typography
+                                    variant="h6"
+                                    noWrap
+                                    style={{ fontWeight: 600 }}
+                                >
                                     {question.stem}
                                 </Typography>
                                 <Box sx={{ flexGrow: 1 }} />
@@ -93,13 +104,16 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
                             >
                                 {question.description}
                             </Typography>
-                            <Box sx={{ display: "flex", flexDirection: "row" }}>
+                            <Box
+                                sx={{ display: "flex", flexDirection: "row" }}
+                                mt={1}
+                            >
                                 <AvatarWrapper id={question.answererId} />
                                 <Typography variant="h6" sx={{ ml: 1 }}>
                                     {question.answererName}
                                 </Typography>
                             </Box>
-                            <Typography variant="caption">
+                            <Typography variant="caption" mb={-1} mt={1}>
                                 创建时间：{formatTimestamp(question.createTime)}
                             </Typography>
                         </Box>
@@ -112,7 +126,7 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
     return prevented ? (
         <Redirect to={"/login"} />
     ) : (
-        <Stack spacing={2}>
+        <Stack spacing={2} mt={4}>
             {questionList == null ? renderPlaceholder() : renderQuestionList()}
         </Stack>
     );

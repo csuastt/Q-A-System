@@ -8,4 +8,4 @@ RUN mvn -s ./settings.xml package -DskipTests
 FROM adoptopenjdk:16-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar ./app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]

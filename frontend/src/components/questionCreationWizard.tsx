@@ -14,6 +14,9 @@ import TextField from "@mui/material/TextField";
 import { Link as RouterLink } from "react-router-dom";
 import questionService from "../services/question.service";
 import { CreationResult, CreationResultType } from "../services/definations";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 
 const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
     const [activeStep, setActiveStep] = useState(0);
@@ -34,7 +37,7 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         setQuestionText(event.target.value);
-        setQuestionError(false);
+        checkInput(event.target.value);
     };
 
     const handleDescriptionChange = (
@@ -43,11 +46,19 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
         setDescriptionText(event.target.value);
     };
 
-    const checkInputAndNextStep = () => {
-        if (questionText && questionText.length >= 10) {
-            nextStep();
+    const checkInput = (input: string) => {
+        if (input && input.length >= 10) {
+            setQuestionError(false);
         } else {
             setQuestionError(true);
+        }
+    };
+
+    const checkInputAndNextStep = () => {
+        if (!questionError && questionText && questionText.length >= 10) {
+            nextStep();
+        } else {
+            checkInput(questionText);
         }
     };
 
@@ -76,7 +87,7 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
                     spacing={3}
                     direction="row"
                     justifyContent="center"
-                    sx={{ mt: 5 }}
+                    sx={matches ? { mt: 16 } : { mt: 5 }}
                 >
                     <CircularProgress />
                     <Typography variant="h5" gutterBottom>
@@ -87,78 +98,131 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
         }
     };
 
-    return (
-        <>
-            <Stepper activeStep={activeStep} orientation="vertical">
-                <Step>
-                    <StepLabel>选择回答者</StepLabel>
-                    <StepContent>
-                        {props.answererId ? (
-                            <>
-                                <UserCard userId={props.answererId} />
-                                <Stack
-                                    spacing={2}
-                                    direction="row"
-                                    sx={{ mt: 2 }}
-                                >
-                                    <Button
-                                        variant="contained"
-                                        onClick={nextStep}
-                                    >
-                                        下一步
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        color="error"
-                                        component={RouterLink}
-                                        to={`/question/select-answerer`}
-                                    >
-                                        重新选择
-                                    </Button>
-                                </Stack>
-                            </>
-                        ) : (
-                            <>
-                                <Typography variant="subtitle1">
-                                    您还没有选择回答者
-                                </Typography>
-                                <Button
-                                    variant="outlined"
-                                    color="warning"
-                                    component={RouterLink}
-                                    to={`/question/select-answerer`}
-                                >
-                                    浏览列表
-                                </Button>
-                            </>
-                        )}
-                    </StepContent>
-                </Step>
-                <Step>
-                    <StepLabel>填写问题信息</StepLabel>
-                    <StepContent>
-                        <TextField
-                            label="问题"
-                            margin="normal"
-                            value={questionText}
-                            onChange={handleQuestionChange}
-                            error={questionError}
-                            helperText={questionError && "问题长度不应小于10"}
-                            fullWidth
-                        />
-                        <TextField
-                            label="详细描述"
-                            margin="normal"
-                            value={descriptionText}
-                            onChange={handleDescriptionChange}
-                            fullWidth
-                            multiline
-                            rows={5}
-                        />
-                        <Stack spacing={2} direction="row" sx={{ mt: 2 }}>
+    const theme = useTheme();
+
+    // if match the mobile size
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
+
+    // render 1st step
+    const renderFirstStep = () => {
+        return props.answererId ? (
+            <>
+                <UserCard userId={props.answererId} />
+                <Stack
+                    spacing={matches ? 4 : 2}
+                    direction="row"
+                    sx={matches ? { mt: 4 } : { mt: 2 }}
+                    justifyContent={matches ? "center" : "flex-start"}
+                >
+                    {matches ? (
+                        <>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                component={RouterLink}
+                                to={`/question/select-answerer`}
+                                size={"large"}
+                            >
+                                重新选择
+                            </Button>
+                            <Button
+                                variant="contained"
+                                onClick={nextStep}
+                                size={"large"}
+                            >
+                                下一步
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                variant="contained"
+                                onClick={nextStep}
+                                size={"medium"}
+                            >
+                                下一步
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                component={RouterLink}
+                                to={`/question/select-answerer`}
+                                size={"medium"}
+                            >
+                                重新选择
+                            </Button>
+                        </>
+                    )}
+                </Stack>
+            </>
+        ) : (
+            <>
+                <Typography variant="subtitle1">您还没有选择回答者</Typography>
+                <Button
+                    variant="outlined"
+                    color="warning"
+                    component={RouterLink}
+                    to={`/question/select-answerer`}
+                    size={matches ? "large" : "medium"}
+                >
+                    浏览列表
+                </Button>
+            </>
+        );
+    };
+
+    // render 2nd step
+    const renderSecondStep = () => {
+        return (
+            <>
+                <TextField
+                    label="问题"
+                    margin="normal"
+                    value={questionText}
+                    onChange={handleQuestionChange}
+                    error={questionError}
+                    helperText={questionError && "问题长度不应小于10"}
+                    fullWidth
+                />
+                <TextField
+                    label="详细描述"
+                    margin="normal"
+                    value={descriptionText}
+                    onChange={handleDescriptionChange}
+                    fullWidth
+                    multiline
+                    rows={5}
+                />
+                <Stack
+                    spacing={matches ? 4 : 2}
+                    direction="row"
+                    sx={matches ? { mt: 4 } : { mt: 2 }}
+                    justifyContent={matches ? "center" : "flex-start"}
+                >
+                    {matches ? (
+                        <>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={previousStep}
+                                size={"large"}
+                            >
+                                上一步
+                            </Button>
                             <Button
                                 variant="contained"
                                 onClick={checkInputAndNextStep}
+                                size={"large"}
+                            >
+                                下一步
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                variant="contained"
+                                onClick={checkInputAndNextStep}
+                                size={"medium"}
                             >
                                 下一步
                             </Button>
@@ -166,25 +230,57 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
                                 variant="outlined"
                                 color="error"
                                 onClick={previousStep}
+                                size={"medium"}
                             >
                                 上一步
                             </Button>
-                        </Stack>
-                    </StepContent>
-                </Step>
-                <Step>
-                    <StepLabel>确认支付</StepLabel>
-                    <StepContent>
-                        <Typography variant="body1">
-                            您现在需要预先付款以完成提问。在您确认得到了满意的回答之后，回答者才可能收到这份酬劳。
-                        </Typography>
-                        <Typography variant="body1">
-                            您的问题首先需要经过审核才能发送到回答者。若审核失败，您可以修改问题或取消提问。如果在回答者接单之前取消提问，我们将全额退款。
-                        </Typography>
-                        <Stack spacing={2} direction="row" sx={{ mt: 2 }}>
+                        </>
+                    )}
+                </Stack>
+            </>
+        );
+    };
+
+    // render 3rd step
+    const renderThirdStep = () => {
+        return (
+            <>
+                <Typography variant="body1">
+                    您现在需要预先付款以完成提问。在您确认得到了满意的回答之后，回答者才可能收到这份酬劳。
+                </Typography>
+                <Typography variant="body1">
+                    您的问题首先需要经过审核才能发送到回答者。若审核失败，您可以修改问题或取消提问。如果在回答者接单之前取消提问，我们将全额退款。
+                </Typography>
+                <Stack
+                    spacing={matches ? 4 : 2}
+                    direction="row"
+                    sx={matches ? { mt: 4 } : { mt: 2 }}
+                    justifyContent={matches ? "center" : "flex-start"}
+                >
+                    {matches ? (
+                        <>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={previousStep}
+                                size={"large"}
+                            >
+                                上一步
+                            </Button>
                             <Button
                                 variant="contained"
                                 onClick={createQuestion}
+                                size={"large"}
+                            >
+                                支付并完成提问
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                variant="contained"
+                                onClick={createQuestion}
+                                size={"medium"}
                             >
                                 支付并完成提问
                             </Button>
@@ -192,13 +288,74 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
                                 variant="outlined"
                                 color="error"
                                 onClick={previousStep}
+                                size={"medium"}
                             >
                                 上一步
                             </Button>
-                        </Stack>
-                    </StepContent>
-                </Step>
-            </Stepper>
+                        </>
+                    )}
+                </Stack>
+            </>
+        );
+    };
+
+    // render the mobile screen style
+    const renderMobileScreen = () => {
+        return (
+            <Box mt={3}>
+                <Stepper activeStep={activeStep} orientation="vertical">
+                    <Step>
+                        <StepLabel>选择回答者</StepLabel>
+                        <StepContent>{renderFirstStep()}</StepContent>
+                    </Step>
+                    <Step>
+                        <StepLabel>填写问题信息</StepLabel>
+                        <StepContent>{renderSecondStep()}</StepContent>
+                    </Step>
+                    <Step>
+                        <StepLabel>确认支付</StepLabel>
+                        <StepContent>{renderThirdStep()}</StepContent>
+                    </Step>
+                </Stepper>
+            </Box>
+        );
+    };
+
+    // render the wide screen style
+    const renderWideScreen = () => {
+        return (
+            <>
+                <Box mt={8}>
+                    <Stepper activeStep={activeStep} orientation="horizontal">
+                        <Step>
+                            <StepLabel>选择回答者</StepLabel>
+                        </Step>
+                        <Step>
+                            <StepLabel>填写问题信息</StepLabel>
+                        </Step>
+                        <Step>
+                            <StepLabel>确认支付</StepLabel>
+                        </Step>
+                    </Stepper>
+                </Box>
+                <Box mt={5}>
+                    {activeStep === 0 ? (
+                        renderFirstStep()
+                    ) : activeStep === 1 ? (
+                        renderSecondStep()
+                    ) : activeStep === 2 ? (
+                        renderThirdStep()
+                    ) : (
+                        <></>
+                    )}
+                </Box>
+            </>
+        );
+    };
+
+    return (
+        <>
+            {matches ? renderWideScreen() : renderMobileScreen()}
             {activeStep === 3 && renderResult()}
         </>
     );
