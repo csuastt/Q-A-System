@@ -6,19 +6,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OrderState {
     // 储存时使用编号，添加时务必加在最后
-    CREATED(true),
-    PAYED(true),
-    PAY_TIMEOUT(false),
-    REVIEWED(true),
-    REJECTED_BY_REVIEWER(false),
-    ACCEPTED(true),
-    REJECTED_BY_ANSWERER(false),
-    RESPOND_TIMEOUT(false),
-    ANSWERED(true),
-    ANSWER_TIMEOUT(false),
-    CHAT_ENDED(false),
-    FULFILLED(false);
+    CREATED(false),
+    PAYED(false),
+    PAY_TIMEOUT(true),
+    REVIEWED(false),
+    REJECTED_BY_REVIEWER(true),
+    ACCEPTED(false),
+    REJECTED_BY_ANSWERER(true),
+    RESPOND_TIMEOUT(true),
+    ANSWERED(false),
+    ANSWER_TIMEOUT(true),
+    CHAT_ENDED(true),
+    FULFILLED(true);
 
     @Getter
-    private final boolean active;
+    private final boolean finished;
 }
