@@ -19,7 +19,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
 
     useEffect(() => {
         userService
-            .get_user_basic_info(props.userId)
+            .getUserInfo(props.userId)
             .then((user) => setUserInfo(user));
     }, []);
 

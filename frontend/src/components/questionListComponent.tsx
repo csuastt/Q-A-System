@@ -31,7 +31,7 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
             .get_questions_for_user(props.userId)
             .then((response) => {
                 setQuestionList(response);
-                return userService.get_users_by_id_list(
+                return userService.getUsersByIdList(
                     _.uniq(response.map((question) => question.answererId))
                 );
             })

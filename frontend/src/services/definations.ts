@@ -3,25 +3,28 @@ export enum UserType {
     Answerer,
 }
 
-export interface UserBasicInfo {
-    id: number;
-    avatarUrl: string;
-    name: string;
-    introduction: string;
-    type: UserType;
-}
+// TODO: backend doesn't support it yet
+// export interface UserBasicInfo {
+//     id: number;
+//     avatarUrl: string;
+//     name: string;
+//     introduction: string;
+//     type: UserType;
+// }
 
-export type UserInfoList = Array<UserBasicInfo>;
+export type UserInfoList = Array<UserInfo>;
 
 export interface UserInfo {
+    id: number;
     username: string;
-    nickname: string;
+    ava_url: string;
+    sign_up_timestamp: number;
     email: string;
-    password: string;
     gender: string;
     phone: string;
+    birthday: string;
     permission: string;
-    money: string;
+    money: number;
     description: string;
 }
 
