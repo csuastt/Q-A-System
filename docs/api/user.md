@@ -11,6 +11,7 @@
   | --------          | ------ | ----------------------- |
   | id                | Long   | unique, auto generated  | 
   | username          | string | not empty, unique       |
+  | nickname          | string | not empty, not unique   |
   | ava_url           | string |                         |
   | sign_up_timestamp | Long   | the time signing up     |
   | mail              | string | should be a valid email |
