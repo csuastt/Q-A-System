@@ -49,7 +49,7 @@ export interface OrderInfo {
     answerer: number;
     stem: string;
     question: string;
-    createTime: number;
+    createTime: string;
     price: number;
 }
 

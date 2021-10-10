@@ -8,5 +8,5 @@ const dateTimeFormat = Intl.DateTimeFormat("zh-CN", {
 });
 
 export function formatTimestamp(timestamp: number): string {
-    return dateTimeFormat.format(timestampToDate(timestamp));
+    return dateTimeFormat.format(new Date(timestamp));
 }
