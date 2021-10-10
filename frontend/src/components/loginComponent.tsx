@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
+import { Redirect } from "react-router-dom";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
@@ -49,6 +50,7 @@ interface LoginState {
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
+    redirect: string | null;
 }
 
 export default class Login extends Component<any, LoginState> {
@@ -65,6 +67,7 @@ export default class Login extends Component<any, LoginState> {
             alert: false,
             alertContent: "",
             alertType: "error",
+            redirect: null
         };
     }
 
@@ -104,34 +107,42 @@ export default class Login extends Component<any, LoginState> {
             AuthService.login(this.state.username, this.state.password).then(
                 () => {
                     // login success
-                    // todo jump to sw
+                    this.setState({
+                        redirect: "/",
+                    });
                     // alert
                     this.setState({
                         alert: true,
                         alertType: "success",
-                        alertContent: "Login success!",
+                        alertContent: "登录成功",
                     });
                 },
                 (error) => {
-                    // retrieve error
-                    const resMessage =
-                        (error.response &&
-                            error.response.data &&
-                            error.response.data.message) ||
-                        error.message ||
-                        error.toString();
                     // show the error message
-                    this.setState({
-                        alert: true,
-                        alertType: "error",
-                        alertContent: resMessage,
-                    });
+                    console.log(error.response.status);
+                    if (error.response.status === 401) {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "用户名或密码错误",
+                        });
+                    } else {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "网络错误",
+                        });
+                    }
                 }
             );
         }
     }
 
     render() {
+        if (this.state.redirect) {
+            return <Redirect to={this.state.redirect} />;
+        }
+
         return (
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
