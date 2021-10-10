@@ -1,12 +1,10 @@
 package com.example.qa.user;
 
-import com.example.qa.user.exchange.LoginRequest;
-import com.example.qa.user.exchange.ModifyPasswordAttribute;
-import com.example.qa.user.exchange.PriceAttribute;
-import com.example.qa.user.exchange.UserAttribute;
+import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.example.qa.user.response.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -485,6 +483,38 @@ class UserControllerTest {
                 .andReturn();
     }
 
+    @Test
+    void modifyPermission() throws Exception {
+        PermitAttribute modifyPermission = new PermitAttribute("q");
+
+        //test for successful modification
+        this.mockMvc.perform(put("/api/users/1/permission")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(objectMapper, modifyPermission)))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertEquals(repository.findById(1L).get().getPermit(), "q");
+
+        //test for useless modification
+        this.mockMvc.perform(put("/api/users/1/permission")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(objectMapper, modifyPermission)))
+                .andExpect(status().isInternalServerError())
+                .andReturn();
+        assertEquals(repository.findById(1L).get().getPermit(), "q");
+
+        //test for not existed user modification
+        this.mockMvc.perform(put("/api/users/"+(repository.count() + 1) + "/permission")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(objectMapper, modifyPermission)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertEquals(repository.findById(1L).get().getPermit(), "q");
+    }
+
     /**
      * generate testUsers with permission a
      * @param username name of answerers
@@ -508,4 +538,6 @@ class UserControllerTest {
         var user = new AppUser(username, passwordEncoder.encode("password"),authorities);
         repository.save(user);
     }
+
+
 }

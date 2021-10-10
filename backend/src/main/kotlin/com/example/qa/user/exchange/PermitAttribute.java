@@ -1,16 +1,18 @@
 package com.example.qa.user.exchange;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Response Body requesting /api/users/{id}/permission
  * METHOD:GET
  */
 @Data
-public class QuestPermit {
+@NoArgsConstructor
+public class PermitAttribute {
     public String permit;
 
-    public QuestPermit(String permit){
+    public PermitAttribute(String permit){
         this.permit = permit;
     }
 }

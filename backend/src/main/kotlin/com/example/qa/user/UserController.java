@@ -76,11 +76,11 @@ public class UserController {
      * @return     Permission of the required user
      */
     @GetMapping("/api/users/{id}/permission")
-    public QuestPermit permitQuest(@PathVariable(value = "id") Long id){
+    public PermitAttribute permitQuest(@PathVariable(value = "id") Long id){
         Optional<AppUser> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         String permit = optionalUser.get().getPermit();
-        return new QuestPermit(permit);
+        return new PermitAttribute(permit);
     }
 
     /**
@@ -212,6 +212,26 @@ public class UserController {
         user.setPrice(modifyPrice.getPrice());
         userRepository.save(user);
         return new SuccessResponse("修改价格成功");
+    }
+
+    /**
+     * @permission          Authenticated
+     * @param id            Unique to specify a user
+     * @param modifyPermit  Permit to be modified
+     * @return              Success or useless
+     */
+    @PutMapping("/api/users/{id}/permission")
+    public SuccessResponse modifyPermission(@PathVariable(value = "id") Long id,
+                                            @RequestBody PermitAttribute modifyPermit){
+        Optional<AppUser> optionalUser = userRepository.findById(id);
+        checkActivity(optionalUser);
+        var user = optionalUser.get();
+        String permit = modifyPermit.getPermit();
+        if(user.getPermit().equals(permit))
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "无效修改");
+        user.setPermit(permit);
+        userRepository.save(user);
+        return new SuccessResponse("修改用户权限成功");
     }
 
     /**
