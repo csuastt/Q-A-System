@@ -17,6 +17,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
 import { UserInfo } from "../services/definations";
+import authToken from "../services/auth-token";
 
 interface ProfileState {
     redirect: string | null;
@@ -85,8 +86,8 @@ export default class AccountProfile extends Component<any, ProfileState> {
             return;
         }
         this.setState({
-            token: currentUser.token,
-            user: currentUser.user,
+            token: authToken(),
+            user: currentUser,
             userReady: true,
         });
         // this.now_nickname = currentUser.user.nickname;
