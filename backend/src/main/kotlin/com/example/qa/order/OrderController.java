@@ -128,7 +128,9 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ASKER_INVALID");
         }
         long newAnswerer = isCreation || data.getAnswerer() > 0 ? data.getAnswerer() : original.getAnswerer().getId();
-        if (newAsker == newAnswerer || !userRepository.existsByIdAndEnable(newAnswerer, true)) {
+        if (newAsker == newAnswerer
+                || !userRepository.existsByIdAndEnable(newAnswerer, true)
+                || !userRepository.getById(newAnswerer).getPermit().equals("a")) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ANSWERER_INVALID");
         }
         String newQuestion = isCreation || data.getQuestion() != null ? data.getQuestion() : original.getQuestion();
