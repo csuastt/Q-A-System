@@ -119,8 +119,8 @@ class UserControllerTest {
 
         MvcResult page_one = this.mockMvc.perform(get("/api/users")
                         .header("Authorization", "Bearer " + token)
-                        .param("page", "1")
-                        .param("limit", "30"))
+                        .queryParam("page", "1")
+                        .queryParam("limit", "30"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -130,8 +130,8 @@ class UserControllerTest {
 
         MvcResult page_two = this.mockMvc.perform(get("/api/users")
                         .header("Authorization", "Bearer " + token)
-                        .param("page", "2")
-                        .param("limit", "30"))
+                        .queryParam("page", "2")
+                        .queryParam("limit", "30"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -142,8 +142,8 @@ class UserControllerTest {
 
         MvcResult page_three = this.mockMvc.perform(get("/api/users")
                         .header("Authorization", "Bearer " + token)
-                        .param("page", "3")
-                        .param("limit", "30"))
+                        .queryParam("page", "3")
+                        .queryParam("limit", "30"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -153,8 +153,7 @@ class UserControllerTest {
 
         //test for answerer filter
         MvcResult page_ans = this.mockMvc.perform(get("/api/users")
-                        .header("Authorization", "Bearer " + token)
-                        .param("answerer", "true"))
+                        .queryParam("answerer", "true"))
                 .andExpect(status().isOk())
                 .andReturn();
 

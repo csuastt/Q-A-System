@@ -51,6 +51,7 @@ public class SpringSecurityConfiguration {
                     .authorizeRequests()
                     .antMatchers(HttpMethod.POST,"/api/users").permitAll()
                     .antMatchers(HttpMethod.POST,"/api/user/login").permitAll()
+                    .regexMatchers(HttpMethod.GET,"/api/users?.*answerer=true.*").permitAll()
                     .anyRequest().authenticated()
                     .and()
                     .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper))
