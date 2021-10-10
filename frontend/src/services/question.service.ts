@@ -1,13 +1,13 @@
 import axios from "axios";
 import { CreationResult, QuestionInfoList } from "./definations";
-import authHeader from "./auth-header";
+import authToken from "./auth-token";
 
 class QuestionService {
     get_questions_for_user(userId: number): Promise<QuestionInfoList> {
         return axios
             .get("/questions", {
                 params: { user: userId },
-                headers: authHeader(),
+                headers: authToken(),
             })
             .then((response) => response.data);
     }
@@ -26,7 +26,7 @@ class QuestionService {
                     description: description,
                 },
                 {
-                    headers: authHeader(),
+                    headers: authToken(),
                 }
             )
             .then((response) => response.data);

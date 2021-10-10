@@ -1,20 +1,37 @@
 import axios from "axios";
-import { UserBasicInfo, UserInfoList } from "./definations";
-import authHeader from "./auth-header";
+import { UserInfo, UserInfoList } from "./definations";
+import authToken from "./auth-token";
 
 class UserService {
-    get_users_of_type(type: string): Promise<UserInfoList> {
+    getAnswerers(): Promise<UserInfoList> {
         return axios
-            .get("/users", { params: { type }, headers: authHeader() })
+            .get("/users", { params: { answerer: true }, headers: authToken() })
+            .then((response) => response.data.users);
+    }
+
+    getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
+        return Promise.all(ids.map((id) => this.getUserInfo(id)));
+    }
+
+    getUserInfo(id: number): Promise<UserInfo> {
+        return axios
+            .get(`/users/${id}`, { headers: authToken() })
             .then((response) => response.data);
     }
 
-    get_users_by_id_list(ids: Array<number>): Promise<UserInfoList> {
-        return Promise.all(ids.map((id) => this.get_user_basic_info(id)));
-    }
-
-    get_user_basic_info(id: number): Promise<UserBasicInfo> {
-        return axios.get(`/user/${id}/basic`).then((response) => response.data);
+    modifyUserInfo(info: UserInfo) {
+        return axios.put(
+            `/users/${info.id}`,
+            {
+                username: info.username,
+                email: info.email,
+                gender: info.gender,
+                birthday: info.birthday,
+            },
+            {
+                headers: authToken(),
+            }
+        );
     }
 }
 

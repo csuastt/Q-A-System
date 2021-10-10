@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import AuthService from "../services/auth.service";
+import authService from "../services/auth.service";
+import userService from "../services/user.service";
 import AccountBriefProfile from "./profileBriefComponent";
 // mui
 import Button from "@mui/material/Button";
@@ -75,7 +76,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
     // if user not found
     // redirect
     componentDidMount() {
-        const currentUser = AuthService.getCurrentUser();
+        const currentUser = authService.getCurrentUser();
 
         if (!currentUser) {
             // redirect and alert
@@ -114,7 +115,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
         if (temp.phone === "+") {
             temp.phone = "";
         }
-        AuthService.modifyUserInfo(temp).then(
+        userService.modifyUserInfo(temp).then(
             () => {
                 // modify success
                 // refresh nickname
@@ -192,18 +193,6 @@ export default class AccountProfile extends Component<any, ProfileState> {
                                             }}
                                             value={this.state.user?.email}
                                             variant="outlined"
-                                        />
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="昵称"
-                                            required
-                                            name="nickname"
-                                            onChange={this.handleChange}
-                                            value={this.state.user?.nickname}
-                                            variant="outlined"
-                                            placeholder={"请填写昵称~"}
                                         />
                                     </Grid>
                                     <Grid item md={6} xs={12}>

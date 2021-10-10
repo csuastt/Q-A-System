@@ -161,7 +161,7 @@ export default function Appbar() {
                         </MenuItem>
                         <MenuItem>
                             <IconButtonWrapper
-                                to={"/user/" + user.id + "/info"}
+                                to={"/profile"}
                             >
                                 <AccountCircle />
                             </IconButtonWrapper>

@@ -6,7 +6,7 @@ import _ from "lodash";
 import {
     QuestionBasicInfo,
     QuestionInfoList,
-    UserBasicInfo,
+    UserInfo,
 } from "../services/definations";
 import questionService from "../services/question.service";
 import userService from "../services/user.service";
@@ -20,7 +20,7 @@ import Stack from "@mui/material/Stack";
 
 const QuestionList: React.FC<{ userId: number }> = (props) => {
     const [questionList, setQuestionList] = useState<QuestionInfoList>();
-    const [userMap, setUserMap] = useState<Map<number, UserBasicInfo>>();
+    const [userMap, setUserMap] = useState<Map<number, UserInfo>>();
 
     // const prevented = authService.getCurrentUser()?.id !== props.userId;
     const prevented = false;
@@ -31,7 +31,7 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
             .get_questions_for_user(props.userId)
             .then((response) => {
                 setQuestionList(response);
-                return userService.get_users_by_id_list(
+                return userService.getUsersByIdList(
                     _.uniq(response.map((question) => question.answererId))
                 );
             })
@@ -73,8 +73,8 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
             <Skeleton variant="circular" height={30} width={30} />
         ) : (
             <Avatar
-                alt={user.name}
-                src={user.avatarUrl}
+                alt={user.username}
+                src={user.ava_url}
                 sx={{ width: 30, height: 30 }}
             />
         );

@@ -1,4 +1,4 @@
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Appbar from "./components/appbarComponent";
 import { Container } from "@mui/material";
 import Welcome from "./components/welcomeComponent";
@@ -8,6 +8,7 @@ import AccountProfile from "./components/profileComponent";
 import Login from "./components/loginComponent";
 import Register from "./components/registerComponent";
 import AnswerList from "./components/answerListComponent";
+import Logout from "./components/logoutComponent";
 
 export default function App() {
     const routes = [
@@ -16,6 +17,7 @@ export default function App() {
         ["/question/create", <QuestionCreationWizard answererId={1} />],
         ["/profile", <AccountProfile />],
         ["/login", <Login />],
+        ["/logout", <Logout />],
         ["/register", <Register />],
         ["/", <Welcome />],
     ];

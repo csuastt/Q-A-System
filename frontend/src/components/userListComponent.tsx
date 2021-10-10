@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { UserBasicInfo } from "../services/definations";
+import { UserInfo } from "../services/definations";
 import userService from "../services/user.service";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -11,11 +11,12 @@ import _ from "lodash";
 import { Divider } from "@mui/material";
 
 const UserList: React.FC<{ type: string }> = (props) => {
-    const [userList, setUserList] = useState<Array<UserBasicInfo>>();
+    const [userList, setUserList] = useState<Array<UserInfo>>();
     useEffect(() => {
-        userService
-            .get_users_of_type(props.type)
-            .then((list) => setUserList(list));
+        // TODO: Unsupported api
+        // userService
+        //     .get_users_of_type(props.type)
+        //     .then((list) => setUserList(list));
     }, []);
 
     const renderPlaceholder = () => (
@@ -35,17 +36,20 @@ const UserList: React.FC<{ type: string }> = (props) => {
         );
         return (
             <>
-                {list.map((user: UserBasicInfo | undefined, index: number) => {
+                {list.map((user: UserInfo | undefined, index: number) => {
                     return user === undefined ? (
                         <Divider variant="inset" component="li" key={index} />
                     ) : (
                         <ListItem alignItems="flex-start" key={index}>
                             <ListItemAvatar>
-                                <Avatar alt={user.name} src={user.avatarUrl} />
+                                <Avatar
+                                    alt={user.username}
+                                    src={user.ava_url}
+                                />
                             </ListItemAvatar>
                             <ListItemText
-                                primary={user.name}
-                                secondary={user.introduction}
+                                primary={user.username}
+                                secondary={user.description}
                             />
                         </ListItem>
                     );
