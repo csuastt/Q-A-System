@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
+import { Redirect } from "react-router-dom";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
@@ -56,6 +57,7 @@ interface RegisterState {
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
     readPolicy: boolean;
+    redirect: string | null;
 }
 
 export default class Register extends Component<any, RegisterState> {
@@ -77,6 +79,7 @@ export default class Register extends Component<any, RegisterState> {
             alertContent: "",
             alertType: "error",
             readPolicy: false,
+            redirect: null
         };
     }
 
@@ -135,7 +138,7 @@ export default class Register extends Component<any, RegisterState> {
                 this.setState({
                     alert: true,
                     alertType: "error",
-                    alertContent: "Please read the user policy!",
+                    alertContent: "请阅读我们的政策",
                 });
                 return;
             }
@@ -146,35 +149,43 @@ export default class Register extends Component<any, RegisterState> {
                 this.state.password
             ).then(
                 () => {
-                    // login success
-                    // todo jump to sw
+                    // register success
                     // alert
                     this.setState({
                         alert: true,
                         alertType: "success",
-                        alertContent: "Register success!",
+                        alertContent: "注册成功",
+                    });
+                    // redirect
+                    this.setState({
+                        redirect: "/login",
                     });
                 },
                 (error) => {
-                    // retrieve error
-                    const resMessage =
-                        (error.response &&
-                            error.response.data &&
-                            error.response.data.message) ||
-                        error.message ||
-                        error.toString();
                     // show the error message
-                    this.setState({
-                        alert: true,
-                        alertType: "error",
-                        alertContent: resMessage,
-                    });
+                    if (error.response.status === 403) {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "用户名已注册",
+                        });
+                    } else {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "网络错误",
+                        });
+                    }
                 }
             );
         }
     }
 
     render() {
+        if (this.state.redirect) {
+            return <Redirect to={this.state.redirect} />;
+        }
+
         return (
             <Container component="main" maxWidth="xs">
                 <CssBaseline />

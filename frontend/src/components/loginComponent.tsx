@@ -107,19 +107,19 @@ export default class Login extends Component<any, LoginState> {
             AuthService.login(this.state.username, this.state.password).then(
                 () => {
                     // login success
-                    this.setState({
-                        redirect: "/",
-                    });
                     // alert
                     this.setState({
                         alert: true,
                         alertType: "success",
                         alertContent: "登录成功",
                     });
+                    // redirect
+                    this.setState({
+                        redirect: "/",
+                    });
                 },
                 (error) => {
                     // show the error message
-                    console.log(error.response.status);
                     if (error.response.status === 401) {
                         this.setState({
                             alert: true,
