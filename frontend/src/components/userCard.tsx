@@ -19,7 +19,7 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
 
     useEffect(() => {
         userService.getUserInfo(props.userId).then((user) => setUserInfo(user));
-    }, []);
+    }, [props.userId]);
 
     const CardActionWrapper: React.FC<{ nextUrl?: string }> = (props) => {
         return props.nextUrl ? (

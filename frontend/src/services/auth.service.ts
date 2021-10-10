@@ -12,7 +12,7 @@ class AuthService {
                 if (response.data.token) {
                     localStorage.setItem(
                         "token",
-                        JSON.stringify(response.data.token)
+                        response.data.token
                     );
                     localStorage.setItem(
                         "user",
@@ -24,9 +24,10 @@ class AuthService {
     }
 
     logout() {
+        localStorage.removeItem("token");
         localStorage.removeItem("user");
-        return axios.post("/user/logout", {
-            header: authToken(),
+        return axios.post("/user/logout", {},{
+            headers: authToken(),
         });
     }
 

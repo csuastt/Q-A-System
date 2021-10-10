@@ -6,7 +6,7 @@ class UserService {
     getAnswerers(): Promise<UserInfoList> {
         return axios
             .get("/users", { params: { answerer: true }, headers: authToken() })
-            .then((response) => response.data);
+            .then((response) => response.data.users);
     }
 
     getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
@@ -14,7 +14,9 @@ class UserService {
     }
 
     getUserInfo(id: number): Promise<UserInfo> {
-        return axios.get(`/users/${id}`).then((response) => response.data);
+        return axios
+            .get(`/users/${id}`, { headers: authToken() })
+            .then((response) => response.data);
     }
 
     modifyUserInfo(info: UserInfo) {
