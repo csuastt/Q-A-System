@@ -89,7 +89,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
             user: currentUser.user,
             userReady: true,
         });
-        this.now_nickname = currentUser.user.nickname;
+        // this.now_nickname = currentUser.user.nickname;
     }
 
     // text change handler

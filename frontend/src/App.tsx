@@ -13,8 +13,8 @@ import Logout from "./components/logoutComponent";
 export default function App() {
     const routes = [
         ["/answerers", <AnswerList type="answerers" />],
-        ["/questions", <QuestionList userId={1} />],
-        ["/question/create", <OrderCreationWizard answererId={1} />],
+        ["/orders", <QuestionList userId={1} />],
+        ["/order/create", <OrderCreationWizard answererId={22} />],
         ["/profile", <AccountProfile />],
         ["/login", <Login />],
         ["/logout", <Logout />],

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { styled, alpha } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -99,8 +99,13 @@ export default function Appbar() {
             </>
         ) : (
             <>
-                <Typography variant="h6" noWrap component="div">
-                    欢迎，{user.name}
+                <Typography
+                    variant="h6"
+                    noWrap
+                    component="div"
+                    sx={{ margin: "auto" }}
+                >
+                    欢迎，{user.username}
                 </Typography>
                 <IconButtonWrapper to={"/user/" + user.id + "/notifications"}>
                     <NotificationsIcon />
@@ -187,6 +192,8 @@ export default function Appbar() {
                         color="inherit"
                         aria-label="open drawer"
                         sx={{ mr: 2 }}
+                        component={RouterLink}
+                        to="/"
                     >
                         <MenuIcon />
                     </IconButton>

@@ -8,11 +8,16 @@ import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
 import React from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ContactsIcon from "@mui/icons-material/Contacts";
+import authService from "../services/auth.service";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import { LiveHelp } from "@mui/icons-material";
 
 export default function Welcome() {
     const theme = useTheme();
+    const user = authService.getCurrentUser();
 
     const ButtonCardWrapper: React.FC<{
         to: string;
@@ -67,18 +72,43 @@ export default function Welcome() {
                 title1="回答者列表"
                 title2="寻找合适的回答者"
             />
-            <ButtonCardWrapper
-                to="/login"
-                Icon={LoginIcon}
-                title1="登陆"
-                title2="提出问题、回答问题"
-            />
-            <ButtonCardWrapper
-                to="/register"
-                Icon={PersonAddIcon}
-                title1="注册"
-                title2="从现在开始解答您的疑惑"
-            />
+            {user ? (
+                <>
+                    <ButtonCardWrapper
+                        to="/order/create"
+                        Icon={LiveHelp}
+                        title1="提出问题"
+                        title2="获取知识与答案"
+                    />
+                    <ButtonCardWrapper
+                        to="/orders"
+                        Icon={FormatListBulletedIcon}
+                        title1="问题列表"
+                        title2="查看历史订单与问题状态"
+                    />
+                    <ButtonCardWrapper
+                        to="/profile"
+                        Icon={AccountCircle}
+                        title1="个人信息"
+                        title2="查看、修改个人信息"
+                    />
+                </>
+            ) : (
+                <>
+                    <ButtonCardWrapper
+                        to="/login"
+                        Icon={LoginIcon}
+                        title1="登录"
+                        title2="提出问题、回答问题"
+                    />
+                    <ButtonCardWrapper
+                        to="/register"
+                        Icon={PersonAddIcon}
+                        title1="注册"
+                        title2="从现在开始解答您的疑惑"
+                    />
+                </>
+            )}
         </>
     );
 }
