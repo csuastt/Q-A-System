@@ -73,11 +73,11 @@ POST /api/orders
 
 - `403` 错误
 
-  | message 属性       | 说明                                        |
-  | ------------------ | ------------------------------------------- |
-  | `ASKER_INVALID`    | 未找到提问者（后续改为仅管理员创建时提示）  |
-  | `ANSWERER_INVALID` | 回答者与提问者相同/未找到回答者             |
-  | `QUESTION_INVALID` | 问题字数不符合系统要求（暂设 5≤length≤100） |
+  | message 属性       | 说明                                           |
+  | ------------------ | ---------------------------------------------- |
+  | `ASKER_INVALID`    | 未找到提问者（后续改为仅管理员创建时提示）     |
+  | `ANSWERER_INVALID` | 回答者与提问者相同/未找到回答者/回答者没有权限 |
+  | `QUESTION_INVALID` | 问题字数不符合系统要求（暂设 5≤length≤100）    |
 
 ### 删除订单
 
@@ -131,7 +131,7 @@ PUT /api/orders/{id}
   | message 属性       | 说明                                                         |
   | ------------------ | ------------------------------------------------------------ |
   | `ASKER_INVALID`    | 未找到新提问者/旧提问者已被删除却没有修改                    |
-  | `ANSWERER_INVALID` | 任何会导致回答者与提问者相同的情况/未找到新回答者/旧回答者已被删除却没有修改 |
+  | `ANSWERER_INVALID` | 任何会导致回答者与提问者相同的情况/未找到新回答者/旧回答者已被删除却没有修改/回答者没有权限 |
   | `QUESTION_INVALID` | 新问题字数不符合系统要求（暂设 5≤length≤100）                |
 
 - `404` 订单不存在或已删除
@@ -144,69 +144,13 @@ PUT /api/orders/{id}
 GET /api/orders
 ```
 
-公共参数：
-
-| 名称     | 类型 | 说明                              |
-| -------- | ---- | --------------------------------- |
-| pageSize | int  | 单页最大订单数，可选，最大为 50   |
-| page     | int  | 页数（从 1 开始），可选，默认为 1 |
-
-参数：（用户）
-
-| 名称       | 类型       | 说明                                     |
-| ---------- | ---------- | ---------------------------------------- |
-| asker      | int        | 必须指定 asker / answerer 之一为查询用户 |
-| answerer   | int        | 必须指定 asker / answerer 之一为查询用户 |
-| state      | OrderState | （可能用不着）                           |
-| isActive   | boolean    |                                          |
-| createTime | int 范围   |                                          |
-
-参数：（问答库）
-
-```
-TODO
-```
-
-参数：（管理员）
-
-| 名称             | 类型            | 说明 |
-| ---------------- | --------------- | ---- |
-| id               | int 范围        |      |
-| isDeleted        | boolean         |      |
-| asker            | int 范围        |      |
-| answerer         | int 范围        |      |
-| state            | OrderState 范围 |      |
-| isActive         | boolean         |      |
-| createTime       | int 范围        |      |
-| payTime          | int 范围        |      |
-| reviewTime       | int 范围        |      |
-| respondTime      | int 范围        |      |
-| answerTime       | int 范围        |      |
-| endTime          | int 范围        |      |
-| fulfillTime      | int 范围        |      |
-| expireTime       | int 范围        |      |
-| chatMessageCount | int 范围        |      |
-| endReason        | EndReason 范围  |      |
-| question         | string          |      |
-| price            | int 范围        |      |
-
-- int 范围：一个范围 `{ "from": 0, "to": 9999 }`（可省略某一边界，两边为闭区间）
-- enum 范围：一个 enum 列表
-
 返回值：
 
-- `200` OK
-
-  | 名称     | 类型    | 说明               |
-  | -------- | ------- | ------------------ |
-  | total    | int     | 总数               |
-  | pageSize | int     | 单页最大订单数     |
-  | page     | int     | 页数（从 1 开始）  |
-  | orders   | Order[] | 超过最后一页时为空 |
+- `200` OK（内容为 Order[]）
 
 - `400` 格式错误
 
-- `401` 未登录或权限不足
+- `401` 未登录或权限不足（后续实现）
 
 ### 支付订单
 
