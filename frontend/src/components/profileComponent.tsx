@@ -86,7 +86,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
             return;
         }
         this.setState({
-            token: authToken(),
+            // token: authToken(),
             user: currentUser,
             userReady: true,
         });

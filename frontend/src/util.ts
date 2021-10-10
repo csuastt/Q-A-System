@@ -7,6 +7,6 @@ const dateTimeFormat = Intl.DateTimeFormat("zh-CN", {
     timeStyle: "short",
 });
 
-export function formatTimestamp(timestamp: number): string {
+export function formatTimestamp(timestamp: string): string {
     return dateTimeFormat.format(new Date(timestamp));
 }
