@@ -29,7 +29,7 @@ export interface UserInfo {
     type: UserType;
 }
 
-export enum QuestionState {
+export enum OrderState {
     WAITING_FOR_REVIEW,
     REJECTED_BY_REVIEWER,
     WAITING_TO_BE_ACCEPTED,
@@ -41,19 +41,19 @@ export enum QuestionState {
     TRANSACTION_COMPLETE,
 }
 
-export interface QuestionBasicInfo {
+export interface OrderInfo {
     id: number;
-    state: QuestionState;
-    questionerId: number;
-    questionerName: string;
-    answererId: number;
-    answererName: string;
+    deleted: boolean
+    state: OrderState;
+    asker: number;
+    answerer: number;
     stem: string;
-    description: string;
+    question: string;
     createTime: number;
+    price: number;
 }
 
-export type QuestionInfoList = Array<QuestionBasicInfo>;
+export type OrderList = Array<OrderInfo>;
 
 export enum CreationResultType {
     SUCCESS,

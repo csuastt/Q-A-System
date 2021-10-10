@@ -1,4 +1,4 @@
-import { QuestionState as QS } from "../services/definations";
+import { OrderState as QS } from "../services/definations";
 import React from "react";
 import Chip from "@mui/material/Chip";
 import _ from "lodash";
@@ -15,7 +15,7 @@ const renderMap: Map<QS, [string, string]> = new Map([
     [QS.TRANSACTION_COMPLETE, ["交易完成", "default"]],
 ]);
 
-const QuestionStateChip: React.FC<any & { state: QS }> = (props) => {
+const OrderStateChip: React.FC<any & { state: QS }> = (props) => {
     const [label, style] = _.defaultTo(renderMap.get(props.state), [
         "未知",
         "default",
@@ -32,4 +32,4 @@ const QuestionStateChip: React.FC<any & { state: QS }> = (props) => {
     );
 };
 
-export default QuestionStateChip;
+export default OrderStateChip;

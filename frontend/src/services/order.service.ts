@@ -1,29 +1,28 @@
 import axios from "axios";
-import { CreationResult, QuestionInfoList } from "./definations";
+import { CreationResult, OrderList } from "./definations";
 import authToken from "./auth-token";
 
-class QuestionService {
-    get_questions_for_user(userId: number): Promise<QuestionInfoList> {
+class OrderService {
+    getOrdersOfUser(userId: number): Promise<OrderList> {
         return axios
-            .get("/questions", {
-                params: { user: userId },
+            .get("/orders", {
                 headers: authToken(),
             })
             .then((response) => response.data);
     }
 
     create_question(
-        answererId: number,
-        question: string,
-        description: string
+        asker: number,
+        answerer: number,
+        question: string
     ): Promise<CreationResult> {
         return axios
-            .put(
-                "/question",
+            .post(
+                "/orders",
                 {
-                    answerer: answererId,
+                    asker: asker,
+                    answerer: answerer,
                     question: question,
-                    description: description,
                 },
                 {
                     headers: authToken(),
@@ -33,4 +32,4 @@ class QuestionService {
     }
 }
 
-export default new QuestionService();
+export default new OrderService();

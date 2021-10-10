@@ -4,22 +4,22 @@ import Skeleton from "@mui/material/Skeleton";
 import { Redirect } from "react-router-dom";
 import _ from "lodash";
 import {
-    QuestionBasicInfo,
-    QuestionInfoList,
+    OrderInfo,
+    OrderList,
     UserInfo,
 } from "../services/definations";
-import questionService from "../services/question.service";
+import questionService from "../services/order.service";
 import userService from "../services/user.service";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import QuestionStateChip from "./questionStateChip";
+import OrderStateChip from "./orderStateChip";
 import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
 
 const QuestionList: React.FC<{ userId: number }> = (props) => {
-    const [questionList, setQuestionList] = useState<QuestionInfoList>();
+    const [questionList, setQuestionList] = useState<OrderList>();
     const [userMap, setUserMap] = useState<Map<number, UserInfo>>();
 
     // const prevented = authService.getCurrentUser()?.id !== props.userId;
@@ -28,11 +28,11 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
     useEffect(() => {
         if (prevented) return;
         questionService
-            .get_questions_for_user(props.userId)
+            .getOrdersOfUser(props.userId)
             .then((response) => {
                 setQuestionList(response);
                 return userService.getUsersByIdList(
-                    _.uniq(response.map((question) => question.answererId))
+                    _.uniq(response.map((question) => question.answerer))
                 );
             })
             .then((users) => {
@@ -82,7 +82,7 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
 
     const renderQuestionList = () => (
         <>
-            {questionList!.map((question: QuestionBasicInfo, index: number) => (
+            {questionList!.map((question: OrderInfo, index: number) => (
                 <Card key={index}>
                     <CardContent>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -95,22 +95,22 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
                                     {question.stem}
                                 </Typography>
                                 <Box sx={{ flexGrow: 1 }} />
-                                <QuestionStateChip state={question.state} />
+                                <OrderStateChip state={question.state} />
                             </Box>
                             <Typography
                                 variant="body1"
                                 sx={{ wordBreak: "break-all" }}
                                 gutterBottom
                             >
-                                {question.description}
+                                {question.question}
                             </Typography>
                             <Box
                                 sx={{ display: "flex", flexDirection: "row" }}
                                 mt={1}
                             >
-                                <AvatarWrapper id={question.answererId} />
+                                <AvatarWrapper id={question.answerer} />
                                 <Typography variant="h6" sx={{ ml: 1 }}>
-                                    {question.answererName}
+                                    User {question.asker}
                                 </Typography>
                             </Box>
                             <Typography variant="caption" mb={-1} mt={1}>

@@ -12,17 +12,17 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink } from "react-router-dom";
-import questionService from "../services/question.service";
+import questionService from "../services/order.service";
+import authService from "../services/auth.service";
 import { CreationResult, CreationResultType } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 
-const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
+const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
     const [activeStep, setActiveStep] = useState(0);
     const [questionText, setQuestionText] = useState<string>("");
     const [questionError, setQuestionError] = useState(false);
-    const [descriptionText, setDescriptionText] = useState<string>("");
     const [result, setResult] = useState<CreationResult>();
 
     const nextStep = () => {
@@ -38,12 +38,6 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
     ) => {
         setQuestionText(event.target.value);
         checkInput(event.target.value);
-    };
-
-    const handleDescriptionChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setDescriptionText(event.target.value);
     };
 
     const checkInput = (input: string) => {
@@ -65,7 +59,11 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
     const createQuestion = () => {
         nextStep();
         questionService
-            .create_question(props.answererId!, questionText, descriptionText)
+            .create_question(
+                authService.getCurrentUser().id,
+                props.answererId!,
+                questionText
+            )
             .then((res) => setResult(res));
     };
 
@@ -182,13 +180,6 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
                     onChange={handleQuestionChange}
                     error={questionError}
                     helperText={questionError && "问题长度不应小于10"}
-                    fullWidth
-                />
-                <TextField
-                    label="详细描述"
-                    margin="normal"
-                    value={descriptionText}
-                    onChange={handleDescriptionChange}
                     fullWidth
                     multiline
                     rows={5}
@@ -361,4 +352,4 @@ const QuestionCreationWizard: React.FC<{ answererId?: number }> = (props) => {
     );
 };
 
-export default QuestionCreationWizard;
+export default OrderCreationWizard;

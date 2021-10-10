@@ -2,8 +2,8 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Appbar from "./components/appbarComponent";
 import { Container } from "@mui/material";
 import Welcome from "./components/welcomeComponent";
-import QuestionList from "./components/questionListComponent";
-import QuestionCreationWizard from "./components/questionCreationWizard";
+import QuestionList from "./components/orderListComponent";
+import OrderCreationWizard from "./components/orderCreationWizard";
 import AccountProfile from "./components/profileComponent";
 import Login from "./components/loginComponent";
 import Register from "./components/registerComponent";
@@ -14,7 +14,7 @@ export default function App() {
     const routes = [
         ["/answerers", <AnswerList type="answerers" />],
         ["/questions", <QuestionList userId={1} />],
-        ["/question/create", <QuestionCreationWizard answererId={1} />],
+        ["/question/create", <OrderCreationWizard answererId={1} />],
         ["/profile", <AccountProfile />],
         ["/login", <Login />],
         ["/logout", <Logout />],
