@@ -234,7 +234,6 @@ export default class Register extends Component<any, RegisterState> {
                             label="邮箱"
                             name="email"
                             autoComplete="email"
-                            autoFocus
                             onChange={(e) => this.onChangeValue(e, "email")}
                             // @ts-ignore
                             error={this.state.error_msg_email.length !== 0}
