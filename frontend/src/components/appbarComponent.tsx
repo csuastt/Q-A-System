@@ -160,9 +160,7 @@ export default function Appbar() {
                             <p>通知中心</p>
                         </MenuItem>
                         <MenuItem>
-                            <IconButtonWrapper
-                                to={"/profile"}
-                            >
+                            <IconButtonWrapper to={"/profile"}>
                                 <AccountCircle />
                             </IconButtonWrapper>
                             <p>用户信息</p>

@@ -43,7 +43,7 @@ export enum OrderState {
 
 export interface OrderInfo {
     id: number;
-    deleted: boolean
+    deleted: boolean;
     state: OrderState;
     asker: number;
     answerer: number;

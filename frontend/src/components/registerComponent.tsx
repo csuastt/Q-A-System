@@ -79,7 +79,7 @@ export default class Register extends Component<any, RegisterState> {
             alertContent: "",
             alertType: "error",
             readPolicy: false,
-            redirect: null
+            redirect: null,
         };
     }
 

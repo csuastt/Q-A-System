@@ -15,12 +15,12 @@ const AnswerList: React.FC<{ type: string }> = (props) => {
         const list =
             answerList == null
                 ? new Array(6).fill({
-                    id: -1,
-                    avatarUrl: "",
-                    name: "",
-                    introduction: "",
-                    type: 1,
-                })
+                      id: -1,
+                      avatarUrl: "",
+                      name: "",
+                      introduction: "",
+                      type: 1,
+                  })
                 : answerList;
 
         return (

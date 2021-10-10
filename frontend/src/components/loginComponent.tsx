@@ -67,7 +67,7 @@ export default class Login extends Component<any, LoginState> {
             alert: false,
             alertContent: "",
             alertType: "error",
-            redirect: null
+            redirect: null,
         };
     }
 
