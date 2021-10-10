@@ -69,7 +69,7 @@ const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
 
     const renderResult = () => {
         if (result) {
-            if (result.type === CreationResultType.SUCCESS) {
+            if (result.state === "CREATED") {
                 return <Alert severity="success">您的问题已经创建成功！</Alert>;
             } else {
                 return (
