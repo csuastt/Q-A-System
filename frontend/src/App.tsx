@@ -9,7 +9,8 @@ import Login from "./components/loginComponent";
 import Register from "./components/registerComponent";
 import AnswerList from "./components/answerListComponent";
 import Logout from "./components/logoutComponent";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import authService from "./services/auth.service";
 
 export default function App() {
     // logout
@@ -35,6 +36,11 @@ export default function App() {
 
     // some app state
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() =>{
+        const user = authService.getCurrentUser();
+        setIsAuthenticated(user !== null);
+    },[]);
 
     return (
         <BrowserRouter>

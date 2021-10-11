@@ -103,7 +103,10 @@ const Appbar: React.FC<{ isAuthenticated: boolean }> = (props) => {
                     variant="h6"
                     noWrap
                     component="div"
-                    sx={{ margin: "auto" }}
+                    sx={{
+                        margin: "auto",
+                        marginRight: 1.5
+                    }}
                 >
                     欢迎，{user.username}
                 </Typography>
