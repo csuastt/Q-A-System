@@ -1,6 +1,6 @@
 package com.example.qa.user.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,55 +10,55 @@ import java.util.List;
 @Data
 public class GetAllResponse {
 
-    @JsonProperty("users")
+    @SerializedName("users")
     private List<UsersDTO> users;
 
     @NoArgsConstructor
     @Data
     public static class UsersDTO {
-        @JsonProperty("id")
-        private Integer id;
-        @JsonProperty("username")
+        @SerializedName("id")
+        private Long id;
+        @SerializedName("username")
         private String username;
-        @JsonProperty("nickname")
+        @SerializedName("nickname")
         private String nickname;
-        @JsonProperty("ava_url")
+        @SerializedName("ava_url")
         private String avaUrl;
-        @JsonProperty("password")
+        @SerializedName("password")
         private String password;
-        @JsonProperty("email")
+        @SerializedName("email")
         private String email;
-        @JsonProperty("phone")
+        @SerializedName("phone")
         private String phone;
-        @JsonProperty("birthday")
+        @SerializedName("birthday")
         private String birthday;
-        @JsonProperty("gender")
+        @SerializedName("gender")
         private String gender;
-        @JsonProperty("enable")
+        @SerializedName("enable")
         private Boolean enable;
-        @JsonProperty("permission")
+        @SerializedName("permission")
         private String permission;
-        @JsonProperty("money")
+        @SerializedName("money")
         private Integer money;
-        @JsonProperty("description")
+        @SerializedName("description")
         private String description;
-        @JsonProperty("sign_up_timestamp")
-        private Integer signUpTimestamp;
-        @JsonProperty("authorities")
+        @SerializedName("sign_up_timestamp")
+        private Long signUpTimestamp;
+        @SerializedName("authorities")
         private List<AuthoritiesDTO> authorities;
-        @JsonProperty("enabled")
+        @SerializedName("enabled")
         private Boolean enabled;
-        @JsonProperty("credentialsNonExpired")
+        @SerializedName("credentialsNonExpired")
         private Boolean credentialsNonExpired;
-        @JsonProperty("accountNonExpired")
+        @SerializedName("accountNonExpired")
         private Boolean accountNonExpired;
-        @JsonProperty("accountNonLocked")
+        @SerializedName("accountNonLocked")
         private Boolean accountNonLocked;
 
         @NoArgsConstructor
         @Data
         public static class AuthoritiesDTO {
-            @JsonProperty("authority")
+            @SerializedName("authority")
             private String authority;
         }
     }

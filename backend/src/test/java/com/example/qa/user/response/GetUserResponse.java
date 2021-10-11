@@ -1,6 +1,6 @@
 package com.example.qa.user.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,20 +8,26 @@ import lombok.NoArgsConstructor;
 @Data
 public class GetUserResponse {
 
-    @JsonProperty("id")
+    @SerializedName("id")
     private Long id;
-    @JsonProperty("username")
+    @SerializedName("username")
     private String username;
-    @JsonProperty("nickname")
+    @SerializedName("nickname")
     private String nickname;
-    @JsonProperty("avatar_url")
+    @SerializedName("avatar_url")
     private String avatarUrl;
-    @JsonProperty("sign_up_timestamp")
+    @SerializedName("sign_up_timestamp")
     private Long signUpTimestamp;
-    @JsonProperty("mail")
-    private String mail;
-    @JsonProperty("gender")
+    @SerializedName("email")
+    private String email;
+    @SerializedName("gender")
     private String gender;
-    @JsonProperty("birthday")
+    @SerializedName("birthday")
     private String birthday;
+    @SerializedName("description")
+    private String description;
+    @SerializedName("permission")
+    private String permission;
+    @SerializedName("phone")
+    private String phone;
 }
