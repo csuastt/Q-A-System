@@ -59,7 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function Appbar() {
+const Appbar: React.FC<{ isAuthenticated: boolean }> = (props) => {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
         React.useState<null | HTMLElement>(null);
 
@@ -88,7 +88,7 @@ export default function Appbar() {
 
     const renderUserRelatedButtons = () => {
         const user = authService.getCurrentUser();
-        return user === null ? (
+        return !props.isAuthenticated ? (
             <>
                 <IconButtonWrapper to="/login">
                     <LoginIcon />
@@ -139,7 +139,7 @@ export default function Appbar() {
                 open={isMobileMenuOpen}
                 onClose={handleMobileMenuClose}
             >
-                {user === null ? (
+                {!props.isAuthenticated ? (
                     <>
                         <MenuItem>
                             <IconButtonWrapper to="/login">
@@ -237,3 +237,5 @@ export default function Appbar() {
         </Box>
     );
 }
+
+export default Appbar;
