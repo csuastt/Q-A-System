@@ -169,6 +169,15 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
+    private void checkValidationModify(@RequestBody UserAttribute registeredUser) {
+        if(registeredUser.getNickname() != null && registeredUser.getNickname().length() < 4)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度小于4");
+        if(registeredUser.getUsername() != null && registeredUser.getUsername().length() < 4)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于");
+        if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female")))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
+    }
+
     /**
      * @permission          Authenticated
      * @param id            Unique to specify a user
@@ -185,7 +194,7 @@ public class UserController {
         if(!id.equals(cu_id)){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "没有修改权限");
         }
-        checkValidation(modifiedUser);
+        checkValidationModify(modifiedUser);
         optionalUser.get().updateUserInfo(modifiedUser);
         userRepository.save(optionalUser.get());
         return new SuccessResponse("修改成功");

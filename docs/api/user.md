@@ -14,12 +14,22 @@
   | nickname          | string | not empty, not unique   |
   | ava_url           | string |                         |
   | sign_up_timestamp | Long   | the time signing up     |
-  | mail              | string | should be a valid email |
+  | email             | string | should be a valid email|
   | phone             | string | should be a valid phone |
   | gender            | string | male/female             |
   | birthday          | string | yy/mm/dd                |
   | permission        | string | q/a                     |
   | money             | int    | `initial` 100           |
+  | description       | string |                         |
+
+ Basic_User :
+
+  | Name        | Type   | Description             |
+  | --------          | ------ | ----------------------- |
+  | id                | Long   | unique, auto generated  | 
+  | username          | string | not empty, unique       |
+  | nickname          | string | not empty, not unique   |
+  | ava_url           | string |                         |
   | description       | string |                         |
  
 
@@ -53,14 +63,11 @@
     | phone    | string | should be a valid phone | optional  |
   
   - Response:
-    - `200`:
- 
-    | Name    | Type   | Description  |
-    | ------- | ------ | ------------ |
-    | token | string    |             |
-    | user  | string    | [User]      |
+    - `200`: 注册成功
         
     - `403 Forbidden`: 用户名已注册
+
+    - `400` : 数据格式错误
 
 
 - `api/user/login` : 用户登录
@@ -122,6 +129,15 @@
         - `200`: body中是`[User]`
         - `400`: 没有该用户
 
+- `api/users/:id/basic` : 获取基本信息
+
+    - Method: `GET`
+
+    - Parameters:
+
+    - Response:
+        - `200`: body中是`[Basic_User]`
+        - `400`: 没有该用户
 
 - `api/users/:id/permission` : 获取用户权限
   
@@ -155,6 +171,7 @@
   - Response:
     - `200`:
     - `400`: 没有该用户
+    - `500`: 没有修改权限
 
 
 - `api/users/:id/password` : 修改密码
@@ -256,6 +273,6 @@
       
       | Name     | Type      | Description      |
       | -------  | ------    | ------------     |
-      | user_list | string    | list of `[User]` |
+      | user_list | string    | list of `[Basic_User]` |
     
     
