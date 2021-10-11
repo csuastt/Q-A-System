@@ -59,7 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function Appbar() {
+const Appbar: React.FC<{ isAuthenticated: boolean }> = (props) => {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
         React.useState<null | HTMLElement>(null);
 
@@ -88,7 +88,7 @@ export default function Appbar() {
 
     const renderUserRelatedButtons = () => {
         const user = authService.getCurrentUser();
-        return user === null ? (
+        return !props.isAuthenticated ? (
             <>
                 <IconButtonWrapper to="/login">
                     <LoginIcon />
@@ -103,14 +103,17 @@ export default function Appbar() {
                     variant="h6"
                     noWrap
                     component="div"
-                    sx={{ margin: "auto" }}
+                    sx={{
+                        margin: "auto",
+                        marginRight: 1.5,
+                    }}
                 >
                     欢迎，{user.username}
                 </Typography>
                 <IconButtonWrapper to={"/user/" + user.id + "/notifications"}>
                     <NotificationsIcon />
                 </IconButtonWrapper>
-                <IconButtonWrapper to={"/user/" + user.id + "/info"}>
+                <IconButtonWrapper to={"/profile"}>
                     <AccountCircle />
                 </IconButtonWrapper>
                 <IconButtonWrapper to={"/logout"}>
@@ -139,7 +142,7 @@ export default function Appbar() {
                 open={isMobileMenuOpen}
                 onClose={handleMobileMenuClose}
             >
-                {user === null ? (
+                {!props.isAuthenticated ? (
                     <>
                         <MenuItem>
                             <IconButtonWrapper to="/login">
@@ -236,4 +239,6 @@ export default function Appbar() {
             <Toolbar />
         </Box>
     );
-}
+};
+
+export default Appbar;

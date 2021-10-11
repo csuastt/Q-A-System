@@ -23,8 +23,8 @@ class UserService {
         return axios.put(
             `/users/${info.id}`,
             {
-                username: info.username,
-                email: info.email,
+                email: info.mail,
+                nickname: info.nickname,
                 gender: info.gender,
                 birthday: info.birthday,
             },

@@ -53,7 +53,12 @@ interface LoginState {
     redirect: string | null;
 }
 
-export default class Login extends Component<any, LoginState> {
+// props interface
+interface LoginProps {
+    login: () => void;
+}
+
+export default class Login extends Component<LoginProps, LoginState> {
     constructor(props: any) {
         super(props);
         // handle login info
@@ -113,6 +118,8 @@ export default class Login extends Component<any, LoginState> {
                         alertType: "success",
                         alertContent: "登录成功",
                     });
+                    // update state
+                    this.props.login();
                     // redirect
                     this.setState({
                         redirect: "/",
@@ -213,12 +220,7 @@ export default class Login extends Component<any, LoginState> {
                         >
                             登录
                         </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    忘记密码？
-                                </Link>
-                            </Grid>
+                        <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link
                                     variant="body2"
