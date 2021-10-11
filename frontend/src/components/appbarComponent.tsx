@@ -113,7 +113,7 @@ const Appbar: React.FC<{ isAuthenticated: boolean }> = (props) => {
                 <IconButtonWrapper to={"/user/" + user.id + "/notifications"}>
                     <NotificationsIcon />
                 </IconButtonWrapper>
-                <IconButtonWrapper to={"/user/" + user.id + "/info"}>
+                <IconButtonWrapper to={"/profile"}>
                     <AccountCircle />
                 </IconButtonWrapper>
                 <IconButtonWrapper to={"/logout"}>

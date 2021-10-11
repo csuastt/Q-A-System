@@ -30,31 +30,7 @@ export default class AccountBriefProfile extends Component<
         // check if there if the username
         if (!this.props.username) return;
         // logout request
-        AuthService.logout().then(
-            () => {
-                // logout success
-                // redirect and alert
-                if (this.props.alertHandler) {
-                    this.props.alertHandler("success", "Logout success!");
-                }
-                if (this.props.redirectHandler) {
-                    this.props.redirectHandler("/");
-                }
-            },
-            (error) => {
-                // retrieve error
-                const resMessage =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.message) ||
-                    error.message ||
-                    error.toString();
-                // show the error message
-                if (this.props.alertHandler) {
-                    this.props.alertHandler("error", resMessage);
-                }
-            }
-        );
+        this.props.redirectHandler("/logout");
     }
 
     render() {

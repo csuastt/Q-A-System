@@ -53,6 +53,8 @@ export default class AccountProfile extends Component<any, ProfileState> {
             alertType: "error",
         };
         this.handleAlert = this.handleAlert.bind(this);
+        this.handleRedirect = this.handleRedirect.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     // alert handler
@@ -81,8 +83,8 @@ export default class AccountProfile extends Component<any, ProfileState> {
 
         if (!currentUser) {
             // redirect and alert
-            this.handleAlert("error", "Network error");
-            this.handleRedirect("#");
+            this.handleAlert("error", "非法访问");
+            this.handleRedirect("/");
             return;
         }
         this.setState({
@@ -90,7 +92,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
             user: currentUser,
             userReady: true,
         });
-        // this.now_nickname = currentUser.user.nickname;
+        this.now_nickname = currentUser.nickname;
     }
 
     // text change handler
@@ -102,7 +104,6 @@ export default class AccountProfile extends Component<any, ProfileState> {
         if (typeof e === "string") new_user_info["phone"] = e;
         // @ts-ignore
         else new_user_info[e.target.name] = e.target.value;
-        console.log(new_user_info["phone"]);
         this.setState({ user: new_user_info });
     };
 
@@ -123,18 +124,12 @@ export default class AccountProfile extends Component<any, ProfileState> {
                 // @ts-ignore
                 this.now_nickname = temp.nickname;
                 // alert
-                this.handleAlert("success", "Modify success!");
+                this.handleAlert("success", "修改成功");
             },
             (error) => {
-                // retrieve error
-                const resMessage =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.message) ||
-                    error.message ||
-                    error.toString();
                 // show the error message
-                this.handleAlert("error", resMessage);
+                console.log(error)
+                this.handleAlert("error", "网络错误");
             }
         );
     }
@@ -192,8 +187,20 @@ export default class AccountProfile extends Component<any, ProfileState> {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={this.state.user?.email}
+                                            value={this.state.user?.mail}
                                             variant="outlined"
+                                        />
+                                    </Grid>
+                                    <Grid item md={6} xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="昵称"
+                                            required
+                                            name="nickname"
+                                            onChange={this.handleChange}
+                                            value={this.state.user?.nickname}
+                                            variant="outlined"
+                                            placeholder={"请填写昵称~"}
                                         />
                                     </Grid>
                                     <Grid item md={6} xs={12}>

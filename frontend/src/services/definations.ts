@@ -17,9 +17,10 @@ export type UserInfoList = Array<UserInfo>;
 export interface UserInfo {
     id: number;
     username: string;
+    nickname: string;
     ava_url: string;
     sign_up_timestamp: number;
-    email: string;
+    mail: string;
     gender: string;
     phone: string;
     birthday: string;
