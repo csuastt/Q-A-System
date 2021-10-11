@@ -220,12 +220,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                         >
                             登录
                         </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    忘记密码？
-                                </Link>
-                            </Grid>
+                        <Grid container  justifyContent="flex-end">
                             <Grid item>
                                 <Link
                                     variant="body2"
