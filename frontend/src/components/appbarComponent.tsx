@@ -105,7 +105,7 @@ const Appbar: React.FC<{ isAuthenticated: boolean }> = (props) => {
                     component="div"
                     sx={{
                         margin: "auto",
-                        marginRight: 1.5
+                        marginRight: 1.5,
                     }}
                 >
                     欢迎，{user.username}
@@ -239,6 +239,6 @@ const Appbar: React.FC<{ isAuthenticated: boolean }> = (props) => {
             <Toolbar />
         </Box>
     );
-}
+};
 
 export default Appbar;

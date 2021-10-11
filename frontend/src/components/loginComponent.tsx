@@ -55,7 +55,7 @@ interface LoginState {
 
 // props interface
 interface LoginProps {
-    login: ()=>void;
+    login: () => void;
 }
 
 export default class Login extends Component<LoginProps, LoginState> {
@@ -220,7 +220,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                         >
                             登录
                         </Button>
-                        <Grid container  justifyContent="flex-end">
+                        <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link
                                     variant="body2"

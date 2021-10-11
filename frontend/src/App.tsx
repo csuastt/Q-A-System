@@ -9,7 +9,7 @@ import Login from "./components/loginComponent";
 import Register from "./components/registerComponent";
 import AnswerList from "./components/answerListComponent";
 import Logout from "./components/logoutComponent";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import authService from "./services/auth.service";
 import ChangePassword from "./components/changePasswordComponent";
 
@@ -17,20 +17,20 @@ export default function App() {
     // logout
     const logout = () => {
         setIsAuthenticated(false);
-    }
+    };
 
     // login
     const login = () => {
         setIsAuthenticated(true);
-    }
+    };
 
     const routes = [
         ["/answerers", <AnswerList type="answerers" />],
         ["/orders", <QuestionList userId={1} />],
         ["/order/create", <OrderCreationWizard answererId={23} />],
         ["/profile", <AccountProfile />],
-        ["/login", <Login login={login}/>],
-        ["/logout", <Logout logout={logout}/>],
+        ["/login", <Login login={login} />],
+        ["/logout", <Logout logout={logout} />],
         ["/register", <Register />],
         ["/change_password", <ChangePassword />],
         ["/", <Welcome />],
@@ -39,16 +39,14 @@ export default function App() {
     // some app state
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    useEffect(() =>{
+    useEffect(() => {
         const user = authService.getCurrentUser();
         setIsAuthenticated(user !== null);
-    },[]);
+    }, []);
 
     return (
         <BrowserRouter>
-            <Appbar
-                isAuthenticated={isAuthenticated}
-            />
+            <Appbar isAuthenticated={isAuthenticated} />
             <Container maxWidth="md">
                 <Switch>
                     {routes.map((routeItem) => {

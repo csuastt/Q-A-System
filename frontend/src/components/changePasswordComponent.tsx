@@ -15,7 +15,7 @@ import Alert from "@mui/material/Alert";
 import { validate_required, validate_length } from "./loginComponent";
 import { validate_second_password } from "./registerComponent";
 // redirector
-import {Link as RouterLink, Redirect} from "react-router-dom";
+import { Link as RouterLink, Redirect } from "react-router-dom";
 
 // state interface
 interface ChangePasswordState {
