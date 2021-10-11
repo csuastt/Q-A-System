@@ -11,6 +11,7 @@ import AnswerList from "./components/answerListComponent";
 import Logout from "./components/logoutComponent";
 import {useEffect, useState} from "react";
 import authService from "./services/auth.service";
+import ChangePassword from "./components/changePasswordComponent";
 
 export default function App() {
     // logout
@@ -31,6 +32,7 @@ export default function App() {
         ["/login", <Login login={login}/>],
         ["/logout", <Logout logout={logout}/>],
         ["/register", <Register />],
+        ["/change_password", <ChangePassword />],
         ["/", <Welcome />],
     ];
 

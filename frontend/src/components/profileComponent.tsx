@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
+import {Link as RouterLink, Redirect} from "react-router-dom";
 import authService from "../services/auth.service";
 import userService from "../services/user.service";
 import AccountBriefProfile from "./profileBriefComponent";
@@ -295,6 +295,8 @@ export default class AccountProfile extends Component<any, ProfileState> {
                                         <Button
                                             color="error"
                                             variant="contained"
+                                            component={RouterLink}
+                                            to="/change_password"
                                         >
                                             修改密码
                                         </Button>
