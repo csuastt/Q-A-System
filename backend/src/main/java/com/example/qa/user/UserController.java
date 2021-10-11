@@ -5,10 +5,14 @@ import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,7 +28,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserRepository userRepository;
-
+    private final Logger logger = LoggerFactory.getLogger("UserControl");
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -48,14 +52,26 @@ public class UserController {
         var response = new GetAllData();
         if(!is_answerer) {
             for (var user : userRepository.findAll(limit, (page - 1) * limit)) {
-                response.getUsers().add(new UserData(user));
+                response.getUsers().add(new BasicUserData(user));
             }
         }else{
             for (var user : userRepository.findAllByPermit(limit, (page - 1) * limit, "a")) {
-                response.getUsers().add(new UserData(user));
+                response.getUsers().add(new BasicUserData(user));
             }
         }
         return response;
+    }
+
+    /**
+     * @permission          Authenticated
+     * @param id            Unique to specify a user
+     *@return               Basic information for required user
+     */
+    @GetMapping("/api/users/{id}/basic")
+    public BasicUserData getBasicUser(@PathVariable(value = "id") Long id){
+        Optional<AppUser> optionalUser = userRepository.findById(id);
+        checkActivity(optionalUser);
+        return new BasicUserData(optionalUser.get());
     }
 
     /**
@@ -134,13 +150,23 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
-        AppUser appUser = new AppUser(registeredUser);
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setAuthorities(authorities);
-        userRepository.save(appUser);
-        appUser.setAva();
-        userRepository.save(appUser);
+        checkValidation(registeredUser);
+        AppUser userInfo = new AppUser(registeredUser);
+        userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+        userInfo.setAuthorities(authorities);
+        userRepository.save(userInfo);
+        userInfo.setAva();
+        userRepository.save(userInfo);
         return new SuccessResponse("注册成功");
+    }
+
+    private void checkValidation(@RequestBody UserAttribute registeredUser) {
+        if(registeredUser.getUsername() == null || registeredUser.getUsername().length() < 4)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于");
+        if(registeredUser.getNickname() != null && registeredUser.getNickname().length() < 4)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度小于4");
+        if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female")))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
     /**
@@ -154,6 +180,12 @@ public class UserController {
                                       @RequestBody UserAttribute modifiedUser){
         Optional<AppUser> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long cu_id = Long.parseLong((String) auth.getPrincipal());
+        if(!id.equals(cu_id)){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "没有修改权限");
+        }
+        checkValidation(modifiedUser);
         optionalUser.get().updateUserInfo(modifiedUser);
         userRepository.save(optionalUser.get());
         return new SuccessResponse("修改成功");

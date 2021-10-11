@@ -12,12 +12,13 @@ public class UserData {
 	public String nickname;
 	public String avatar_url;
 	public Long sign_up_timestamp;
-	public String mail;
+	public String email;
 	public String gender;
 	public String birthday;
 	public String description;
 	public String permission;
 	public String phone;
+	public int money;
 
 	/**
 	 * @param appUser Construct from restored user
@@ -28,11 +29,12 @@ public class UserData {
 		this.username = appUser.getUsername();
 		this.avatar_url = appUser.getAva_url();
 		this.sign_up_timestamp = appUser.sign_up_timestamp;
-		this.mail = appUser.getEmail();
+		this.email = appUser.getEmail();
 		this.gender = appUser.getGender();
 		this.birthday = appUser.getBirthday();
 		this.description = appUser.getDescription();
 		this.permission = appUser.getPermit();
 		this.phone = appUser.getPhone();
+		this.money = appUser.getMoney();
 	}
 }

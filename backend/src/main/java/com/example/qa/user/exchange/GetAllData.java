@@ -10,5 +10,5 @@ import java.util.ArrayList;
  */
 @Data
 public class GetAllData {
-    ArrayList<UserData> users = new ArrayList<>();
+    ArrayList<BasicUserData> users = new ArrayList<>();
 }

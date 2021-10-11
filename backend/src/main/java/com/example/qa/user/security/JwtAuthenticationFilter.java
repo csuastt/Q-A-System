@@ -6,6 +6,7 @@ import com.example.qa.user.model.AppUser;
 import com.example.qa.user.utils.SecurityConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.SneakyThrows;
@@ -22,7 +23,6 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import static com.example.qa.user.utils.HttpServletRequestReader.ReadAsChars;
-import static com.example.qa.user.utils.JsonHelper.fromJson;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        LoginRequest login = fromJson( objectMapper, ReadAsChars(request), LoginRequest.class);
+        LoginRequest login = new Gson().fromJson(ReadAsChars(request), LoginRequest.class);
 
         var username = login.getUsername();
         var password = login.getPassword();
@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
             .setIssuer(SecurityConstants.TOKEN_ISSUER)
             .setAudience(SecurityConstants.TOKEN_AUDIENCE)
-            .setSubject(user.getUsername())
+            .setSubject(user.getId().toString())
             .setExpiration(new Date(System.currentTimeMillis() + 864000000))
             .claim("rol", roles)
             .compact();

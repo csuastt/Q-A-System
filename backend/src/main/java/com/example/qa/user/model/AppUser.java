@@ -34,7 +34,7 @@ public class AppUser implements UserDetails {
 	private String password;
 	private String email = "";
 	private String phone = "";
-	private String birthday = "";
+	private String birthday = "2000-01-01";
 	private String gender = "unknown";
 	private boolean enable = true;
 	private String permit = "q";
