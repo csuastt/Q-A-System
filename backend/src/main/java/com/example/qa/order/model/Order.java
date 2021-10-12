@@ -40,7 +40,7 @@ public class Order {
         }
     }
 
-    // 传 data 前先检查
+    // 传 data 前先用 checkOrderData 检查
     public Order(OrderData data, @NonNull AppUser asker, @NonNull AppUser answerer, boolean allProperties) {
         this.asker = asker;
         this.answerer = answerer;
@@ -50,17 +50,17 @@ public class Order {
         if (allProperties) {
             setState(data.getState());
             endReason = data.getEndReason() != null ? data.getEndReason() : endReason;
-            price = data.getPrice() > 0 ? data.getPrice() : price;
+            price = data.getPrice() != null && data.getPrice() > 0 ? data.getPrice() : price;
         }
     }
 
-    // 传 data 前先检查
+    // 传 data 前先用 checkOrderData 检查，仅限管理员，默认所有修改
     public void update(OrderData data, @NonNull AppUser asker, @NonNull AppUser answerer) {
         this.asker = asker;
         this.answerer = answerer;
         setState(data.getState());
         endReason = data.getEndReason() != null ? data.getEndReason() : endReason;
         question = data.getQuestion() != null ? data.getQuestion() : question;
-        price = data.getPrice() > 0 ? data.getPrice() : price;
+        price = data.getPrice() != null && data.getPrice() > 0 ? data.getPrice() : price;
     }
 }
