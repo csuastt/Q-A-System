@@ -26,7 +26,7 @@ class UserService {
                 nickname: info.nickname,
                 gender: info.gender,
                 phone: info.phone,
-                description: info.description
+                description: info.description,
             },
             {
                 headers: authToken(),
