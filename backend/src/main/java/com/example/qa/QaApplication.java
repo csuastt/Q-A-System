@@ -18,7 +18,7 @@ public class QaApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:8080")
+                        .allowedOrigins("*")
                         .allowedMethods("PUT", "GET", "POST", "DELETE", "HEAD")
                         .allowedHeaders("header1", "header2")
                         .allowCredentials(true);
