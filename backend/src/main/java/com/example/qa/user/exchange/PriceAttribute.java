@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PriceAttribute {
-    public int price;
+    public Integer price;
 
     public PriceAttribute(int price) {
         this.price = price;
