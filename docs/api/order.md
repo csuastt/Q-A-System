@@ -12,12 +12,10 @@
 | answerer   | AppUser        | Get: BasicUserData, Set: number |                                         |
 | state      | OrderState     | string                          |                                         |
 | finished   | boolean        |                                 | 订单结束后设为 true                     |
-| createTime | ZonedDateTime  | ISO string\*                    | 创建时间                                |
+| createTime | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)  | 创建时间                                |
 | endReason  | OrderEndReason | string                          |                                         |
 | question   | string         |                                 | 问题（最长 100 字符，后续交给系统设置） |
 | price      | int            |                                 |                                         |
-
-\* 收发均确保为 UTC，即末尾带 `Z`
 
 ### OrderState (enum)
 
