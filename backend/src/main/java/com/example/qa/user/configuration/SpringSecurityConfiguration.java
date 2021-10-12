@@ -78,14 +78,6 @@ public class SpringSecurityConfiguration {
         public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
         }
-
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-            final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-
-            return source;
-        }
     }
 }
 

@@ -22,7 +22,7 @@ public class QaApplication {
                                 "https://prj2a-repo-dev-hardeng.app.secoder.net/",
                                 "http://localhost:3000/",
                                 "http://localhost:8080")
-                        .allowedMethods("PUT", "GET", "POST", "DELETE", "HEAD")
+                        .allowedMethods("*")
                         .allowCredentials(true);
             }
         };
