@@ -36,7 +36,7 @@ public class AppUser implements UserDetails {
 	private String phone = "";
 	private String birthday = "2000-01-01";
 	private String gender = "unknown";
-	private boolean enable = true;
+	private Boolean enable = true;
 	private String permit = "q";
 	private Integer money = 100;
     // TODO: It may not be the best way to deal with database updates. We will change it after the stabilization of data models

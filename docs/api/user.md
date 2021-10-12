@@ -7,16 +7,16 @@
  User 用户:
   - `username` unique  
 
-  | Name        | Type   | Description             |
+  | Name              | Type   | Description             |
   | --------          | ------ | ----------------------- |
   | id                | Long   | unique, auto generated  | 
   | username          | string | not empty, unique       |
-  | nickname          | string | not empty, not unique   |
+  | nickname          | string | empty, or max_len < 10  |
   | ava_url           | string |                         |
   | sign_up_timestamp | Long   | the time signing up     |
-  | email             | string | should be a valid email|
+  | email             | string | should be a valid email |
   | phone             | string | should be a valid phone |
-  | gender            | string | male/female             |
+  | gender            | string | male/female/unknown     |
   | birthday          | string | yy/mm/dd                |
   | permission        | string | q/a                     |
   | money             | int    | `initial` 100           |
@@ -24,11 +24,11 @@
 
  Basic_User :
 
-  | Name        | Type   | Description             |
+  | Name              | Type   | Description             |
   | --------          | ------ | ----------------------- |
   | id                | Long   | unique, auto generated  | 
   | username          | string | not empty, unique       |
-  | nickname          | string | not empty, not unique   |
+  | nickname          | string | empty, or max_len < 10  |
   | ava_url           | string |                         |
   | description       | string |                         |
  
@@ -58,7 +58,7 @@
     | username | string | not empty, unique       | essential |
     | password | string | 6 to 12 in length       | essential |
     | email    | string | should be a valid email | optional  |
-    | gender   | string | male/female             | optional  |
+    | gender   | string | male/female/unknown     | optional  |
     | birthday | string | yy/mm/dd                | optional  |
     | phone    | string | should be a valid phone | optional  |
   
@@ -160,14 +160,17 @@
   
   - RequestBody:
 
-    | Name     | Type   | Description                       |
-    | -------- | ------ | -----------------------           |
-    | username | string | not empty, unique       `optional`|
-    | nickname | string | not empty               `optional`|
-    | email    | string | should be a valid email `optional`|
-    | gender   | string | male/female             `optional`|
-    | birthday | string | yy/mm/dd                `optional`|
-  
+    | Name        | Type   | Description                       |
+    | --------    | ------ | -----------------------           |
+    | username    | string | not empty, unique       `optional`|
+    | nickname    | string | not empty               `optional`|
+    | email       | string | should be a valid email `optional`|
+    | gender      | string | male/female/unknown     `optional`|
+    | birthday    | string | yy/mm/dd                `optional`|
+    | description | string |                         `optional`|
+    | phone       | string |                         `optional`|
+
+
   - Response:
     - `200`:
     - `400`: 没有该用户

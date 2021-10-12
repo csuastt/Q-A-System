@@ -163,18 +163,18 @@ public class UserController {
     private void checkValidation(@RequestBody UserAttribute registeredUser) {
         if(registeredUser.getUsername() == null || registeredUser.getUsername().length() < 4)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于");
-        if(registeredUser.getNickname() != null && registeredUser.getNickname().length() < 4)
+        if(registeredUser.getNickname() != null && registeredUser.getNickname().length() > 10)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度小于4");
-        if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female")))
+        if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female") && !registeredUser.getGender().equals("unknown")))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
     private void checkValidationModify(@RequestBody UserAttribute registeredUser) {
         if(registeredUser.getNickname() != null && registeredUser.getNickname().length() < 4)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度小于4");
-        if(registeredUser.getUsername() != null && registeredUser.getUsername().length() < 4)
+        if(registeredUser.getUsername() != null && registeredUser.getUsername().length() > 10)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于");
-        if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female")))
+        if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female") && !registeredUser.getGender().equals("unknown")))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
@@ -280,7 +280,7 @@ public class UserController {
      * @param optionalUser   The user to test
      */
     private void checkActivity(Optional<AppUser> optionalUser) {
-        if (optionalUser.isEmpty()|| !optionalUser.get().isEnable())
+        if (optionalUser.isEmpty()|| !optionalUser.get().getEnable())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
     }
 }

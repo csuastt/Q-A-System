@@ -20,7 +20,7 @@ public class UserData {
 	public String description;
 	public String permission;
 	public String phone;
-	public int money;
+	public Integer money;
 
 	/**
 	 * @param appUser Construct from restored user

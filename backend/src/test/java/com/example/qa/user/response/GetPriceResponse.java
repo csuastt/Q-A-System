@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class GetPriceResponse {
 
     @SerializedName("price")
-    private int price;
+    private Integer price;
 }
