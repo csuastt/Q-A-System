@@ -3,14 +3,14 @@ export enum UserType {
     Answerer,
 }
 
-// TODO: backend doesn't support it yet
-// export interface UserBasicInfo {
-//     id: number;
-//     avatarUrl: string;
-//     name: string;
-//     introduction: string;
-//     type: UserType;
-// }
+export interface UserBasicInfo {
+    id: number;
+    username: string;
+    nickname: string;
+    ava_url: string;
+    description: string;
+    type: UserType;
+}
 
 export type UserInfoList = Array<UserInfo>;
 
@@ -21,8 +21,8 @@ export interface UserInfo {
     ava_url: string;
     sign_up_timestamp: number;
     email: string;
-    gender: string;
     phone: string;
+    gender: string;
     birthday: string;
     permission: string;
     money: number;

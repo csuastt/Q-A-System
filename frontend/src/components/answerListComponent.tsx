@@ -1,37 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { UserInfo, UserInfoList } from "../services/definations";
+import { UserBasicInfo } from "../services/definations";
 import userService from "../services/user.service";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import UserCard from "./userCard";
 
 const AnswerList: React.FC<{ type: string }> = (props) => {
-    const [answerList, setAnswerList] = useState<UserInfoList>();
+    const [answerList, setAnswerList] = useState<Array<UserBasicInfo>>();
     useEffect(() => {
-        userService.getAnswerers().then((list) => setAnswerList(list));
+        userService.getUserList(true).then((list) => setAnswerList(list));
     }, []);
 
     const renderAnswerList = () => {
-        const list =
-            answerList == null
-                ? new Array(6).fill({
-                      id: -1,
-                      avatarUrl: "",
-                      name: "",
-                      introduction: "",
-                      type: 1,
-                  })
-                : answerList;
-
-        return (
+        return answerList == null ? (
+            <Grid item lg={4} md={6} xs={12}>
+                <UserCard placeholder={true} />
+            </Grid>
+        ) : (
             <>
-                {list.map((user: UserInfo, index: number) => {
-                    return (
-                        <Grid item key={index} lg={4} md={6} xs={12}>
-                            <UserCard userId={user.id} />
-                        </Grid>
-                    );
-                })}
+                {answerList.map((user: UserBasicInfo, index: number) => (
+                    <Grid item key={index} lg={4} md={6} xs={12}>
+                        <UserCard userInfo={user} />
+                    </Grid>
+                ))}
             </>
         );
     };
