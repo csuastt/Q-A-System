@@ -187,7 +187,7 @@ export default class AccountProfile extends Component<any, ProfileState> {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={this.state.user?.mail}
+                                            value={this.state.user?.email}
                                             variant="outlined"
                                         />
                                     </Grid>
