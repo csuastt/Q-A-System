@@ -8,16 +8,16 @@
 | ---------- | ------------------------------------ | --------------------------------------- |
 | id         | long                                 |                                         |
 | deleted    | boolean                              | 删除标记                                |
-| asker      | AppUser (ID in JSON)                 |                                         |
-| answerer   | AppUser (ID in JSON)                 |                                         |
+| asker      | AppUser (BasicUserData in JSON)      |                                         |
+| answerer   | AppUser (BasicUserData in JSON)      |                                         |
 | state      | OrderState (string in JSON)          |                                         |
 | finished   | boolean                              | 订单结束后设为 true                     |
-| createTime | LocalDateTime (ISO string in JSON)\* | 创建时间                                |
+| createTime | ZonedDateTime (ISO string\* in JSON) | 创建时间                                |
 | endReason  | OrderEndReason (string in JSON)      |                                         |
 | question   | string                               | 问题（最长 100 字符，后续交给系统设置） |
 | price      | int                                  |                                         |
 
-\* 最后带 Z 的为 UTC，不带 Z 的为系统本地时区，需要固定为 UTC+8
+\* 收发均确保为 UTC，即末尾带 `Z`
 
 ### OrderState (enum)
 
