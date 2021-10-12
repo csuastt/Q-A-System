@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +19,8 @@ public class OrderData {
     private long answerer;
     private OrderState state;
     private boolean finished;
-    private LocalDateTime createTime;
+    // @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    private ZonedDateTime createTime;
     private OrderEndReason endReason;
     private String question;
     private int price;

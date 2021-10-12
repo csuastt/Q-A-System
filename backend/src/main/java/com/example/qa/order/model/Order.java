@@ -5,7 +5,7 @@ import com.example.qa.user.model.AppUser;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -25,7 +25,7 @@ public class Order {
     private OrderState state = OrderState.CREATED;
     @Setter(AccessLevel.NONE)
     private boolean finished = false;
-    private LocalDateTime createTime;
+    private ZonedDateTime createTime;
     // TODO: 其他时间参数或者事件记录
     // TODO: 聊天记录条数
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
@@ -45,7 +45,7 @@ public class Order {
         this.asker = asker;
         this.answerer = answerer;
         question = data.getQuestion();
-        createTime = LocalDateTime.now();
+        createTime = ZonedDateTime.now();
         price = answerer.getPrice();
         if (allProperties) {
             setState(data.getState());
