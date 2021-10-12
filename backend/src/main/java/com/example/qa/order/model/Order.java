@@ -1,6 +1,6 @@
 package com.example.qa.order.model;
 
-import com.example.qa.order.exchange.OrderData;
+import com.example.qa.order.exchange.OrderEditData;
 import com.example.qa.user.model.AppUser;
 import lombok.*;
 
@@ -41,7 +41,7 @@ public class Order {
     }
 
     // 传 data 前先用 checkOrderData 检查
-    public Order(OrderData data, @NonNull AppUser asker, @NonNull AppUser answerer, boolean allProperties) {
+    public Order(OrderEditData data, @NonNull AppUser asker, @NonNull AppUser answerer, boolean allProperties) {
         this.asker = asker;
         this.answerer = answerer;
         question = data.getQuestion();
@@ -55,7 +55,7 @@ public class Order {
     }
 
     // 传 data 前先用 checkOrderData 检查，仅限管理员，默认所有修改
-    public void update(OrderData data, @NonNull AppUser asker, @NonNull AppUser answerer) {
+    public void update(OrderEditData data, @NonNull AppUser asker, @NonNull AppUser answerer) {
         this.asker = asker;
         this.answerer = answerer;
         setState(data.getState());

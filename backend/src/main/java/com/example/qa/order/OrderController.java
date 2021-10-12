@@ -2,6 +2,7 @@ package com.example.qa.order;
 
 import com.example.qa.order.exchange.AcceptData;
 import com.example.qa.order.exchange.OrderData;
+import com.example.qa.order.exchange.OrderEditData;
 import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.order.repository.OrderRepository;
@@ -27,7 +28,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderData create(@RequestBody OrderData data) {
+    public OrderData create(@RequestBody OrderEditData data) {
         boolean isAdmin = false;
         AppUser[] users = checkOrderData(data, null);
         Order order = new Order(data, users[0], users[1], isAdmin);
@@ -54,7 +55,7 @@ public class OrderController {
 
     @PutMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void edit(@PathVariable(value = "id") long id, @RequestBody OrderData data) {
+    public void edit(@PathVariable(value = "id") long id, @RequestBody OrderEditData data) {
         Order order = getById(id, false);
         AppUser[] users = checkOrderData(data, order);
         order.update(data, users[0], users[1]);
@@ -110,7 +111,7 @@ public class OrderController {
         return order.get();
     }
 
-    private AppUser[] checkOrderData(OrderData data, Order original) {
+    private AppUser[] checkOrderData(OrderEditData data, Order original) {
         boolean isCreation = original == null;
         if (isCreation && (data.getAsker() == null || data.getAnswerer() == null || data.getQuestion() == null)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
