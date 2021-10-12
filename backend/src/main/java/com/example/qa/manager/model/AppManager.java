@@ -22,7 +22,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity
 public class AppManager implements UserDetails {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String managername;

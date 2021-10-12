@@ -25,7 +25,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "APPUSER")
 public class AppUser implements UserDetails {
-	@Id @GeneratedValue
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@Column
 	private String username;
