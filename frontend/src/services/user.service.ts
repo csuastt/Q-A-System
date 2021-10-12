@@ -23,10 +23,10 @@ class UserService {
         return axios.put(
             `/users/${info.id}`,
             {
-                email: info.mail,
                 nickname: info.nickname,
                 gender: info.gender,
-                birthday: info.birthday,
+                phone: info.phone,
+                description: info.description,
             },
             {
                 headers: authToken(),

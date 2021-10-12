@@ -20,7 +20,7 @@ export interface UserInfo {
     nickname: string;
     ava_url: string;
     sign_up_timestamp: number;
-    mail: string;
+    email: string;
     gender: string;
     phone: string;
     birthday: string;
