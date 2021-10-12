@@ -19,7 +19,7 @@ import { Link as RouterLink, Redirect } from "react-router-dom";
 
 // state interface
 interface ChangePasswordState {
-    username: string;
+    id: number;
     old_password: string;
     password: string;
     ensure_password: string;
@@ -49,10 +49,9 @@ export default class ChangePassword extends Component<
         super(props);
         // handle changing password
         this.handleChanging = this.handleChanging.bind(this);
-        this.handleRequestError = this.handleRequestError.bind(this);
         // state
         this.state = {
-            username: "",
+            id: 0,
             old_password: "",
             password: "",
             ensure_password: "",
@@ -78,7 +77,7 @@ export default class ChangePassword extends Component<
             return;
         }
         this.setState({
-            username: currentUser.username,
+            id: currentUser.id,
         });
     }
 
@@ -111,16 +110,6 @@ export default class ChangePassword extends Component<
         return error === "";
     }
 
-    // handle request error
-    handleRequestError(error: any) {
-        // show the error message
-        this.setState({
-            alert: true,
-            alertType: "error",
-            alertContent: "网络错误",
-        });
-    }
-
     // handle password change submit
     handleChanging(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -142,7 +131,7 @@ export default class ChangePassword extends Component<
         ) {
             // changing request
             AuthService.modifyPassword(
-                this.state.username,
+                this.state.id,
                 this.state.old_password,
                 this.state.password
             ).then(
@@ -160,8 +149,20 @@ export default class ChangePassword extends Component<
                     });
                 },
                 (error) => {
-                    // handle error
-                    this.handleRequestError(error);
+                    // show the error message
+                    if (error.response.status === 403) {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "原密码不正确",
+                        });
+                    } else {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "网络错误",
+                        });
+                    }
                 }
             );
         }
