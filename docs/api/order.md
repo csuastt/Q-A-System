@@ -4,20 +4,18 @@
 
 ### Order
 
-| 属性       | 类型                                 | 说明                                    |
-| ---------- | ------------------------------------ | --------------------------------------- |
-| id         | long                                 |                                         |
-| deleted    | boolean                              | 删除标记                                |
-| asker      | AppUser (ID in JSON)                 |                                         |
-| answerer   | AppUser (ID in JSON)                 |                                         |
-| state      | OrderState (string in JSON)          |                                         |
-| finished   | boolean                              | 订单结束后设为 true                     |
-| createTime | LocalDateTime (ISO string in JSON)\* | 创建时间                                |
-| endReason  | OrderEndReason (string in JSON)      |                                         |
-| question   | string                               | 问题（最长 100 字符，后续交给系统设置） |
-| price      | int                                  |                                         |
-
-\* 最后带 Z 的为 UTC，不带 Z 的为系统本地时区，需要固定为 UTC+8
+| 属性       | 类型           | JSON                            | 说明                                    |
+| ---------- | -------------- | ------------------------------- | --------------------------------------- |
+| id         | long           |                                 |                                         |
+| deleted    | boolean        |                                 | 删除标记                                |
+| asker      | AppUser        | Get: BasicUserData, Set: number |                                         |
+| answerer   | AppUser        | Get: BasicUserData, Set: number |                                         |
+| state      | OrderState     | string                          |                                         |
+| finished   | boolean        |                                 | 订单结束后设为 true                     |
+| createTime | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)  | 创建时间                                |
+| endReason  | OrderEndReason | string                          |                                         |
+| question   | string         |                                 | 问题（最长 100 字符，后续交给系统设置） |
+| price      | int            |                                 |                                         |
 
 ### OrderState (enum)
 

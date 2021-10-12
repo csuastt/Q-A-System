@@ -2,6 +2,7 @@ package com.example.qa.order;
 
 import com.example.qa.order.exchange.AcceptData;
 import com.example.qa.order.exchange.OrderData;
+import com.example.qa.order.exchange.OrderEditData;
 import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.order.repository.OrderRepository;
@@ -27,7 +28,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderData create(@RequestBody OrderData data) {
+    public OrderData create(@RequestBody OrderEditData data) {
         boolean isAdmin = false;
         AppUser[] users = checkOrderData(data, null);
         Order order = new Order(data, users[0], users[1], isAdmin);
@@ -54,7 +55,7 @@ public class OrderController {
 
     @PutMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void edit(@PathVariable(value = "id") long id, @RequestBody OrderData data) {
+    public void edit(@PathVariable(value = "id") long id, @RequestBody OrderEditData data) {
         Order order = getById(id, false);
         AppUser[] users = checkOrderData(data, order);
         order.update(data, users[0], users[1]);
@@ -68,11 +69,7 @@ public class OrderController {
         if (order.getState() != OrderState.PAYED) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
         }
-        if (data.isAccept()) {
-            order.setState(OrderState.REVIEWED);
-        } else {
-            order.setState(OrderState.REJECTED_BY_REVIEWER);
-        }
+        order.setState(data.isAccept() ? OrderState.REVIEWED : OrderState.REJECTED_BY_REVIEWER);
         orderRepository.save(order);
     }
 
@@ -84,11 +81,7 @@ public class OrderController {
         if (order.getState() != OrderState.REVIEWED) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
         }
-        if (data.isAccept()) {
-            order.setState(OrderState.ACCEPTED);
-        } else {
-            order.setState(OrderState.REJECTED_BY_ANSWERER);
-        }
+        order.setState(data.isAccept() ? OrderState.ACCEPTED : OrderState.REJECTED_BY_ANSWERER);
         orderRepository.save(order);
     }
 
@@ -118,16 +111,16 @@ public class OrderController {
         return order.get();
     }
 
-    private AppUser[] checkOrderData(OrderData data, Order original) {
+    private AppUser[] checkOrderData(OrderEditData data, Order original) {
         boolean isCreation = original == null;
-        if (isCreation && (data.getAsker() <= 0 || data.getAnswerer() <= 0 || data.getQuestion() == null)) {
+        if (isCreation && (data.getAsker() == null || data.getAnswerer() == null || data.getQuestion() == null)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        long newAsker = isCreation || data.getAsker() > 0 ? data.getAsker() : original.getAsker().getId();
+        long newAsker = isCreation || data.getAsker() != null ? data.getAsker() : original.getAsker().getId();
         if (!userRepository.existsByIdAndEnable(newAsker, true)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ASKER_INVALID");
         }
-        long newAnswerer = isCreation || data.getAnswerer() > 0 ? data.getAnswerer() : original.getAnswerer().getId();
+        long newAnswerer = isCreation || data.getAnswerer() != null ? data.getAnswerer() : original.getAnswerer().getId();
         if (newAsker == newAnswerer
                 || !userRepository.existsByIdAndEnable(newAnswerer, true)
                 || !userRepository.getById(newAnswerer).getPermit().equals("a")) {
