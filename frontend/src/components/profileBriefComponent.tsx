@@ -58,7 +58,7 @@ export default class AccountBriefProfile extends Component<
                                 variant="h4"
                             >
                                 {this.props.nickname === ""
-                                    ? "默认昵称"
+                                    ? "匿名用户"
                                     : this.props.nickname}
                             </Typography>
                         </Box>

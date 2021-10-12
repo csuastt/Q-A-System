@@ -125,10 +125,26 @@ export default class AccountProfile extends Component<any, ProfileState> {
                 this.now_nickname = temp.nickname;
                 // alert
                 this.handleAlert("success", "修改成功");
+                // get info again
+                if (this.state.user) {
+                    userService.getUserInfo(this.state.user.id).then(
+                        (response) => {
+                            if (response) {
+                                localStorage.setItem(
+                                    "user",
+                                    JSON.stringify(response)
+                                );
+                            }
+                        },
+                        (error) => {
+                            // show the error message
+                            this.handleAlert("error", "网络错误");
+                        }
+                    );
+                }
             },
             (error) => {
                 // show the error message
-                console.log(error);
                 this.handleAlert("error", "网络错误");
             }
         );

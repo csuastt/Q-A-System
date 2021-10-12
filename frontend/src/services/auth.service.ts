@@ -45,9 +45,9 @@ class AuthService {
         return user_raw ? JSON.parse(user_raw) : null;
     }
 
-    modifyPassword(username: string, old_password: string, password: string) {
+    modifyPassword(id: number, old_password: string, password: string) {
         return axios.put(
-            `/users/${username}/password`,
+            `/users/${id}/password`,
             {
                 origin: old_password,
                 password: password,
