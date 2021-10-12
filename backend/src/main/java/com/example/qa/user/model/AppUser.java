@@ -38,12 +38,12 @@ public class AppUser implements UserDetails {
 	private String gender = "unknown";
 	private boolean enable = true;
 	private String permit = "q";
-	private int money = 100;
+	private Integer money = 100;
     // TODO: It may not be the best way to deal with database updates. We will change it after the stabilization of data models
 	@ColumnDefault("0")
-	private int price = 0;
+	private Integer price = 0;
 	private String description = "";
-	public Long sign_up_timestamp;
+	private Long sign_up_timestamp;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Collection<GrantedAuthority> authorities;

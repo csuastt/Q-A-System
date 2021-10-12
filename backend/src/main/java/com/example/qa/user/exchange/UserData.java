@@ -3,6 +3,8 @@ package com.example.qa.user.exchange;
 
 import com.example.qa.user.model.AppUser;
 
+import java.time.ZonedDateTime;
+
 /**
  * User detail when requested
  */
@@ -28,7 +30,7 @@ public class UserData {
 		this.nickname = appUser.getNickname();
 		this.username = appUser.getUsername();
 		this.avatar_url = appUser.getAva_url();
-		this.sign_up_timestamp = appUser.sign_up_timestamp;
+		this.sign_up_timestamp = appUser.getSign_up_timestamp();
 		this.email = appUser.getEmail();
 		this.gender = appUser.getGender();
 		this.birthday = appUser.getBirthday();
