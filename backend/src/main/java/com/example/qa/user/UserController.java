@@ -162,18 +162,18 @@ public class UserController {
 
     private void checkValidation(@RequestBody UserAttribute registeredUser) {
         if(registeredUser.getUsername() == null || registeredUser.getUsername().length() < 4)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于4");
         if(registeredUser.getNickname() != null && registeredUser.getNickname().length() > 10)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度小于4");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度大于10");
         if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female") && !registeredUser.getGender().equals("unknown")))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
     private void checkValidationModify(@RequestBody UserAttribute registeredUser) {
-        if(registeredUser.getNickname() != null && registeredUser.getNickname().length() < 4)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度小于4");
-        if(registeredUser.getUsername() != null && registeredUser.getUsername().length() > 10)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于");
+        if(registeredUser.getNickname() != null && registeredUser.getNickname().length() > 10)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度大于10");
+        if(registeredUser.getUsername() != null && registeredUser.getUsername().length() < 4)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于4");
         if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female") && !registeredUser.getGender().equals("unknown")))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
     }

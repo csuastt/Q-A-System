@@ -1,9 +1,11 @@
 package com.example.qa.user.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -42,8 +44,9 @@ public class GetAllResponse {
         private Integer money;
         @SerializedName("description")
         private String description;
-        @SerializedName("sign_up_timestamp")
-        private Long signUpTimestamp;
+        @SerializedName("createTime")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[XXX][XX]")
+        private String createTime;
         @SerializedName("authorities")
         private List<AuthoritiesDTO> authorities;
         @SerializedName("enabled")

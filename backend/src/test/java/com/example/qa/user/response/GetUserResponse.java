@@ -1,8 +1,11 @@
 package com.example.qa.user.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.ZonedDateTime;
 
 @NoArgsConstructor
 @Data
@@ -16,8 +19,9 @@ public class GetUserResponse {
     private String nickname;
     @SerializedName("avatar_url")
     private String avatarUrl;
-    @SerializedName("sign_up_timestamp")
-    private Long signUpTimestamp;
+    @SerializedName("createTime")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[XXX][XX]")
+    private String createTime;
     @SerializedName("email")
     private String email;
     @SerializedName("gender")

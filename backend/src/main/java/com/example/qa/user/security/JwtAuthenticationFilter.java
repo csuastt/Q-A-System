@@ -4,12 +4,20 @@ import com.example.qa.user.exchange.AuthenticationSuccessResponse;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.model.AppUser;
 import com.example.qa.user.utils.SecurityConstants;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 import com.google.gson.Gson;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +27,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -71,10 +84,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .compact();
 
 		response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
-		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        JavaTimeModule module = new JavaTimeModule();
+        module.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		ObjectMapper mapper = new ObjectMapper().registerModule(module);
 
 		try {
-			String json = ow.writeValueAsString(new AuthenticationSuccessResponse(token, user));
+            var authUser = new AuthenticationSuccessResponse(token, user);
+            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(authUser);
             response.setCharacterEncoding("UTF-8");
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.getWriter().write(json);
