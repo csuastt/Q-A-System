@@ -126,10 +126,9 @@ export default class AccountProfile extends Component<any, ProfileState> {
                 // alert
                 this.handleAlert("success", "修改成功");
                 // get info again
-                if (this.state.user)
-                {
+                if (this.state.user) {
                     userService.getUserInfo(this.state.user.id).then(
-                        (response)=>{
+                        (response) => {
                             if (response) {
                                 localStorage.setItem(
                                     "user",
@@ -143,8 +142,6 @@ export default class AccountProfile extends Component<any, ProfileState> {
                         }
                     );
                 }
-
-
             },
             (error) => {
                 // show the error message
