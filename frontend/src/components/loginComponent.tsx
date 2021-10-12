@@ -127,7 +127,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                 },
                 (error) => {
                     // show the error message
-                    if (error.response.status === 401) {
+                    if (error.response.status === 403) {
                         this.setState({
                             alert: true,
                             alertType: "error",
