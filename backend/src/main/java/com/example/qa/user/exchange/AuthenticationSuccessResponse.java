@@ -2,10 +2,16 @@ package com.example.qa.user.exchange;
 
 
 import com.example.qa.user.model.AppUser;
+import lombok.Data;
+import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *  Response Body when successfully authenticated
  */
+@Data
+@ToString
 public class AuthenticationSuccessResponse {
 	public String token;
 	public UserData user;

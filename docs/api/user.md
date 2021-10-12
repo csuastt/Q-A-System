@@ -7,20 +7,20 @@
  User 用户:
   - `username` unique  
 
-  | Name              | Type   | Description             |
-  | --------          | ------ | ----------------------- |
-  | id                | Long   | unique, auto generated  | 
-  | username          | string | not empty, unique       |
-  | nickname          | string | empty, or max_len < 10  |
-  | ava_url           | string |                         |
-  | sign_up_timestamp | Long   | the time signing up     |
-  | email             | string | should be a valid email |
-  | phone             | string | should be a valid phone |
-  | gender            | string | male/female/unknown     |
-  | birthday          | string | yy/mm/dd                |
-  | permission        | string | q/a                     |
-  | money             | int    | `initial` 100           |
-  | description       | string |                         |
+  | Name         | Type           | Description             |
+  | --------     | ------         | ----------------------- |
+  | id           | Long           | unique, auto generated  | 
+  | username     | string         | not empty, unique       |
+  | nickname     | string         | empty, or max_len < 10  |
+  | ava_url      | string         |                         |
+  | createTime   | ZonedDateTime  | the time signing up     |
+  | email        | string         | should be a valid email |
+  | phone        | string         | should be a valid phone |
+  | gender       | string         | male/female/unknown     |
+  | birthday     | string         | yy/mm/dd                |
+  | permission   | string         | q/a                     |
+  | money        | int            | `initial` 100           |
+  | description  | string         |                         |
 
  Basic_User :
 
@@ -59,7 +59,6 @@
     | password | string | 6 to 12 in length       | essential |
     | email    | string | should be a valid email | optional  |
     | gender   | string | male/female/unknown     | optional  |
-    | birthday | string | yy/mm/dd                | optional  |
     | phone    | string | should be a valid phone | optional  |
   
   - Response:

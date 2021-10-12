@@ -2,21 +2,26 @@ package com.example.qa.user.exchange;
 
 
 import com.example.qa.user.model.AppUser;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 /**
  * User detail when requested
  */
+@Data
 public class UserData {
 	public Long id;
 	public String username;
 	public String nickname;
 	public String avatar_url;
-	public Long sign_up_timestamp;
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+hh")
+	public ZonedDateTime createTime;
 	public String email;
 	public String gender;
-	public String birthday;
+	public LocalDate birthday;
 	public String description;
 	public String permission;
 	public String phone;
@@ -30,7 +35,7 @@ public class UserData {
 		this.nickname = appUser.getNickname();
 		this.username = appUser.getUsername();
 		this.avatar_url = appUser.getAva_url();
-		this.sign_up_timestamp = appUser.getSign_up_timestamp();
+		this.createTime = appUser.createTime;
 		this.email = appUser.getEmail();
 		this.gender = appUser.getGender();
 		this.birthday = appUser.getBirthday();

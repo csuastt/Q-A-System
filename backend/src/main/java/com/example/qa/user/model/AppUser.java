@@ -1,6 +1,7 @@
 package com.example.qa.user.model;
 
 import com.example.qa.user.exchange.UserAttribute;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -34,7 +36,7 @@ public class AppUser implements UserDetails {
 	private String password;
 	private String email = "";
 	private String phone = "";
-	private String birthday = "2000-01-01";
+	private LocalDate birthday = LocalDate.parse("2000-01-01");
 	private String gender = "unknown";
 	private Boolean enable = true;
 	private String permit = "q";
@@ -43,7 +45,10 @@ public class AppUser implements UserDetails {
 	@ColumnDefault("0")
 	private Integer price = 0;
 	private String description = "";
-	private Long sign_up_timestamp;
+//	@JsonFormat(shape=JsonFormat.Shape.STRING)
+//	@JsonFormat(pattern = "yyyy-MM-dd'T'HH：mm：ss.SSSZ")
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[XXX][XX]")
+	public ZonedDateTime createTime;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Collection<GrantedAuthority> authorities;
@@ -61,7 +66,7 @@ public class AppUser implements UserDetails {
 		this.username = username;
 		this.password = password;
 		this.authorities = authorities;
-		this.sign_up_timestamp = Instant.now().getEpochSecond();
+		this.createTime = ZonedDateTime.now();
 	}
 
 	/**
@@ -81,7 +86,7 @@ public class AppUser implements UserDetails {
 		if (register.password != null)
 			this.password = register.password;
 		if (register.birthday != null)
-			this.birthday = register.birthday;
+			this.birthday = LocalDate.parse(register.birthday);
 		if (register.gender != null)
 			this.gender = register.gender;
 		if (register.email != null)
@@ -92,7 +97,7 @@ public class AppUser implements UserDetails {
 			this.phone = register.phone;
 		if(register.description != null)
 			this.description = register.description;
-		this.sign_up_timestamp = Instant.now().getEpochSecond();
+		this.createTime = ZonedDateTime.now();
 	}
 
 	/**
@@ -103,7 +108,7 @@ public class AppUser implements UserDetails {
 		if (newInfo.username != null)
 			this.username = newInfo.username;
 		if (newInfo.birthday != null)
-			this.birthday = newInfo.birthday;
+			this.birthday = LocalDate.parse(newInfo.birthday);
 		if (newInfo.gender != null)
 			this.gender = newInfo.gender;
 		if (newInfo.email != null)

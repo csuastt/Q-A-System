@@ -2,6 +2,8 @@ package com.example.qa.user.exchange;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 /**
  *  Request Body visiting /api/users/{id}
  *  METHOD:PUT

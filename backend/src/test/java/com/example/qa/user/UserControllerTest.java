@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -183,19 +185,18 @@ class UserControllerTest {
         assertNotNull(response.getId(),"不能为空");
         assertNotNull(response.getEmail(),"不能为空");
         assertNotNull(response.getNickname(),"不能为空");
-        assertNotNull(response.getSignUpTimestamp(),"不能为空");
+        assertNotNull(response.getCreateTime(),"不能为空");
         if(repository.findById(1L).isEmpty()){
             throw new Exception("用户不存在");
         }
         var user = repository.findById(1L).get();
         assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
         assertEquals(response.getAvatarUrl(), user.getAva_url(),"头像路径不正确");
-        assertEquals(response.getBirthday(), user.getBirthday(),"生日不正确");
+        assertEquals(LocalDate.parse(response.getBirthday()), user.getBirthday(),"生日不正确");
         assertEquals(response.getGender(), user.getGender(),"性别不正确");
         assertEquals(response.getId(), user.getId() ,"id不正确");
         assertEquals(response.getEmail(), user.getEmail(), "邮件不正确");
         assertEquals(response.getNickname(), user.getNickname(), "昵称不正确");
-        assertEquals(response.getSignUpTimestamp(), user.getSign_up_timestamp(), "时间戳不正确");
 
         long id = repository.count() + 1;
 
@@ -327,7 +328,7 @@ class UserControllerTest {
 
         long expected = repository.count() + 1;
 
-        UserAttribute register = new UserAttribute();
+       RegisterRequest register = new RegisterRequest();
         register.setUsername("eeee");
         register.setPassword("eeee");
 
@@ -353,7 +354,7 @@ class UserControllerTest {
         UserAttribute modify = new UserAttribute();
         modify.setUsername("eeeee");
         modify.setPassword("eeeee");
-        modify.setBirthday("2040-10-3");
+        modify.setBirthday("2000-10-03");
         modify.setDescription("A student");
         modify.setEmail("@mails.tsinghua.edu.cn");
         modify.setGender("male");
@@ -382,7 +383,7 @@ class UserControllerTest {
         var user = repository.findById(1L).get();
 
         assertEquals(user.getUsername(), "eeeee");
-        assertEquals(user.getBirthday(), "2040-10-3");
+        assertEquals(user.getBirthday(), LocalDate.parse("2000-10-03"));
         assertEquals(user.getEmail(), "@mails.tsinghua.edu.cn");
         assertEquals(user.getDescription(), "A student");
         assertEquals(user.getGender(),"male");
