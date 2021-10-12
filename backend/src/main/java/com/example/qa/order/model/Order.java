@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @Table(name = "APP_ORDER")
 public class Order {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private boolean deleted = false;
     @ManyToOne
