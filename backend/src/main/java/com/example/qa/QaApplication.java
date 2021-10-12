@@ -18,9 +18,11 @@ public class QaApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
+                        .allowedOrigins("https://prj2a-repo-hardeng.app.secoder.net/",
+                                "https://prj2a-repo-dev-hardeng.app.secoder.net/",
+                                "http://localhost:3000/",
+                                "http://localhost:8080")
                         .allowedMethods("PUT", "GET", "POST", "DELETE", "HEAD")
-                        .allowedHeaders("header1", "header2")
                         .allowCredentials(true);
             }
         };
