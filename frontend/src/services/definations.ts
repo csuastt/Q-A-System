@@ -12,7 +12,7 @@ export interface UserBasicInfo {
     type: UserType;
 }
 
-export type UserInfoList = Array<UserInfo>;
+export type UserInfoList = Array<UserBasicInfo>;
 
 export interface UserInfo {
     id: number;
@@ -44,13 +44,12 @@ export enum OrderState {
 
 export interface OrderInfo {
     id: number;
-    deleted: boolean;
     state: OrderState;
-    asker: number;
-    answerer: number;
-    stem: string;
+    asker: UserBasicInfo;
+    answerer: UserBasicInfo;
     question: string;
     createTime: string;
+    endReason: string;
     price: number;
 }
 

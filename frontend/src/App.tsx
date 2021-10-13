@@ -25,8 +25,9 @@ export default function App() {
     };
 
     const routes = [
-        ["/answerers", <AnswererList type="answerers" />],
-        ["/orders", <QuestionList userId={1} />],
+        ["/answerers/select", <AnswererList selectModel />],
+        ["/answerers", <AnswererList />],
+        ["/orders", <QuestionList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile />],

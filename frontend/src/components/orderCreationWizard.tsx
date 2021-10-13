@@ -131,7 +131,7 @@ const OrderCreationWizard: React.FC = (props) => {
                                 variant="outlined"
                                 color="error"
                                 component={RouterLink}
-                                to={`/question/select-answerer`}
+                                to={`/answerers/select`}
                                 size={"large"}
                             >
                                 重新选择
@@ -157,7 +157,7 @@ const OrderCreationWizard: React.FC = (props) => {
                                 variant="outlined"
                                 color="error"
                                 component={RouterLink}
-                                to={`/question/select-answerer`}
+                                to={`/answerers/select`}
                                 size={"medium"}
                             >
                                 重新选择
@@ -173,7 +173,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     variant="outlined"
                     color="warning"
                     component={RouterLink}
-                    to={`/question/select-answerer`}
+                    to={`/answerers/select`}
                     size={matches ? "large" : "medium"}
                 >
                     浏览列表

@@ -17,7 +17,7 @@ class UserService {
                 },
                 headers: authToken(),
             })
-            .then((response) => response.data);
+            .then((response) => response.data['users']);
     }
 
     getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
