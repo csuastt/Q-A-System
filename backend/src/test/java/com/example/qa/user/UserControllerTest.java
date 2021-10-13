@@ -215,8 +215,7 @@ class UserControllerTest {
     @Test
     void getBasicUser() throws Exception {
         //test for success get user detail
-        MvcResult getBasicUserResult = this.mockMvc.perform(get("/api/users/1")
-                        .header("Authorization", "Bearer " + token))
+        MvcResult getBasicUserResult = this.mockMvc.perform(get("/api/users/1/basic"))
                 .andExpect(status().isOk())
                 .andReturn();
         GetBasicUserResponse response = new Gson().fromJson(getBasicUserResult.getResponse().getContentAsString(), GetBasicUserResponse.class);
@@ -236,14 +235,9 @@ class UserControllerTest {
         long id = repository.count() + 1;
 
         //test for not existed user
-        this.mockMvc.perform(get("/api/users/" + id)
+        this.mockMvc.perform(get("/api/users/" + id + "/basic")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isBadRequest())
-                .andReturn();
-
-        //test for not authenticated
-        this.mockMvc.perform(get("/api/users/1"))
-                .andExpect(status().isForbidden())
                 .andReturn();
     }
 
