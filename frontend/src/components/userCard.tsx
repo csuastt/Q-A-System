@@ -106,13 +106,15 @@ const UserCard: React.FC<{
                         )}
                     </Box>
                 </CardContent>
-                {userInfo.type === UserType.Answerer ? (
+                {userInfo.type === UserType.Answerer && props.nextUrl ? (
                     <CardActions style={{ justifyContent: "center" }}>
                         <Box mb={1.5} mt={-2}>
                             <Button
                                 color="primary"
                                 size="large"
                                 variant="contained"
+                                component={RouterLink}
+                                to={props.nextUrl}
                             >
                                 向TA提问
                             </Button>

@@ -17,7 +17,7 @@ class UserService {
                 },
                 headers: authToken(),
             })
-            .then((response) => response.data['users']);
+            .then((response) => response.data["users"]);
     }
 
     getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
@@ -32,7 +32,7 @@ class UserService {
 
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
         return axios
-            .get(`/users/${id}/basic`)
+            .get(`/users/${id}/basic`, { headers: authToken() })
             .then((response) => response.data);
     }
 
