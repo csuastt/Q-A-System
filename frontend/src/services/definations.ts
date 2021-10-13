@@ -3,16 +3,16 @@ export enum UserType {
     Answerer,
 }
 
-// TODO: backend doesn't support it yet
-// export interface UserBasicInfo {
-//     id: number;
-//     avatarUrl: string;
-//     name: string;
-//     introduction: string;
-//     type: UserType;
-// }
+export interface UserBasicInfo {
+    id: number;
+    username: string;
+    nickname: string;
+    ava_url: string;
+    description: string;
+    type: UserType;
+}
 
-export type UserInfoList = Array<UserInfo>;
+export type UserInfoList = Array<UserBasicInfo>;
 
 export interface UserInfo {
     id: number;
@@ -21,8 +21,8 @@ export interface UserInfo {
     ava_url: string;
     sign_up_timestamp: number;
     email: string;
-    gender: string;
     phone: string;
+    gender: string;
     birthday: string;
     permission: string;
     money: number;
@@ -44,13 +44,12 @@ export enum OrderState {
 
 export interface OrderInfo {
     id: number;
-    deleted: boolean;
     state: OrderState;
-    asker: number;
-    answerer: number;
-    stem: string;
+    asker: UserBasicInfo;
+    answerer: UserBasicInfo;
     question: string;
     createTime: string;
+    endReason: string;
     price: number;
 }
 

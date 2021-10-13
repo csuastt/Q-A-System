@@ -1,49 +1,56 @@
 import React, { useEffect, useState } from "react";
-import { UserInfo, UserInfoList } from "../services/definations";
+import { UserBasicInfo, UserType } from "../services/definations";
 import userService from "../services/user.service";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import UserCard from "./userCard";
+import Typography from "@mui/material/Typography";
 
-const AnswerList: React.FC<{ type: string }> = (props) => {
-    const [answerList, setAnswerList] = useState<UserInfoList>();
+const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
+    const [answerList, setAnswerList] = useState<Array<UserBasicInfo>>();
     useEffect(() => {
-        userService.getAnswerers().then((list) => setAnswerList(list));
+        userService.getUserList(true).then((list) => {
+            list.forEach((user) => (user.type = UserType.Answerer));
+            setAnswerList(list);
+        });
     }, []);
 
-    const renderAnswerList = () => {
-        const list =
-            answerList == null
-                ? new Array(6).fill({
-                      id: -1,
-                      avatarUrl: "",
-                      name: "",
-                      introduction: "",
-                      type: 1,
-                  })
-                : answerList;
-
+    if (answerList == null) {
         return (
-            <>
-                {list.map((user: UserInfo, index: number) => {
-                    return (
-                        <Grid item key={index} lg={4} md={6} xs={12}>
-                            <UserCard userId={user.id} />
-                        </Grid>
-                    );
-                })}
-            </>
+            <Box sx={{ pt: 3 }} mt={1}>
+                <Grid container spacing={3}>
+                    <Grid item lg={4} md={6} xs={12}>
+                        <UserCard placeholder={true} />
+                    </Grid>
+                </Grid>
+            </Box>
         );
-    };
-
-    return (
-        <Box sx={{ pt: 3 }} mt={1}>
-            <Grid container spacing={3}>
-                {" "}
-                {renderAnswerList()}
-            </Grid>
-        </Box>
-    );
+    } else if (answerList.length === 0) {
+        return (
+            <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
+                没有可用的回答者
+            </Typography>
+        );
+    } else {
+        return (
+            <Box sx={{ pt: 3 }} mt={1}>
+                <Grid container spacing={3}>
+                    {answerList.map((user: UserBasicInfo, index: number) => (
+                        <Grid item key={index} lg={4} md={6} xs={12}>
+                            <UserCard
+                                userInfo={user}
+                                nextUrl={
+                                    props.selectModel
+                                        ? `/order/create/${user.id}`
+                                        : undefined
+                                }
+                            />
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
+        );
+    }
 };
 
-export default AnswerList;
+export default AnswererList;

@@ -11,19 +11,32 @@ import UserCard from "./userCard";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useParams } from "react-router-dom";
 import questionService from "../services/order.service";
 import authService from "../services/auth.service";
-import { CreationResult, CreationResultType } from "../services/definations";
+import { CreationResult } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 
-const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
+function processInt(str?: string): number {
+    if (str) {
+        const x = parseInt(str);
+        if (!isNaN(x)) {
+            return x;
+        }
+    }
+    return -1;
+}
+
+const OrderCreationWizard: React.FC = (props) => {
     const [activeStep, setActiveStep] = useState(0);
     const [questionText, setQuestionText] = useState<string>("");
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
+
+    const routerParam = useParams<{ answerer?: string }>();
+    const answerer = processInt(routerParam.answerer);
 
     const nextStep = () => {
         setActiveStep(activeStep + 1);
@@ -61,7 +74,7 @@ const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
         questionService
             .create_question(
                 authService.getCurrentUser().id,
-                props.answererId!,
+                answerer,
                 questionText
             )
             .then((res) => setResult(res));
@@ -103,9 +116,9 @@ const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
 
     // render 1st step
     const renderFirstStep = () => {
-        return props.answererId ? (
+        return answerer >= 0 ? (
             <>
-                <UserCard userId={props.answererId} />
+                <UserCard userId={answerer} />
                 <Stack
                     spacing={matches ? 4 : 2}
                     direction="row"
@@ -118,7 +131,7 @@ const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
                                 variant="outlined"
                                 color="error"
                                 component={RouterLink}
-                                to={`/question/select-answerer`}
+                                to={`/answerers/select`}
                                 size={"large"}
                             >
                                 重新选择
@@ -144,7 +157,7 @@ const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
                                 variant="outlined"
                                 color="error"
                                 component={RouterLink}
-                                to={`/question/select-answerer`}
+                                to={`/answerers/select`}
                                 size={"medium"}
                             >
                                 重新选择
@@ -160,7 +173,7 @@ const OrderCreationWizard: React.FC<{ answererId?: number }> = (props) => {
                     variant="outlined"
                     color="warning"
                     component={RouterLink}
-                    to={`/question/select-answerer`}
+                    to={`/answerers/select`}
                     size={matches ? "large" : "medium"}
                 >
                     浏览列表

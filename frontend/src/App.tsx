@@ -7,7 +7,7 @@ import OrderCreationWizard from "./components/orderCreationWizard";
 import AccountProfile from "./components/profileComponent";
 import Login from "./components/loginComponent";
 import Register from "./components/registerComponent";
-import AnswerList from "./components/answerListComponent";
+import AnswererList from "./components/answerListComponent";
 import Logout from "./components/logoutComponent";
 import { useEffect, useState } from "react";
 import authService from "./services/auth.service";
@@ -25,9 +25,11 @@ export default function App() {
     };
 
     const routes = [
-        ["/answerers", <AnswerList type="answerers" />],
-        ["/orders", <QuestionList userId={1} />],
-        ["/order/create", <OrderCreationWizard answererId={23} />],
+        ["/answerers/select", <AnswererList selectModel />],
+        ["/answerers", <AnswererList />],
+        ["/orders", <QuestionList />],
+        ["/order/create/:answerer", <OrderCreationWizard />],
+        ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile />],
         ["/login", <Login login={login} />],
         ["/logout", <Logout logout={logout} />],
