@@ -45,6 +45,8 @@ class OrderControllerTest {
     private static final String password = "password";
     private static final String question = "TestQuestion";
     private final ObjectMapper mapper = new ObjectMapper();
+    private static long askerId;
+    private static long answererId;
 
     @BeforeAll
     static void addUsers(@Autowired UserRepository userRepository, @Autowired PasswordEncoder passwordEncoder) {
@@ -53,9 +55,11 @@ class OrderControllerTest {
         AppUser asker = new AppUser("testAsker", passwordEncoder.encode(password), authorities);
         asker.setPermit("q");
         userRepository.save(asker);
+        askerId = asker.getId();
         AppUser answerer = new AppUser("testAnswerer", passwordEncoder.encode(password), authorities);
         answerer.setPermit("a");
         userRepository.save(answerer);
+        answererId = answerer.getId();
     }
 
     @BeforeEach
@@ -78,8 +82,8 @@ class OrderControllerTest {
     @Test
     long createOrder() throws Exception {
         OrderEditData request = new OrderEditData();
-        request.setAsker(1L);
-        request.setAnswerer(2L);
+        request.setAsker(askerId);
+        request.setAnswerer(answererId);
         request.setQuestion(question);
         MvcResult createResult = mockMvc
                 .perform(post("/api/orders")
@@ -89,8 +93,8 @@ class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         OrderData result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
-        assertEquals(result.getAsker().id, 1L);
-        assertEquals(result.getAnswerer().id, 2L);
+        assertEquals(result.getAsker().id, askerId);
+        assertEquals(result.getAnswerer().id, answererId);
         assertEquals(result.getQuestion(), question);
         assertEquals(result.getState(), OrderState.CREATED);
         return result.getId();
@@ -100,7 +104,7 @@ class OrderControllerTest {
     void createOrderWithInvalidAsker() throws Exception {
         OrderEditData request = new OrderEditData();
         request.setAsker(99L);
-        request.setAnswerer(2L);
+        request.setAnswerer(answererId);
         request.setQuestion(question);
         MvcResult createResult = mockMvc
                 .perform(post("/api/orders")
@@ -114,8 +118,8 @@ class OrderControllerTest {
     @Test
     void createOrderWithInvalidAnswerer() throws Exception {
         OrderEditData request = new OrderEditData();
-        request.setAsker(1L);
-        request.setAnswerer(1L);
+        request.setAsker(askerId);
+        request.setAnswerer(askerId);
         request.setQuestion(question);
         MvcResult createResult = mockMvc
                 .perform(post("/api/orders")
@@ -129,8 +133,8 @@ class OrderControllerTest {
     @Test
     void createOrderWithInvalidQuestion() throws Exception {
         OrderEditData request = new OrderEditData();
-        request.setAsker(1L);
-        request.setAnswerer(2L);
+        request.setAsker(askerId);
+        request.setAnswerer(answererId);
         request.setQuestion("q");
         MvcResult createResult = mockMvc
                 .perform(post("/api/orders")
