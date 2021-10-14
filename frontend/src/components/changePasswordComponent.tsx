@@ -15,11 +15,11 @@ import Alert from "@mui/material/Alert";
 import { validate_required, validate_length } from "./loginComponent";
 import { validate_second_password } from "./registerComponent";
 // redirector
-import { Redirect } from "react-router-dom";
+import { Link as RouterLink, Redirect } from "react-router-dom";
 
 // state interface
 interface ChangePasswordState {
-    username: string;
+    id: number;
     old_password: string;
     password: string;
     ensure_password: string;
@@ -32,6 +32,15 @@ interface ChangePasswordState {
     redirect: null | string;
 }
 
+// password validator
+const validate_origin_password = (value: any, origin: string) => {
+    if (value === origin) {
+        return "新密码不能和旧密码相同";
+    } else {
+        return "";
+    }
+};
+
 export default class ChangePassword extends Component<
     any,
     ChangePasswordState
@@ -40,10 +49,9 @@ export default class ChangePassword extends Component<
         super(props);
         // handle changing password
         this.handleChanging = this.handleChanging.bind(this);
-        this.handleRequestError = this.handleRequestError.bind(this);
         // state
         this.state = {
-            username: "",
+            id: 0,
             old_password: "",
             password: "",
             ensure_password: "",
@@ -69,7 +77,7 @@ export default class ChangePassword extends Component<
             return;
         }
         this.setState({
-            username: currentUser.user.username,
+            id: currentUser.id,
         });
     }
 
@@ -81,6 +89,10 @@ export default class ChangePassword extends Component<
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
+        // password should not equal to the origin one
+        if (error === "" && type === "password") {
+            error = validate_origin_password(value, this.state.old_password);
+        }
         // then validate other requirements
         if (error === "" && type === "ensure_password") {
             // @ts-ignore
@@ -96,23 +108,6 @@ export default class ChangePassword extends Component<
         nextState["error_msg_" + type] = error;
         this.setState(nextState);
         return error === "";
-    }
-
-    // handle request error
-    handleRequestError(error: any) {
-        // retrieve error
-        const resMessage =
-            (error.response &&
-                error.response.data &&
-                error.response.data.message) ||
-            error.message ||
-            error.toString();
-        // show the error message
-        this.setState({
-            alert: true,
-            alertType: "error",
-            alertContent: resMessage,
-        });
     }
 
     // handle password change submit
@@ -136,7 +131,7 @@ export default class ChangePassword extends Component<
         ) {
             // changing request
             AuthService.modifyPassword(
-                this.state.username,
+                this.state.id,
                 this.state.old_password,
                 this.state.password
             ).then(
@@ -146,24 +141,28 @@ export default class ChangePassword extends Component<
                     this.setState({
                         alert: true,
                         alertType: "success",
-                        alertContent: "Modify success!",
+                        alertContent: "修改成功",
                     });
                     // then logout
-                    AuthService.logout().then(
-                        () => {
-                            this.setState({
-                                redirect: "/",
-                            });
-                        },
-                        (error) => {
-                            // handle error
-                            this.handleRequestError(error);
-                        }
-                    );
+                    this.setState({
+                        redirect: "/logout",
+                    });
                 },
                 (error) => {
-                    // handle error
-                    this.handleRequestError(error);
+                    // show the error message
+                    if (error.response.status === 403) {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "原密码不正确",
+                        });
+                    } else {
+                        this.setState({
+                            alert: true,
+                            alertType: "error",
+                            alertContent: "网络错误",
+                        });
+                    }
                 }
             );
         }
@@ -179,7 +178,8 @@ export default class ChangePassword extends Component<
                 <CssBaseline />
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: 3,
+                        marginBottom: 4,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -267,9 +267,8 @@ export default class ChangePassword extends Component<
                             fullWidth
                             variant="contained"
                             sx={{ mt: 1, mb: 2 }}
-                            onClick={() => {
-                                window.location.reload();
-                            }}
+                            component={RouterLink}
+                            to="/profile"
                         >
                             取消修改
                         </Button>

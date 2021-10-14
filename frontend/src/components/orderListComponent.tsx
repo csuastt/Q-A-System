@@ -2,38 +2,32 @@ import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Redirect } from "react-router-dom";
-import _ from "lodash";
-import { OrderInfo, OrderList, UserInfo } from "../services/definations";
+import { OrderInfo, OrderList } from "../services/definations";
 import questionService from "../services/order.service";
-import userService from "../services/user.service";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import OrderStateChip from "./orderStateChip";
 import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
+import authService from "../services/auth.service";
 
-const QuestionList: React.FC<{ userId: number }> = (props) => {
+const QuestionList: React.FC<{ userId?: number }> = (props) => {
     const [questionList, setQuestionList] = useState<OrderList>();
-    const [userMap, setUserMap] = useState<Map<number, UserInfo>>();
-
-    // const prevented = authService.getCurrentUser()?.id !== props.userId;
-    const prevented = false;
+    const [shouldLogin, setShouldLogin] = useState<boolean>(false);
 
     useEffect(() => {
-        if (prevented) return;
-        questionService
-            .getOrdersOfUser(props.userId)
-            .then((response) => {
-                setQuestionList(response);
-                return userService.getUsersByIdList(
-                    _.uniq(response.map((question) => question.answerer))
-                );
-            })
-            .then((users) => {
-                setUserMap(new Map(users.map((user) => [user.id, user])));
-            });
+        let userId = props.userId;
+        if (userId === undefined) {
+            userId = authService.getCurrentUser()?.id;
+        }
+        if (userId === undefined) {
+            setShouldLogin(true);
+            return;
+        }
+        questionService.getOrdersOfUser(props.userId!).then((response) => {
+            setQuestionList(response);
+        });
     }, []);
 
     const renderCardPlaceholder = () => (
@@ -63,22 +57,9 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
         </>
     );
 
-    const AvatarWrapper: React.FC<{ id: number }> = (props) => {
-        const user = userMap?.get(props.id);
-        return user === undefined ? (
-            <Skeleton variant="circular" height={30} width={30} />
-        ) : (
-            <Avatar
-                alt={user.username}
-                src={user.ava_url}
-                sx={{ width: 30, height: 30 }}
-            />
-        );
-    };
-
     const renderQuestionList = () => (
         <>
-            {questionList!.map((question: OrderInfo, index: number) => (
+            {questionList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
                     <CardContent>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -88,29 +69,26 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
                                     noWrap
                                     style={{ fontWeight: 600 }}
                                 >
-                                    {question.stem}
+                                    {order.question}
                                 </Typography>
                                 <Box sx={{ flexGrow: 1 }} />
-                                <OrderStateChip state={question.state} />
+                                {/*<OrderStateChip state={order.state} />*/}
                             </Box>
-                            <Typography
-                                variant="body1"
-                                sx={{ wordBreak: "break-all" }}
-                                gutterBottom
-                            >
-                                {question.question}
-                            </Typography>
                             <Box
                                 sx={{ display: "flex", flexDirection: "row" }}
                                 mt={1}
                             >
-                                <AvatarWrapper id={question.answerer} />
-                                <Typography variant="h6" sx={{ ml: 1 }}>
-                                    User {question.asker}
+                                <Avatar
+                                    src={order.answerer.ava_url}
+                                    alt={order.answerer.username}
+                                    sx={{ width: 30, height: 30 }}
+                                />
+                                <Typography variant="subtitle1" sx={{ ml: 1 }}>
+                                    {order.answerer.username}
                                 </Typography>
                             </Box>
                             <Typography variant="caption" mb={-1} mt={1}>
-                                创建时间：{formatTimestamp(question.createTime)}
+                                创建时间：{formatTimestamp(order.createTime)}
                             </Typography>
                         </Box>
                     </CardContent>
@@ -119,7 +97,7 @@ const QuestionList: React.FC<{ userId: number }> = (props) => {
         </>
     );
 
-    return prevented ? (
+    return shouldLogin ? (
         <Redirect to={"/login"} />
     ) : (
         <Stack spacing={2} mt={4}>

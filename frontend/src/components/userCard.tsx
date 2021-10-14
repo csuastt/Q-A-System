@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
-import { UserInfo, UserType } from "../services/definations";
+import { UserBasicInfo, UserType } from "../services/definations";
 import userService from "../services/user.service";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
@@ -14,12 +14,25 @@ import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import { Grid } from "@mui/material";
 
-const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
-    const [userInfo, setUserInfo] = useState<UserInfo>();
+const UserCard: React.FC<{
+    userInfo?: UserBasicInfo;
+    userId?: number;
+    placeholder?: boolean;
+    nextUrl?: string;
+}> = (props) => {
+    const [userInfo, setUserInfo] = useState<UserBasicInfo>();
 
     useEffect(() => {
-        userService.getUserInfo(props.userId).then((user) => setUserInfo(user));
-    }, [props.userId]);
+        if (props.placeholder) {
+            return;
+        } else if (props.userId) {
+            userService
+                .getUserBasicInfo(props.userId)
+                .then((user) => setUserInfo(user));
+        } else if (props.userInfo) {
+            setUserInfo(props.userInfo);
+        }
+    }, [props.placeholder, props.userId, props.userInfo]);
 
     const CardActionWrapper: React.FC<{ nextUrl?: string }> = (props) => {
         return props.nextUrl ? (
@@ -93,13 +106,15 @@ const UserCard: React.FC<{ userId: number; nextUrl?: string }> = (props) => {
                         )}
                     </Box>
                 </CardContent>
-                {userInfo.type === UserType.Answerer ? (
+                {userInfo.type === UserType.Answerer && props.nextUrl ? (
                     <CardActions style={{ justifyContent: "center" }}>
                         <Box mb={1.5} mt={-2}>
                             <Button
                                 color="primary"
                                 size="large"
                                 variant="contained"
+                                component={RouterLink}
+                                to={props.nextUrl}
                             >
                                 向TA提问
                             </Button>

@@ -1,12 +1,23 @@
 import axios from "axios";
-import { UserInfo, UserInfoList } from "./definations";
+import { UserBasicInfo, UserInfo, UserInfoList } from "./definations";
 import authToken from "./auth-token";
 
 class UserService {
-    getAnswerers(): Promise<UserInfoList> {
+    getUserList(
+        answerer: boolean,
+        page: number = 1,
+        limit: number = 20
+    ): Promise<Array<UserBasicInfo>> {
         return axios
-            .get("/users", { params: { answerer: true }, headers: authToken() })
-            .then((response) => response.data.users);
+            .get("/users", {
+                params: {
+                    answerer: answerer,
+                    page: page,
+                    limit: limit,
+                },
+                headers: authToken(),
+            })
+            .then((response) => response.data["users"]);
     }
 
     getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
@@ -19,14 +30,20 @@ class UserService {
             .then((response) => response.data);
     }
 
+    getUserBasicInfo(id: number): Promise<UserBasicInfo> {
+        return axios
+            .get(`/users/${id}/basic`, { headers: authToken() })
+            .then((response) => response.data);
+    }
+
     modifyUserInfo(info: UserInfo) {
         return axios.put(
             `/users/${info.id}`,
             {
-                username: info.username,
-                email: info.email,
+                nickname: info.nickname,
                 gender: info.gender,
-                birthday: info.birthday,
+                phone: info.phone,
+                description: info.description,
             },
             {
                 headers: authToken(),
