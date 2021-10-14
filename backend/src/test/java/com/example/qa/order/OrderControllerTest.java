@@ -28,6 +28,7 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -73,7 +74,7 @@ class OrderControllerTest {
     }
 
     @Test
-    void create() throws Exception {
+    long create() throws Exception {
         OrderEditData request = new OrderEditData();
         request.setAsker(1L);
         request.setAnswerer(2L);
@@ -90,6 +91,7 @@ class OrderControllerTest {
         assertEquals(result.getAnswerer().id, 2L);
         assertEquals(result.getQuestion(), "TestQuestion");
         assertEquals(result.getState(), OrderState.CREATED);
+        return result.getId();
     }
 
     @Test
@@ -135,5 +137,16 @@ class OrderControllerTest {
                         .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andReturn();
+    }
+
+    @Test
+    void deleteOrder() throws Exception {
+        long id = create();
+        mockMvc.perform(delete("/api/orders/" + id)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/orders/" + id)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
     }
 }
