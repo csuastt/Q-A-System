@@ -200,6 +200,32 @@ class OrderControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void respondOrder() throws Exception {
+        long id = createOrder();
+        OrderEditData request = new OrderEditData();
+        request.setState(OrderState.REVIEWED);
+        edit(id, request);
+        AcceptData accept = new AcceptData(true);
+        mockMvc.perform(post("/api/orders/" + id + "/respond")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(accept)))
+                .andExpect(status().isOk());
+        assertEquals(query(id).getState(), OrderState.ACCEPTED);
+    }
+
+    @Test
+    void respondInvalidOrder() throws Exception {
+        long id = createOrder();
+        AcceptData accept = new AcceptData(true);
+        mockMvc.perform(post("/api/orders/" + id + "/respond")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(accept)))
+                .andExpect(status().isForbidden());
+    }
+
     OrderData query(long id) throws Exception {
         MvcResult queryResult = mockMvc
                 .perform(get("/api/orders/" + id)
