@@ -17,7 +17,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
 import { UserInfo } from "../services/definations";
-import authToken from "../services/auth-token";
 
 interface ProfileState {
     redirect: string | null;

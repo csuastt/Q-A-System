@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { UserInfo } from "../services/definations";
-import userService from "../services/user.service";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
