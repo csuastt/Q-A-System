@@ -1,17 +1,17 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Appbar from "./components/appbarComponent";
+import Appbar from "./components/Appbar";
 import { Container } from "@mui/material";
-import Welcome from "./components/welcomeComponent";
-import QuestionList from "./components/orderListComponent";
-import OrderCreationWizard from "./components/orderCreationWizard";
-import AccountProfile from "./components/profileComponent";
-import Login from "./components/loginComponent";
-import Register from "./components/registerComponent";
-import AnswererList from "./components/answerListComponent";
-import Logout from "./components/logoutComponent";
+import Welcome from "./components/Welcome";
+import QuestionList from "./components/QuestionList";
+import OrderCreationWizard from "./components/OrderCreationWizard";
+import AccountProfile from "./components/AccountProfile";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import AnswererList from "./components/AnswerList";
+import Logout from "./components/Logout";
 import { useEffect, useState } from "react";
 import authService from "./services/auth.service";
-import ChangePassword from "./components/changePasswordComponent";
+import ChangePassword from "./components/ChangePassword";
 
 export default function App() {
     // logout

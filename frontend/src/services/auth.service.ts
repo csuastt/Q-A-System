@@ -1,5 +1,5 @@
 import axios from "axios";
-import authToken from "./auth-token";
+import authToken from "./auth.token";
 
 class AuthService {
     login(username: string, password: string) {

@@ -10,7 +10,7 @@ import _ from "lodash";
 import { Divider } from "@mui/material";
 
 const UserList: React.FC<{ type: string }> = (props) => {
-    const [userList, setUserList] = useState<Array<UserInfo>>();
+    const [userList] = useState<Array<UserInfo>>();
     useEffect(() => {
         // TODO: Unsupported api
         // userService

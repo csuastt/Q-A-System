@@ -1,6 +1,6 @@
 import axios from "axios";
 import { CreationResult, OrderList } from "./definations";
-import authToken from "./auth-token";
+import authToken from "./auth.token";
 
 class OrderService {
     getOrdersOfUser(userId: number): Promise<OrderList> {
