@@ -1,5 +1,6 @@
 package com.example.qa.order;
 
+import com.example.qa.order.exchange.AcceptData;
 import com.example.qa.order.exchange.OrderData;
 import com.example.qa.order.exchange.OrderEditData;
 import com.example.qa.order.model.OrderState;
@@ -169,12 +170,34 @@ class OrderControllerTest {
         String newQuestion = "NewQuestion";
         OrderEditData request = new OrderEditData();
         request.setQuestion(newQuestion);
-        mockMvc.perform(put("/api/orders/" + id)
+        edit(id, request);
+        assertEquals(query(id).getQuestion(), newQuestion);
+    }
+
+    @Test
+    void reviewOrder() throws Exception {
+        long id = createOrder();
+        OrderEditData request = new OrderEditData();
+        request.setState(OrderState.PAYED);
+        edit(id, request);
+        AcceptData accept = new AcceptData(true);
+        mockMvc.perform(post("/api/orders/" + id + "/review")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(accept)))
                 .andExpect(status().isOk());
-        assertEquals(query(id).getQuestion(), newQuestion);
+        assertEquals(query(id).getState(), OrderState.REVIEWED);
+    }
+
+    @Test
+    void reviewInvalidOrder() throws Exception {
+        long id = createOrder();
+        AcceptData accept = new AcceptData(true);
+        mockMvc.perform(post("/api/orders/" + id + "/review")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(accept)))
+                .andExpect(status().isForbidden());
     }
 
     OrderData query(long id) throws Exception {
@@ -186,5 +209,13 @@ class OrderControllerTest {
         OrderData result = mapper.readValue(queryResult.getResponse().getContentAsString(), OrderData.class);
         assertEquals(result.getId(), id);
         return result;
+    }
+
+    void edit(long id, OrderEditData data) throws Exception {
+        mockMvc.perform(put("/api/orders/" + id)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(data)))
+                .andExpect(status().isOk());
     }
 }
