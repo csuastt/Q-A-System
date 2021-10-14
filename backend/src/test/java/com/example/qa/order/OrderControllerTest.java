@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -246,6 +247,17 @@ class OrderControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void queryOrderList() throws Exception {
+        createOrder();
+        MvcResult mvcResult = mockMvc
+                .perform(get("/api/orders")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        OrderData[] result = mapper.readerForArrayOf(OrderData.class).readValue(mvcResult.getResponse().getContentAsString());
+        assertTrue(result.length > 0);
+    }
 
     OrderData query(long id) throws Exception {
         MvcResult queryResult = mockMvc
