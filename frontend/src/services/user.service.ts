@@ -1,6 +1,6 @@
 import axios from "axios";
 import { UserBasicInfo, UserInfo, UserInfoList } from "./definations";
-import authToken from "./auth-token";
+import authToken from "./auth.token";
 
 class UserService {
     getUserList(

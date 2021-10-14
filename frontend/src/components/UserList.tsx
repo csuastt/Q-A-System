@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { UserInfo } from "../services/definations";
-import userService from "../services/user.service";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -11,7 +10,7 @@ import _ from "lodash";
 import { Divider } from "@mui/material";
 
 const UserList: React.FC<{ type: string }> = (props) => {
-    const [userList, setUserList] = useState<Array<UserInfo>>();
+    const [userList] = useState<Array<UserInfo>>();
     useEffect(() => {
         // TODO: Unsupported api
         // userService

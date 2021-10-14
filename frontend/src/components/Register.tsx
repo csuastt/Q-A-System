@@ -1,100 +1,100 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
+import { Redirect } from "react-router-dom";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
-// validators
-import { validate_required, validate_length } from "./loginComponent";
-import { validate_second_password } from "./registerComponent";
-// redirector
-import { Link as RouterLink, Redirect } from "react-router-dom";
+// email checker
+// @ts-ignore
+import { isEmail } from "validator";
+// other validators
+import { validate_required, validate_length } from "./Login";
+import { Link as RouterLink } from "react-router-dom";
 
-// state interface
-interface ChangePasswordState {
-    id: number;
-    old_password: string;
-    password: string;
-    ensure_password: string;
-    error_msg_old_password: string;
-    error_msg_password: string;
-    error_msg_ensure_password: string;
-    alert: boolean;
-    alertType: "success" | "info" | "warning" | "error";
-    alertContent: string;
-    redirect: null | string;
-}
-
-// password validator
-const validate_origin_password = (value: any, origin: string) => {
-    if (value === origin) {
-        return "新密码不能和旧密码相同";
+// some validators
+// email validator
+// to ensure a valid email
+export const validate_email = (value: any) => {
+    if (!isEmail(value.toString().trim())) {
+        return "请输入合法的邮箱";
+    } else {
+        return "";
+    }
+};
+// second password validator
+// to ensure the second password is identical to the first one
+export const validate_second_password = (value: any, old_password: string) => {
+    if (value !== old_password) {
+        return "两次密码输入不一致";
     } else {
         return "";
     }
 };
 
-export default class ChangePassword extends Component<
-    any,
-    ChangePasswordState
-> {
+// state interface
+interface RegisterState {
+    username: string;
+    password: string;
+    email: string;
+    ensure_password: string;
+    error_msg_username: string;
+    error_msg_password: string;
+    error_msg_email: string;
+    error_msg_ensure_password: string;
+    alert: boolean;
+    alertType: "success" | "info" | "warning" | "error";
+    alertContent: string;
+    readPolicy: boolean;
+    redirect: string | null;
+}
+
+export default class Register extends Component<any, RegisterState> {
     constructor(props: any) {
         super(props);
-        // handle changing password
-        this.handleChanging = this.handleChanging.bind(this);
+        // handle register info
+        this.handleRegister = this.handleRegister.bind(this);
         // state
         this.state = {
-            id: 0,
-            old_password: "",
+            username: "",
             password: "",
+            email: "",
             ensure_password: "",
-            error_msg_old_password: "",
+            error_msg_username: "",
             error_msg_password: "",
+            error_msg_email: "",
             error_msg_ensure_password: "",
             alert: false,
             alertContent: "",
             alertType: "error",
+            readPolicy: false,
             redirect: null,
         };
     }
 
-    // get user info first
-    // if user not found
-    // redirect
-    componentDidMount() {
-        const currentUser = AuthService.getCurrentUser();
-
-        if (!currentUser) {
-            // that means a bug occur
-            console.error("Try to change password without login!");
-            return;
-        }
-        this.setState({
-            id: currentUser.id,
-        });
-    }
-
-    // listener on old_password/password/ensure_password
+    // listener on email/username/password
     onChangeValue(
         e: any,
-        type: "old_password" | "password" | "ensure_password"
+        type: "username" | "password" | "ensure_password" | "email"
     ) {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
-        // password should not equal to the origin one
-        if (error === "" && type === "password") {
-            error = validate_origin_password(value, this.state.old_password);
-        }
         // then validate other requirements
-        if (error === "" && type === "ensure_password") {
+        if (error === "" && type === "email") {
+            error = validate_email(value);
+        } else if (error === "" && type === "ensure_password") {
             // @ts-ignore
             error = validate_second_password(value, this.state.password);
         } else if (error === "") {
@@ -110,15 +110,18 @@ export default class ChangePassword extends Component<
         return error === "";
     }
 
-    // handle password change submit
-    handleChanging(e: React.FormEvent<HTMLFormElement>) {
+    handleRegister(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         // validate all the info
         if (
             this.onChangeValue(
-                { target: { value: this.state.old_password } },
-                "old_password"
+                { target: { value: this.state.username } },
+                "username"
+            ) &&
+            this.onChangeValue(
+                { target: { value: this.state.email } },
+                "email"
             ) &&
             this.onChangeValue(
                 { target: { value: this.state.password } },
@@ -129,23 +132,33 @@ export default class ChangePassword extends Component<
                 "ensure_password"
             )
         ) {
-            // changing request
-            AuthService.modifyPassword(
-                this.state.id,
-                this.state.old_password,
+            // make sure the user has read about policy
+            if (!this.state.readPolicy) {
+                // alert
+                this.setState({
+                    alert: true,
+                    alertType: "error",
+                    alertContent: "请阅读我们的政策",
+                });
+                return;
+            }
+            // register request
+            AuthService.register(
+                this.state.username,
+                this.state.email,
                 this.state.password
             ).then(
                 () => {
-                    // modify success
+                    // register success
                     // alert
                     this.setState({
                         alert: true,
                         alertType: "success",
-                        alertContent: "修改成功",
+                        alertContent: "注册成功",
                     });
-                    // then logout
+                    // redirect
                     this.setState({
-                        redirect: "/logout",
+                        redirect: "/login",
                     });
                 },
                 (error) => {
@@ -154,7 +167,7 @@ export default class ChangePassword extends Component<
                         this.setState({
                             alert: true,
                             alertType: "error",
-                            alertContent: "原密码不正确",
+                            alertContent: "用户名已注册",
                         });
                     } else {
                         this.setState({
@@ -186,45 +199,56 @@ export default class ChangePassword extends Component<
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-                        <VpnKeyIcon />
+                        <AccountCircleIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        修改密码
+                        注册
                     </Typography>
                     <Box
                         component="form"
-                        onSubmit={this.handleChanging}
+                        onSubmit={this.handleRegister}
                         noValidate
-                        sx={{ mt: 1 }}
+                        sx={{ mt: 0 }}
                     >
                         <TextField
                             margin="normal"
                             required
                             fullWidth
-                            name="old_password"
-                            label="旧密码"
-                            type="password"
-                            id="cp_old_password"
-                            autoComplete="new-password"
-                            onChange={(e) =>
-                                this.onChangeValue(e, "old_password")
-                            }
+                            id="reg_username"
+                            label="用户名"
+                            name="username"
+                            autoComplete="username"
+                            autoFocus
+                            onChange={(e) => this.onChangeValue(e, "username")}
                             // @ts-ignore
-                            error={
-                                this.state.error_msg_old_password.length !== 0
-                            }
+                            error={this.state.error_msg_username.length !== 0}
                             // @ts-ignore
-                            helperText={this.state.error_msg_old_password}
+                            helperText={this.state.error_msg_username}
                             inputProps={{ maxLength: 15 }}
                         />
                         <TextField
                             margin="normal"
                             required
                             fullWidth
+                            id="reg_email"
+                            label="邮箱"
+                            name="email"
+                            autoComplete="email"
+                            onChange={(e) => this.onChangeValue(e, "email")}
+                            // @ts-ignore
+                            error={this.state.error_msg_email.length !== 0}
+                            // @ts-ignore
+                            helperText={this.state.error_msg_email}
+                            inputProps={{ maxLength: 30 }}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
                             name="password"
-                            label="新密码"
+                            label="密码"
                             type="password"
-                            id="cp_password"
+                            id="reg_password"
                             autoComplete="new-password"
                             onChange={(e) => this.onChangeValue(e, "password")}
                             // @ts-ignore
@@ -240,7 +264,7 @@ export default class ChangePassword extends Component<
                             name="ensure_password"
                             label="确认密码"
                             type="password"
-                            id="cp_ensure_password"
+                            id="reg_ensure_password"
                             autoComplete="new-password"
                             onChange={(e) =>
                                 this.onChangeValue(e, "ensure_password")
@@ -254,24 +278,51 @@ export default class ChangePassword extends Component<
                             helperText={this.state.error_msg_ensure_password}
                             inputProps={{ maxLength: 15 }}
                         />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    value="agree"
+                                    color="primary"
+                                    checked={this.state.readPolicy}
+                                    onChange={() => {
+                                        this.setState({
+                                            readPolicy: !this.state.readPolicy,
+                                        });
+                                    }}
+                                />
+                            }
+                            label={
+                                <div>
+                                    <span>我已阅读并同意</span>
+                                    <Link
+                                        href={
+                                            "https://www.kuaishou.com/about/policy"
+                                        }
+                                    >
+                                        《快手用户服务协议》
+                                    </Link>
+                                </div>
+                            }
+                        />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
-                            color={"error"}
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            确认修改
+                            注册
                         </Button>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 1, mb: 2 }}
-                            component={RouterLink}
-                            to="/profile"
-                        >
-                            取消修改
-                        </Button>
+                        <Grid container justifyContent="flex-end">
+                            <Grid item>
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/login"
+                                >
+                                    已有账号？快速登录
+                                </Link>
+                            </Grid>
+                        </Grid>
                     </Box>
                 </Box>
                 <Snackbar

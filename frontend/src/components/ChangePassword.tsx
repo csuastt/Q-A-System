@@ -1,74 +1,63 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
-import { Redirect } from "react-router-dom";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
-
-import { Link as RouterLink } from "react-router-dom";
-
-// some validators
-// not empty
-export const validate_required = (value: any) => {
-    if (!value) {
-        return "此处不能为空";
-    } else {
-        return "";
-    }
-};
-// 6 to 12 in length
-export const validate_length = (value: any) => {
-    if (value.toString().trim().length < 6) {
-        // too long
-        return "长度不能小于6个字符";
-    } else if (value.toString().trim().length > 12) {
-        // too short
-        return "长度不能大于12个字符";
-    } else {
-        return "";
-    }
-};
+// validators
+import { validate_required, validate_length } from "./Login";
+import { validate_second_password } from "./Register";
+// redirector
+import { Link as RouterLink, Redirect } from "react-router-dom";
 
 // state interface
-interface LoginState {
-    username: string;
+interface ChangePasswordState {
+    id: number;
+    old_password: string;
     password: string;
-    error_msg_username: string;
+    ensure_password: string;
+    error_msg_old_password: string;
     error_msg_password: string;
+    error_msg_ensure_password: string;
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
-    redirect: string | null;
+    redirect: null | string;
 }
 
-// props interface
-interface LoginProps {
-    login: () => void;
-}
+// password validator
+const validate_origin_password = (value: any, origin: string) => {
+    if (value === origin) {
+        return "新密码不能和旧密码相同";
+    } else {
+        return "";
+    }
+};
 
-export default class Login extends Component<LoginProps, LoginState> {
+export default class ChangePassword extends Component<
+    any,
+    ChangePasswordState
+> {
     constructor(props: any) {
         super(props);
-        // handle login info
-        this.handleLogin = this.handleLogin.bind(this);
+        // handle changing password
+        this.handleChanging = this.handleChanging.bind(this);
         // state
         this.state = {
-            username: "",
+            id: 0,
+            old_password: "",
             password: "",
-            error_msg_username: "",
+            ensure_password: "",
+            error_msg_old_password: "",
             error_msg_password: "",
+            error_msg_ensure_password: "",
             alert: false,
             alertContent: "",
             alertType: "error",
@@ -76,12 +65,39 @@ export default class Login extends Component<LoginProps, LoginState> {
         };
     }
 
-    // listener on username/password
-    onChangeValue(e: any, type: "username" | "password") {
+    // get user info first
+    // if user not found
+    // redirect
+    componentDidMount() {
+        const currentUser = AuthService.getCurrentUser();
+
+        if (!currentUser) {
+            // that means a bug occur
+            console.error("Try to change password without login!");
+            return;
+        }
+        this.setState({
+            id: currentUser.id,
+        });
+    }
+
+    // listener on old_password/password/ensure_password
+    onChangeValue(
+        e: any,
+        type: "old_password" | "password" | "ensure_password"
+    ) {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
-        if (error === "") {
+        // password should not equal to the origin one
+        if (error === "" && type === "password") {
+            error = validate_origin_password(value, this.state.old_password);
+        }
+        // then validate other requirements
+        if (error === "" && type === "ensure_password") {
+            // @ts-ignore
+            error = validate_second_password(value, this.state.password);
+        } else if (error === "") {
             error = validate_length(value);
         }
         // set new state
@@ -94,35 +110,42 @@ export default class Login extends Component<LoginProps, LoginState> {
         return error === "";
     }
 
-    handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    // handle password change submit
+    handleChanging(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         // validate all the info
         if (
             this.onChangeValue(
-                { target: { value: this.state.username } },
-                "username"
+                { target: { value: this.state.old_password } },
+                "old_password"
             ) &&
             this.onChangeValue(
                 { target: { value: this.state.password } },
                 "password"
+            ) &&
+            this.onChangeValue(
+                { target: { value: this.state.ensure_password } },
+                "ensure_password"
             )
         ) {
-            // login request
-            AuthService.login(this.state.username, this.state.password).then(
+            // changing request
+            AuthService.modifyPassword(
+                this.state.id,
+                this.state.old_password,
+                this.state.password
+            ).then(
                 () => {
-                    // login success
+                    // modify success
                     // alert
                     this.setState({
                         alert: true,
                         alertType: "success",
-                        alertContent: "登录成功",
+                        alertContent: "修改成功",
                     });
-                    // update state
-                    this.props.login();
-                    // redirect
+                    // then logout
                     this.setState({
-                        redirect: "/",
+                        redirect: "/logout",
                     });
                 },
                 (error) => {
@@ -131,7 +154,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                         this.setState({
                             alert: true,
                             alertType: "error",
-                            alertContent: "用户名或密码错误",
+                            alertContent: "原密码不正确",
                         });
                     } else {
                         this.setState({
@@ -163,31 +186,35 @@ export default class Login extends Component<LoginProps, LoginState> {
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-                        <LockOutlinedIcon />
+                        <VpnKeyIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        登录
+                        修改密码
                     </Typography>
                     <Box
                         component="form"
-                        onSubmit={this.handleLogin}
+                        onSubmit={this.handleChanging}
                         noValidate
-                        sx={{ mt: 0 }}
+                        sx={{ mt: 1 }}
                     >
                         <TextField
                             margin="normal"
                             required
                             fullWidth
-                            id="username"
-                            label="用户名"
-                            name="username"
-                            autoComplete="username"
-                            autoFocus
-                            onChange={(e) => this.onChangeValue(e, "username")}
+                            name="old_password"
+                            label="旧密码"
+                            type="password"
+                            id="cp_old_password"
+                            autoComplete="new-password"
+                            onChange={(e) =>
+                                this.onChangeValue(e, "old_password")
+                            }
                             // @ts-ignore
-                            error={this.state.error_msg_username.length !== 0}
+                            error={
+                                this.state.error_msg_old_password.length !== 0
+                            }
                             // @ts-ignore
-                            helperText={this.state.error_msg_username}
+                            helperText={this.state.error_msg_old_password}
                             inputProps={{ maxLength: 15 }}
                         />
                         <TextField
@@ -195,10 +222,10 @@ export default class Login extends Component<LoginProps, LoginState> {
                             required
                             fullWidth
                             name="password"
-                            label="密码"
+                            label="新密码"
                             type="password"
-                            id="password"
-                            autoComplete="current-password"
+                            id="cp_password"
+                            autoComplete="new-password"
                             onChange={(e) => this.onChangeValue(e, "password")}
                             // @ts-ignore
                             error={this.state.error_msg_password.length !== 0}
@@ -206,31 +233,45 @@ export default class Login extends Component<LoginProps, LoginState> {
                             helperText={this.state.error_msg_password}
                             inputProps={{ maxLength: 15 }}
                         />
-                        <FormControlLabel
-                            control={
-                                <Checkbox value="remember" color="primary" />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="ensure_password"
+                            label="确认密码"
+                            type="password"
+                            id="cp_ensure_password"
+                            autoComplete="new-password"
+                            onChange={(e) =>
+                                this.onChangeValue(e, "ensure_password")
                             }
-                            label="记住我"
+                            // @ts-ignore
+                            error={
+                                this.state.error_msg_ensure_password.length !==
+                                0
+                            }
+                            // @ts-ignore
+                            helperText={this.state.error_msg_ensure_password}
+                            inputProps={{ maxLength: 15 }}
                         />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
+                            color={"error"}
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            登录
+                            确认修改
                         </Button>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <Link
-                                    variant="body2"
-                                    component={RouterLink}
-                                    to="/register"
-                                >
-                                    还没有账号？快速注册
-                                </Link>
-                            </Grid>
-                        </Grid>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 1, mb: 2 }}
+                            component={RouterLink}
+                            to="/profile"
+                        >
+                            取消修改
+                        </Button>
                     </Box>
                 </Box>
                 <Snackbar

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 import authService from "../services/auth.service";
 import userService from "../services/user.service";
-import AccountBriefProfile from "./profileBriefComponent";
+import AccountBriefProfile from "./AccountBriefProfile";
 // mui
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -17,7 +17,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
 import { UserInfo } from "../services/definations";
-import authToken from "../services/auth-token";
 
 interface ProfileState {
     redirect: string | null;
