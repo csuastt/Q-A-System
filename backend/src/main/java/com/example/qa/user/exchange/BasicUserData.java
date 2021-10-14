@@ -1,7 +1,11 @@
 package com.example.qa.user.exchange;
 
 import com.example.qa.user.model.AppUser;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class BasicUserData {
     public Long id;
     public String username;
