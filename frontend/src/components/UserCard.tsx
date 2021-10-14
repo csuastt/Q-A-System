@@ -34,7 +34,9 @@ const UserCard: React.FC<{
         }
     }, [props.placeholder, props.userId, props.userInfo]);
 
-    const CardActionWrapper: React.FC<{ nextUrl?: string }> = (wrapperProps) => {
+    const CardActionWrapper: React.FC<{ nextUrl?: string }> = (
+        wrapperProps
+    ) => {
         return wrapperProps.nextUrl ? (
             <CardActionArea component={RouterLink} to={wrapperProps.nextUrl}>
                 {wrapperProps.children}
