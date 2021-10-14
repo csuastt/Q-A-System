@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,6 +43,7 @@ class OrderControllerTest {
     private OrderRepository orderRepository;
     private String token;
     private static final String password = "password";
+    private static final String question = "TestQuestion";
     private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeAll
@@ -78,7 +80,7 @@ class OrderControllerTest {
         OrderEditData request = new OrderEditData();
         request.setAsker(1L);
         request.setAnswerer(2L);
-        request.setQuestion("TestQuestion");
+        request.setQuestion(question);
         MvcResult createResult = mockMvc
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
@@ -89,7 +91,7 @@ class OrderControllerTest {
         OrderData result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
         assertEquals(result.getAsker().id, 1L);
         assertEquals(result.getAnswerer().id, 2L);
-        assertEquals(result.getQuestion(), "TestQuestion");
+        assertEquals(result.getQuestion(), question);
         assertEquals(result.getState(), OrderState.CREATED);
         return result.getId();
     }
@@ -99,7 +101,7 @@ class OrderControllerTest {
         OrderEditData request = new OrderEditData();
         request.setAsker(99L);
         request.setAnswerer(2L);
-        request.setQuestion("TestQuestion");
+        request.setQuestion(question);
         MvcResult createResult = mockMvc
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
@@ -114,7 +116,7 @@ class OrderControllerTest {
         OrderEditData request = new OrderEditData();
         request.setAsker(1L);
         request.setAnswerer(1L);
-        request.setQuestion("TestQuestion");
+        request.setQuestion(question);
         MvcResult createResult = mockMvc
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
@@ -148,5 +150,25 @@ class OrderControllerTest {
         mockMvc.perform(delete("/api/orders/" + id)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void query() throws Exception {
+        long id = create();
+        MvcResult queryResult = mockMvc
+                .perform(get("/api/orders/" + id)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        OrderData result = mapper.readValue(queryResult.getResponse().getContentAsString(), OrderData.class);
+        assertEquals(result.getId(), id);
+    }
+
+    @Test
+    void queryInvalidOrder() throws Exception {
+        mockMvc.perform(get("/api/orders/" + -1)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound())
+                .andReturn();
     }
 }
