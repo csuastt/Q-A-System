@@ -226,6 +226,27 @@ class OrderControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void endOrder() throws Exception {
+        long id = createOrder();
+        OrderEditData request = new OrderEditData();
+        request.setState(OrderState.ANSWERED);
+        edit(id, request);
+        mockMvc.perform(post("/api/orders/" + id + "/end")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+        assertEquals(query(id).getState(), OrderState.CHAT_ENDED);
+    }
+
+    @Test
+    void endInvalidOrder() throws Exception {
+        long id = createOrder();
+        mockMvc.perform(post("/api/orders/" + id + "/end")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+
     OrderData query(long id) throws Exception {
         MvcResult queryResult = mockMvc
                 .perform(get("/api/orders/" + id)

@@ -87,7 +87,7 @@ public class OrderController {
 
     @PostMapping("/{id}/end")
     @ResponseStatus(value = HttpStatus.OK)
-    public void endChat(@PathVariable(value = "id") long id, @RequestBody AcceptData data) {
+    public void endChat(@PathVariable(value = "id") long id) {
         Order order = getById(id, false);
         // TODO: 检查是否是合法的操作者
         if (order.getState() != OrderState.ANSWERED) {
