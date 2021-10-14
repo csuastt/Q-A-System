@@ -91,4 +91,49 @@ class OrderControllerTest {
         assertEquals(result.getQuestion(), "TestQuestion");
         assertEquals(result.getState(), OrderState.CREATED);
     }
+
+    @Test
+    void createWithInvalidAsker() throws Exception {
+        OrderEditData request = new OrderEditData();
+        request.setAsker(99L);
+        request.setAnswerer(2L);
+        request.setQuestion("TestQuestion");
+        MvcResult createResult = mockMvc
+                .perform(post("/api/orders")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    @Test
+    void createWithInvalidAnswerer() throws Exception {
+        OrderEditData request = new OrderEditData();
+        request.setAsker(1L);
+        request.setAnswerer(1L);
+        request.setQuestion("TestQuestion");
+        MvcResult createResult = mockMvc
+                .perform(post("/api/orders")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    @Test
+    void createWithInvalidQuestion() throws Exception {
+        OrderEditData request = new OrderEditData();
+        request.setAsker(1L);
+        request.setAnswerer(2L);
+        request.setQuestion("q");
+        MvcResult createResult = mockMvc
+                .perform(post("/api/orders")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
 }
