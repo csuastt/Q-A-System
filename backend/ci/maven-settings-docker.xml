@@ -7,5 +7,4 @@
             <mirrorOf>central</mirrorOf>
         </mirror>
     </mirrors>
-    <localRepository>${env.CI_PROJECT_DIR}/.m2/repository</localRepository>
 </settings>
