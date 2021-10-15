@@ -1,25 +1,21 @@
 package com.example.qa.manager;
 
 
+import com.example.qa.errorhandling.ApiException;
 import com.example.qa.manager.exception.DeleteException;
 import com.example.qa.manager.exception.NotFoundException;
 import com.example.qa.manager.exception.NotMatchException;
 import com.example.qa.manager.exchange.*;
 import com.example.qa.manager.model.AppManager;
 import com.example.qa.manager.repository.ManagerRepository;
-import org.apache.catalina.Manager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -45,7 +41,7 @@ public class ManagerController {
         Optional<AppManager> optionalManager = managerRepository.findById(id);
 
         if (optionalManager.isEmpty())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ManagerData(optionalManager.get());
     }
 
@@ -79,7 +75,7 @@ public class ManagerController {
     @PostMapping("/api/managers")
     public RedirectView register(@RequestParam(value = "managername") String managername, @RequestParam(value = "password") String password) {
         if (managerRepository.existsByManagername(managername))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new ApiException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("manager"));
         AppManager appManager = new AppManager(managername, passwordEncoder.encode(password), authorities);
@@ -95,7 +91,7 @@ public class ManagerController {
         Optional<AppManager> optionalManager = managerRepository.findById(id);
 
         if (optionalManager.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ApiException(HttpStatus.BAD_REQUEST);
         optionalManager.get().updateManagerInfo(modifiedManager);
         managerRepository.save(optionalManager.get());
         return new ManagerData(optionalManager.get());
@@ -107,7 +103,7 @@ public class ManagerController {
         Optional<AppManager> optionalManager = managerRepository.findById(id);
 
         if (optionalManager.isEmpty())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR);
         if (optionalManager.get().getPassword().equals(passwordEncoder.encode(modifiedManager.getOrigin_password()))) {
             optionalManager.get().setPassword(passwordEncoder.encode(modifiedManager.getNew_password()));
             managerRepository.save(optionalManager.get());
