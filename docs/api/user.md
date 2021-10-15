@@ -182,39 +182,74 @@ PUT /api/users/{id}/password
   | `PASSWORD_INVALID` | 新密码格式错误 |
 - `404` 管理员修改用户不存在或已删除
 
+### 申请成为回答者
 
-- `api/users/:id/apply` : 申请成为回答者
+（仅限用户本人）
 
-    ```
-  TODO
-  ```
+```
+POST /api/users/{id}/apply
+```
 
+参数：
 
-- `api/users/:id/income` : 查询收入
+| 属性        | 类型   | 说明           |
+| ----------- | ------ | -------------- |
+| description | string | 即修改个人说明 |
+| price       | int    | 定价           |
 
-    ```
-  TODO
-  ```
+返回值：
 
+- `200` OK
 
-- `api/users` : 用户列表
-  
-  - Method: `GET`
-  
-  - Parameters:
+- `401` 未登录或权限不足
 
-    | Name     | Type      | Description                |
-    | -------  | ------    | ------------               |
-    | answerer | boolean   | true/false  default `false`|
-    | page     | int       |      default `1`           |
-    | limit    | int       |      default `20`          |
-  
+- `403` 错误
 
-  - Response:
-    - `200`:
-      
-      | Name     | Type      | Description      |
-      | -------  | ------    | ------------     |
-      | user_list | string    | list of `[Basic_User]` |
-    
-    
+  | message 属性          | 说明             |
+  | --------------------- | ---------------- |
+  | `DESCRIPTION_INVALID` | 个人说明长度错误 |
+  | `PRICE_INVALID`       | 价格超过范围     |
+
+### 用户列表
+
+```
+GET /api/users
+```
+
+参数：
+
+| 属性 | 类型 | 说明                            |
+| ---- | ---- | ------------------------------- |
+| role | enum | 用户只能填 ANSWERER，管理员任意 |
+| page | int  | 页数，默认为 1                  |
+| size | int  | 单页用户数，默认为 20           |
+
+返回值：
+
+- `200` OK `{ users: [...] }`
+- `401` 未登录或权限不足
+
+### 充值
+
+```
+POST /api/users/{id}/recharge
+```
+
+参数：
+
+| 属性  | 类型 | 说明       |
+| ----- | ---- | ---------- |
+| value | int  | 只能为正数 |
+
+返回值：
+
+- `200` OK
+
+- `401` 未登录或权限不足
+
+- `403` 错误
+
+  | message 属性       | 说明                   |
+  | ------------------ | ---------------------- |
+  | `RECHARGE_INVALID` | 充值金额超过范围       |
+  | `BALANCE_INVALID`  | （充值后）余额超过范围 |
