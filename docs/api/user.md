@@ -1,37 +1,38 @@
 # Backend User API
 
 
-## Data
+## Model
 
+### User
 
- User 用户:
-  - `username` unique  
+#### 公开属性
 
-  | Name         | Type           | Description             |
-  | --------     | ------         | ----------------------- |
-  | id           | Long           | unique, auto generated  | 
-  | username     | string         | not empty, unique       |
-  | nickname     | string         | empty, or max_len < 10  |
-  | ava_url      | string         |                         |
-  | createTime   | ZonedDateTime  | the time signing up     |
-  | email        | string         | should be a valid email |
-  | phone        | string         | should be a valid phone |
-  | gender       | string         | male/female/unknown     |
-  | birthday     | string         | yy/mm/dd                |
-  | permission   | string         | q/a                     |
-  | money        | int            | `initial` 100           |
-  | description  | string         |                         |
+| 属性        | 类型   | JSON | 说明                     |
+| ----------- | ------ | ---- | ------------------------ |
+| id          | long   |      |                          |
+| username    | string |      | Unique，不可修改         |
+| nickname    | string |      | 默认设成与 username 相同 |
+| avatar      | string |      | 未上传则为空             |
+| description | string |      |                          |
+| price       | int    |      | 回答问题定价（仅回答者） |
 
- Basic_User :
+#### 私有属性 (仅限本用户)
 
-  | Name              | Type   | Description             |
-  | --------          | ------ | ----------------------- |
-  | id                | Long   | unique, auto generated  | 
-  | username          | string | not empty, unique       |
-  | nickname          | string | empty, or max_len < 10  |
-  | ava_url           | string |                         |
-  | description       | string |                         |
- 
+| 属性     | 类型   | JSON   | 说明                      |
+| -------- | ------ | ------ | ------------------------- |
+| password | string | 不返回 | 只写不读                  |
+| email    | string |        | 有数据验证                |
+| phone    | string |        | 可随意修改                |
+| gender   | enum   | string | { UNKNOWN, MALE, FEMALE } |
+| role     | enum   | string | { USER, ANSWERER }        |
+| balance  | int    |        | 余额                      |
+
+#### 私有属性 (仅限管理员)
+
+| 属性       | 类型          | JSON              | 说明     |
+| ---------- | ------------- | ----------------- | -------- |
+| deleted    | boolean       |                   | 删除标记 |
+| createTime | ZonedDateTime | ISO string in UTC |          |
 
 ## Authentication
 
@@ -39,58 +40,52 @@
 - 在所有和用户相关的 HTTP 请求中的 Header 里设置 `Authorization: Bearer <token>`
   - ref [JWT Token](https://jwt.io/introduction)
 
-## Agreement
-
-- `Parameters` : 用`param`传参
-- `RequestBody` : 用`body`传参
-
 ## API
 
+### 注册
 
-- `/api/users`: 用户注册
-  
-  - Method: `POST`
-  
-  - RequestBody:
+```
+POST /api/users
+```
 
-    | Name     | Type   | Description             | Necessity |
-    | -------- | ------ | ----------------------- | --------- |
-    | username | string | not empty, unique       | essential |
-    | password | string | 6 to 12 in length       | essential |
-    | email    | string | should be a valid email | optional  |
-    | gender   | string | male/female/unknown     | optional  |
-    | phone    | string | should be a valid phone | optional  |
-  
-  - Response:
-    - `200`: 注册成功
-        
-    - `403 Forbidden`: 用户名已注册
+参数：
 
-    - `400` : 数据格式错误
+| 属性     | 类型   | 说明       |
+| -------- | ------ | ---------- |
+| username | string |            |
+| password | string |            |
+| email    | string | 有数据验证 |
 
+返回值：
 
-- `api/user/login` : 用户登录
-  
-  - Method: `POST`
+- `200` OK
+- `400` 格式错误
+- `403` 错误
 
-  - RequestBody:
+  | message 属性       | 说明                          |
+  | ------------------ | ----------------------------- |
+  | `USERNAME_INVALID` | 用户名已被使用/用户名格式错误 |
+  | `PASSWORD_INVALID` | 密码格式错误                  |
+  | `EMAIL_INVALID`    | 邮箱格式错误                  |
 
-    | Name     | Type   | Description             |
-    | -------- | ------ | ----------------------- |
-    | username | string |                         |
-    | password | string |                         |
-  
-  - Response:
-    - `200`:
+### 登录
 
-    | Name    | Type   | Description  |
-    | ------- | ------ | ------------ |
-    | token   | string |              |
-    | user    | string | [User]       |
-    - `401`:
-     ```
-    密码/用户名错误
-    ```
+```
+POST /api/user/login
+```
+
+参数：
+
+| 属性     | 类型   | 说明 |
+| -------- | ------ | ---- |
+| username | string |      |
+| password | string |      |
+
+返回值：
+
+- `200` OK
+- `400` 格式错误
+- `403` 错误（用户名/密码错误）
   
 - `api/user/logout` : 用户登出
   
