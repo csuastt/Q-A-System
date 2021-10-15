@@ -12,11 +12,11 @@ public class ApiException extends ResponseStatusException {
         super(HttpStatus.valueOf(rawStatusCode));
     }
 
-    public ApiException(HttpStatus status, String reason) {
-        super(status, reason);
+    public ApiException(HttpStatus status, String message) {
+        super(status, message);
     }
 
-    public ApiException(int rawStatusCode, String reason) {
-        super(HttpStatus.valueOf(rawStatusCode), reason);
+    public ApiException(int rawStatusCode, String message) {
+        super(HttpStatus.valueOf(rawStatusCode), message);
     }
 }
