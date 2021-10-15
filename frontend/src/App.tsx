@@ -24,6 +24,8 @@ export default function App() {
         setIsAuthenticated(true);
     };
 
+    // todo also need to add login & logout function for the admin
+
     const routes = [
         ["/answerers/select", <AnswererList selectModel />],
         ["/answerers", <AnswererList />],
@@ -31,7 +33,7 @@ export default function App() {
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile />],
-        ["/login", <Login login={login} />],
+        ["/login", <Login login={login} redirect={"/"} isAdmin={false}/>],
         ["/logout", <Logout logout={logout} redirect={"/"} isAdmin={false}/>],
         ["/register", <Register />],
         ["/change_password", <ChangePassword />],
@@ -41,6 +43,7 @@ export default function App() {
     // some app state
     // note: this authentication is of the user
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // todo add authentication state for the admin
 
     useEffect(() => {
         const user = authService.getCurrentUser();
