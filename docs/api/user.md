@@ -157,72 +157,30 @@ PUT /api/users/{id}
 
 - `404` 管理员修改用户不存在或已删除
 
+### 修改密码
 
-- `api/users/:id/password` : 修改密码
+```
+PUT /api/users/{id}/password
+```
+
+参数：
+
+| 属性     | 类型   | 说明             |
+| -------- | ------ | ---------------- |
+| original | string | 管理员不用此参数 |
+| password | string |                  |
+
+返回值：
+
+- `200` OK
+- `401` 未登录或权限不足
+- `403` 错误
   
-  - Method: `PUT`
-  
-  - RequestBody:
-
-    | Name      | Type   | Description             |
-    | --------  | ------ | ----------------------- |
-    | origin    | string |                         |
-    | password  | string |                         |
-  
-  - Response:
-    - `200`: 修改成功
-    - `400`: 没有该用户
-    - `403`: 原密码不正确
-
-
-- `api/users/:id/price` : 获得用户定价
-  
-  - Method : `GET`
-
-  - Parameters:
-
-  - Response:
-      - `200`:
-
-        | Name      | Type   | Description             |
-        | --------  | ------ | ----------------------- |
-        | price     | int    |                         |
-      - `400`: 没有该用户
-      - `403`: 没有权限
-
-
-- `api/users/:id/price` : 修改用户定价
-
-    - Method: `PUT`
-
-    - RequestBody:
-
-      | Name      | Type   | Description             |
-      | --------  | ------ | ----------------------- |
-      | price     | int    | min 20   max  100       |
-
-    - Response:
-        - `200`: 修改成功
-        - `400`: 没有该用户
-        - `403`: 没有定价权限
-        - `500`: 定价不在允许的范围内
-
-    
-- `api/users/:id/permission` : 修改用户权限
-
-  - Method: `PUT`
-
-  - RequestBody:
-
-    | Name        | Type   | Description             |
-    | --------    | ------ | ----------------------- |
-    | permission  | string | q/a                     |
-
-  - Response:
-      - `200`: 修改成功
-      - `400`: 没有该用户
-      - `403`: 没有修改权限
-      - `500`: 修改错误(从q修改至q)
+  | message 属性       | 说明           |
+  | ------------------ | -------------- |
+  | `WRONG_PASSWORD`   | 原密码错误     |
+  | `PASSWORD_INVALID` | 新密码格式错误 |
+- `404` 管理员修改用户不存在或已删除
 
 
 - `api/users/:id/apply` : 申请成为回答者
