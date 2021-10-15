@@ -4,18 +4,19 @@
 
 ### Order
 
-| 属性       | 类型           | JSON                            | 说明                                    |
-| ---------- | -------------- | ------------------------------- | --------------------------------------- |
-| id         | long           |                                 |                                         |
-| deleted    | boolean        |                                 | 删除标记                                |
-| asker      | AppUser        | Get: BasicUserData, Set: number |                                         |
-| answerer   | AppUser        | Get: BasicUserData, Set: number |                                         |
-| state      | OrderState     | string                          |                                         |
-| finished   | boolean        |                                 | 订单结束后设为 true                     |
-| createTime | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)  | 创建时间                                |
-| endReason  | OrderEndReason | string                          |                                         |
-| question   | string         |                                 | 问题（最长 100 字符，后续交给系统设置） |
-| price      | int            |                                 |                                         |
+| 属性          | 类型           | JSON                            | 说明                                    |
+| ------------- | -------------- | ------------------------------- | --------------------------------------- |
+| id            | long           |                                 |                                         |
+| deleted       | boolean        |                                 | 删除标记                                |
+| asker         | AppUser        | Get: BasicUserData, Set: number |                                         |
+| answerer      | AppUser        | Get: BasicUserData, Set: number |                                         |
+| state         | OrderState     | string                          |                                         |
+| finished      | boolean        |                                 | 订单结束后设为 true                     |
+| createTime    | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)  | 创建时间                                |
+| endReason     | OrderEndReason | string                          |                                         |
+| question      | string         |                                 | 问题（最长 100 字符，后续交给系统设置） |
+| answerSummary | string         |                                 |                                         |
+| price         | int            |                                 |                                         |
 
 ### OrderState (enum)
 
@@ -71,11 +72,12 @@ POST /api/orders
 
 - `403` 错误
 
-  | message 属性       | 说明                                           |
-  | ------------------ | ---------------------------------------------- |
-  | `ASKER_INVALID`    | 未找到提问者（后续改为仅管理员创建时提示）     |
-  | `ANSWERER_INVALID` | 回答者与提问者相同/未找到回答者/回答者没有权限 |
-  | `QUESTION_INVALID` | 问题字数不符合系统要求（暂设 5≤length≤100）    |
+  | message 属性         | 说明                                           |
+  | -------------------- | ---------------------------------------------- |
+  | `ASKER_INVALID`      | 未找到提问者（后续改为仅管理员创建时提示）     |
+  | `ANSWERER_INVALID`   | 回答者与提问者相同/未找到回答者/回答者没有权限 |
+  | `QUESTION_INVALID`   | 问题字数不符合系统要求（暂设 5≤length≤100）    |
+  | `BALANCE_NOT_ENOUGH` | 余额不足                                       |
 
 ### 删除订单
 
@@ -152,7 +154,17 @@ GET /api/orders
 
 ### 支付订单
 
-请从支付系统回调。
+（暂时不用，创建订单后默认直接支付）
+
+```
+POST /api/orders/{id}/pay
+```
+
+返回值：
+
+- `200` OK
+- `401` 未登录或权限不足（后续实现）
+- `403` 错误（余额不足）
 
 ### 审核订单
 
@@ -199,6 +211,26 @@ POST /api/orders/{id}/respond
 ### 回答者首次回答
 
 由 IM 系统触发。
+
+临时接口（回答完直接结束服务）：
+
+```
+POST /api/orders/{id}/answer
+```
+
+参数：
+
+| 名称   | 类型   | 说明 |
+| ------ | ------ | ---- |
+| answer | string |      |
+
+返回值：
+
+- `200` OK
+- `400` 格式错误
+- `401` 未登录或权限不足（仅限回答者，后续实现）
+- `403` 错误（订单不是待回答状态）
+- `404` 订单不存在或已删除
 
 ### 结束服务
 
