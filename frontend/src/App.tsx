@@ -36,7 +36,7 @@ export default function App() {
         ["/login", <Login login={login} redirect={"/"} isAdmin={false}/>],
         ["/logout", <Logout logout={logout} redirect={"/"} isAdmin={false}/>],
         ["/register", <Register />],
-        ["/change_password", <ChangePassword />],
+        ["/change_password", <ChangePassword redirectConfirm={"/logout"} redirectCancel={"/profile"} isAdmin={false}/>],
         ["/", <Welcome />],
     ];
 
