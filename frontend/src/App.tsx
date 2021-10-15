@@ -32,13 +32,14 @@ export default function App() {
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile />],
         ["/login", <Login login={login} />],
-        ["/logout", <Logout logout={logout} />],
+        ["/logout", <Logout logout={logout} redirect={"/"} isAdmin={false}/>],
         ["/register", <Register />],
         ["/change_password", <ChangePassword />],
         ["/", <Welcome />],
     ];
 
     // some app state
+    // note: this authentication is of the user
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
