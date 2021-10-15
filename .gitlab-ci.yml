@@ -5,6 +5,13 @@ stages:
   - test
   - deploy
 
+# Cache
+
+cache:
+  paths:
+    - .m2/repository
+    - frontend/node_modules/
+
 # Docker build
 
 build-frontend:
@@ -32,11 +39,6 @@ build-backend:
 .frontend-test:
   image: node:latest
   stage: test
-
-  cache:
-    key: ${CI_COMMIT_REF_SLUG}
-    paths:
-      - frontend/node_modules/
 
   before_script:
     - cd frontend
