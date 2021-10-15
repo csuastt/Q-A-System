@@ -86,89 +86,76 @@ POST /api/user/login
 - `200` OK
 - `400` 格式错误
 - `403` 错误（用户名/密码错误）
-  
-- `api/user/logout` : 用户登出
-  
-  - Method: `POST`
-  
-  - Parameters:
 
-  - Response:
-    - `200`: 成功登出
+### 退出
 
+```
+POST /api/user/logout
+```
 
-- `api/users` : 删除用户
-  
-  - Method: `DELETE`
-  
-  - Parameters:
+返回值：
 
-    | Name     | Type   | Description             |
-    | -------- | ------ | ----------------------- |
-    | id       | long   |                         |
-  
-  - Response:
-    - `200`: 成功删除
-    - `500`: 后台数据库出错
-    - `400`: 没有该用户
-    
-    
-- `api/users/:id` : 获取详细信息
-    
-    - Method: `GET`
-  
-    - Parameters:
-  
-    - Response:
-        - `200`: body中是`[User]`
-        - `400`: 没有该用户
+- `200` OK
 
-- `api/users/:id/basic` : 获取基本信息
+### 删除
 
-    - Method: `GET`
+（仅限管理员）
 
-    - Parameters:
+```
+DELETE /api/users/{id}
+```
 
-    - Response:
-        - `200`: body中是`[Basic_User]`
-        - `400`: 没有该用户
+返回值：
 
-- `api/users/:id/permission` : 获取用户权限
-  
-  - Method: `GET`
-  
-  - Parameters:
-  
-  - Response:
-    - `200`:
+- `200` OK
+- `401` 未登录或权限不足
+- `403` 错误（已删除）
+- `404` 用户不存在
 
-      | Name      | Type   | Description             |
-      | --------  | ------ | ----------------------- |
-      | permission| string | q/a                     |
-    - `400`: 没有该用户
-    
+### 查询
 
-- `api/users/:id` : 修改详细信息
-  
-  - Method: `PUT`
-  
-  - RequestBody:
+```
+GET /api/users/{id}
+```
 
-    | Name        | Type   | Description                       |
-    | --------    | ------ | -----------------------           |
-    | username    | string | not empty, unique       `optional`|
-    | nickname    | string | not empty               `optional`|
-    | email       | string | should be a valid email `optional`|
-    | gender      | string | male/female/unknown     `optional`|
-    | birthday    | string | yy/mm/dd                `optional`|
-    | description | string |                         `optional`|
-    | phone       | string |                         `optional`|
+返回值：
 
+- `200` OK（返回值是单个 User，详细程度见 Model）
+- `401` 未登录
+- `404` 用户不存在（或用户已删除且查询者不是管理员）
 
-  - Response:
-    - `200`:
-    - `400`: 没有该用户
-    - `500`: 没有修改权限
+【预期结果】
+
+（仅限本用户或者管理员）
+
+- `200` OK（返回值是单个 User，详细程度见 Model）
+- `401` 未登录或查询非本人信息
+- `404` 管理员查询用户不存在（已删除也会返回 200）
+
+### 修改
+
+```
+PUT /api/users/{id}
+```
+
+本用户允许参数：`{ nickname, description, phone, gender }`
+
+管理员允许参数：以上 + `{ email, role, balance, price }`
+
+返回值：
+
+- `200` OK
+
+- `401` 未登录或权限不足
+
+- `403` 错误（仅限用户本人修改，管理员修改不做验证）
+
+  | message 属性          | 说明                           |
+  | --------------------- | ------------------------------ |
+  | `NICKNAME_INVALID`    | 昵称格式错误                   |
+  | `DESCRIPTION_INVALID` | 个人说明长度错误（仅限回答者） |
+
+- `404` 管理员修改用户不存在或已删除
 
 
 - `api/users/:id/password` : 修改密码
