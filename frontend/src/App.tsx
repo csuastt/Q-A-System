@@ -7,7 +7,7 @@ import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import AnswererList from "./components/AnswerList";
+import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
 import { useEffect, useState } from "react";
 import authService from "./services/auth.service";

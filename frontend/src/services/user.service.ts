@@ -1,6 +1,6 @@
 import axios from "axios";
 import { UserBasicInfo, UserInfo, UserInfoList } from "./definations";
-import authToken from "./auth.token";
+import AuthService from "../services/auth.service";
 
 class UserService {
     getUserList(
@@ -15,7 +15,7 @@ class UserService {
                     page: page,
                     limit: limit,
                 },
-                headers: authToken(),
+                headers: AuthService.authToken(),
             })
             .then((response) => response.data["users"]);
     }
@@ -26,13 +26,13 @@ class UserService {
 
     getUserInfo(id: number): Promise<UserInfo> {
         return axios
-            .get(`/users/${id}`, { headers: authToken() })
+            .get(`/users/${id}`, { headers: AuthService.authToken() })
             .then((response) => response.data);
     }
 
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
         return axios
-            .get(`/users/${id}/basic`, { headers: authToken() })
+            .get(`/users/${id}/basic`, { headers: AuthService.authToken() })
             .then((response) => response.data);
     }
 
@@ -46,7 +46,7 @@ class UserService {
                 description: info.description,
             },
             {
-                headers: authToken(),
+                headers: AuthService.authToken(),
             }
         );
     }
