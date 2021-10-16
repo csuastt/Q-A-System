@@ -5,8 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
-
 @NoArgsConstructor
 @Data
 public class GetUserResponse {
@@ -17,10 +15,10 @@ public class GetUserResponse {
     private String username;
     @SerializedName("nickname")
     private String nickname;
-    @SerializedName("avatar_url")
+    @SerializedName("avatarUrl")
     private String avatarUrl;
     @SerializedName("createTime")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[XXX][XX]")
+    @JsonFormat(pattern = "yyyy-MM-dd 'T' HH:mm:ss[XXX][XX]")
     private String createTime;
     @SerializedName("email")
     private String email;

@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class BasicUserData {
-    public Long id;
-    public String username;
-    public String nickname;
-    public String avatar_url;
-    public String description;
+    private Long id;
+    private String username;
+    private String nickname;
+    private String avatarUrl;
+    private String description;
 
     /**
      * @param userInfo Construct from restored user
@@ -20,7 +20,7 @@ public class BasicUserData {
         this.id = userInfo.getId();
         this.nickname = userInfo.getNickname();
         this.username = userInfo.getUsername();
-        this.avatar_url = userInfo.getAva_url();
+        this.avatarUrl = userInfo.getAva_url();
         this.description = userInfo.getDescription();
     }
 }

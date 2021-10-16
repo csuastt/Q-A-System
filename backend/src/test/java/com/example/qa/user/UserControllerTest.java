@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -70,7 +69,7 @@ class UserControllerTest {
         LoginResponse response = new Gson().fromJson(loginResult.getResponse().getContentAsString(), LoginResponse.class);
         this.token = response.getToken();
         assertNotNull(response.getToken(), "Token must not be null!");
-        assertEquals(response.getUser().getUsername(), "testUser");
+        assertEquals("testUser", response.getUser().getUsername());
 
         loginRequest.setPassword("pa");
 
@@ -107,8 +106,8 @@ class UserControllerTest {
                 .andReturn();
 
         GetAllResponse response = new Gson().fromJson(getAllResult.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(response.getUsers().size(), 20);
-        assertEquals(response.getUsers().get(0).getId(), 1);
+        assertEquals(20, response.getUsers().size());
+        assertEquals(1, response.getUsers().get(0).getId());
 
         //test for page feature
 
@@ -120,8 +119,8 @@ class UserControllerTest {
                 .andReturn();
 
         GetAllResponse res_one = new Gson().fromJson(page_one.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(res_one.getUsers().size(), 30);
-        assertEquals(res_one.getUsers().get(0).getId(), 1);
+        assertEquals(30, res_one.getUsers().size());
+        assertEquals(1, res_one.getUsers().get(0).getId());
 
         MvcResult page_two = this.mockMvc.perform(get("/api/users")
                         .header("Authorization", "Bearer " + token)
@@ -131,7 +130,7 @@ class UserControllerTest {
                 .andReturn();
 
         GetAllResponse res_two = new Gson().fromJson(page_two.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(res_two.getUsers().size(), 30);
+        assertEquals(30, res_two.getUsers().size());
         assertEquals(res_two.getUsers().get(0).getId(), res_one.getUsers().get(29).getId() + 1);
         assertEquals(res_two.getUsers().get(29).getId(), res_one.getUsers().get(29).getId() + 30);
 
@@ -153,9 +152,10 @@ class UserControllerTest {
                 .andReturn();
 
         GetAllResponse res_ans = new Gson().fromJson(page_ans.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(res_ans.getUsers().size(), 20);
+        assertEquals(20, res_ans.getUsers().size());
         for(var res : res_ans.getUsers()){
-            assertEquals(repository.findById(res.getId()).get().getPermit(), "a");
+            if (repository.findById(res.getId()).isPresent())
+                assertEquals("a", repository.findById(res.getId()).get().getPermit());
         }
 
         //test for not authenticated
@@ -376,13 +376,13 @@ class UserControllerTest {
         }
         var user = repository.findById(1L).get();
 
-        assertEquals(user.getUsername(), "eeeee");
+        assertEquals("eeeee", user.getUsername());
         assertEquals(user.getBirthday(), LocalDate.parse("2000-10-03"));
-        assertEquals(user.getEmail(), "@mails.tsinghua.edu.cn");
-        assertEquals(user.getDescription(), "A student");
-        assertEquals(user.getGender(),"male");
-        assertEquals(user.getPhone(),"1010");
-        assertEquals(user.getNickname(), "little");
+        assertEquals("@mails.tsinghua.edu.cn", user.getEmail());
+        assertEquals("A student", user.getDescription());
+        assertEquals("male", user.getGender());
+        assertEquals("1010", user.getPhone());
+        assertEquals("little", user.getNickname());
 
         //test modify user not existed
         long id = repository.count() + 1;
@@ -460,10 +460,14 @@ class UserControllerTest {
         // initial testUser
         generateAnswerer("testAnswerer_g");
         generateUser("testQuestioner_g");
-        Long id_ans = repository.findByUsernameAndEnable("testAnswerer_g", true)
-                .get().getId();
-        Long id_usr = repository.findByUsernameAndEnable("testQuestioner_g", true)
-                .get().getId();
+        Long id_ans = 1L;
+        Long id_usr = 1L;
+        if (repository.findByUsernameAndEnable("testAnswerer_g", true).isPresent())
+            id_ans = repository.findByUsernameAndEnable("testAnswerer_g", true)
+                    .get().getId();
+        if (repository.findByUsernameAndEnable("testQuestioner_g", true).isPresent())
+            id_usr = repository.findByUsernameAndEnable("testQuestioner_g", true)
+                    .get().getId();
 
         //test for success get
         MvcResult getPriceResult = this.mockMvc.perform(get("/api/users/" + id_ans + "/price")
@@ -471,7 +475,8 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         GetPriceResponse response = new Gson().fromJson(getPriceResult.getResponse().getContentAsString(), GetPriceResponse.class);
-        assertEquals(response.getPrice(), repository.findById(id_ans).get().getPrice());
+        if(repository.findById(id_ans).isPresent())
+            assertEquals(response.getPrice(), repository.findById(id_ans).get().getPrice());
 
         //test for questioner get
         this.mockMvc.perform(get("/api/users/" + id_usr + "/price")
@@ -495,10 +500,14 @@ class UserControllerTest {
         // initial testUser
         generateAnswerer("testAnswerer");
         generateUser("testQuestioner");
-        Long id_ans = repository.findByUsernameAndEnable("testAnswerer", true)
-                .get().getId();
-        Long id_usr = repository.findByUsernameAndEnable("testQuestioner", true)
-                .get().getId();
+        Long id_ans = 1L;
+        Long id_usr = 1L;
+        if(repository.findByUsernameAndEnable("testAnswerer", true).isPresent())
+            id_ans = repository.findByUsernameAndEnable("testAnswerer", true)
+                    .get().getId();
+        if(repository.findByUsernameAndEnable("testQuestioner", true).isPresent())
+            id_usr = repository.findByUsernameAndEnable("testQuestioner", true)
+                    .get().getId();
 
         //test for success modification
         int modifiedPrice = 60;
@@ -509,7 +518,8 @@ class UserControllerTest {
                         .content(new Gson().toJson(modifyPrice)))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertEquals(modifiedPrice, repository.findById(id_ans).get().getPrice());
+        if(repository.findById(id_ans).isPresent())
+            assertEquals(modifiedPrice, repository.findById(id_ans).get().getPrice());
 
         //test for questioner modification
         this.mockMvc.perform(put("/api/users/" + id_usr + "/price")
@@ -539,7 +549,7 @@ class UserControllerTest {
                         .content(new Gson().toJson(modifyPermission)))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertEquals(repository.findById(1L).get().getPermit(), "q");
+        assertEquals("q", repository.findById(1L).get().getPermit());
 
         //test for useless modification
         this.mockMvc.perform(put("/api/users/1/permission")
@@ -548,7 +558,7 @@ class UserControllerTest {
                         .content(new Gson().toJson(modifyPermission)))
                 .andExpect(status().isInternalServerError())
                 .andReturn();
-        assertEquals(repository.findById(1L).get().getPermit(), "q");
+        assertEquals("q", repository.findById(1L).get().getPermit());
 
         //test for not existed user modification
         this.mockMvc.perform(put("/api/users/"+(repository.count() + 1) + "/permission")
@@ -557,7 +567,8 @@ class UserControllerTest {
                         .content(new Gson().toJson(modifyPermission)))
                 .andExpect(status().isBadRequest())
                 .andReturn();
-        assertEquals(repository.findById(1L).get().getPermit(), "q");
+        if (repository.findById(1L).isPresent())
+            assertEquals("q", repository.findById(1L).get().getPermit());
     }
 
     /**

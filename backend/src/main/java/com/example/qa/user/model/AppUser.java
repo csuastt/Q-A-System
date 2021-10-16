@@ -81,22 +81,22 @@ public class AppUser implements UserDetails {
 	 * @param register Request Body when register
 	 */
 	public AppUser(UserAttribute register){
-		if (register.username != null)
-			this.username = register.username;
-		if (register.password != null)
-			this.password = register.password;
-		if (register.birthday != null)
-			this.birthday = LocalDate.parse(register.birthday);
-		if (register.gender != null)
-			this.gender = register.gender;
-		if (register.email != null)
-			this.email = register.email;
-		if (register.nickname != null)
-			this.nickname = register.nickname;
-		if(register.phone != null)
-			this.phone = register.phone;
-		if(register.description != null)
-			this.description = register.description;
+		if (register.getUsername() != null)
+			this.username = register.getUsername();
+		if (register.getPassword() != null)
+			this.password = register.getPassword();
+		if (register.getBirthday() != null)
+			this.birthday = LocalDate.parse(register.getBirthday());
+		if (register.getGender() != null)
+			this.gender = register.getGender();
+		if (register.getEmail() != null)
+			this.email = register.getEmail();
+		if (register.getNickname() != null)
+			this.nickname = register.getNickname();
+		if(register.getPhone() != null)
+			this.phone = register.getPhone();
+		if(register.getDescription() != null)
+			this.description = register.getDescription();
 		this.createTime = ZonedDateTime.now();
 	}
 
@@ -105,20 +105,20 @@ public class AppUser implements UserDetails {
 	 * @param newInfo Request Body when modify
 	 */
 	public void updateUserInfo(UserAttribute newInfo) {
-		if (newInfo.username != null)
-			this.username = newInfo.username;
-		if (newInfo.birthday != null)
-			this.birthday = LocalDate.parse(newInfo.birthday);
-		if (newInfo.gender != null)
-			this.gender = newInfo.gender;
-		if (newInfo.email != null)
-			this.email = newInfo.email;
-		if (newInfo.nickname != null)
-			this.nickname = newInfo.nickname;
-		if(newInfo.phone != null)
-			this.phone = newInfo.phone;
-		if(newInfo.description != null)
-			this.description = newInfo.description;
+		if (newInfo.getUsername() != null)
+			this.username = newInfo.getUsername();
+		if (newInfo.getBirthday() != null)
+			this.birthday = LocalDate.parse(newInfo.getBirthday());
+		if (newInfo.getGender() != null)
+			this.gender = newInfo.getGender();
+		if (newInfo.getEmail() != null)
+			this.email = newInfo.getEmail();
+		if (newInfo.getNickname() != null)
+			this.nickname = newInfo.getNickname();
+		if(newInfo.getPhone() != null)
+			this.phone = newInfo.getPhone();
+		if(newInfo.getDescription() != null)
+			this.description = newInfo.getDescription();
 	}
 
     @Override

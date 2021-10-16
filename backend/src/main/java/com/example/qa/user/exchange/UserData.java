@@ -13,19 +13,19 @@ import java.time.ZonedDateTime;
  */
 @Data
 public class UserData {
-	public Long id;
-	public String username;
-	public String nickname;
-	public String avatar_url;
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss+hh")
-	public ZonedDateTime createTime;
-	public String email;
-	public String gender;
-	public LocalDate birthday;
-	public String description;
-	public String permission;
-	public String phone;
-	public Integer money;
+	private Long id;
+	private String username;
+	private String nickname;
+	private String avatarUrl;
+	@JsonFormat(pattern = "yyyy-MM-dd 'T' HH:mm:ss+hh")
+	private ZonedDateTime createTime;
+	private String email;
+	private String gender;
+	private LocalDate birthday;
+	private String description;
+	private String permission;
+	private String phone;
+	private Integer money;
 
 	/**
 	 * @param appUser Construct from restored user
@@ -34,7 +34,7 @@ public class UserData {
 		this.id = appUser.getId();
 		this.nickname = appUser.getNickname();
 		this.username = appUser.getUsername();
-		this.avatar_url = appUser.getAva_url();
+		this.avatarUrl = appUser.getAva_url();
 		this.createTime = appUser.createTime;
 		this.email = appUser.getEmail();
 		this.gender = appUser.getGender();

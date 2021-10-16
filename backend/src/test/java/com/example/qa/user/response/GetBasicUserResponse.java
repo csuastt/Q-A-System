@@ -13,7 +13,7 @@ public class GetBasicUserResponse {
     private String username;
     @SerializedName("nickname")
     private String nickname;
-    @SerializedName("avatar_url")
+    @SerializedName("avatarUrl")
     private String avatarUrl;
     @SerializedName("description")
     private String description;

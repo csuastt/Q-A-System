@@ -1,6 +1,7 @@
 package com.example.qa.user.exchange;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -8,9 +9,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * With Successful information
  */
 @Data
+@NoArgsConstructor
 @ResponseBody
 public class SuccessResponse {
-    public String message;
+    private String message;
 
     public SuccessResponse(String message){
         this.message = message;

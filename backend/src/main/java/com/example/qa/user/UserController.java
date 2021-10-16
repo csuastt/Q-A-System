@@ -146,7 +146,7 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public SuccessResponse register( @RequestBody UserAttribute registeredUser) {
-        if (userRepository.existsByUsernameAndEnable(registeredUser.username, true))
+        if (userRepository.existsByUsernameAndEnable(registeredUser.getUsername(), true))
             throw new ApiException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
