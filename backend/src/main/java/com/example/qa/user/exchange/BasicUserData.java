@@ -20,7 +20,7 @@ public class BasicUserData {
         this.id = userInfo.getId();
         this.nickname = userInfo.getNickname();
         this.username = userInfo.getUsername();
-        this.avatarUrl = userInfo.getAva_url();
+        this.avatarUrl = userInfo.getAvaUrl();
         this.description = userInfo.getDescription();
     }
 }

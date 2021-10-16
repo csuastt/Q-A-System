@@ -191,7 +191,7 @@ class UserControllerTest {
         }
         var user = repository.findById(1L).get();
         assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
-        assertEquals(response.getAvatarUrl(), user.getAva_url(),"头像路径不正确");
+        assertEquals(response.getAvatarUrl(), user.getAvaUrl(),"头像路径不正确");
         assertEquals(LocalDate.parse(response.getBirthday()), user.getBirthday(),"生日不正确");
         assertEquals(response.getGender(), user.getGender(),"性别不正确");
         assertEquals(response.getId(), user.getId() ,"id不正确");
@@ -228,7 +228,7 @@ class UserControllerTest {
         }
         var user = repository.findById(1L).get();
         assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
-        assertEquals(response.getAvatarUrl(), user.getAva_url(),"头像路径不正确");
+        assertEquals(response.getAvatarUrl(), user.getAvaUrl(),"头像路径不正确");
         assertEquals(response.getId(), user.getId() ,"id不正确");
         assertEquals(response.getNickname(), user.getNickname(), "昵称不正确");
 

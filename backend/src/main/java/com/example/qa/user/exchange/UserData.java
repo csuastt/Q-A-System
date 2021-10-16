@@ -34,7 +34,7 @@ public class UserData {
 		this.id = appUser.getId();
 		this.nickname = appUser.getNickname();
 		this.username = appUser.getUsername();
-		this.avatarUrl = appUser.getAva_url();
+		this.avatarUrl = appUser.getAvaUrl();
 		this.createTime = appUser.createTime;
 		this.email = appUser.getEmail();
 		this.gender = appUser.getGender();

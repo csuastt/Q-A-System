@@ -32,7 +32,7 @@ public class AppUser implements UserDetails {
 	@Column
 	private String username;
 	private String nickname = "";
-	private String ava_url = "";
+	private String avaUrl = "";
 	private String password;
 	private String email = "";
 	private String phone = "";
@@ -62,7 +62,7 @@ public class AppUser implements UserDetails {
 	public AppUser(String username,
 				   String password,
 				   Collection<GrantedAuthority> authorities){
-		this.ava_url = "api/users/avatar/" + 1 + ".png";
+		this.avaUrl = "api/users/avatar/" + 1 + ".png";
 		this.username = username;
 		this.password = password;
 		this.authorities = authorities;
@@ -73,7 +73,7 @@ public class AppUser implements UserDetails {
 	 * init ava path
 	 */
 	public void setAva(){
-		this.ava_url = "api/users/avatar/" + id + ".png";
+		this.avaUrl = "api/users/avatar/" + id + ".png";
 	}
 
 	/**

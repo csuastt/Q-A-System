@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -45,7 +44,7 @@ public class GetAllResponse {
         @SerializedName("description")
         private String description;
         @SerializedName("createTime")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[XXX][XX]")
+        @JsonFormat(pattern = "yyyy-MM-dd 'T' HH:mm:ss[XXX][XX]")
         private String createTime;
         @SerializedName("authorities")
         private List<AuthoritiesDTO> authorities;

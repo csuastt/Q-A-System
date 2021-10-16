@@ -3,7 +3,6 @@ package com.example.qa.user.configuration;
 import com.example.qa.user.security.JwtAuthenticationFilter;
 import com.example.qa.user.security.JwtAuthorizationFilter;
 import com.example.qa.user.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,12 +26,10 @@ public class SpringSecurityConfiguration {
     public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         private final UserService userService;
-        private final ObjectMapper objectMapper;
 
         @Autowired
-        public SecurityConfiguration(UserService userService, ObjectMapper objectMapper) {
+        public SecurityConfiguration(UserService userService) {
             this.userService = userService;
-            this.objectMapper = objectMapper;
         }
 
         /**
@@ -52,7 +49,7 @@ public class SpringSecurityConfiguration {
                     .regexMatchers(HttpMethod.GET,"/api/users?.*answerer=true.*").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper))
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                     .addFilter(new JwtAuthorizationFilter(authenticationManager()))
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
