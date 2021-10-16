@@ -3,6 +3,7 @@ import { Link as RouterLink, Redirect } from "react-router-dom";
 import authService from "../services/auth.service";
 import userService from "../services/user.service";
 import AccountBriefProfile from "./AccountBriefProfile";
+import { UserInfo, UserFullyInfo } from "../services/definations";
 // mui
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -16,16 +17,24 @@ import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
 import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
-import { UserInfo } from "../services/definations";
+import UserCard from "./UserCard";
 
+
+// state interface
 interface ProfileState {
     redirect: string | null;
     userReady: boolean;
     token: string;
-    user: UserInfo | null;
+    user: UserInfo | UserFullyInfo | null;
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
+}
+
+// props interface
+interface ProfileProps {
+    isAdmin: boolean;
+
 }
 
 // gender options
@@ -35,7 +44,7 @@ const gender_options = [
     { value: "unknown", label: "未知" },
 ];
 
-export default class AccountProfile extends Component<any, ProfileState> {
+export default class AccountProfile extends Component<ProfileProps, ProfileState> {
     // now nickname
     private now_nickname = "";
 
@@ -78,20 +87,47 @@ export default class AccountProfile extends Component<any, ProfileState> {
     // if user not found
     // redirect
     componentDidMount() {
-        const currentUser = authService.getCurrentUser();
-
-        if (!currentUser) {
-            // redirect and alert
-            this.handleAlert("error", "非法访问");
-            this.handleRedirect("/");
-            return;
+        if (this.props.isAdmin) {
+            // todo use admin api to get fully info of user
+            // remove this mock code
+            const currentUser = {
+                id: 123213,
+                username: "test",
+                password: "thisIsPassword",
+                nickname: "Nickname",
+                ava_url: "www.ava.com",
+                sign_up_timestamp: 112323333,
+                email: "sdassss@qq.com",
+                phone: "",
+                gender: "unknown",
+                permission: "q",
+                money: 100,
+                description: "This is the description",
+                price: 1222,
+                type: 0
+            };
+            this.setState({
+                user: currentUser,
+                userReady: true,
+            });
+            this.now_nickname = currentUser.nickname;
         }
-        this.setState({
-            // token: authToken(),
-            user: currentUser,
-            userReady: true,
-        });
-        this.now_nickname = currentUser.nickname;
+        else {
+            const currentUser = authService.getCurrentUser();
+
+            if (!currentUser) {
+                // redirect and alert
+                this.handleAlert("error", "非法访问");
+                this.handleRedirect("/");
+                return;
+            }
+            this.setState({
+                // token: authToken(),
+                user: currentUser,
+                userReady: true,
+            });
+            this.now_nickname = currentUser.nickname;
+        }
     }
 
     // text change handler
@@ -116,37 +152,42 @@ export default class AccountProfile extends Component<any, ProfileState> {
         if (temp.phone === "+") {
             temp.phone = "";
         }
-        userService.modifyUserInfo(temp).then(
-            () => {
-                // modify success
-                // refresh nickname
-                // @ts-ignore
-                this.now_nickname = temp.nickname;
-                // alert
-                this.handleAlert("success", "修改成功");
-                // get info again
-                if (this.state.user) {
-                    userService.getUserInfo(this.state.user.id).then(
-                        (response) => {
-                            if (response) {
-                                localStorage.setItem(
-                                    "user",
-                                    JSON.stringify(response)
-                                );
+        // request
+        if (this.props.isAdmin) {
+            // todo make request for admin
+        } else  {
+            userService.modifyUserInfo(temp).then(
+                () => {
+                    // modify success
+                    // refresh nickname
+                    // @ts-ignore
+                    this.now_nickname = temp.nickname;
+                    // alert
+                    this.handleAlert("success", "修改成功");
+                    // get info again
+                    if (this.state.user) {
+                        userService.getUserInfo(this.state.user.id).then(
+                            (response) => {
+                                if (response) {
+                                    localStorage.setItem(
+                                        "user",
+                                        JSON.stringify(response)
+                                    );
+                                }
+                            },
+                            (error) => {
+                                // show the error message
+                                this.handleAlert("error", "网络错误");
                             }
-                        },
-                        (error) => {
-                            // show the error message
-                            this.handleAlert("error", "网络错误");
-                        }
-                    );
+                        );
+                    }
+                },
+                (error) => {
+                    // show the error message
+                    this.handleAlert("error", "网络错误");
                 }
-            },
-            (error) => {
-                // show the error message
-                this.handleAlert("error", "网络错误");
-            }
-        );
+            );
+        }
     }
 
     render() {
