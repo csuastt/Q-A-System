@@ -32,7 +32,7 @@ export default function App() {
         ["/orders", <QuestionList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
-        ["/profile", <AccountProfile />],
+        ["/profile", <AccountProfile isAdmin={true}/>],
         ["/login", <Login login={login} redirect={"/"} isAdmin={false}/>],
         ["/logout", <Logout logout={logout} redirect={"/"} isAdmin={false}/>],
         ["/register", <Register />],

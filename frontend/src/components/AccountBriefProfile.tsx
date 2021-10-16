@@ -10,7 +10,7 @@ import CardContent from "@mui/material/CardContent";
 import { Component } from "react";
 
 interface AccountBriefProfileProps {
-    avatar: string;
+    avatar: string | undefined;
     nickname: string | undefined;
     username: string | undefined;
     permission: string | undefined;

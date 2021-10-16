@@ -17,7 +17,6 @@ import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
 import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
-import UserCard from "./UserCard";
 
 
 // state interface
@@ -199,21 +198,28 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
             <Grid
                 container
                 spacing={4}
+                justifyContent="center"
                 sx={{
                     width: "100%",
                 }}
             >
-                <Grid item md={4} xs={4} mt={2}>
-                    <AccountBriefProfile
-                        avatar={""}
-                        nickname={this.now_nickname}
-                        username={this.state.user?.username}
-                        permission={this.state.user?.permission}
-                        alertHandler={this.handleAlert}
-                        redirectHandler={this.handleRedirect}
-                    />
-                </Grid>
-                <Grid item md={8} xs={8} mt={2}>
+                {
+                    this.props.isAdmin ?
+                    <Grid item md={1} xs={1} mt={2}>
+                        <></>
+                    </Grid> :
+                    <Grid item md={4} xs={8} mt={2}>
+                        <AccountBriefProfile
+                            avatar={this.state.user?.ava_url}
+                            nickname={this.now_nickname}
+                            username={this.state.user?.username}
+                            permission={this.state.user?.permission}
+                            alertHandler={this.handleAlert}
+                            redirectHandler={this.handleRedirect}
+                        />
+                    </Grid>
+                }
+                <Grid item md={8} xs={12} mt={2}>
                     <form noValidate>
                         <Card>
                             <CardHeader
@@ -251,7 +257,6 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                         <TextField
                                             fullWidth
                                             label="昵称"
-                                            required
                                             name="nickname"
                                             onChange={this.handleChange}
                                             value={this.state.user?.nickname}
@@ -265,7 +270,6 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                             label="性别"
                                             name="gender"
                                             onChange={this.handleChange}
-                                            required
                                             select
                                             SelectProps={{ native: true }}
                                             value={this.state.user?.gender}
@@ -286,7 +290,6 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                             fullWidth
                                             label="电话"
                                             name="phone"
-                                            required
                                             sx={{
                                                 "& .MuiPhoneNumber-flagButton":
                                                     {
@@ -323,7 +326,6 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                             fullWidth
                                             label="自我介绍"
                                             name="description"
-                                            required
                                             multiline
                                             onChange={this.handleChange}
                                             rows={4}
