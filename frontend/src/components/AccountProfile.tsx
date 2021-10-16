@@ -159,6 +159,14 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
         if (typeof e === "string") new_user_info["phone"] = e;
         else if (e.target.name === "money" && e.target.value < 0)
             new_user_info["money"] = 0;
+        else if (e.target.name === "price" && e.target.value < this.state.minPrice)
+        { // @ts-ignore
+            new_user_info["price"] = this.state.minPrice;
+        }
+        else if (e.target.name === "price" && e.target.value > this.state.maxPrice)
+        { // @ts-ignore
+            new_user_info["price"] = this.state.maxPrice;
+        }
         // @ts-ignore
         else new_user_info[e.target.name] = e.target.value;
         this.setState({ user: new_user_info });
@@ -198,6 +206,19 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
         // request
         if (this.props.isAdmin) {
             // todo make request for admin
+            // validate all the info
+            if (
+                this.handleChangeUser(
+                    { target: { value: this.state.user.username } }
+                ) &&
+                this.handleChangeUser(
+                    { target: { value: this.state.user.email } }
+                ) &&
+                "password" in this.state.user &&
+                this.handleChangeUser(
+                    { target: { value: this.state.user.password } }
+                )
+            ) {}
         } else  {
             userService.modifyUserInfo(temp).then(
                 () => {
