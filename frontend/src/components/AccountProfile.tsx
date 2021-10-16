@@ -17,7 +17,8 @@ import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
 import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
-import Typography from "@mui/material/Typography";
+import {validate_length, validate_required} from "./Login";
+import {validate_email} from "./Register";
 
 
 // state interface
@@ -31,6 +32,9 @@ interface ProfileState {
     alertContent: string;
     minPrice: number;
     maxPrice: number;
+    error_msg_username: string;
+    error_msg_password: string;
+    error_msg_email: string;
 }
 
 // props interface
@@ -68,11 +72,15 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
             alertContent: "",
             alertType: "error",
             minPrice: 0,
-            maxPrice: 100
+            maxPrice: 100,
+            error_msg_username: "",
+            error_msg_password: "",
+            error_msg_email: ""
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleChangeUser = this.handleChangeUser.bind(this);
     }
 
     // alert handler
@@ -104,7 +112,7 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
             // remove this mock code
             const currentUser = {
                 id: 123213,
-                username: "test",
+                username: "tester123",
                 password: "thisIsPassword",
                 nickname: "Nickname",
                 ava_url: "www.ava.com",
@@ -155,6 +163,27 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
         else new_user_info[e.target.name] = e.target.value;
         this.setState({ user: new_user_info });
     };
+
+    // handle changes on email/username/password
+    handleChangeUser(e: any) {
+        let error = validate_required(e.target.value);
+        if (error === "" && e.target.name === "email") {
+            error = validate_email(e.target.value);
+        } else if (error === "") {
+            error = validate_length(e.target.value);
+        }
+        // set new state
+        const nextUserInfo = { ...this.state.user };
+        // @ts-ignore
+        nextUserInfo[e.target.name] = e.target.value;
+        const nextState = {};
+        // @ts-ignore
+        nextState["error_msg_" + e.target.name] = error;
+        // @ts-ignore
+        nextState["user"] = nextUserInfo;
+        this.setState(nextState);
+        return error === "";
+    }
 
     // submit handler
     handleSubmit() {
@@ -259,11 +288,18 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                                 label="用户名"
                                                 name="username"
                                                 InputProps={
-                                                    {readOnly: false,}
+                                                    {
+                                                        readOnly: false
+                                                    }
                                                 }
-                                                onChange={this.handleChange}
+                                                inputProps={{ maxLength: 15 }}
+                                                onChange={this.handleChangeUser}
                                                 required
                                                 value={this.state.user?.username}
+                                                // @ts-ignore
+                                                error={this.state.error_msg_username.length !== 0}
+                                                // @ts-ignore
+                                                helperText={this.state.error_msg_username}
                                                 variant="outlined"
                                             /> :
                                             <TextField
@@ -289,9 +325,14 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                                         readOnly: false,
                                                     }}
                                                     value={this.state.user?.email}
-                                                    onChange={this.handleChange}
+                                                    onChange={this.handleChangeUser}
                                                     required
                                                     variant="outlined"
+                                                    // @ts-ignore
+                                                    error={this.state.error_msg_email.length !== 0}
+                                                    // @ts-ignore
+                                                    helperText={this.state.error_msg_email}
+                                                    inputProps={{ maxLength: 30 }}
                                                 /> :
                                                 <TextField
                                                     fullWidth
@@ -314,10 +355,15 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                                             fullWidth
                                                             label="密码"
                                                             name="password"
-                                                            onChange={this.handleChange}
+                                                            onChange={this.handleChangeUser}
                                                             required
                                                             value={this.state.user?.password}
                                                             variant="outlined"
+                                                            // @ts-ignore
+                                                            error={this.state.error_msg_password.length !== 0}
+                                                            // @ts-ignore
+                                                            helperText={this.state.error_msg_password}
+                                                            inputProps={{ maxLength: 15 }}
                                                         />
                                                     </Grid>
                                                     <Grid item md={6} xs={12}>
