@@ -6,8 +6,6 @@ import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -28,7 +26,6 @@ import java.util.Optional;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final Logger logger = LoggerFactory.getLogger("UserControl");
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -39,18 +36,18 @@ public class UserController {
 
     /**
      * @permission          Authenticated
-     * @param is_answerer   Whether answerers
+     * @param isAnswerer   Whether answerers
      * @param page          Page Number
      * @param limit         Item Number
      * @return              A List of AppUser requested
      */
     @GetMapping("/api/users")
-    public GetAllData getUsers(@RequestParam(value = "answerer", defaultValue = "false")Boolean is_answerer,
+    public GetAllData getUsers(@RequestParam(value = "answerer", defaultValue = "false")Boolean isAnswerer,
                                @RequestParam(value = "page", defaultValue = "1")Integer page,
                                @RequestParam(value = "limit", defaultValue = "20")Integer limit)
     {
         var response = new GetAllData();
-        if(!is_answerer) {
+        if(Boolean.FALSE.equals(isAnswerer)) {
             for (var user : userRepository.findAll(limit, (page - 1) * limit)) {
                 response.getUsers().add(new BasicUserData(user));
             }
@@ -146,7 +143,7 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public SuccessResponse register( @RequestBody UserAttribute registeredUser) {
-        if (userRepository.existsByUsernameAndEnable(registeredUser.username, true))
+        if (userRepository.existsByUsernameAndEnable(registeredUser.getUsername(), true))
             throw new ApiException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
@@ -190,8 +187,8 @@ public class UserController {
         Optional<AppUser> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long cu_id = Long.parseLong((String) auth.getPrincipal());
-        if(!id.equals(cu_id)){
+        Long cuId = Long.parseLong((String) auth.getPrincipal());
+        if(!id.equals(cuId)){
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "没有修改权限");
         }
         checkValidationModify(modifiedUser);

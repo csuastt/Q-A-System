@@ -74,7 +74,7 @@ public class ManagerController {
 
     @PostMapping("/api/managers")
     public RedirectView register(@RequestParam(value = "managername") String managername, @RequestParam(value = "password") String password) {
-        if (managerRepository.existsByManagername(managername))
+        if (managerRepository.existsByManagerName(managername))
             throw new ApiException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("manager"));

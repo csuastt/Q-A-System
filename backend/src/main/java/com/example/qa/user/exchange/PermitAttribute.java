@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PermitAttribute {
-    public String permit;
+    private String permit;
 
     public PermitAttribute(String permit){
         this.permit = permit;
