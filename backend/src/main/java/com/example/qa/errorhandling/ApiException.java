@@ -1,22 +1,27 @@
 package com.example.qa.errorhandling;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
-public class ApiException extends ResponseStatusException {
+@Getter
+public class ApiException extends RuntimeException {
+    HttpStatus status;
+    String message;
+
     public ApiException(HttpStatus status) {
-        super(status);
+        this(status, null);
     }
 
     public ApiException(int rawStatusCode) {
-        super(HttpStatus.valueOf(rawStatusCode));
+        this(rawStatusCode, null);
     }
 
     public ApiException(HttpStatus status, String message) {
-        super(status, message);
+        this.status = status;
+        this.message = message;
     }
 
     public ApiException(int rawStatusCode, String message) {
-        super(HttpStatus.valueOf(rawStatusCode), message);
+        this(HttpStatus.valueOf(rawStatusCode), message);
     }
 }
