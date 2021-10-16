@@ -11,9 +11,15 @@ import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 import { Link as RouterLink } from "react-router-dom";
 
@@ -49,11 +55,14 @@ interface LoginState {
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
     redirect: string | null;
+    openDialog: boolean;
 }
 
 // props interface
 interface LoginProps {
     login: () => void;
+    isAdmin: boolean;
+    redirect: string;
 }
 
 export default class Login extends Component<LoginProps, LoginState> {
@@ -61,6 +70,8 @@ export default class Login extends Component<LoginProps, LoginState> {
         super(props);
         // handle login info
         this.handleLogin = this.handleLogin.bind(this);
+        this.handleCloseDialog = this.handleCloseDialog.bind(this);
+        this.handleOpenDialog = this.handleOpenDialog.bind(this);
         // state
         this.state = {
             username: "",
@@ -71,6 +82,7 @@ export default class Login extends Component<LoginProps, LoginState> {
             alertContent: "",
             alertType: "error",
             redirect: null,
+            openDialog: false,
         };
     }
 
@@ -106,8 +118,16 @@ export default class Login extends Component<LoginProps, LoginState> {
                 "password"
             )
         ) {
+            let service;
+            if (this.props.isAdmin) {
+                // todo substitute it with admin service
+                service = AuthService;
+            } else {
+                service = AuthService;
+            }
+
             // login request
-            AuthService.login(this.state.username, this.state.password).then(
+            service.login(this.state.username, this.state.password).then(
                 () => {
                     // login success
                     // alert
@@ -120,7 +140,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                     this.props.login();
                     // redirect
                     this.setState({
-                        redirect: "/",
+                        redirect: this.props.redirect,
                     });
                 },
                 (error) => {
@@ -143,6 +163,14 @@ export default class Login extends Component<LoginProps, LoginState> {
         }
     }
 
+    handleOpenDialog() {
+        this.setState({ openDialog: true });
+    }
+
+    handleCloseDialog() {
+        this.setState({ openDialog: false });
+    }
+
     render() {
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />;
@@ -161,10 +189,14 @@ export default class Login extends Component<LoginProps, LoginState> {
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-                        <LockOutlinedIcon />
+                        {this.props.isAdmin ? (
+                            <SupervisedUserCircleIcon />
+                        ) : (
+                            <LockOutlinedIcon />
+                        )}
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        登录
+                        {this.props.isAdmin ? "管理员登录" : "登录"}
                     </Typography>
                     <Box
                         component="form"
@@ -212,8 +244,18 @@ export default class Login extends Component<LoginProps, LoginState> {
                         >
                             登录
                         </Button>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
+                    </Box>
+                    <Grid container justifyContent="flex-end">
+                        <Grid item>
+                            {this.props.isAdmin ? (
+                                <Link
+                                    variant="body2"
+                                    component="button"
+                                    onClick={this.handleOpenDialog}
+                                >
+                                    还没有账号？请联系超级管理员
+                                </Link>
+                            ) : (
                                 <Link
                                     variant="body2"
                                     component={RouterLink}
@@ -221,10 +263,31 @@ export default class Login extends Component<LoginProps, LoginState> {
                                 >
                                     还没有账号？快速注册
                                 </Link>
-                            </Grid>
+                            )}
                         </Grid>
-                    </Box>
+                    </Grid>
                 </Box>
+                <Dialog
+                    open={this.state.openDialog}
+                    onClose={this.handleCloseDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"如何成为管理员"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            在当前机制下，管理员无法自行注册。只有超级管理员才能添加其他管理员。
+                            如果您想成为管理员，请联系超级管理员将您添加到管理员列表中。
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleCloseDialog} autoFocus>
+                            我知道了
+                        </Button>
+                    </DialogActions>
+                </Dialog>
                 <Snackbar
                     autoHideDuration={2000}
                     open={this.state.alert}

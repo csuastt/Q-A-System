@@ -23,10 +23,26 @@ export interface UserInfo {
     email: string;
     phone: string;
     gender: string;
-    birthday: string;
     permission: string;
     money: number;
     description: string;
+    type: UserType;
+}
+
+export interface UserFullyInfo {
+    id: number;
+    username: string;
+    password: string;
+    nickname: string;
+    ava_url: string;
+    sign_up_timestamp: number;
+    email: string;
+    phone: string;
+    gender: string;
+    permission: string;
+    money: number;
+    description: string;
+    price: number;
     type: UserType;
 }
 

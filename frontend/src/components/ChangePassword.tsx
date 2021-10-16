@@ -14,7 +14,7 @@ import Alert from "@mui/material/Alert";
 // validators
 import { validate_required, validate_length } from "./Login";
 import { validate_second_password } from "./Register";
-// redirector
+// router
 import { Link as RouterLink, Redirect } from "react-router-dom";
 
 // state interface
@@ -32,6 +32,13 @@ interface ChangePasswordState {
     redirect: null | string;
 }
 
+// props interface
+interface ChangePasswordProps {
+    isAdmin: boolean;
+    redirectConfirm: string;
+    redirectCancel: string;
+}
+
 // password validator
 const validate_origin_password = (value: any, origin: string) => {
     if (value === origin) {
@@ -42,7 +49,7 @@ const validate_origin_password = (value: any, origin: string) => {
 };
 
 export default class ChangePassword extends Component<
-    any,
+    ChangePasswordProps,
     ChangePasswordState
 > {
     constructor(props: any) {
@@ -69,16 +76,22 @@ export default class ChangePassword extends Component<
     // if user not found
     // redirect
     componentDidMount() {
-        const currentUser = AuthService.getCurrentUser();
+        if (this.props.isAdmin) {
+            // todo
+            // you need to init admin id first
+            // refer to what I've done below
+        } else {
+            const currentUser = AuthService.getCurrentUser();
 
-        if (!currentUser) {
-            // that means a bug occur
-            console.error("Try to change password without login!");
-            return;
+            if (!currentUser) {
+                // that means a bug occur
+                console.error("Try to change password without login!");
+                return;
+            }
+            this.setState({
+                id: currentUser.id,
+            });
         }
-        this.setState({
-            id: currentUser.id,
-        });
     }
 
     // listener on old_password/password/ensure_password
@@ -129,42 +142,52 @@ export default class ChangePassword extends Component<
                 "ensure_password"
             )
         ) {
+            let service;
+            if (this.props.isAdmin) {
+                // todo substitute it with admin service
+                service = AuthService;
+            } else {
+                service = AuthService;
+            }
+
             // changing request
-            AuthService.modifyPassword(
-                this.state.id,
-                this.state.old_password,
-                this.state.password
-            ).then(
-                () => {
-                    // modify success
-                    // alert
-                    this.setState({
-                        alert: true,
-                        alertType: "success",
-                        alertContent: "修改成功",
-                    });
-                    // then logout
-                    this.setState({
-                        redirect: "/logout",
-                    });
-                },
-                (error) => {
-                    // show the error message
-                    if (error.response.status === 403) {
+            service
+                .modifyPassword(
+                    this.state.id,
+                    this.state.old_password,
+                    this.state.password
+                )
+                .then(
+                    () => {
+                        // modify success
+                        // alert
                         this.setState({
                             alert: true,
-                            alertType: "error",
-                            alertContent: "原密码不正确",
+                            alertType: "success",
+                            alertContent: "修改成功",
                         });
-                    } else {
+                        // then logout
                         this.setState({
-                            alert: true,
-                            alertType: "error",
-                            alertContent: "网络错误",
+                            redirect: this.props.redirectConfirm,
                         });
+                    },
+                    (error) => {
+                        // show the error message
+                        if (error.response.status === 403) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "原密码不正确",
+                            });
+                        } else {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "网络错误",
+                            });
+                        }
                     }
-                }
-            );
+                );
         }
     }
 
@@ -189,7 +212,7 @@ export default class ChangePassword extends Component<
                         <VpnKeyIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        修改密码
+                        {this.props.isAdmin ? "修改管理员密码" : "修改密码"}
                     </Typography>
                     <Box
                         component="form"
@@ -268,7 +291,7 @@ export default class ChangePassword extends Component<
                             variant="contained"
                             sx={{ mt: 1, mb: 2 }}
                             component={RouterLink}
-                            to="/profile"
+                            to={this.props.redirectCancel}
                         >
                             取消修改
                         </Button>

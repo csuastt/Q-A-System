@@ -1,12 +1,12 @@
 import axios from "axios";
 import { CreationResult, OrderList } from "./definations";
-import authToken from "./auth.token";
+import AuthService from "../services/auth.service";
 
 class OrderService {
     getOrdersOfUser(userId: number): Promise<OrderList> {
         return axios
             .get("/orders", {
-                headers: authToken(),
+                headers: AuthService.authToken(),
             })
             .then((response) => response.data);
     }
@@ -25,7 +25,7 @@ class OrderService {
                     question: question,
                 },
                 {
-                    headers: authToken(),
+                    headers: AuthService.authToken(),
                 }
             )
             .then((response) => response.data);
