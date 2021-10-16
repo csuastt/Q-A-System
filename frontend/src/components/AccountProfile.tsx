@@ -17,9 +17,8 @@ import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
 import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
-import {validate_length, validate_required} from "./Login";
-import {validate_email} from "./Register";
-
+import { validate_length, validate_required } from "./Login";
+import { validate_email } from "./Register";
 
 // state interface
 interface ProfileState {
@@ -40,7 +39,6 @@ interface ProfileState {
 // props interface
 interface ProfileProps {
     isAdmin: boolean;
-
 }
 
 // gender options
@@ -53,10 +51,13 @@ const gender_options = [
 // permission options
 const permission_options = [
     { value: "q", label: "提问者" },
-    { value: "a", label: "问答者" }
+    { value: "a", label: "问答者" },
 ];
 
-export default class AccountProfile extends Component<ProfileProps, ProfileState> {
+export default class AccountProfile extends Component<
+    ProfileProps,
+    ProfileState
+> {
     // now nickname
     private now_nickname = "";
 
@@ -75,7 +76,7 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
             maxPrice: 100,
             error_msg_username: "",
             error_msg_password: "",
-            error_msg_email: ""
+            error_msg_email: "",
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
@@ -124,15 +125,14 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                 money: 100,
                 description: "This is the description",
                 price: 50,
-                type: 0
+                type: 0,
             };
             this.setState({
                 user: currentUser,
                 userReady: true,
             });
             this.now_nickname = currentUser.nickname;
-        }
-        else {
+        } else {
             const currentUser = authService.getCurrentUser();
 
             if (!currentUser) {
@@ -159,12 +159,17 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
         if (typeof e === "string") new_user_info["phone"] = e;
         else if (e.target.name === "money" && e.target.value < 0)
             new_user_info["money"] = 0;
-        else if (e.target.name === "price" && e.target.value < this.state.minPrice)
-        { // @ts-ignore
+        else if (
+            e.target.name === "price" &&
+            e.target.value < this.state.minPrice
+        ) {
+            // @ts-ignore
             new_user_info["price"] = this.state.minPrice;
-        }
-        else if (e.target.name === "price" && e.target.value > this.state.maxPrice)
-        { // @ts-ignore
+        } else if (
+            e.target.name === "price" &&
+            e.target.value > this.state.maxPrice
+        ) {
+            // @ts-ignore
             new_user_info["price"] = this.state.maxPrice;
         }
         // @ts-ignore
@@ -208,18 +213,19 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
             // todo make request for admin
             // validate all the info
             if (
-                this.handleChangeUser(
-                    { target: { value: this.state.user.username } }
-                ) &&
-                this.handleChangeUser(
-                    { target: { value: this.state.user.email } }
-                ) &&
+                this.handleChangeUser({
+                    target: { value: this.state.user.username },
+                }) &&
+                this.handleChangeUser({
+                    target: { value: this.state.user.email },
+                }) &&
                 "password" in this.state.user &&
-                this.handleChangeUser(
-                    { target: { value: this.state.user.password } }
-                )
-            ) {}
-        } else  {
+                this.handleChangeUser({
+                    target: { value: this.state.user.password },
+                })
+            ) {
+            }
+        } else {
             userService.modifyUserInfo(temp).then(
                 () => {
                     // modify success
@@ -268,11 +274,11 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                     width: "100%",
                 }}
             >
-                {
-                    this.props.isAdmin ?
+                {this.props.isAdmin ? (
                     <Grid item md={1} xs={1} mt={2}>
                         <></>
-                    </Grid> :
+                    </Grid>
+                ) : (
                     <Grid item md={4} xs={8} mt={2}>
                         <AccountBriefProfile
                             avatar={this.state.user?.ava_url}
@@ -283,135 +289,172 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                             redirectHandler={this.handleRedirect}
                         />
                     </Grid>
-                }
+                )}
                 <Grid item md={8} xs={12} mt={2}>
                     <form noValidate>
                         <Card>
-                            {
-                                this.props.isAdmin ?
+                            {this.props.isAdmin ? (
                                 <CardHeader
                                     subheader="在下方编辑并点击保存即可修改该用户的信息~"
                                     title="用户信息"
-                                /> :
+                                />
+                            ) : (
                                 <CardHeader
                                     subheader="在下方编辑并点击保存即可修改个人信息~"
                                     title="个人信息"
                                 />
-                            }
+                            )}
                             <Divider />
                             <CardContent>
                                 <Grid container spacing={3}>
                                     <Grid item md={6} xs={12}>
-                                        {
-                                            this.props.isAdmin ?
+                                        {this.props.isAdmin ? (
                                             <TextField
                                                 fullWidth
                                                 label="用户名"
                                                 name="username"
-                                                InputProps={
-                                                    {
-                                                        readOnly: false
-                                                    }
-                                                }
+                                                InputProps={{
+                                                    readOnly: false,
+                                                }}
                                                 inputProps={{ maxLength: 15 }}
                                                 onChange={this.handleChangeUser}
                                                 required
-                                                value={this.state.user?.username}
+                                                value={
+                                                    this.state.user?.username
+                                                }
                                                 // @ts-ignore
-                                                error={this.state.error_msg_username.length !== 0}
+                                                error={
+                                                    this.state
+                                                        .error_msg_username
+                                                        .length !== 0
+                                                }
                                                 // @ts-ignore
-                                                helperText={this.state.error_msg_username}
+                                                helperText={
+                                                    this.state
+                                                        .error_msg_username
+                                                }
                                                 variant="outlined"
-                                            /> :
+                                            />
+                                        ) : (
                                             <TextField
                                                 fullWidth
                                                 label="用户名"
                                                 name="username"
-                                                InputProps={
-                                                    {readOnly: true,}
+                                                InputProps={{ readOnly: true }}
+                                                value={
+                                                    this.state.user?.username
                                                 }
-                                                value={this.state.user?.username}
                                                 variant="outlined"
                                             />
-                                        }
+                                        )}
                                     </Grid>
                                     <Grid item md={6} xs={12}>
-                                        {
-                                            this.props.isAdmin ?
-                                                <TextField
-                                                    fullWidth
-                                                    label="邮箱"
-                                                    name="email"
-                                                    InputProps={{
-                                                        readOnly: false,
-                                                    }}
-                                                    value={this.state.user?.email}
-                                                    onChange={this.handleChangeUser}
-                                                    required
-                                                    variant="outlined"
-                                                    // @ts-ignore
-                                                    error={this.state.error_msg_email.length !== 0}
-                                                    // @ts-ignore
-                                                    helperText={this.state.error_msg_email}
-                                                    inputProps={{ maxLength: 30 }}
-                                                /> :
-                                                <TextField
-                                                    fullWidth
-                                                    label="邮箱"
-                                                    name="email"
-                                                    InputProps={{
-                                                        readOnly: true,
-                                                    }}
-                                                    value={this.state.user?.email}
-                                                    variant="outlined"
-                                                />
-                                        }
+                                        {this.props.isAdmin ? (
+                                            <TextField
+                                                fullWidth
+                                                label="邮箱"
+                                                name="email"
+                                                InputProps={{
+                                                    readOnly: false,
+                                                }}
+                                                value={this.state.user?.email}
+                                                onChange={this.handleChangeUser}
+                                                required
+                                                variant="outlined"
+                                                // @ts-ignore
+                                                error={
+                                                    this.state.error_msg_email
+                                                        .length !== 0
+                                                }
+                                                // @ts-ignore
+                                                helperText={
+                                                    this.state.error_msg_email
+                                                }
+                                                inputProps={{ maxLength: 30 }}
+                                            />
+                                        ) : (
+                                            <TextField
+                                                fullWidth
+                                                label="邮箱"
+                                                name="email"
+                                                InputProps={{
+                                                    readOnly: true,
+                                                }}
+                                                value={this.state.user?.email}
+                                                variant="outlined"
+                                            />
+                                        )}
                                     </Grid>
-                                    {
-                                        (this.props.isAdmin && this.state.user && "password" in this.state.user) ?
-                                            (
-                                                <>
-                                                    <Grid item md={6} xs={12}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="密码"
-                                                            name="password"
-                                                            onChange={this.handleChangeUser}
-                                                            required
-                                                            value={this.state.user?.password}
-                                                            variant="outlined"
-                                                            // @ts-ignore
-                                                            error={this.state.error_msg_password.length !== 0}
-                                                            // @ts-ignore
-                                                            helperText={this.state.error_msg_password}
-                                                            inputProps={{ maxLength: 15 }}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item md={6} xs={12}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="权限"
-                                                            name="permission"
-                                                            onChange={this.handleChange}
-                                                            select
-                                                            SelectProps={{ native: true }}
-                                                            value={this.state.user?.permission}
-                                                            variant="outlined"
-                                                        >
-                                                            {permission_options.map((option) => (
-                                                                <option
-                                                                    key={option.value}
-                                                                    value={option.value}
-                                                                >
-                                                                    {option.label}
-                                                                </option>
-                                                            ))}
-                                                        </TextField>
-                                                    </Grid>
-                                                </>
-                                            ) :
-                                            <></>
-                                    }
+                                    {this.props.isAdmin &&
+                                    this.state.user &&
+                                    "password" in this.state.user ? (
+                                        <>
+                                            <Grid item md={6} xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="密码"
+                                                    name="password"
+                                                    onChange={
+                                                        this.handleChangeUser
+                                                    }
+                                                    required
+                                                    value={
+                                                        this.state.user
+                                                            ?.password
+                                                    }
+                                                    variant="outlined"
+                                                    // @ts-ignore
+                                                    error={
+                                                        this.state
+                                                            .error_msg_password
+                                                            .length !== 0
+                                                    }
+                                                    // @ts-ignore
+                                                    helperText={
+                                                        this.state
+                                                            .error_msg_password
+                                                    }
+                                                    inputProps={{
+                                                        maxLength: 15,
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item md={6} xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="权限"
+                                                    name="permission"
+                                                    onChange={this.handleChange}
+                                                    select
+                                                    SelectProps={{
+                                                        native: true,
+                                                    }}
+                                                    value={
+                                                        this.state.user
+                                                            ?.permission
+                                                    }
+                                                    variant="outlined"
+                                                >
+                                                    {permission_options.map(
+                                                        (option) => (
+                                                            <option
+                                                                key={
+                                                                    option.value
+                                                                }
+                                                                value={
+                                                                    option.value
+                                                                }
+                                                            >
+                                                                {option.label}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </TextField>
+                                            </Grid>
+                                        </>
+                                    ) : (
+                                        <></>
+                                    )}
                                     <Grid item md={6} xs={12}>
                                         <TextField
                                             fullWidth
@@ -469,79 +512,86 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                             onChange={this.handleChange}
                                             type="number"
                                             InputProps={
-                                                this.props.isAdmin ?
-                                                {
-                                                    inputProps: {
-                                                        min: 0
-                                                    },
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            ￥
-                                                        </InputAdornment>
-                                                    ),
-                                                } : {
-                                                    readOnly: true,
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            ￥
-                                                        </InputAdornment>
-                                                    ),
-                                                }
+                                                this.props.isAdmin
+                                                    ? {
+                                                          inputProps: {
+                                                              min: 0,
+                                                          },
+                                                          startAdornment: (
+                                                              <InputAdornment position="start">
+                                                                  ￥
+                                                              </InputAdornment>
+                                                          ),
+                                                      }
+                                                    : {
+                                                          readOnly: true,
+                                                          startAdornment: (
+                                                              <InputAdornment position="start">
+                                                                  ￥
+                                                              </InputAdornment>
+                                                          ),
+                                                      }
                                             }
                                             value={this.state.user?.money}
                                             variant="outlined"
                                         />
                                     </Grid>
-                                    {
-                                        (this.props.isAdmin && this.state.user && this.state.user.permission === "a" && "price" in this.state.user) ?
-                                            <>
-                                                <Grid item md={6} xs={12}
-                                                >
-                                                    <TextField
-                                                        fullWidth
-                                                        label="定价区间"
-                                                        name="min_max_price"
-                                                        InputProps={
-                                                            {
-                                                                readOnly: true,
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start">
-                                                                        ￥
-                                                                    </InputAdornment>
-                                                                ),
-                                                            }
-                                                        }
-                                                        value={this.state.minPrice.toString() + " - " + this.state.maxPrice}
-                                                        variant="outlined"
-                                                    />
-                                                </Grid>
-                                                <Grid item md={6} xs={12}>
-                                                    <TextField
-                                                        fullWidth
-                                                        label="提问定价"
-                                                        name="price"
-                                                        onChange={this.handleChange}
-                                                        type="number"
-                                                        InputProps={
-                                                            {
-                                                                inputProps: {
-                                                                    min: this.state.minPrice,
-                                                                    max: this.state.maxPrice
-                                                                },
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start">
-                                                                        ￥/次
-                                                                    </InputAdornment>
-                                                                ),
-                                                            }
-                                                        }
-                                                        value={this.state.user?.price}
-                                                        variant="outlined"
-                                                    />
-                                                </Grid>
-                                            </>:
-                                            <></>
-                                    }
+                                    {this.props.isAdmin &&
+                                    this.state.user &&
+                                    this.state.user.permission === "a" &&
+                                    "price" in this.state.user ? (
+                                        <>
+                                            <Grid item md={6} xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="定价区间"
+                                                    name="min_max_price"
+                                                    InputProps={{
+                                                        readOnly: true,
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                ￥
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    value={
+                                                        this.state.minPrice.toString() +
+                                                        " - " +
+                                                        this.state.maxPrice
+                                                    }
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item md={6} xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="提问定价"
+                                                    name="price"
+                                                    onChange={this.handleChange}
+                                                    type="number"
+                                                    InputProps={{
+                                                        inputProps: {
+                                                            min: this.state
+                                                                .minPrice,
+                                                            max: this.state
+                                                                .maxPrice,
+                                                        },
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                ￥/次
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    value={
+                                                        this.state.user?.price
+                                                    }
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                        </>
+                                    ) : (
+                                        <></>
+                                    )}
                                     <Grid item md={12} xs={12}>
                                         <TextField
                                             fullWidth
@@ -570,20 +620,20 @@ export default class AccountProfile extends Component<ProfileProps, ProfileState
                                     spacing={1}
                                     justifyContent={"flex-end"}
                                 >
-                                    {
-                                        this.props.isAdmin ?
-                                            <></> :
-                                            <Grid item>
-                                                <Button
-                                                    color="error"
-                                                    variant="contained"
-                                                    component={RouterLink}
-                                                    to="/change_password"
-                                                >
-                                                    修改密码
-                                                </Button>
-                                            </Grid>
-                                    }
+                                    {this.props.isAdmin ? (
+                                        <></>
+                                    ) : (
+                                        <Grid item>
+                                            <Button
+                                                color="error"
+                                                variant="contained"
+                                                component={RouterLink}
+                                                to="/change_password"
+                                            >
+                                                修改密码
+                                            </Button>
+                                        </Grid>
+                                    )}
                                     <Grid item>
                                         <Button
                                             color="primary"

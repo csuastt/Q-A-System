@@ -3,9 +3,9 @@ import authService from "../services/auth.service";
 import { Redirect } from "react-router-dom";
 
 const Logout: React.FC<{
-    logout: () => void,
-    redirect: string,
-    isAdmin: boolean
+    logout: () => void;
+    redirect: string;
+    isAdmin: boolean;
 }> = (props) => {
     if (props.isAdmin) {
         // todo

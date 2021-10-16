@@ -11,15 +11,15 @@ import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 import { Link as RouterLink } from "react-router-dom";
 
@@ -82,7 +82,7 @@ export default class Login extends Component<LoginProps, LoginState> {
             alertContent: "",
             alertType: "error",
             redirect: null,
-            openDialog: false
+            openDialog: false,
         };
     }
 
@@ -164,12 +164,12 @@ export default class Login extends Component<LoginProps, LoginState> {
     }
 
     handleOpenDialog() {
-        this.setState({openDialog: true});
-    };
+        this.setState({ openDialog: true });
+    }
 
     handleCloseDialog() {
-        this.setState({openDialog: false});
-    };
+        this.setState({ openDialog: false });
+    }
 
     render() {
         if (this.state.redirect) {
@@ -189,10 +189,11 @@ export default class Login extends Component<LoginProps, LoginState> {
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-                        {this.props.isAdmin ?
-                            <SupervisedUserCircleIcon /> :
+                        {this.props.isAdmin ? (
+                            <SupervisedUserCircleIcon />
+                        ) : (
                             <LockOutlinedIcon />
-                        }
+                        )}
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         {this.props.isAdmin ? "管理员登录" : "登录"}
@@ -246,24 +247,23 @@ export default class Login extends Component<LoginProps, LoginState> {
                     </Box>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            {
-                                this.props.isAdmin ?
-                                    <Link
-                                        variant="body2"
-                                        component="button"
-                                        onClick={this.handleOpenDialog}
-                                    >
-                                        还没有账号？请联系超级管理员
-                                    </Link> :
-                                    <Link
-                                        variant="body2"
-                                        component={RouterLink}
-                                        to="/register"
-                                    >
-                                        还没有账号？快速注册
-                                    </Link>
-                            }
-
+                            {this.props.isAdmin ? (
+                                <Link
+                                    variant="body2"
+                                    component="button"
+                                    onClick={this.handleOpenDialog}
+                                >
+                                    还没有账号？请联系超级管理员
+                                </Link>
+                            ) : (
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/register"
+                                >
+                                    还没有账号？快速注册
+                                </Link>
+                            )}
                         </Grid>
                     </Grid>
                 </Box>
@@ -283,7 +283,9 @@ export default class Login extends Component<LoginProps, LoginState> {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleCloseDialog} autoFocus>我知道了</Button>
+                        <Button onClick={this.handleCloseDialog} autoFocus>
+                            我知道了
+                        </Button>
                     </DialogActions>
                 </Dialog>
                 <Snackbar

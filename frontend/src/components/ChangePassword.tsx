@@ -151,41 +151,43 @@ export default class ChangePassword extends Component<
             }
 
             // changing request
-            service.modifyPassword(
-                this.state.id,
-                this.state.old_password,
-                this.state.password
-            ).then(
-                () => {
-                    // modify success
-                    // alert
-                    this.setState({
-                        alert: true,
-                        alertType: "success",
-                        alertContent: "修改成功",
-                    });
-                    // then logout
-                    this.setState({
-                        redirect: this.props.redirectConfirm,
-                    });
-                },
-                (error) => {
-                    // show the error message
-                    if (error.response.status === 403) {
+            service
+                .modifyPassword(
+                    this.state.id,
+                    this.state.old_password,
+                    this.state.password
+                )
+                .then(
+                    () => {
+                        // modify success
+                        // alert
                         this.setState({
                             alert: true,
-                            alertType: "error",
-                            alertContent: "原密码不正确",
+                            alertType: "success",
+                            alertContent: "修改成功",
                         });
-                    } else {
+                        // then logout
                         this.setState({
-                            alert: true,
-                            alertType: "error",
-                            alertContent: "网络错误",
+                            redirect: this.props.redirectConfirm,
                         });
+                    },
+                    (error) => {
+                        // show the error message
+                        if (error.response.status === 403) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "原密码不正确",
+                            });
+                        } else {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "网络错误",
+                            });
+                        }
                     }
-                }
-            );
+                );
         }
     }
 
