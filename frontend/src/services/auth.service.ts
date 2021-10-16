@@ -1,5 +1,4 @@
 import axios from "axios";
-import authToken from "./auth-token";
 
 class AuthService {
     login(username: string, password: string) {
@@ -27,7 +26,7 @@ class AuthService {
             "/user/logout",
             {},
             {
-                headers: authToken(),
+                headers: this.authToken(),
             }
         );
     }
@@ -53,9 +52,14 @@ class AuthService {
                 password: password,
             },
             {
-                headers: authToken(),
+                headers: this.authToken(),
             }
         );
+    }
+
+    authToken() {
+        const storedToken: string | null = localStorage.getItem("token");
+        return storedToken ? { Authorization: `Bearer ${storedToken}` } : {};
     }
 }
 

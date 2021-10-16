@@ -1,5 +1,6 @@
 package com.example.qa.order;
 
+import com.example.qa.errorhandling.ApiException;
 import com.example.qa.order.exchange.AcceptData;
 import com.example.qa.order.exchange.OrderData;
 import com.example.qa.order.exchange.OrderEditData;
@@ -11,7 +12,6 @@ import com.example.qa.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -41,7 +41,7 @@ public class OrderController {
     public void delete(@PathVariable(value = "id") long id) {
         Order order = getById(id, true);
         if (order.isDeleted()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new ApiException(HttpStatus.FORBIDDEN);
         }
         order.setDeleted(true);
         orderRepository.save(order);
@@ -67,7 +67,7 @@ public class OrderController {
     public void review(@PathVariable(value = "id") long id, @RequestBody AcceptData data) {
         Order order = getById(id, false);
         if (order.getState() != OrderState.PAYED) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
+            throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
         }
         order.setState(data.isAccept() ? OrderState.REVIEWED : OrderState.REJECTED_BY_REVIEWER);
         orderRepository.save(order);
@@ -79,7 +79,7 @@ public class OrderController {
         Order order = getById(id, false);
         // TODO: 检查是否是回答者
         if (order.getState() != OrderState.REVIEWED) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
+            throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
         }
         order.setState(data.isAccept() ? OrderState.ACCEPTED : OrderState.REJECTED_BY_ANSWERER);
         orderRepository.save(order);
@@ -91,7 +91,7 @@ public class OrderController {
         Order order = getById(id, false);
         // TODO: 检查是否是合法的操作者
         if (order.getState() != OrderState.ANSWERED) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "NOT_TO_BE_ENDED");
+            throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_ENDED");
         }
         order.setState(OrderState.CHAT_ENDED);
         orderRepository.save(order);
@@ -106,7 +106,7 @@ public class OrderController {
     private Order getById(long id, boolean allowDeleted) {
         Optional<Order> order = orderRepository.findById(id);
         if (order.isEmpty() || (order.get().isDeleted() && !allowDeleted)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ApiException(HttpStatus.NOT_FOUND);
         }
         return order.get();
     }
@@ -114,21 +114,21 @@ public class OrderController {
     private AppUser[] checkOrderData(OrderEditData data, Order original) {
         boolean isCreation = original == null;
         if (isCreation && (data.getAsker() == null || data.getAnswerer() == null || data.getQuestion() == null)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ApiException(HttpStatus.BAD_REQUEST);
         }
         long newAsker = isCreation || data.getAsker() != null ? data.getAsker() : original.getAsker().getId();
         if (!userRepository.existsByIdAndEnable(newAsker, true)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ASKER_INVALID");
+            throw new ApiException(HttpStatus.FORBIDDEN, "ASKER_INVALID");
         }
         long newAnswerer = isCreation || data.getAnswerer() != null ? data.getAnswerer() : original.getAnswerer().getId();
         if (newAsker == newAnswerer
                 || !userRepository.existsByIdAndEnable(newAnswerer, true)
                 || !userRepository.getById(newAnswerer).getPermit().equals("a")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ANSWERER_INVALID");
+            throw new ApiException(HttpStatus.FORBIDDEN, "ANSWERER_INVALID");
         }
         String newQuestion = isCreation || data.getQuestion() != null ? data.getQuestion() : original.getQuestion();
         if (newQuestion == null || newQuestion.length() < 5 || newQuestion.length() > 100) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "QUESTION_INVALID");
+            throw new ApiException(HttpStatus.FORBIDDEN, "QUESTION_INVALID");
         }
         return new AppUser[]{userRepository.getById(newAsker), userRepository.getById(newAnswerer)};
     }

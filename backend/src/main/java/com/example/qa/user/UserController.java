@@ -1,12 +1,11 @@
 package com.example.qa.user;
 
+import com.example.qa.errorhandling.ApiException;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.AppUser;
 import com.example.qa.user.repository.UserRepository;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -15,7 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +26,6 @@ import java.util.Optional;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final Logger logger = LoggerFactory.getLogger("UserControl");
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -39,18 +36,18 @@ public class UserController {
 
     /**
      * @permission          Authenticated
-     * @param is_answerer   Whether answerers
+     * @param isAnswerer   Whether answerers
      * @param page          Page Number
      * @param limit         Item Number
      * @return              A List of AppUser requested
      */
     @GetMapping("/api/users")
-    public GetAllData getUsers(@RequestParam(value = "answerer", defaultValue = "false")Boolean is_answerer,
+    public GetAllData getUsers(@RequestParam(value = "answerer", defaultValue = "false")Boolean isAnswerer,
                                @RequestParam(value = "page", defaultValue = "1")Integer page,
                                @RequestParam(value = "limit", defaultValue = "20")Integer limit)
     {
         var response = new GetAllData();
-        if(!is_answerer) {
+        if(Boolean.FALSE.equals(isAnswerer)) {
             for (var user : userRepository.findAll(limit, (page - 1) * limit)) {
                 response.getUsers().add(new BasicUserData(user));
             }
@@ -113,11 +110,11 @@ public class UserController {
                 userRepository.save(user);
                 return new SuccessResponse("删除成功");
             }catch (Exception e){
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "数据库出错");
+                throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "数据库出错");
             }
 
         }else{
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户不存在");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "用户不存在");
         }
     }
 
@@ -135,7 +132,7 @@ public class UserController {
             ImageIO.write(img, "png", bao);
             return bao.toByteArray();
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -146,8 +143,8 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public SuccessResponse register( @RequestBody UserAttribute registeredUser) {
-        if (userRepository.existsByUsernameAndEnable(registeredUser.username, true))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        if (userRepository.existsByUsernameAndEnable(registeredUser.getUsername(), true))
+            throw new ApiException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
         checkValidation(registeredUser);
@@ -162,20 +159,20 @@ public class UserController {
 
     private void checkValidation(@RequestBody UserAttribute registeredUser) {
         if(registeredUser.getUsername() == null || registeredUser.getUsername().length() < 4)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于4");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "用户名长度小于4");
         if(registeredUser.getNickname() != null && registeredUser.getNickname().length() > 10)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度大于10");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "昵称长度大于10");
         if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female") && !registeredUser.getGender().equals("unknown")))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
     private void checkValidationModify(@RequestBody UserAttribute registeredUser) {
         if(registeredUser.getNickname() != null && registeredUser.getNickname().length() > 10)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "昵称长度大于10");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "昵称长度大于10");
         if(registeredUser.getUsername() != null && registeredUser.getUsername().length() < 4)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "用户名长度小于4");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "用户名长度小于4");
         if(registeredUser.getGender() != null && (!registeredUser.getGender().equals("male") && !registeredUser.getGender().equals("female") && !registeredUser.getGender().equals("unknown")))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "性别错误");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
     /**
@@ -190,9 +187,9 @@ public class UserController {
         Optional<AppUser> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long cu_id = Long.parseLong((String) auth.getPrincipal());
-        if(!id.equals(cu_id)){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "没有修改权限");
+        Long cuId = Long.parseLong((String) auth.getPrincipal());
+        if(!id.equals(cuId)){
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "没有修改权限");
         }
         checkValidationModify(modifiedUser);
         optionalUser.get().updateUserInfo(modifiedUser);
@@ -218,7 +215,7 @@ public class UserController {
         }
 
         userRepository.save(optionalUser.get());
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "原密码不正确");
+        throw new ApiException(HttpStatus.FORBIDDEN, "原密码不正确");
     }
 
     /**
@@ -232,7 +229,7 @@ public class UserController {
         checkActivity(optionalUser);
         var user = optionalUser.get();
         if(user.getPermit().equals("q"))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new ApiException(HttpStatus.FORBIDDEN);
         return new PriceAttribute(user.getPrice());
     }
 
@@ -249,7 +246,7 @@ public class UserController {
         checkActivity(optionalUser);
         var user = optionalUser.get();
         if(user.getPermit().equals("q"))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new ApiException(HttpStatus.FORBIDDEN);
         user.setPrice(modifyPrice.getPrice());
         userRepository.save(user);
         return new SuccessResponse("修改价格成功");
@@ -269,7 +266,7 @@ public class UserController {
         var user = optionalUser.get();
         String permit = modifyPermit.getPermit();
         if(user.getPermit().equals(permit))
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "无效修改");
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "无效修改");
         user.setPermit(permit);
         userRepository.save(user);
         return new SuccessResponse("修改用户权限成功");
@@ -281,6 +278,6 @@ public class UserController {
      */
     private void checkActivity(Optional<AppUser> optionalUser) {
         if (optionalUser.isEmpty()|| !optionalUser.get().getEnable())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "未找到用户");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "未找到用户");
     }
 }

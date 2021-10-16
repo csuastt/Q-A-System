@@ -14,8 +14,8 @@ public class ManagerData {
     public ManagerData(AppManager appManager) {
         this.id = appManager.getId();
         this.nickname = appManager.getNickname();
-        this.managername = appManager.getManagername();
-        this.create_up_timestamp = appManager.create_up_timestamp;
+        this.managername = appManager.getManagerName();
+        this.create_up_timestamp = appManager.getCreateTime();
         this.email = appManager.getEmail();
         this.phone = appManager.getPhone();
         this.permission = appManager.getPermission();

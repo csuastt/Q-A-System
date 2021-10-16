@@ -29,7 +29,7 @@
   | id                | Long   | unique, auto generated  | 
   | username          | string | not empty, unique       |
   | nickname          | string | empty, or max_len < 10  |
-  | ava_url           | string |                         |
+  | avaUrl            | string |                         |
   | description       | string |                         |
  
 

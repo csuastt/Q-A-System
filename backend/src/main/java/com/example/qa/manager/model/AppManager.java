@@ -25,40 +25,40 @@ public class AppManager implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
-    private String managername;
+    private String managerName;
     private String password;
     private String nickname = "";
     private String permission = "observer";
     private String email = "";
     private String phone = "";
-    public Long create_up_timestamp;
+    private Long createTime;
 
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Collection<GrantedAuthority> authorities;
 
 
-    public AppManager(String managername,
+    public AppManager(String managerName,
                    String password,
                    Collection<GrantedAuthority> authorities){
-        this.managername = managername;
+        this.managerName = managerName;
         this.password = password;
         this.authorities = authorities;
-        this.create_up_timestamp = Instant.now().getEpochSecond();
+        this.createTime = Instant.now().getEpochSecond();
     }
 
-    public AppManager(String managername,
+    public AppManager(String managerName,
                       String password,
                       Collection<GrantedAuthority> authorities,
                       String permission,
                       String email,
                       String phone,
                       String nickname) {
-        this.managername = managername;
+        this.managerName = managerName;
         this.password = password;
         this.authorities = authorities;
         this.permission = permission;
-        this.create_up_timestamp = Instant.now().getEpochSecond();
+        this.createTime = Instant.now().getEpochSecond();
         this.email = email;
         this.nickname = nickname;
         this.phone = phone;
@@ -68,7 +68,7 @@ public class AppManager implements UserDetails {
 
     public void updateManagerInfo(ModifyManagerAttribute newInfo) {
         if (newInfo.managername != null)
-            this.managername = newInfo.managername;
+            this.managerName = newInfo.managername;
         if (newInfo.permission != null)
             this.permission = newInfo.permission;
         if (newInfo.password != null)
@@ -117,12 +117,12 @@ public class AppManager implements UserDetails {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         AppManager appManager = (AppManager) o;
-        return Objects.equals(managername, appManager.managername);
+        return Objects.equals(managerName, appManager.managerName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(managername,password,permission,email, phone,nickname);
+        return Objects.hash(managerName,password,permission,email, phone,nickname);
     }
 
 

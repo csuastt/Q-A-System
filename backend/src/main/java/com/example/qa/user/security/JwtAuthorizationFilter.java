@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -69,7 +68,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 var authorities = ((List<?>) parsedToken.getBody()
                     .get("rol")).stream()
                     .map(authority -> new SimpleGrantedAuthority((String) authority))
-                    .collect(Collectors.toList());
+                    .toList();
 
                 if (StringUtils.isNotEmpty(username)) {
                     return new UsernamePasswordAuthenticationToken(username, null, authorities);

@@ -93,8 +93,8 @@ class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         OrderData result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
-        assertEquals(result.getAsker().id, askerId);
-        assertEquals(result.getAnswerer().id, answererId);
+        assertEquals(result.getAsker().getId(), askerId);
+        assertEquals(result.getAnswerer().getId(), answererId);
         assertEquals(result.getQuestion(), question);
         assertEquals(result.getState(), OrderState.CREATED);
         return result.getId();

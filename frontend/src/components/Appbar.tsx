@@ -73,15 +73,15 @@ const Appbar: React.FC<{ isAuthenticated: boolean }> = (props) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
-    const IconButtonWrapper: React.FC<{ to: string }> = (props) => {
+    const IconButtonWrapper: React.FC<{ to: string }> = (wrapperProps) => {
         return (
             <IconButton
                 size="large"
                 color="inherit"
                 component={RouterLink}
-                to={props.to}
+                to={wrapperProps.to}
             >
-                {props.children}
+                {wrapperProps.children}
             </IconButton>
         );
     };
