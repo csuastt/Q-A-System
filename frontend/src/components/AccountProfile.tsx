@@ -601,6 +601,16 @@ export default class AccountProfile extends Component<
                                             onChange={this.handleChange}
                                             rows={4}
                                             value={this.state.user?.description}
+                                            InputProps={
+                                                ((!this.props.isAdmin) && this.state.user &&
+                                                    this.state.user.permission === "a")
+                                                    ? {
+                                                        readOnly: true,
+                                                    }
+                                                    : {
+                                                        readOnly: false
+                                                    }
+                                            }
                                             placeholder="快来介绍一下你自己吧~"
                                             variant="outlined"
                                         />
