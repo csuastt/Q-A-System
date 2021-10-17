@@ -281,6 +281,7 @@ export default class AccountProfile extends Component<
                 ) : (
                     <Grid item md={4} xs={8} mt={2}>
                         <AccountBriefProfile
+                            id={this.state.user?.id}
                             avatar={this.state.user?.ava_url}
                             nickname={this.now_nickname}
                             username={this.state.user?.username}
