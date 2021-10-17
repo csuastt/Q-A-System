@@ -1,4 +1,4 @@
-package com.example.qa.user.utils;
+package com.example.qa.security;
 
 public final class SecurityConstants {
 
@@ -10,9 +10,9 @@ public final class SecurityConstants {
     // JWT token defaults
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String TOKEN_TYPE = "JWT";
-    public static final String TOKEN_ISSUER = "secure-api";
-    public static final String TOKEN_AUDIENCE = "secure-app";
+
+    public static final String ROLE_USER = "user";
+    public static final String ROLE_ADMIN = "admin";
 
     private SecurityConstants() {
         throw new IllegalStateException("Cannot create instance of static util class");
