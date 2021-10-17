@@ -84,17 +84,4 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return deleted;
     }
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		AppUser appUser = (AppUser) o;
-		return Objects.equals(username, appUser.username);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(username,password, email, phone, birthday, gender, nickname);
-	}
 }
