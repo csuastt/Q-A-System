@@ -24,6 +24,31 @@ class UserService {
         return Promise.all(ids.map((id) => this.getUserInfo(id)));
     }
 
+    applyAnswerer(id: number, description: string, price: number) {
+        return axios.post(
+            `/users/${id}/apply`,
+            {
+                description: description,
+                price: price,
+            },
+            {
+                headers: AuthService.authToken(),
+            }
+        );
+    }
+
+    modifyPrice(id: number, price: number) {
+        return axios.put(
+            `/users/${id}`,
+            {
+                price: price,
+            },
+            {
+                headers: AuthService.authToken(),
+            }
+        );
+    }
+
     getUserInfo(id: number): Promise<UserInfo> {
         return axios
             .get(`/users/${id}`, { headers: AuthService.authToken() })

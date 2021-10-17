@@ -281,12 +281,15 @@ export default class AccountProfile extends Component<
                 ) : (
                     <Grid item md={4} xs={8} mt={2}>
                         <AccountBriefProfile
+                            id={this.state.user?.id}
                             avatar={this.state.user?.ava_url}
                             nickname={this.now_nickname}
                             username={this.state.user?.username}
                             permission={this.state.user?.permission}
                             alertHandler={this.handleAlert}
                             redirectHandler={this.handleRedirect}
+                            minPrice={this.state.minPrice}
+                            maxPrice={this.state.maxPrice}
                         />
                     </Grid>
                 )}
@@ -565,7 +568,7 @@ export default class AccountProfile extends Component<
                                             <Grid item md={6} xs={12}>
                                                 <TextField
                                                     fullWidth
-                                                    label="提问定价"
+                                                    label="回答定价"
                                                     name="price"
                                                     onChange={this.handleChange}
                                                     type="number"
@@ -595,12 +598,24 @@ export default class AccountProfile extends Component<
                                     <Grid item md={12} xs={12}>
                                         <TextField
                                             fullWidth
-                                            label="自我介绍"
+                                            label="个人介绍"
                                             name="description"
                                             multiline
                                             onChange={this.handleChange}
                                             rows={4}
                                             value={this.state.user?.description}
+                                            InputProps={
+                                                !this.props.isAdmin &&
+                                                this.state.user &&
+                                                this.state.user.permission ===
+                                                    "a"
+                                                    ? {
+                                                          readOnly: true,
+                                                      }
+                                                    : {
+                                                          readOnly: false,
+                                                      }
+                                            }
                                             placeholder="快来介绍一下你自己吧~"
                                             variant="outlined"
                                         />
