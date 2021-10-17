@@ -7,7 +7,7 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import Divider from "@mui/material/Divider";
 import CardContent from "@mui/material/CardContent";
-import { Component } from "react";
+import React, { Component } from "react";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -46,7 +46,9 @@ export default class AccountBriefProfile extends Component<
             openPriceDialog: false
         };
         this.handleCloseApplyDialog = this.handleCloseApplyDialog.bind(this);
+        this.handleOpenApplyDialog = this.handleOpenApplyDialog.bind(this);
         this.handleClosePriceDialog = this.handleClosePriceDialog.bind(this);
+        this.handleOpenPriceDialog = this.handleOpenPriceDialog.bind(this);
     }
 
     handleLogout() {
@@ -113,36 +115,51 @@ export default class AccountBriefProfile extends Component<
                     </CardContent>
                     <Divider />
                     <CardActions>
-                        <Button
-                            color="error"
-                            fullWidth
-                            variant="text"
-                            onClick={this.handleLogout.bind(this)}
-                        >
-                            退出登录
-                        </Button>
+                        {
+                            this.props.permission === "q" ?
+                            <Button
+                                color="primary"
+                                fullWidth
+                                variant="text"
+                                onClick={this.handleOpenApplyDialog}
+                            >
+                                问答者申请
+                            </Button> :
+                            <Button
+                                color="primary"
+                                fullWidth
+                                variant="text"
+                                onClick={this.handleOpenPriceDialog}
+                            >
+                                修改定价
+                            </Button>
+                        }
                     </CardActions>
                 </Card>
-                <Dialog open={this.state.openApplyDialog} onClose={this.handleCloseApplyDialog}>
-                    <DialogTitle>Subscribe</DialogTitle>
+                <Dialog fullWidth open={this.state.openApplyDialog} onClose={this.handleCloseApplyDialog}>
+                    <DialogTitle>申请成为问答者</DialogTitle>
                     <DialogContent>
-                        <DialogContentText>
-                            To subscribe to this website, please enter your email address here. We
-                            will send updates occasionally.
+                        <DialogContentText mb={3}>
+                            在申请成为问答者前，请重新填写您的个人介绍。
+                            个人介绍是审核的重要根据，并且在提交成功后<Box component="span" fontWeight='fontWeightBold'>不可修改</Box>。
+                            优秀的、有展示性的个人介绍能帮助您获得更多提问者的青睐。
                         </DialogContentText>
                         <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Email Address"
-                            type="email"
                             fullWidth
-                            variant="standard"
+                            autoFocus
+                            label="个人介绍"
+                            name="description"
+                            multiline
+                            // onChange={this.handleChange}
+                            rows={4}
+                            // value={this.state.description}
+                            placeholder="快来介绍一下你自己吧~"
+                            variant="outlined"
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleCloseApplyDialog}>Cancel</Button>
-                        <Button onClick={this.handleCloseApplyDialog}>Subscribe</Button>
+                        <Button onClick={this.handleCloseApplyDialog} color="error">取消</Button>
+                        <Button onClick={this.handleCloseApplyDialog}>提交</Button>
                     </DialogActions>
                 </Dialog>
             </>

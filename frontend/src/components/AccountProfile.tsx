@@ -595,7 +595,7 @@ export default class AccountProfile extends Component<
                                     <Grid item md={12} xs={12}>
                                         <TextField
                                             fullWidth
-                                            label="自我介绍"
+                                            label="个人介绍"
                                             name="description"
                                             multiline
                                             onChange={this.handleChange}
