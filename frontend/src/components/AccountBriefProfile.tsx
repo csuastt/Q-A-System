@@ -14,6 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
 
 interface AccountBriefProfileProps {
     avatar: string | undefined;
@@ -25,6 +26,8 @@ interface AccountBriefProfileProps {
         arg2: string
     ) => void;
     redirectHandler: (arg1: string) => void;
+    minPrice: number;
+    maxPrice: number;
 }
 
 interface AccountBriefProfileState {
@@ -160,6 +163,49 @@ export default class AccountBriefProfile extends Component<
                     <DialogActions>
                         <Button onClick={this.handleCloseApplyDialog} color="error">取消</Button>
                         <Button onClick={this.handleCloseApplyDialog}>提交</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog maxWidth={"xs"} open={this.state.openPriceDialog} onClose={this.handleClosePriceDialog}>
+                    <DialogTitle>修改回答定价</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText mb={3}>
+                            您可以在任何时候修改您的回答定价。
+                            在当前机制下，
+                            回答定价最高不能超过
+                            <Box component="span" fontWeight='fontWeightBold'>
+                                {this.props.maxPrice}
+                            </Box>￥/次，
+                            最低不能低于
+                            <Box component="span" fontWeight='fontWeightBold'>{
+                                this.props.minPrice}
+                            </Box>￥/次。
+                        </DialogContentText>
+                        <TextField
+                            fullWidth
+                            label="回答定价"
+                            name="price"
+                            // onChange={this.handleChange}
+                            type="number"
+                            InputProps={{
+                                inputProps: {
+                                    min: this.props
+                                        .minPrice,
+                                    max: this.props
+                                        .maxPrice,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        ￥/次
+                                    </InputAdornment>
+                                ),
+                            }}
+                            // value={this.state.user?.price}
+                            variant="outlined"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleClosePriceDialog} color="error">取消</Button>
+                        <Button onClick={this.handleClosePriceDialog}>提交</Button>
                     </DialogActions>
                 </Dialog>
             </>

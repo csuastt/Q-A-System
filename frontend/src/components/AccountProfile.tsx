@@ -287,6 +287,8 @@ export default class AccountProfile extends Component<
                             permission={this.state.user?.permission}
                             alertHandler={this.handleAlert}
                             redirectHandler={this.handleRedirect}
+                            minPrice={this.state.minPrice}
+                            maxPrice={this.state.maxPrice}
                         />
                     </Grid>
                 )}
@@ -565,7 +567,7 @@ export default class AccountProfile extends Component<
                                             <Grid item md={6} xs={12}>
                                                 <TextField
                                                     fullWidth
-                                                    label="提问定价"
+                                                    label="回答定价"
                                                     name="price"
                                                     onChange={this.handleChange}
                                                     type="number"
