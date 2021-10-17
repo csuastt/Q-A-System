@@ -2,7 +2,7 @@ package com.example.qa.user;
 
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.user.exchange.*;
-import com.example.qa.user.model.AppUser;
+import com.example.qa.user.model.User;
 import com.example.qa.user.repository.UserRepository;
 import com.talanlabs.avatargenerator.Avatar;
 import com.talanlabs.avatargenerator.IdenticonAvatar;
@@ -28,22 +28,14 @@ import java.util.Optional;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final Logger logger = LoggerFactory.getLogger("UserControl");
     private final PasswordEncoder passwordEncoder;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * @permission          Authenticated
-     * @param is_answerer   Whether answerers
-     * @param page          Page Number
-     * @param limit         Item Number
-     * @return              A List of AppUser requested
-     */
     @GetMapping("/api/users")
     public GetAllData getUsers(@RequestParam(value = "answerer", defaultValue = "false")Boolean is_answerer,
                                @RequestParam(value = "page", defaultValue = "1")Integer page,
@@ -62,48 +54,28 @@ public class UserController {
         return response;
     }
 
-    /**
-     * @permission          Authenticated
-     * @param id            Unique to specify a user
-     *@return               Basic information for required user
-     */
     @GetMapping("/api/users/{id}/basic")
     public BasicUserData getBasicUser(@PathVariable(value = "id") Long id){
-        Optional<AppUser> optionalUser = userRepository.findById(id);
+        Optional<User> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         return new BasicUserData(optionalUser.get());
     }
 
-    /**
-     * @permission Authentication
-     * @param id   Unique to specify a user
-     * @return     Detailed information for required user
-     */
     @GetMapping("/api/users/{id}")
-    public UserData getUser(@PathVariable(value = "id") Long id) {
-        Optional<AppUser> optionalUser = userRepository.findById(id);
+    public UserResponse getUser(@PathVariable(value = "id") Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
-        return new UserData(optionalUser.get());
+        return new UserResponse(optionalUser.get());
     }
 
-    /**
-     * @permission Authentication
-     * @param id   Unique to specify a user
-     * @return     Permission of the required user
-     */
     @GetMapping("/api/users/{id}/permission")
     public PermitAttribute permitQuest(@PathVariable(value = "id") Long id){
-        Optional<AppUser> optionalUser = userRepository.findById(id);
+        Optional<User> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         String permit = optionalUser.get().getPermit();
         return new PermitAttribute(permit);
     }
 
-    /**
-     * @permission Authentication
-     * @param id   Unique to specify a user
-     * @return     Success or Not Found
-     */
     @DeleteMapping("/api/users")
     public SuccessResponse deleteUser(@RequestParam(value = "id") Long id) {
         if(userRepository.existsByIdAndEnable(id, true)){
@@ -121,37 +93,14 @@ public class UserController {
         }
     }
 
-    /**
-     * @permission Authenticated
-     * @param id   Unique to specify a user
-     * @return     A generated avatar for the specific user
-     */
-    @GetMapping(value = "/api/users/avatar/{id}.png", produces = "image/png")
-    public @ResponseBody byte[] genAvatar(@PathVariable(value = "id") Long id)  {
-        try {
-            Avatar avatar = IdenticonAvatar.newAvatarBuilder().build();
-            var img = avatar.create((id + "Q & A backend").hashCode());
-            ByteArrayOutputStream bao = new ByteArrayOutputStream();
-            ImageIO.write(img, "png", bao);
-            return bao.toByteArray();
-        } catch (IOException e) {
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * @permission            Public
-     * @param registeredUser  Body to register
-     * @return                Success or not
-     */
     @PostMapping("/api/users")
-    public SuccessResponse register( @RequestBody UserAttribute registeredUser) {
+    public SuccessResponse register( @RequestBody UserRequest registeredUser) {
         if (userRepository.existsByUsernameAndEnable(registeredUser.username, true))
             throw new ApiException(HttpStatus.FORBIDDEN);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
         checkValidation(registeredUser);
-        AppUser userInfo = new AppUser(registeredUser);
+        User userInfo = new User(registeredUser);
         userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
         userInfo.setAuthorities(authorities);
         userRepository.save(userInfo);
@@ -160,7 +109,7 @@ public class UserController {
         return new SuccessResponse("注册成功");
     }
 
-    private void checkValidation(@RequestBody UserAttribute registeredUser) {
+    private void checkValidation(@RequestBody UserRequest registeredUser) {
         if(registeredUser.getUsername() == null || registeredUser.getUsername().length() < 4)
             throw new ApiException(HttpStatus.BAD_REQUEST, "用户名长度小于4");
         if(registeredUser.getNickname() != null && registeredUser.getNickname().length() > 10)
@@ -169,7 +118,7 @@ public class UserController {
             throw new ApiException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
-    private void checkValidationModify(@RequestBody UserAttribute registeredUser) {
+    private void checkValidationModify(@RequestBody UserRequest registeredUser) {
         if(registeredUser.getNickname() != null && registeredUser.getNickname().length() > 10)
             throw new ApiException(HttpStatus.BAD_REQUEST, "昵称长度大于10");
         if(registeredUser.getUsername() != null && registeredUser.getUsername().length() < 4)
@@ -178,16 +127,10 @@ public class UserController {
             throw new ApiException(HttpStatus.BAD_REQUEST, "性别错误");
     }
 
-    /**
-     * @permission          Authenticated
-     * @param id            Unique to specify a user
-     * @param modifiedUser  Body for modification
-     * @return              Success or not
-     */
     @PutMapping("/api/users/{id}")
     public SuccessResponse modifyUser(@PathVariable(value = "id") Long id,
-                                      @RequestBody UserAttribute modifiedUser){
-        Optional<AppUser> optionalUser = userRepository.findById(id);
+                                      @RequestBody UserRequest modifiedUser){
+        Optional<User> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long cu_id = Long.parseLong((String) auth.getPrincipal());
@@ -200,16 +143,10 @@ public class UserController {
         return new SuccessResponse("修改成功");
     }
 
-    /**
-     * @permission          Authenticated
-     * @param id            Unique to specify a user
-     * @param modifiedUser  Body for password modification
-     * @return              Success or Origin not match
-     */
     @PutMapping("/api/users/{id}/password")
     public SuccessResponse modifyPass(@PathVariable(value = "id") Long id,
-                                      @RequestBody ModifyPasswordAttribute modifiedUser) {
-        Optional<AppUser> optionalUser = userRepository.findById(id);
+                                      @RequestBody ChangePasswordRequest modifiedUser) {
+        Optional<User> optionalUser = userRepository.findById(id);
         checkActivity(optionalUser);
         if(passwordEncoder.matches(modifiedUser.getOrigin(),optionalUser.get().getPassword())){
             optionalUser.get().setPassword(passwordEncoder.encode(modifiedUser.getPassword()));
@@ -221,65 +158,7 @@ public class UserController {
         throw new ApiException(HttpStatus.FORBIDDEN, "原密码不正确");
     }
 
-    /**
-     * @permission    Authenticated and be an answerer
-     * @param id      Unique to specify a user
-     * @return        Price of the required user
-     */
-    @GetMapping("/api/users/{id}/price")
-    public PriceAttribute getPrice(@PathVariable(value = "id") Long id){
-        Optional<AppUser> optionalUser = userRepository.findById(id);
-        checkActivity(optionalUser);
-        var user = optionalUser.get();
-        if(user.getPermit().equals("q"))
-            throw new ApiException(HttpStatus.FORBIDDEN);
-        return new PriceAttribute(user.getPrice());
-    }
-
-    /**
-     * @permission          Authenticated
-     * @param id            Unique to specify a user
-     * @param modifyPrice   Price to pass
-     * @return              Success or not authenticated
-     */
-    @PutMapping("/api/users/{id}/price")
-    public SuccessResponse modifyPrice(@PathVariable(value = "id") Long id,
-                                       @RequestBody PriceAttribute modifyPrice){
-        Optional<AppUser> optionalUser = userRepository.findById(id);
-        checkActivity(optionalUser);
-        var user = optionalUser.get();
-        if(user.getPermit().equals("q"))
-            throw new ApiException(HttpStatus.FORBIDDEN);
-        user.setPrice(modifyPrice.getPrice());
-        userRepository.save(user);
-        return new SuccessResponse("修改价格成功");
-    }
-
-    /**
-     * @permission          Authenticated
-     * @param id            Unique to specify a user
-     * @param modifyPermit  Permit to be modified
-     * @return              Success or useless
-     */
-    @PutMapping("/api/users/{id}/permission")
-    public SuccessResponse modifyPermission(@PathVariable(value = "id") Long id,
-                                            @RequestBody PermitAttribute modifyPermit){
-        Optional<AppUser> optionalUser = userRepository.findById(id);
-        checkActivity(optionalUser);
-        var user = optionalUser.get();
-        String permit = modifyPermit.getPermit();
-        if(user.getPermit().equals(permit))
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "无效修改");
-        user.setPermit(permit);
-        userRepository.save(user);
-        return new SuccessResponse("修改用户权限成功");
-    }
-
-    /**
-     * Check if it is a soft_deleted user or not existed
-     * @param optionalUser   The user to test
-     */
-    private void checkActivity(Optional<AppUser> optionalUser) {
+    private void checkActivity(Optional<User> optionalUser) {
         if (optionalUser.isEmpty()|| !optionalUser.get().getEnable())
             throw new ApiException(HttpStatus.BAD_REQUEST, "未找到用户");
     }
