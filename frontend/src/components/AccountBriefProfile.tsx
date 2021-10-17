@@ -35,6 +35,7 @@ interface AccountBriefProfileState {
     openApplyDialog: boolean;
     openPriceDialog: boolean;
     description: string;
+    price: number;
     error_msg: string;
 }
 
@@ -51,6 +52,7 @@ export default class AccountBriefProfile extends Component<
             openApplyDialog: false,
             openPriceDialog: false,
             description: "",
+            price: 50,
             error_msg: ""
         };
         this.handleCloseApplyDialog = this.handleCloseApplyDialog.bind(this);
@@ -58,6 +60,7 @@ export default class AccountBriefProfile extends Component<
         this.handleClosePriceDialog = this.handleClosePriceDialog.bind(this);
         this.handleOpenPriceDialog = this.handleOpenPriceDialog.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+        this.handlePriceChange = this.handlePriceChange.bind(this);
     }
 
 
@@ -86,6 +89,17 @@ export default class AccountBriefProfile extends Component<
         nextState["error_msg"] = error;
         this.setState(nextState);
         return error === "";
+    }
+
+    handlePriceChange(e: any) {
+        let value = e.target.value;
+        if (value < this.props.minPrice)
+            value = this.props.minPrice;
+        else if (value > this.props.maxPrice)
+            value = this.props.maxPrice;
+        this.setState({
+            price: value
+        });
     }
 
     render() {
@@ -197,7 +211,7 @@ export default class AccountBriefProfile extends Component<
                             fullWidth
                             label="回答定价"
                             name="price"
-                            // onChange={this.handleChange}
+                            onChange={this.handlePriceChange}
                             type="number"
                             InputProps={{
                                 inputProps: {
@@ -212,7 +226,7 @@ export default class AccountBriefProfile extends Component<
                                     </InputAdornment>
                                 ),
                             }}
-                            // value={this.state.user?.price}
+                            value={this.state.price}
                             variant="outlined"
                         />
                     </DialogContent>
