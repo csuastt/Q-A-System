@@ -15,6 +15,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
+import {validate_required} from "./Login";
 
 interface AccountBriefProfileProps {
     avatar: string | undefined;
@@ -33,6 +34,8 @@ interface AccountBriefProfileProps {
 interface AccountBriefProfileState {
     openApplyDialog: boolean;
     openPriceDialog: boolean;
+    description: string;
+    error_msg: string;
 }
 
 
@@ -46,20 +49,17 @@ export default class AccountBriefProfile extends Component<
 
         this.state = {
             openApplyDialog: false,
-            openPriceDialog: false
+            openPriceDialog: false,
+            description: "",
+            error_msg: ""
         };
         this.handleCloseApplyDialog = this.handleCloseApplyDialog.bind(this);
         this.handleOpenApplyDialog = this.handleOpenApplyDialog.bind(this);
         this.handleClosePriceDialog = this.handleClosePriceDialog.bind(this);
         this.handleOpenPriceDialog = this.handleOpenPriceDialog.bind(this);
+        this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
     }
 
-    handleLogout() {
-        // check if there if the username
-        if (!this.props.username) return;
-        // logout request
-        this.props.redirectHandler("/logout");
-    }
 
     handleCloseApplyDialog() {
         this.setState({openApplyDialog: false});
@@ -75,6 +75,17 @@ export default class AccountBriefProfile extends Component<
 
     handleOpenPriceDialog() {
         this.setState({openPriceDialog: true})
+    }
+
+    handleDescriptionChange(e: any) {
+        let error = validate_required(e.target.value);
+        const nextState = {};
+        // @ts-ignore
+        nextState[e.target.name] = e.target.value;
+        // @ts-ignore
+        nextState["error_msg"] = error;
+        this.setState(nextState);
+        return error === "";
     }
 
     render() {
@@ -153,9 +164,11 @@ export default class AccountBriefProfile extends Component<
                             label="个人介绍"
                             name="description"
                             multiline
-                            // onChange={this.handleChange}
+                            onChange={this.handleDescriptionChange}
                             rows={4}
-                            // value={this.state.description}
+                            value={this.state.description}
+                            error={this.state.error_msg.length !== 0}
+                            helperText={this.state.error_msg}
                             placeholder="快来介绍一下你自己吧~"
                             variant="outlined"
                         />
