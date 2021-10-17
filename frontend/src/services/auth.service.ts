@@ -20,13 +20,14 @@ class AuthService {
     }
 
     logout() {
+        let tokenConfig = this.authToken();
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         return axios.post(
             "/user/logout",
             {},
             {
-                headers: this.authToken(),
+                headers: tokenConfig,
             }
         );
     }

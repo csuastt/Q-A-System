@@ -16,6 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import {validate_required} from "./Login";
+import authService from "../services/auth.service";
 
 interface AccountBriefProfileProps {
     avatar: string | undefined;
@@ -63,6 +64,14 @@ export default class AccountBriefProfile extends Component<
         this.handlePriceChange = this.handlePriceChange.bind(this);
     }
 
+    componentDidMount() {
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            this.setState({
+                price: currentUser.price
+            });
+        }
+    }
 
     handleCloseApplyDialog() {
         this.setState({openApplyDialog: false});
