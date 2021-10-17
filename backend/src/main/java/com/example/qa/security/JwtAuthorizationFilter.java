@@ -1,6 +1,5 @@
-package com.example.qa.user.security;
+package com.example.qa.security;
 
-import com.example.qa.user.utils.SecurityConstants;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
