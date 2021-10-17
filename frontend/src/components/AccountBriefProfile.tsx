@@ -8,14 +8,14 @@ import CardActions from "@mui/material/CardActions";
 import Divider from "@mui/material/Divider";
 import CardContent from "@mui/material/CardContent";
 import React, { Component } from "react";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import {validate_required} from "./Login";
+import { validate_required } from "./Login";
 import authService from "../services/auth.service";
 import userService from "../services/user.service";
 
@@ -43,12 +43,10 @@ interface AccountBriefProfileState {
     error_msg_2: string;
 }
 
-
 export default class AccountBriefProfile extends Component<
     AccountBriefProfileProps,
     AccountBriefProfileState
 > {
-
     constructor(props: any) {
         super(props);
 
@@ -58,7 +56,7 @@ export default class AccountBriefProfile extends Component<
             description: "",
             price: 50,
             error_msg: "",
-            error_msg_2: ""
+            error_msg_2: "",
         };
         this.handleCloseApplyDialog = this.handleCloseApplyDialog.bind(this);
         this.handleOpenApplyDialog = this.handleOpenApplyDialog.bind(this);
@@ -74,25 +72,25 @@ export default class AccountBriefProfile extends Component<
         const currentUser = authService.getCurrentUser();
         if (currentUser) {
             this.setState({
-                price: currentUser.price
+                price: currentUser.price,
             });
         }
     }
 
     handleCloseApplyDialog() {
-        this.setState({openApplyDialog: false});
+        this.setState({ openApplyDialog: false });
     }
 
     handleOpenApplyDialog() {
-        this.setState({openApplyDialog: true});
+        this.setState({ openApplyDialog: true });
     }
 
     handleClosePriceDialog() {
-        this.setState({openPriceDialog: false});
+        this.setState({ openPriceDialog: false });
     }
 
     handleOpenPriceDialog() {
-        this.setState({openPriceDialog: true})
+        this.setState({ openPriceDialog: true });
     }
 
     handleDescriptionChange(e: any) {
@@ -109,21 +107,18 @@ export default class AccountBriefProfile extends Component<
     handlePriceChange(e: any) {
         let error = validate_required(e.target.value);
         let value = e.target.value;
-        if (error)
-        {
+        if (error) {
             this.setState({
                 error_msg_2: "价格为空或格式错误",
-                price: value
+                price: value,
             });
             return false;
         }
-        this.setState({error_msg_2: ""});
-        if (value < this.props.minPrice)
-            value = this.props.minPrice;
-        else if (value > this.props.maxPrice)
-            value = this.props.maxPrice;
+        this.setState({ error_msg_2: "" });
+        if (value < this.props.minPrice) value = this.props.minPrice;
+        else if (value > this.props.maxPrice) value = this.props.maxPrice;
         this.setState({
-            price: value
+            price: value,
         });
         return true;
     }
@@ -137,10 +132,14 @@ export default class AccountBriefProfile extends Component<
                 target: { value: this.state.price },
             })
         ) {
-            if (
-                typeof this.props.id !== 'undefined'
-                ) {
-                    userService.applyAnswerer(this.props.id, this.state.description, this.state.price).then(
+            if (typeof this.props.id !== "undefined") {
+                userService
+                    .applyAnswerer(
+                        this.props.id,
+                        this.state.description,
+                        this.state.price
+                    )
+                    .then(
                         () => {
                             // apply success
                             this.props.alertHandler("success", "提交成功");
@@ -148,19 +147,20 @@ export default class AccountBriefProfile extends Component<
                         (error) => {
                             // show the error message
                             this.props.alertHandler("error", "网络错误");
-                        })
-                }
-                this.handleCloseApplyDialog();
+                        }
+                    );
+            }
+            this.handleCloseApplyDialog();
         }
     }
 
     handleSubmitPrice() {
-        if (this.handlePriceChange({
-            target: { value: this.state.price },
-        })) {
-            if (
-                typeof this.props.id !== 'undefined'
-            ) {
+        if (
+            this.handlePriceChange({
+                target: { value: this.state.price },
+            })
+        ) {
+            if (typeof this.props.id !== "undefined") {
                 userService.modifyPrice(this.props.id, this.state.price).then(
                     () => {
                         // apply success
@@ -169,7 +169,8 @@ export default class AccountBriefProfile extends Component<
                     (error) => {
                         // show the error message
                         this.props.alertHandler("error", "网络错误");
-                    })
+                    }
+                );
             }
             this.handleClosePriceDialog();
         }
@@ -206,7 +207,10 @@ export default class AccountBriefProfile extends Component<
                                 </Typography>
                             </Box>
                             <Box mx={2}>
-                                <Typography color="textSecondary" variant="body1">
+                                <Typography
+                                    color="textSecondary"
+                                    variant="body1"
+                                >
                                     {this.props.permission === "q"
                                         ? "你还不是问答者，快去申请吧~"
                                         : "你已经是问答者了，快去回答问题吧~"}
@@ -216,8 +220,7 @@ export default class AccountBriefProfile extends Component<
                     </CardContent>
                     <Divider />
                     <CardActions>
-                        {
-                            this.props.permission === "q" ?
+                        {this.props.permission === "q" ? (
                             <Button
                                 color="primary"
                                 fullWidth
@@ -225,7 +228,8 @@ export default class AccountBriefProfile extends Component<
                                 onClick={this.handleOpenApplyDialog}
                             >
                                 问答者申请
-                            </Button> :
+                            </Button>
+                        ) : (
                             <Button
                                 color="primary"
                                 fullWidth
@@ -234,15 +238,23 @@ export default class AccountBriefProfile extends Component<
                             >
                                 修改定价
                             </Button>
-                        }
+                        )}
                     </CardActions>
                 </Card>
-                <Dialog fullWidth open={this.state.openApplyDialog} onClose={this.handleCloseApplyDialog}>
+                <Dialog
+                    fullWidth
+                    open={this.state.openApplyDialog}
+                    onClose={this.handleCloseApplyDialog}
+                >
                     <DialogTitle>申请成为问答者</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={3}>
                             在申请成为问答者前，请重新填写您的个人介绍以及设置定价。
-                            个人介绍是审核的重要根据，并且在提交成功后<Box component="span" fontWeight='fontWeightBold'>不可修改</Box>。
+                            个人介绍是审核的重要根据，并且在提交成功后
+                            <Box component="span" fontWeight="fontWeightBold">
+                                不可修改
+                            </Box>
+                            。
                             优秀的、有展示性的个人介绍能帮助您获得更多提问者的青睐。
                         </DialogContentText>
                         <TextField
@@ -260,15 +272,15 @@ export default class AccountBriefProfile extends Component<
                             variant="outlined"
                         />
                         <DialogContentText mt={3} mb={3}>
-                            在当前机制下，
-                            回答定价最高不能超过
-                            <Box component="span" fontWeight='fontWeightBold'>
+                            在当前机制下， 回答定价最高不能超过
+                            <Box component="span" fontWeight="fontWeightBold">
                                 {this.props.maxPrice}
-                            </Box>￥/次，
-                            最低不能低于
-                            <Box component="span" fontWeight='fontWeightBold'>{
-                                this.props.minPrice}
-                            </Box>￥/次。
+                            </Box>
+                            ￥/次， 最低不能低于
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {this.props.minPrice}
+                            </Box>
+                            ￥/次。
                         </DialogContentText>
                         <TextField
                             fullWidth
@@ -278,10 +290,8 @@ export default class AccountBriefProfile extends Component<
                             type="number"
                             InputProps={{
                                 inputProps: {
-                                    min: this.props
-                                        .minPrice,
-                                    max: this.props
-                                        .maxPrice,
+                                    min: this.props.minPrice,
+                                    max: this.props.maxPrice,
                                 },
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -296,24 +306,33 @@ export default class AccountBriefProfile extends Component<
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleCloseApplyDialog} color="error">取消</Button>
+                        <Button
+                            onClick={this.handleCloseApplyDialog}
+                            color="error"
+                        >
+                            取消
+                        </Button>
                         <Button onClick={this.handleSubmitApply}>提交</Button>
                     </DialogActions>
                 </Dialog>
-                <Dialog maxWidth={"xs"} open={this.state.openPriceDialog} onClose={this.handleClosePriceDialog}>
+                <Dialog
+                    maxWidth={"xs"}
+                    open={this.state.openPriceDialog}
+                    onClose={this.handleClosePriceDialog}
+                >
                     <DialogTitle>修改回答定价</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={3}>
-                            您可以在任何时候修改您的回答定价。
-                            在当前机制下，
+                            您可以在任何时候修改您的回答定价。 在当前机制下，
                             回答定价最高不能超过
-                            <Box component="span" fontWeight='fontWeightBold'>
+                            <Box component="span" fontWeight="fontWeightBold">
                                 {this.props.maxPrice}
-                            </Box>￥/次，
-                            最低不能低于
-                            <Box component="span" fontWeight='fontWeightBold'>{
-                                this.props.minPrice}
-                            </Box>￥/次。
+                            </Box>
+                            ￥/次， 最低不能低于
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {this.props.minPrice}
+                            </Box>
+                            ￥/次。
                         </DialogContentText>
                         <TextField
                             fullWidth
@@ -323,10 +342,8 @@ export default class AccountBriefProfile extends Component<
                             type="number"
                             InputProps={{
                                 inputProps: {
-                                    min: this.props
-                                        .minPrice,
-                                    max: this.props
-                                        .maxPrice,
+                                    min: this.props.minPrice,
+                                    max: this.props.maxPrice,
                                 },
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -341,7 +358,12 @@ export default class AccountBriefProfile extends Component<
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleClosePriceDialog} color="error">取消</Button>
+                        <Button
+                            onClick={this.handleClosePriceDialog}
+                            color="error"
+                        >
+                            取消
+                        </Button>
                         <Button onClick={this.handleSubmitPrice}>提交</Button>
                     </DialogActions>
                 </Dialog>

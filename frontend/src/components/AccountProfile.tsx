@@ -605,14 +605,16 @@ export default class AccountProfile extends Component<
                                             rows={4}
                                             value={this.state.user?.description}
                                             InputProps={
-                                                ((!this.props.isAdmin) && this.state.user &&
-                                                    this.state.user.permission === "a")
+                                                !this.props.isAdmin &&
+                                                this.state.user &&
+                                                this.state.user.permission ===
+                                                    "a"
                                                     ? {
-                                                        readOnly: true,
-                                                    }
+                                                          readOnly: true,
+                                                      }
                                                     : {
-                                                        readOnly: false
-                                                    }
+                                                          readOnly: false,
+                                                      }
                                             }
                                             placeholder="快来介绍一下你自己吧~"
                                             variant="outlined"

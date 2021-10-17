@@ -29,7 +29,7 @@ class UserService {
             `/users/${id}/apply`,
             {
                 description: description,
-                price: price
+                price: price,
             },
             {
                 headers: AuthService.authToken(),
@@ -41,7 +41,7 @@ class UserService {
         return axios.put(
             `/users/${id}`,
             {
-                price: price
+                price: price,
             },
             {
                 headers: AuthService.authToken(),
