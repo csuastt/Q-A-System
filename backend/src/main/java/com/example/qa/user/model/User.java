@@ -1,150 +1,89 @@
 package com.example.qa.user.model;
 
-import com.example.qa.user.exchange.UserAttribute;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.qa.user.exchange.UserRequest;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Objects;
 
-/**
- * Entity restored in the repository
- */
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "APPUSER")
-public class AppUser implements UserDetails {
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@Column
-	private String username;
-	private String nickname = "";
-	private String ava_url = "";
-	private String password;
-	private String email = "";
-	private String phone = "";
-	private LocalDate birthday = LocalDate.parse("2000-01-01");
-	private String gender = "unknown";
-	private Boolean enable = true;
-	private String permit = "q";
-	private Integer money = 100;
-    // TODO: It may not be the best way to deal with database updates. We will change it after the stabilization of data models
-	@ColumnDefault("0")
-	private Integer price = 0;
-	private String description = "";
-//	@JsonFormat(shape=JsonFormat.Shape.STRING)
-//	@JsonFormat(pattern = "yyyy-MM-dd'T'HH：mm：ss.SSSZ")
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[XXX][XX]")
-	public ZonedDateTime createTime;
+@Table(name = "app_user")
+public class User implements UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private boolean deleted = false;
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	private Collection<GrantedAuthority> authorities;
+    @Column(unique = true)
+    private String username;
+    private String password;
 
-	/**
-	 * Construct User from username and password
-	 * @param username    User name
-	 * @param password    Initial password
-	 * @param authorities Initial authorities
-	 */
-	public AppUser(String username,
-				   String password,
-				   Collection<GrantedAuthority> authorities){
-		this.ava_url = "api/users/avatar/" + 1 + ".png";
-		this.username = username;
-		this.password = password;
-		this.authorities = authorities;
-		this.createTime = ZonedDateTime.now();
-	}
+    private String avatar;
+    private String nickname;
+    private String email;
+    private String phone = "";
+    private Gender gender = Gender.UNKNOWN;
 
-	/**
-	 * init ava path
-	 */
-	public void setAva(){
-		this.ava_url = "api/users/avatar/" + id + ".png";
-	}
+    private int price = 0;
+    private String description = "";
 
-	/**
-	 * Construct User from registration
-	 * @param register Request Body when register
-	 */
-	public AppUser(UserAttribute register){
-		if (register.username != null)
-			this.username = register.username;
-		if (register.password != null)
-			this.password = register.password;
-		if (register.birthday != null)
-			this.birthday = LocalDate.parse(register.birthday);
-		if (register.gender != null)
-			this.gender = register.gender;
-		if (register.email != null)
-			this.email = register.email;
-		if (register.nickname != null)
-			this.nickname = register.nickname;
-		if(register.phone != null)
-			this.phone = register.phone;
-		if(register.description != null)
-			this.description = register.description;
-		this.createTime = ZonedDateTime.now();
-	}
+    private ZonedDateTime createTime;
 
-	/**
-	 * Update info from modification
-	 * @param newInfo Request Body when modify
-	 */
-	public void updateUserInfo(UserAttribute newInfo) {
-		if (newInfo.username != null)
-			this.username = newInfo.username;
-		if (newInfo.birthday != null)
-			this.birthday = LocalDate.parse(newInfo.birthday);
-		if (newInfo.gender != null)
-			this.gender = newInfo.gender;
-		if (newInfo.email != null)
-			this.email = newInfo.email;
-		if (newInfo.nickname != null)
-			this.nickname = newInfo.nickname;
-		if(newInfo.phone != null)
-			this.phone = newInfo.phone;
-		if(newInfo.description != null)
-			this.description = newInfo.description;
-	}
+    private UserRole role = UserRole.USER;
+
+    private int balance = 100;
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        createTime = ZonedDateTime.now();
+    }
+
+    public void update(UserRequest data) {
+        password = data.getPassword() != null ? data.getPassword() : password;
+        nickname = data.getNickname() != null ? data.getNickname() : nickname;
+        email = data.getEmail() != null ? data.getEmail() : email;
+        phone = data.getPhone() != null ? data.getPhone() : phone;
+        gender = data.getGender() != null ? data.getGender() : gender;
+        price = data.getPrice() != null ? data.getPrice() : price;
+        description = data.getDescription() != null ? data.getDescription() : description;
+        role = data.getRole() != null ? data.getRole() : role;
+        balance = data.getBalance() != null ? data.getBalance() : balance;
+    }
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return authorities;
+        return null;
     }
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return enable;
-	}
+    @Override
+    public boolean isAccountNonExpired() {
+        return deleted;
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return enable;
-	}
+    @Override
+    public boolean isAccountNonLocked() {
+        return deleted;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return enable;
-	}
+    @Override
+    public boolean isEnabled() {
+        return deleted;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return enable;
-	}
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return deleted;
+    }
 
 	@Override
 	public boolean equals(Object o) {
