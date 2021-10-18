@@ -8,14 +8,11 @@ import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.user.repository.UserRepository;
-import com.example.qa.utils.StringValidator;
+import com.example.qa.utils.FieldValidator;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +25,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    // private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -37,7 +34,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void create(@RequestBody RegisterRequest registerRequest) {
+    public void createUser(@RequestBody RegisterRequest registerRequest) {
         checkUserData(registerRequest);
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
             throw new ApiException(HttpStatus.FORBIDDEN, "USERNAME_INVALID");
@@ -47,89 +44,151 @@ public class UserController {
     }
 
     @GetMapping
-    public UserListResponse list(
-            @RequestParam Optional<UserRole> role,
+    public UserListResponse listUsers(
+            @RequestParam(required = false) UserRole role,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page
     ) {
+        if (!authIsAdmin() && role != UserRole.ANSWERER) {
+            throw new ApiException(403, "NO_PERMISSION");
+        }
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.USER_LIST_MAX_PAGE_SIZE);
         Pageable pageable = Pageable.ofSize(pageSize).withPage(page - 1);
         Page<User> result =
-                role.isEmpty() ? userRepository.findAll(pageable) : userRepository.findAllByRole(role.get(), pageable);
-        UserAuthentication authentication = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        int userResponseLevel = authentication != null && authentication.getRole() == AppManager.class ? 2 : 0;
+                role == null ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
+        int userResponseLevel = authIsAdmin() ? 2 : 0;
         return new UserListResponse(result, userResponseLevel);
     }
 
     @GetMapping("/{id}")
-    public UserResponse getUser(@PathVariable(value = "id") Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        checkActivity(optionalUser);
-        return new UserResponse(optionalUser.get());
+    public UserResponse getUser(@PathVariable(value = "id") long id) {
+        // TODO: 非本人或者管理员直接返回 403
+        User user = getUserOrThrow(id, authIsAdmin());
+        int userResponseLevel = 0;
+        if (authIsUser(id)) {
+            userResponseLevel = 1;
+        } else if (authIsAdmin()) {
+            userResponseLevel = 2;
+        }
+        return new UserResponse(user, userResponseLevel);
     }
 
     @DeleteMapping("/{id}")
-    public SuccessResponse deleteUser(@RequestParam(value = "id") Long id) {
-        if(userRepository.existsByIdAndEnable(id, true)){
-            var user = userRepository.findById(id).get();
-            user.setEnable(false);
-            try{
-                userRepository.save(user);
-                return new SuccessResponse("删除成功");
-            }catch (Exception e){
-                throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "数据库出错");
-            }
-
-        }else{
-            throw new ApiException(HttpStatus.BAD_REQUEST, "用户不存在");
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUser(@PathVariable(value = "id") long id) {
+        if (!authLogin()) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED);
         }
+        if (!authIsAdmin()) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "NO_PERMISSION");
+        }
+        User user = getUserOrThrow(id, true);
+        if (user.isDeleted()) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
+        }
+        user.setDeleted(true);
+        user.setUsername(user.getUsername() + "@" + user.getId());
+        userRepository.save(user);
     }
 
     @PutMapping("/{id}")
-    public SuccessResponse modifyUser(@PathVariable(value = "id") Long id,
-                                      @RequestBody UserRequest modifiedUser){
-        Optional<User> optionalUser = userRepository.findById(id);
-        checkActivity(optionalUser);
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long cu_id = Long.parseLong((String) auth.getPrincipal());
-        if(!id.equals(cu_id)){
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "没有修改权限");
+    @ResponseStatus(HttpStatus.OK)
+    public void editUser(@PathVariable(value = "id") long id, @RequestBody UserRequest userRequest) {
+        authUserOrAdminOrThrow(id);
+        boolean isAdmin = authIsAdmin();
+        User user = getUserOrThrow(id, false);
+        if (!isAdmin) {
+            if (user.getRole() != UserRole.ANSWERER) {
+                userRequest.setPrice(null);
+            }
+            checkUserData(userRequest);
         }
-        checkValidationModify(modifiedUser);
-        optionalUser.get().updateUserInfo(modifiedUser);
-        userRepository.save(optionalUser.get());
-        return new SuccessResponse("修改成功");
+        user.update(userRequest, isAdmin);
+        userRepository.save(user);
     }
 
     @PutMapping("/{id}/password")
-    public SuccessResponse modifyPass(@PathVariable(value = "id") Long id,
-                                      @RequestBody ChangePasswordRequest modifiedUser) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        checkActivity(optionalUser);
-        if(passwordEncoder.matches(modifiedUser.getOrigin(),optionalUser.get().getPassword())){
-            optionalUser.get().setPassword(passwordEncoder.encode(modifiedUser.getPassword()));
-            userRepository.save(optionalUser.get());
-            return new SuccessResponse("修改密码成功");
+    public void changePassword(@PathVariable(value = "id") long id,
+                                      @RequestBody ChangePasswordRequest changePasswordRequest) {
+        authUserOrAdminOrThrow(id);
+        validatePassword(changePasswordRequest.getPassword());
+        User user = getUserOrThrow(id, false);
+        if (!authIsAdmin() && !passwordEncoder.matches(changePasswordRequest.getPassword(), user.getPassword())) {
+            throw new ApiException(403, "WRONG_PASSWORD");
         }
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
+        userRepository.save(user);
+    }
 
-        userRepository.save(optionalUser.get());
-        throw new ApiException(HttpStatus.FORBIDDEN, "原密码不正确");
+    private User getUserOrThrow(long id, boolean allowDeleted) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            throw new ApiException(404);
+        }
+        User user = userOptional.get();
+        if (user.isDeleted() && !allowDeleted) {
+            throw new ApiException(404);
+        }
+        return user;
+    }
+
+    private boolean authLogin() {
+        return SecurityContextHolder.getContext().getAuthentication() != null;
+    }
+
+    private boolean authIsUser(long id) {
+        UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        return auth != null && auth.getRole() == User.class && (long) auth.getPrincipal() == id;
+    }
+
+    private boolean authIsAdmin() {
+        UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        return auth != null && auth.getRole() == AppManager.class;
+    }
+
+    private void authUserOrAdminOrThrow(long id) {
+        if (!authLogin()) {
+            throw new ApiException(401);
+        }
+        if (!authIsUser(id) && !authIsAdmin()) {
+            throw new ApiException(403, "NO_PERMISSION");
+        }
+    }
+
+    private void validatePassword(String password) {
+        if (!FieldValidator.length
+                (password, SystemConfig.PASSWORD_MIN_LENGTH, SystemConfig.PASSWORD_MAX_LENGTH)) {
+            throw new ApiException(403, "PASSWORD_INVALID");
+        }
     }
 
     private void checkUserData(RegisterRequest request) {
-        if (!StringValidator.length
+        if (!FieldValidator.length
                 (request.getUsername(), SystemConfig.USERNAME_MIN_LENGTH, SystemConfig.USERNAME_MAX_LENGTH)
                 || request.getUsername().contains("@")) {
             throw new ApiException(403, "USERNAME_INVALID");
         }
-        if (!StringValidator.length
-                (request.getPassword(), SystemConfig.PASSWORD_MIN_LENGTH, SystemConfig.PASSWORD_MAX_LENGTH)) {
-            throw new ApiException(403, "PASSWORD_INVALID");
-        }
+        validatePassword(request.getPassword());
         if (!EmailValidator.getInstance().isValid(request.getEmail())) {
             throw new ApiException(403, "EMAIL_INVALID");
+        }
+    }
+
+    private void checkUserData(UserRequest request) {
+        if (!FieldValidator.lengthIfNotNull
+                (request.getNickname(), SystemConfig.NICKNAME_MIN_LENGTH, SystemConfig.NICKNAME_MAX_LENGTH)
+        ) {
+            throw new ApiException(403, "NICKNAME_INVALID");
+        }
+        if (!FieldValidator.lengthIfNotNull
+                (request.getDescription(), SystemConfig.DESCRIPTION_MIN_LENGTH, SystemConfig.DESCRIPTION_MAX_LENGTH)
+        ) {
+            throw new ApiException(403, "DESCRIPTION_INVALID");
+        }
+        if (FieldValidator.valueIfNotNull(request.getPrice(), SystemConfig.PRICE_MIN, SystemConfig.PRICE_MAX)) {
+            throw new ApiException(403, "PRICE_INVALID");
         }
     }
 }
