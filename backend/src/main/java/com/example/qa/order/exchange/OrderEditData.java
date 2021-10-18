@@ -2,10 +2,12 @@ package com.example.qa.order.exchange;
 
 import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class OrderEditData {
     private Long asker;

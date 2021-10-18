@@ -1,9 +1,10 @@
 package com.example.qa.manager.exchange;
 
-import lombok.Data;
-import org.springframework.web.bind.annotation.ResponseBody;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class DeleteResponse {
     public String message;
 

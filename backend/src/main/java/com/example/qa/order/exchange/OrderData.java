@@ -5,12 +5,14 @@ import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.exchange.UserResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.ZonedDateTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class OrderData {

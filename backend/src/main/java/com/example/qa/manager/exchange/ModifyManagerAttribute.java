@@ -1,8 +1,10 @@
 package com.example.qa.manager.exchange;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ModifyManagerAttribute {
     public String managername;
     public String password;
