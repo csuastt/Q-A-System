@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
+import ManagerService from "../services/manager.service";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
@@ -80,6 +81,14 @@ export default class ChangePassword extends Component<
             // todo
             // you need to init admin id first
             // refer to what I've done below
+            const currentManager = ManagerService.getCurrentManager();
+            if (!currentManager) {
+                console.error("Try to change password without login!");
+                return;
+            }
+            this.setState({
+                id: currentManager.id,
+            });
         } else {
             const currentUser = AuthService.getCurrentUser();
 
@@ -144,8 +153,7 @@ export default class ChangePassword extends Component<
         ) {
             let service;
             if (this.props.isAdmin) {
-                // todo substitute it with admin service
-                service = AuthService;
+                service = ManagerService;
             } else {
                 service = AuthService;
             }

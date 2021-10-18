@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import authService from "./services/auth.service";
 import ChangePassword from "./components/ChangePassword";
 import ManagerService from "./services/manager.service";
+import ManagerProfile from "./components/ManagerProfile";
 
 export default function AppManage() {
     // logout
@@ -36,17 +37,20 @@ export default function AppManage() {
         // ["/order/create", <OrderCreationWizard />],
 
         ["/manager/profile", <AccountProfile isAdmin={true} />],
+
+        ["/manager/manager_profile", <ManagerProfile />],
+
         ["/manager/login", <Login login={managerLogin} redirect={"/"} isAdmin={true} />],
         ["/manager/logout", <Logout logout={managerLogout} redirect={"/"} isAdmin={true} />],
         ["/manager/create", <Create />],
-        // [
-        //     "/change_password",
-        //     <ChangePassword
-        //         redirectConfirm={"/logout"}
-        //         redirectCancel={"/profile"}
-        //         isAdmin={false}
-        //     />,
-        // ],
+        [
+            "/manager/change_password",
+            <ChangePassword
+                redirectConfirm={"/manager/logout"}
+                redirectCancel={"/manager/manager_profile"}
+                isAdmin={true}
+            />,
+        ],
         // ["/", <Welcome />],
     ];
 
