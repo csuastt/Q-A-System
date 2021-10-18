@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import authService from "../services/auth.service";
 import userService from "../services/user.service";
 import AccountBriefProfile from "./AccountBriefProfile";
-import { UserInfo, UserFullyInfo } from "../services/definations";
+import { UserFullyInfo, UserInfo } from "../services/definations";
 // mui
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -19,6 +18,7 @@ import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
 import { validate_length, validate_required } from "./Login";
 import { validate_email } from "./Register";
+import UserContext from "../UserContext";
 
 // state interface
 interface ProfileState {
@@ -133,7 +133,7 @@ export default class AccountProfile extends Component<
             });
             this.now_nickname = currentUser.nickname;
         } else {
-            const currentUser = authService.getCurrentUser();
+            const currentUser = this.context.user;
 
             if (!currentUser) {
                 // redirect and alert
@@ -688,3 +688,5 @@ export default class AccountProfile extends Component<
         );
     }
 }
+
+AccountProfile.contextType = UserContext;

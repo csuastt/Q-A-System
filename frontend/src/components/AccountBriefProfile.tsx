@@ -16,8 +16,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import { validate_required } from "./Login";
-import authService from "../services/auth.service";
 import userService from "../services/user.service";
+import UserContext from "../UserContext";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
@@ -69,8 +69,8 @@ export default class AccountBriefProfile extends Component<
     }
 
     componentDidMount() {
-        const currentUser = authService.getCurrentUser();
-        if (currentUser) {
+        const currentUser = this.context.user;
+        if (this.context.user) {
             this.setState({
                 price: currentUser.price,
             });
@@ -371,3 +371,5 @@ export default class AccountBriefProfile extends Component<
         );
     }
 }
+
+AccountBriefProfile.contextType = UserContext;

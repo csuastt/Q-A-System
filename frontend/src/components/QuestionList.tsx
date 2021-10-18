@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Redirect } from "react-router-dom";
@@ -10,16 +10,17 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
-import authService from "../services/auth.service";
+import UserContext from "../UserContext";
 
 const QuestionList: React.FC<{ userId?: number }> = (props) => {
     const [questionList, setQuestionList] = useState<OrderList>();
     const [shouldLogin, setShouldLogin] = useState<boolean>(false);
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         let userId = props.userId;
         if (userId === undefined) {
-            userId = authService.getCurrentUser()?.id;
+            userId = user?.id;
         }
         if (userId === undefined) {
             setShouldLogin(true);

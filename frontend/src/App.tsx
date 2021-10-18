@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Appbar from "./components/Appbar";
+import UserContext from "./UserContext";
+import AppFrame from "./components/AppFrame";
 import { Container } from "@mui/material";
 import Welcome from "./components/Welcome";
 import QuestionList from "./components/QuestionList";
@@ -9,22 +10,12 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
-import { useEffect, useState } from "react";
-import authService from "./services/auth.service";
+import React, { useState } from "react";
 import ChangePassword from "./components/ChangePassword";
+import { UserInfo } from "./services/definations";
 
 export default function App() {
-    // logout
-    const logout = () => {
-        setIsAuthenticated(false);
-    };
-
-    // login
-    const login = () => {
-        setIsAuthenticated(true);
-    };
-
-    // todo also need to add login & logout function for the admin
+    const [user, setUser] = useState<UserInfo>();
 
     const routes = [
         ["/answerers/select", <AnswererList selectModel />],
@@ -33,8 +24,8 @@ export default function App() {
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile isAdmin={false} />],
-        ["/login", <Login login={login} redirect={"/"} isAdmin={false} />],
-        ["/logout", <Logout logout={logout} redirect={"/"} isAdmin={false} />],
+        ["/login", <Login redirect={"/"} isAdmin={false} />],
+        ["/logout", <Logout redirect={"/"} isAdmin={false} />],
         ["/register", <Register />],
         [
             "/change_password",
@@ -47,33 +38,32 @@ export default function App() {
         ["/", <Welcome />],
     ];
 
-    // some app state
-    // note: this authentication is of the user
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    // todo add authentication state for the admin
-
-    useEffect(() => {
-        const user = authService.getCurrentUser();
-        setIsAuthenticated(user !== null);
-    }, []);
-
     return (
-        <BrowserRouter>
-            <Appbar isAuthenticated={isAuthenticated} />
-            <Container maxWidth="md">
-                <Switch>
-                    {routes.map((routeItem) => {
-                        return (
-                            <Route
-                                path={routeItem[0].toString()}
-                                key={routeItem[0].toString()}
-                            >
-                                {routeItem[1]}
-                            </Route>
-                        );
-                    })}
-                </Switch>
-            </Container>
-        </BrowserRouter>
+        <UserContext.Provider
+            value={{
+                user: user,
+                setUser: setUser,
+                clearUser: () => setUser(undefined),
+            }}
+        >
+            <BrowserRouter>
+                <AppFrame>
+                    <Container maxWidth="md">
+                        <Switch>
+                            {routes.map((routeItem) => {
+                                return (
+                                    <Route
+                                        path={routeItem[0].toString()}
+                                        key={routeItem[0].toString()}
+                                    >
+                                        {routeItem[1]}
+                                    </Route>
+                                );
+                            })}
+                        </Switch>
+                    </Container>
+                </AppFrame>
+            </BrowserRouter>
+        </UserContext.Provider>
     );
 }

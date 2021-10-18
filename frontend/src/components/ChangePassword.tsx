@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import AuthService from "../services/auth.service";
+import authService from "../services/auth.service";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
@@ -12,10 +12,11 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
 // validators
-import { validate_required, validate_length } from "./Login";
+import { validate_length, validate_required } from "./Login";
 import { validate_second_password } from "./Register";
 // router
 import { Link as RouterLink, Redirect } from "react-router-dom";
+import UserContext from "../UserContext";
 
 // state interface
 interface ChangePasswordState {
@@ -81,7 +82,7 @@ export default class ChangePassword extends Component<
             // you need to init admin id first
             // refer to what I've done below
         } else {
-            const currentUser = AuthService.getCurrentUser();
+            const currentUser = this.context.user;
 
             if (!currentUser) {
                 // that means a bug occur
@@ -145,9 +146,9 @@ export default class ChangePassword extends Component<
             let service;
             if (this.props.isAdmin) {
                 // todo substitute it with admin service
-                service = AuthService;
+                service = authService;
             } else {
-                service = AuthService;
+                service = authService;
             }
 
             // changing request
@@ -320,3 +321,5 @@ export default class ChangePassword extends Component<
         );
     }
 }
+
+ChangePassword.contextType = UserContext;
