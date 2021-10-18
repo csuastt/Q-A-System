@@ -6,18 +6,18 @@ import CardContent from "@mui/material/CardContent";
 import LoginIcon from "@mui/icons-material/Login";
 import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
-import React from "react";
+import React, { useContext } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
 import ContactsIcon from "@mui/icons-material/Contacts";
-import authService from "../services/auth.service";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { LiveHelp } from "@mui/icons-material";
+import UserContext from "../UserContext";
 
 export default function Welcome() {
     const theme = useTheme();
-    const user = authService.getCurrentUser();
+    const { user } = useContext(UserContext);
 
     const ButtonCardWrapper: React.FC<{
         to: string;

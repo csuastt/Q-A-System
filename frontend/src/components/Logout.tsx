@@ -1,21 +1,16 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import authService from "../services/auth.service";
 import { Redirect } from "react-router-dom";
+import UserContext from "../UserContext";
 
 const Logout: React.FC<{
-    logout: () => void;
     redirect: string;
     isAdmin: boolean;
 }> = (props) => {
-    if (props.isAdmin) {
-        // todo
-        // add the service code for admin
-    } else {
-        authService.logout().then(() => {
-            props.logout();
-        });
-    }
-
+    const { clearUser } = useContext(UserContext);
+    useEffect(() => {
+        authService.logout().then(clearUser);
+    });
     return <Redirect to={props.redirect} />;
 };
 

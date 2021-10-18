@@ -1,14 +1,9 @@
 import axios from "axios";
 import { CreationResult, OrderList } from "./definations";
-import AuthService from "../services/auth.service";
 
 class OrderService {
     getOrdersOfUser(userId: number): Promise<OrderList> {
-        return axios
-            .get("/orders", {
-                headers: AuthService.authToken(),
-            })
-            .then((response) => response.data);
+        return axios.get("/orders").then((response) => response.data);
     }
 
     create_question(
@@ -17,17 +12,11 @@ class OrderService {
         question: string
     ): Promise<CreationResult> {
         return axios
-            .post(
-                "/orders",
-                {
-                    asker: asker,
-                    answerer: answerer,
-                    question: question,
-                },
-                {
-                    headers: AuthService.authToken(),
-                }
-            )
+            .post("/orders", {
+                asker: asker,
+                answerer: answerer,
+                question: question,
+            })
             .then((response) => response.data);
     }
 }

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
     alpha,
@@ -33,6 +34,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import GroupIcon from "@mui/icons-material/Group";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import UserContext from "../UserContext";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -147,8 +149,9 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const AppFrame: React.FC<{ isAuthenticated: boolean }> = (props) => {
+const AppFrame: React.FC = (props) => {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
+    const { user } = useContext(UserContext);
 
     const theme = useTheme();
 
@@ -235,7 +238,7 @@ const AppFrame: React.FC<{ isAuthenticated: boolean }> = (props) => {
                 {renderDrawerList([["主页", "/", HomeIcon]])}
                 <Divider />
                 {renderDrawerList(
-                    props.isAuthenticated
+                    user
                         ? [
                               ["个人信息", "/profile", AccountCircleIcon],
                               ["登出", "/logout", LogoutIcon],

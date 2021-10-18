@@ -3,8 +3,10 @@ import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
 import axios from "axios";
+import authService from "./services/auth.service";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE;
+authService.refreshToken();
 
 ReactDOM.render(
     <React.StrictMode>

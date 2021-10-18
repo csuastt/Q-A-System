@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -13,11 +13,11 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import questionService from "../services/order.service";
-import authService from "../services/auth.service";
 import { CreationResult } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import UserContext from "../UserContext";
 
 function processInt(str?: string): number {
     if (str) {
@@ -35,6 +35,7 @@ const OrderCreationWizard: React.FC = (props) => {
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
 
+    const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
     const answerer = processInt(routerParam.answerer);
 
@@ -72,11 +73,7 @@ const OrderCreationWizard: React.FC = (props) => {
     const createQuestion = () => {
         nextStep();
         questionService
-            .create_question(
-                authService.getCurrentUser().id,
-                answerer,
-                questionText
-            )
+            .create_question(user!.id, answerer, questionText)
             .then((res) => setResult(res));
     };
 
