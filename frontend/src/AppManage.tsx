@@ -9,6 +9,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
+import Create from "./components/Create";
 import { useEffect, useState } from "react";
 import authService from "./services/auth.service";
 import ChangePassword from "./components/ChangePassword";
@@ -33,10 +34,11 @@ export default function AppManage() {
         // ["/orders", <QuestionList />],
         // ["/order/create/:answerer", <OrderCreationWizard />],
         // ["/order/create", <OrderCreationWizard />],
-        // ["/profile", <AccountProfile isAdmin={false} />],
+
+        ["/manager/profile", <AccountProfile isAdmin={true} />],
         ["/manager/login", <Login login={managerLogin} redirect={"/"} isAdmin={true} />],
         ["/manager/logout", <Logout logout={managerLogout} redirect={"/"} isAdmin={true} />],
-        //["/register", <Register />],
+        ["/manager/create", <Create />],
         // [
         //     "/change_password",
         //     <ChangePassword
@@ -52,7 +54,6 @@ export default function AppManage() {
     // note: this authentication is of the user
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     // todo add authentication state for the admin
-
     useEffect(() => {
         const manager = ManagerService.getCurrentManager();
         setIsAuthenticated(manager !== null);

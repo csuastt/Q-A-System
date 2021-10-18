@@ -1,6 +1,7 @@
 import React from "react";
 import authService from "../services/auth.service";
 import { Redirect } from "react-router-dom";
+import ManagerService from "../services/manager.service";
 
 const Logout: React.FC<{
     logout: () => void;
@@ -8,8 +9,10 @@ const Logout: React.FC<{
     isAdmin: boolean;
 }> = (props) => {
     if (props.isAdmin) {
-        // todo
         // add the service code for admin
+        ManagerService.logout().then(() => {
+            props.logout();
+        });
     } else {
         authService.logout().then(() => {
             props.logout();
