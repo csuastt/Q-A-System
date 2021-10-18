@@ -1,16 +1,12 @@
 package com.example.qa.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import com.example.qa.manager.model.AppManager;
+import com.example.qa.user.model.User;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -19,73 +15,53 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws IOException, ServletException {
-        var authentication = getAuthentication(request);
-        if (authentication == null) {
-            filterChain.doFilter(request, response);
-            return;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        UserAuthentication authentication = getAuthentication(request);
+        if (authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        var token = request.getHeader(SecurityConstants.TOKEN_HEADER);
-        if (StringUtils.isNotEmpty(token) && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+    private UserAuthentication getAuthentication(HttpServletRequest request) {
+        String token = request.getHeader(SecurityConstants.TOKEN_HEADER);
+        if (token != null && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             try {
-                var signingKey = SecurityConstants.JWT_SECRET.getBytes();
+                Jws<Claims> parsedToken = Jwts.parser()
+                        .setSigningKey(SecurityConstants.JWT_SECRET.getBytes())
+                        .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
 
-                var parsedToken = Jwts.parser()
-                    .setSigningKey(signingKey)
-                    .parseClaimsJws(token.replace("Bearer ", ""));
+                long id = Long.parseLong(parsedToken.getBody().getSubject());
+                String role = parsedToken.getBody().get(SecurityConstants.ROLE_CLAIM, String.class);
 
-                var username = parsedToken
-                    .getBody()
-                    .getSubject();
-
-                // a workaround to identify user for user-only operation
-                var url = request.getRequestURI();
-                if (url.startsWith("/user/")) {
-                    var components = url.split("/");
-                    if (components.length < 3 || !components[2].equals(username))
-                        return null;
-                }
-
-                var authorities = ((List<?>) parsedToken.getBody()
-                    .get("rol")).stream()
-                    .map(authority -> new SimpleGrantedAuthority((String) authority))
-                    .collect(Collectors.toList());
-
-                if (StringUtils.isNotEmpty(username)) {
-                    return new UsernamePasswordAuthenticationToken(username, null, authorities);
+                if (role.equals(SecurityConstants.ROLE_USER)) {
+                    return new UserAuthentication(id, User.class);
+                } else if (role.equals(SecurityConstants.ROLE_ADMIN)) {
+                    return new UserAuthentication(id, AppManager.class);
                 }
             } catch (ExpiredJwtException exception) {
-                log.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
+                logger.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
             } catch (UnsupportedJwtException exception) {
-                log.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
+                logger.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
             } catch (MalformedJwtException exception) {
-                log.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
+                logger.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
             } catch (SignatureException exception) {
-                log.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
+                logger.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
             } catch (IllegalArgumentException exception) {
-                log.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
+                logger.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
             }
         }
-
         return null;
     }
 }

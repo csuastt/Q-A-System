@@ -13,7 +13,7 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET.getBytes())
                 .setSubject(subject)
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .claim("rol", role)
+                .claim(SecurityConstants.ROLE_CLAIM, role)
                 .compact();
     }
 
