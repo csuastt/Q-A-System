@@ -96,6 +96,7 @@ public class UserController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void editUser(@PathVariable(value = "id") long id, @RequestBody UserRequest userRequest) {
+        authLoginOrThrow();
         authUserOrAdminOrThrow(id);
         boolean isAdmin = authIsAdmin();
         User user = getUserOrThrow(id, false);
@@ -110,8 +111,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")
+    @ResponseStatus(HttpStatus.OK)
     public void changePassword(@PathVariable(value = "id") long id,
-                                      @RequestBody ChangePasswordRequest changePasswordRequest) {
+                               @RequestBody ChangePasswordRequest changePasswordRequest) {
+        authLoginOrThrow();
         authUserOrAdminOrThrow(id);
         validatePassword(changePasswordRequest.getPassword());
         User user = getUserOrThrow(id, false);
@@ -119,6 +122,33 @@ public class UserController {
             throw new ApiException(403, "WRONG_PASSWORD");
         }
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
+        userRepository.save(user);
+    }
+
+    @PostMapping("/{id}/apply")
+    @ResponseStatus(HttpStatus.OK)
+    public void apply(@PathVariable(value = "id") long id,
+                      @RequestBody ApplyRequest applyRequest) {
+        authLoginOrThrow();
+        authUserOrThrow(id);
+        User user = getUserOrThrow(id, false);
+        if (user.getRole() == UserRole.ANSWERER) {
+            throw new ApiException(403, "ALREADY_ANSWERER");
+        }
+        checkUserData(applyRequest);
+        user.update(applyRequest);
+        userRepository.save(user);
+    }
+
+    @PostMapping("/{id}/recharge")
+    @ResponseStatus(HttpStatus.OK)
+    public void recharge(@PathVariable(value = "id") long id,
+                         @RequestBody ValueRequest valueRequest) {
+        authLoginOrThrow();
+        authUserOrThrow(id);
+        User user = getUserOrThrow(id, false);
+        checkRecharge(user.getBalance(), valueRequest.getValue());
+        user.setBalance(user.getBalance() + valueRequest.getValue());
         userRepository.save(user);
     }
 
@@ -148,10 +178,19 @@ public class UserController {
         return auth != null && auth.getRole() == AppManager.class;
     }
 
-    private void authUserOrAdminOrThrow(long id) {
+    private void authLoginOrThrow() {
         if (!authLogin()) {
             throw new ApiException(401);
         }
+    }
+
+    private void authUserOrThrow(long id) {
+        if (!authIsUser(id)) {
+            throw new ApiException(403, "NO_PERMISSION");
+        }
+    }
+
+    private void authUserOrAdminOrThrow(long id) {
         if (!authIsUser(id) && !authIsAdmin()) {
             throw new ApiException(403, "NO_PERMISSION");
         }
@@ -189,6 +228,26 @@ public class UserController {
         }
         if (FieldValidator.valueIfNotNull(request.getPrice(), SystemConfig.PRICE_MIN, SystemConfig.PRICE_MAX)) {
             throw new ApiException(403, "PRICE_INVALID");
+        }
+    }
+
+    private void checkUserData(ApplyRequest request) {
+        if (!FieldValidator.length
+                (request.getDescription(), SystemConfig.DESCRIPTION_MIN_LENGTH, SystemConfig.DESCRIPTION_MAX_LENGTH)
+        ) {
+            throw new ApiException(403, "DESCRIPTION_INVALID");
+        }
+        if (FieldValidator.value(request.getPrice(), SystemConfig.PRICE_MIN, SystemConfig.PRICE_MAX)) {
+            throw new ApiException(403, "PRICE_INVALID");
+        }
+    }
+
+    private void checkRecharge(int balance, Integer recharge) {
+        if (!FieldValidator.value(recharge, 1, SystemConfig.RECHARGE_MAX)) {
+            throw new ApiException(403, "RECHARGE_INVALID");
+        }
+        if (balance + recharge > SystemConfig.BALANCE_MAX) {
+            throw new ApiException(403, "BALANCE_INVALID");
         }
     }
 }

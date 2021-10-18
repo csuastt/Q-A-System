@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserRequest {
-    private String password;
     // private String avatar;
     private String nickname;
     private String email;

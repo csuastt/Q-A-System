@@ -1,5 +1,6 @@
 package com.example.qa.user.model;
 
+import com.example.qa.user.exchange.ApplyRequest;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.exchange.UserRequest;
 import lombok.Getter;
@@ -49,16 +50,22 @@ public class User implements UserDetails {
         createTime = ZonedDateTime.now();
     }
 
-    public void update(UserRequest data) {
-        password = data.getPassword() != null ? data.getPassword() : password;
+    public void update(UserRequest data, boolean isAdmin) {
         nickname = data.getNickname() != null ? data.getNickname() : nickname;
-        email = data.getEmail() != null ? data.getEmail() : email;
         phone = data.getPhone() != null ? data.getPhone() : phone;
         gender = data.getGender() != null ? data.getGender() : gender;
         price = data.getPrice() != null ? data.getPrice() : price;
         description = data.getDescription() != null ? data.getDescription() : description;
-        role = data.getRole() != null ? data.getRole() : role;
-        balance = data.getBalance() != null ? data.getBalance() : balance;
+        if (isAdmin) {
+            email = data.getEmail() != null ? data.getEmail() : email;
+            role = data.getRole() != null ? data.getRole() : role;
+            balance = data.getBalance() != null ? data.getBalance() : balance;
+        }
+    }
+
+    public void update(ApplyRequest data) {
+        description = data.getDescription();
+        price = data.getPrice();
     }
 
     @Override

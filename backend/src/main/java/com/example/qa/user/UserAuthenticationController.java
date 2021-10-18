@@ -33,7 +33,7 @@ public class UserAuthenticationController {
         if (loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
             throw new ApiException(400);
         }
-        Optional<User> userOptional = userRepository.findByUsernameAndDeleted(loginRequest.getUsername(), false);
+        Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
         if (userOptional.isEmpty()) {
             logger.info("login: username '{}' not found", loginRequest.getUsername());
             throw new ApiException(403);
