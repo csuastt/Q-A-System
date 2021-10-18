@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
-import { Redirect } from "react-router-dom";
+import { Link as RouterLink, Redirect } from "react-router-dom";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
@@ -20,8 +20,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
-import { Link as RouterLink } from "react-router-dom";
+import UserContext from "../UserContext";
 
 // some validators
 // not empty
@@ -60,7 +59,6 @@ interface LoginState {
 
 // props interface
 interface LoginProps {
-    login: () => void;
     isAdmin: boolean;
     redirect: string;
 }
@@ -128,7 +126,7 @@ export default class Login extends Component<LoginProps, LoginState> {
 
             // login request
             service.login(this.state.username, this.state.password).then(
-                () => {
+                (user) => {
                     // login success
                     // alert
                     this.setState({
@@ -137,7 +135,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                         alertContent: "登录成功",
                     });
                     // update state
-                    this.props.login();
+                    this.context.setUser(user);
                     // redirect
                     this.setState({
                         redirect: this.props.redirect,
@@ -311,3 +309,5 @@ export default class Login extends Component<LoginProps, LoginState> {
         );
     }
 }
+
+Login.contextType = UserContext;
