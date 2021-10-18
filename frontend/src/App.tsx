@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Appbar from "./components/Appbar";
+import AppFrame from "./components/AppFrame";
 import { Container } from "@mui/material";
 import Welcome from "./components/Welcome";
 import QuestionList from "./components/QuestionList";
@@ -59,21 +59,22 @@ export default function App() {
 
     return (
         <BrowserRouter>
-            <Appbar isAuthenticated={isAuthenticated} />
-            <Container maxWidth="md">
-                <Switch>
-                    {routes.map((routeItem) => {
-                        return (
-                            <Route
-                                path={routeItem[0].toString()}
-                                key={routeItem[0].toString()}
-                            >
-                                {routeItem[1]}
-                            </Route>
-                        );
-                    })}
-                </Switch>
-            </Container>
+            <AppFrame isAuthenticated={isAuthenticated}>
+                <Container maxWidth="md">
+                    <Switch>
+                        {routes.map((routeItem) => {
+                            return (
+                                <Route
+                                    path={routeItem[0].toString()}
+                                    key={routeItem[0].toString()}
+                                >
+                                    {routeItem[1]}
+                                </Route>
+                            );
+                        })}
+                    </Switch>
+                </Container>
+            </AppFrame>
         </BrowserRouter>
     );
 }
