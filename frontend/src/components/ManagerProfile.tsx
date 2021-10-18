@@ -41,4 +41,43 @@ export default class ManagerProfile extends Component<
     ManagerProfileState
     > {
 
+    constructor(props: any) {
+        super(props);
+
+        this.state = {
+            redirect: null,
+            managerReady: false,
+            token: "",
+            manager: null,
+            alert: false,
+            alertType: "error",
+            alertContent: "",
+            error_msg_manager_name: "",
+            error_msg_password: "",
+            error_msg_email: "",
+        };
+        this.handleAlert = this.handleAlert.bind(this);
+        this.handleRedirect = this.handleRedirect.bind(this);
+    }
+    // alert handler
+    handleAlert(
+        _alertType: "success" | "info" | "warning" | "error",
+        _alertContent: string
+    ) {
+        this.setState({
+            alert: true,
+            alertType: _alertType,
+            alertContent: _alertContent,
+        });
+    }
+
+    // redirect handler
+    handleRedirect(target: string) {
+        this.setState({
+            redirect: target,
+        });
+    }
+
+
+
 }
