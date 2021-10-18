@@ -34,8 +34,8 @@ export default function AppManage() {
         // ["/order/create/:answerer", <OrderCreationWizard />],
         // ["/order/create", <OrderCreationWizard />],
         // ["/profile", <AccountProfile isAdmin={false} />],
-        ["/manager/login", <Login login={managerLogin} redirect={"/"} isAdmin={false} />],
-        ["/manager/logout", <Logout logout={managerLogout} redirect={"/"} isAdmin={false} />],
+        ["/manager/login", <Login login={managerLogin} redirect={"/"} isAdmin={true} />],
+        ["/manager/logout", <Logout logout={managerLogout} redirect={"/"} isAdmin={true} />],
         //["/register", <Register />],
         // [
         //     "/change_password",
