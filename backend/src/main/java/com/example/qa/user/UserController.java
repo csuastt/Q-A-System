@@ -2,8 +2,6 @@ package com.example.qa.user;
 
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
-import com.example.qa.manager.model.AppManager;
-import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
@@ -12,11 +10,12 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+
+import static com.example.qa.security.RestControllerAuthUtils.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -161,38 +160,6 @@ public class UserController {
             throw new ApiException(404);
         }
         return user;
-    }
-
-    private boolean authLogin() {
-        return SecurityContextHolder.getContext().getAuthentication() != null;
-    }
-
-    private boolean authIsUser(long id) {
-        UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getRole() == User.class && (long) auth.getPrincipal() == id;
-    }
-
-    private boolean authIsAdmin() {
-        UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getRole() == AppManager.class;
-    }
-
-    private void authLoginOrThrow() {
-        if (!authLogin()) {
-            throw new ApiException(401);
-        }
-    }
-
-    private void authUserOrThrow(long id) {
-        if (!authIsUser(id)) {
-            throw new ApiException(403, "NO_PERMISSION");
-        }
-    }
-
-    private void authUserOrAdminOrThrow(long id) {
-        if (!authIsUser(id) && !authIsAdmin()) {
-            throw new ApiException(403, "NO_PERMISSION");
-        }
     }
 
     private void validatePassword(String password) {

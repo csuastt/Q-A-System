@@ -1,7 +1,7 @@
 package com.example.qa.order.model;
 
 import com.example.qa.order.exchange.OrderEditData;
-import com.example.qa.user.model.AppUser;
+import com.example.qa.user.model.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,9 +19,9 @@ public class Order {
     private long id;
     private boolean deleted = false;
     @ManyToOne
-    private AppUser asker;
+    private User asker;
     @ManyToOne
-    private AppUser answerer;
+    private User answerer;
     private OrderState state = OrderState.CREATED;
     @Setter(AccessLevel.NONE)
     private boolean finished = false;
@@ -41,7 +41,7 @@ public class Order {
     }
 
     // 传 data 前先用 checkOrderData 检查
-    public Order(OrderEditData data, @NonNull AppUser asker, @NonNull AppUser answerer, boolean allProperties) {
+    public Order(OrderEditData data, @NonNull User asker, @NonNull User answerer, boolean allProperties) {
         this.asker = asker;
         this.answerer = answerer;
         question = data.getQuestion();
@@ -55,7 +55,7 @@ public class Order {
     }
 
     // 传 data 前先用 checkOrderData 检查，仅限管理员，默认所有修改
-    public void update(OrderEditData data, @NonNull AppUser asker, @NonNull AppUser answerer) {
+    public void update(OrderEditData data, @NonNull User asker, @NonNull User answerer) {
         this.asker = asker;
         this.answerer = answerer;
         setState(data.getState());
