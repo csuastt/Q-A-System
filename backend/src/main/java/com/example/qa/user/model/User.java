@@ -1,5 +1,6 @@
 package com.example.qa.user.model;
 
+import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.exchange.UserRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ public class User implements UserDetails {
     private boolean deleted = false;
 
     @Column(unique = true)
-    private String username;
+    private String username;  // 删除时手动在之后添加 @{id} 以便允许重新注册
     private String password;
 
     private String avatar;
@@ -41,10 +42,10 @@ public class User implements UserDetails {
 
     private int balance = 100;
 
-    public User(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
+    public User(RegisterRequest registerRequest) {
+        username = registerRequest.getUsername();
+        password = registerRequest.getPassword();
+        email = registerRequest.getEmail();
         createTime = ZonedDateTime.now();
     }
 
@@ -67,21 +68,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return deleted;
+        return !deleted;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return deleted;
+        return !deleted;
     }
 
     @Override
     public boolean isEnabled() {
-        return deleted;
+        return !deleted;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return deleted;
+        return !deleted;
     }
 }
