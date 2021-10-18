@@ -2,6 +2,11 @@ export enum UserType {
     Normal,
     Answerer,
 }
+export enum ManagerType {
+    Admin,
+    Auditor,
+    Observer,
+}
 
 export interface UserBasicInfo {
     id: number;
@@ -11,6 +16,18 @@ export interface UserBasicInfo {
     description: string;
     type: UserType;
 }
+export type ManagerInfoList = Array<ManagerInfo>;
+
+export interface ManagerInfo {
+    id: number;
+    manager_name: string;
+    sign_up_timestamp: number;
+    email: string;
+    phone: string;
+    permission: string;
+    type: ManagerType;
+}
+
 
 export type UserInfoList = Array<UserBasicInfo>;
 
