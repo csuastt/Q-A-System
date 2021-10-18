@@ -152,7 +152,113 @@ export default class ManageCreate extends Component<any, CreateState> {
 
         return (
             <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box
+                    sx={{
+                        marginTop: 3,
+                        marginBottom: 4,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+                        <AccountCircleIcon />
+                    </Avatar>
+                    <Typography component="h1" variant="h5">
+                        管理员创建
+                    </Typography>
+                    <Box
+                        component="form"
+                        onSubmit={this.handleCreate}
+                        noValidate
+                        sx={{ mt: 0 }}
+                    >
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="reg_manager_name"
+                            label="管理员名称"
+                            name="manager_name"
+                            autoComplete="manager_name"
+                            autoFocus
+                            onChange={(e) => this.onChangeValue(e, "manager_name")}
+                            // @ts-ignore
+                            error={this.state.error_msg_manager_name.length !== 0}
+                            // @ts-ignore
+                            helperText={this.state.error_msg_manager_name}
+                            inputProps={{ maxLength: 15 }}
+                        />
 
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            select
+                            SelectProps={{
+                                native: true,
+                            }}
+                            value={
+                                this.state.permission
+                            }
+
+                            name="permission"
+                            label="管理员权限"
+                            type="permission"
+                            id="reg_permission"
+                            autoComplete="new-permission"
+                            onChange={(e) => this.onChangeValue(e, "permission")}
+                            // @ts-ignore
+                            error={this.state.error_msg_permission.length !== 0}
+                            // @ts-ignore
+                            helperText={this.state.error_msg_permission}
+                            inputProps={{ maxLength: 10 }}
+                        >{manager_permission_options.map(
+                        (option) => (
+                            <option
+                                key={
+                                    option.value
+                                }
+                                value={
+                                    option.value
+                                }
+                            >
+                                {option.label}
+                            </option>
+                        )
+                    )} </TextField>
+
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            创建
+                        </Button>
+
+                    </Box>
+                </Box>
+                <Snackbar
+                    autoHideDuration={2000}
+                    open={this.state.alert}
+                    onClose={() => {
+                        this.setState({ alert: false });
+                    }}
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                    }}
+                    sx={{ width: "30%" }}
+                >
+                    <Alert
+                        severity={this.state.alertType}
+                        sx={{ width: "100%" }}
+                    >
+                        {this.state.alertContent}
+                    </Alert>
+                </Snackbar>
             </Container>
         );
     }
