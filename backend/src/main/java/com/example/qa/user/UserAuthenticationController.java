@@ -4,7 +4,6 @@ import com.example.qa.errorhandling.ApiException;
 import com.example.qa.user.exchange.AuthenticationSuccessResponse;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.model.User;
-import com.example.qa.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

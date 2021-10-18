@@ -1,4 +1,4 @@
-package com.example.qa.user.repository;
+package com.example.qa.user;
 
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;

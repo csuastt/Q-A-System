@@ -7,7 +7,6 @@ import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
-import com.example.qa.user.repository.UserRepository;
 import com.example.qa.utils.FieldValidator;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.data.domain.Page;
