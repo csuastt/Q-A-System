@@ -55,7 +55,7 @@ public class ManagerController {
 
 
     @DeleteMapping("/api/managers")
-    public DeleteResponse deleteUser(@RequestParam(value = "id") Long id) throws ApiException {
+    public DeleteResponse deleteUser(@RequestParam(value = "id") Long id) {
         if (managerRepository.existsById(id)) {
 
             try {
@@ -99,7 +99,7 @@ public class ManagerController {
 
 
     @PutMapping("/api/managers/{id}/password")
-    public ModifyPassResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyManagerPasswordAttribute modifiedManager) throws ApiException {
+    public ModifyPassResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyManagerPasswordAttribute modifiedManager) {
         Optional<AppManager> optionalManager = managerRepository.findById(id);
 
         if (optionalManager.isEmpty())
