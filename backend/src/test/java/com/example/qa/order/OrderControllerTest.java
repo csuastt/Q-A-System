@@ -10,7 +10,8 @@ import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.user.response.LoginResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class OrderControllerTest {
     private static final String password = "password";
     private static final String question = "TestQuestion";
     private static final String email = "example@example.com";
-    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();;
     private static long askerId;
     private static long answererId;
 
@@ -68,10 +69,10 @@ class OrderControllerTest {
         MvcResult loginResult = this.mockMvc
                 .perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
+                        .content(mapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
-        LoginResponse response = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
+        LoginResponse response = mapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
         this.token = response.getToken();
     }
 
@@ -85,10 +86,10 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData result = objectMapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
+        OrderData result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
         assertEquals(result.getAsker().getId(), askerId);
         assertEquals(result.getAnswerer().getId(), answererId);
         assertEquals(result.getQuestion(), question);
@@ -106,7 +107,7 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -121,7 +122,7 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -136,7 +137,7 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -185,7 +186,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/review")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(accept)))
+                        .content(mapper.writeValueAsString(accept)))
                 .andExpect(status().isOk());
         assertEquals(query(id).getState(), OrderState.REVIEWED);
     }
@@ -197,7 +198,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/review")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(accept)))
+                        .content(mapper.writeValueAsString(accept)))
                 .andExpect(status().isForbidden());
     }
 
@@ -211,7 +212,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/respond")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(accept)))
+                        .content(mapper.writeValueAsString(accept)))
                 .andExpect(status().isOk());
         assertEquals(query(id).getState(), OrderState.ACCEPTED);
     }
@@ -223,7 +224,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/respond")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(accept)))
+                        .content(mapper.writeValueAsString(accept)))
                 .andExpect(status().isForbidden());
     }
 
@@ -255,7 +256,7 @@ class OrderControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData[] result = objectMapper.readerForArrayOf(OrderData.class).readValue(mvcResult.getResponse().getContentAsString());
+        OrderData[] result = mapper.readerForArrayOf(OrderData.class).readValue(mvcResult.getResponse().getContentAsString());
         assertTrue(result.length > 0);
     }
 
@@ -265,7 +266,7 @@ class OrderControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData result = objectMapper.readValue(queryResult.getResponse().getContentAsString(), OrderData.class);
+        OrderData result = mapper.readValue(queryResult.getResponse().getContentAsString(), OrderData.class);
         assertEquals(result.getId(), id);
         return result;
     }
@@ -274,7 +275,7 @@ class OrderControllerTest {
         mockMvc.perform(put("/api/orders/" + id)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(data)))
+                        .content(mapper.writeValueAsString(data)))
                 .andExpect(status().isOk());
     }
 }
