@@ -25,6 +25,7 @@ export interface ManagerInfo {
     email: string;
     phone: string;
     permission: string;
+    password: string;
     type: ManagerType;
 }
 

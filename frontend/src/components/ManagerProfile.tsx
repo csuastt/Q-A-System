@@ -29,15 +29,14 @@ interface ManagerProfileState {
     token: string;
     manager: ManagerInfo | null;
     alert: boolean;
-    alertType: "success" | "info" | "warning" | "error";
-    alertContent: string;
-    error_msg_manager_name: string;
-    error_msg_password: string;
-    error_msg_email: string;
+    alertContent:string;
+    alertType: "info" | "error";
+
 }
 
 
-export default class ManagerProfile extends Component<
+
+export default class ManagerProfile extends Component<{},
     ManagerProfileState
     > {
 
@@ -50,18 +49,18 @@ export default class ManagerProfile extends Component<
             token: "",
             manager: null,
             alert: false,
-            alertType: "error",
             alertContent: "",
-            error_msg_manager_name: "",
-            error_msg_password: "",
-            error_msg_email: "",
+            alertType: "error",
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
     }
+
+
+
     // alert handler
     handleAlert(
-        _alertType: "success" | "info" | "warning" | "error",
+        _alertType:  "info" | "error",
         _alertContent: string
     ) {
         this.setState({
@@ -78,6 +77,157 @@ export default class ManagerProfile extends Component<
         });
     }
 
+    componentDidMount() {
+        const currentManager = ManagerService.getCurrentManager();
+        if (!currentManager) {
+            // alert
+            this.handleAlert("error", "非法访问");
+            //this.handleRedirect("/");
+            return;
+        }
+        this.setState({
+            // token: authToken(),
+            manager: currentManager,
+            managerReady: true,
+        });
+
+    }
+
+    render(){
+        if (this.state.redirect) {
+            return <Redirect to={this.state.redirect} />;
+        }
+        return(
+            <Grid
+                container
+                spacing={4}
+                justifyContent="center"
+                sx={{
+                    width: "100%",
+                }}
+            >
+                <Grid item md={8} xs={12} mt={3}>
+                    <form noValidate>
+                        <Card>
+
+                                <CardHeader
+                                    title="管理员信息"
+                                />
+
+                            <Divider />
+                            <CardContent>
+                                <Grid container spacing={4}>
+                                    <Grid item md={6} xs={12}>
+
+                                            <TextField
+                                                fullWidth
+                                                label="用户名"
+                                                name="username"
+                                                InputProps={{ readOnly: true }}
+                                                value={
+                                                    this.state.manager?.manager_name
+                                                }
+                                                variant="outlined"
+                                            />
+
+                                    </Grid>
+
+                                    <Grid item md={6} xs={12}>
+                                            <TextField
+                                                fullWidth
+                                                label="邮箱"
+                                                name="email"
+                                                InputProps={{
+                                                    readOnly: true,
+                                                }}
+                                                value={this.state.manager?.email}
+                                                variant="outlined"
+                                            />
+                                    </Grid>
 
 
+                                            <Grid item md={6} xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="密码"
+                                                    name="password"
+                                                    InputProps={{
+                                                        readOnly: true,
+                                                    }}
+                                                    value={
+                                                        this.state.manager
+                                                            ?.password
+                                                    }
+                                                    variant="outlined"
+                                                    // @ts-ignore
+                                                />
+                                            </Grid>
+                                            <Grid item md={6} xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="权限"
+                                                    name="permission"
+                                                    InputProps={{
+                                                        readOnly: true,
+                                                    }}
+                                                    value={
+                                                        this.state.manager
+                                                            ?.permission
+                                                    }
+                                                    variant="outlined"
+                                                >
+
+                                                </TextField>
+                                            </Grid>
+                                </Grid>
+
+                            </CardContent>
+                            <Box>
+                                <Grid item>
+                                    <Button
+                                        color="error"
+                                        variant="contained"
+                                        component={RouterLink}
+                                        to="/change_password"
+                                    >
+                                        修改密码
+                                    </Button>
+                                </Grid>
+                            </Box>
+
+                        </Card>
+                    </form>
+
+
+                </Grid>
+
+                 <Snackbar
+                    autoHideDuration={2000}
+                    open={this.state.alert}
+                    onClose={() => {
+                        this.setState({ alert: false });
+                    }}
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                    }}
+                    sx={{ width: "30%" }}
+                >
+                    <Alert
+                        severity={this.state.alertType}
+                        sx={{ width: "100%" }}
+                    >
+                        {this.state.alertContent}
+                    </Alert>
+                </Snackbar>
+            </Grid>
+        );
+
+
+    }
 }
+
+
+
+
+
