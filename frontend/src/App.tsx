@@ -10,12 +10,21 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import { UserInfo } from "./services/definations";
+import authService from "./services/auth.service";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
+
+    useEffect(() => {
+        authService.refreshToken()?.then((user) => {
+            if (user) {
+                setUser(user);
+            }
+        });
+    }, []);
 
     const routes = [
         ["/answerers/select", <AnswererList selectModel />],
