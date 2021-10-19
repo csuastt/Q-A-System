@@ -239,10 +239,7 @@ export default class AccountProfile extends Component<
                         userService.getUserInfo(this.state.user.id).then(
                             (response) => {
                                 if (response) {
-                                    localStorage.setItem(
-                                        "user",
-                                        JSON.stringify(response)
-                                    );
+                                    this.context.setUser(response);
                                 }
                             },
                             (error) => {

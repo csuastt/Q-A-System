@@ -29,7 +29,7 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
         questionService.getOrdersOfUser(props.userId!).then((response) => {
             setQuestionList(response);
         });
-    }, []);
+    }, [props.userId, user?.id]);
 
     const renderCardPlaceholder = () => (
         <Card>
