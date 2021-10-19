@@ -1,9 +1,10 @@
 package com.example.qa.user;
 
 import com.example.qa.user.exchange.*;
-import com.example.qa.user.model.AppUser;
-import com.example.qa.user.repository.UserRepository;
+import com.example.qa.user.model.User;
 import com.example.qa.user.response.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -36,10 +36,12 @@ class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    private String token;
-    private String password = "password";
     @Autowired
     private UserRepository repository;
+
+    private String token;
+    private final String password = "password";
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @BeforeAll
     static void addTestUser(
@@ -48,7 +50,7 @@ class UserControllerTest {
     ) {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new AppUser("testUser", passwordEncoder.encode("password"), authorities);
+        var user = new User("testUser", passwordEncoder.encode("password"), authorities);
         user.setPermit("a");
         repository.save(user);
     }
@@ -191,8 +193,6 @@ class UserControllerTest {
         }
         var user = repository.findById(1L).get();
         assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
-        assertEquals(response.getAvatarUrl(), user.getAva_url(),"头像路径不正确");
-        assertEquals(LocalDate.parse(response.getBirthday()), user.getBirthday(),"生日不正确");
         assertEquals(response.getGender(), user.getGender(),"性别不正确");
         assertEquals(response.getId(), user.getId() ,"id不正确");
         assertEquals(response.getEmail(), user.getEmail(), "邮件不正确");
@@ -208,66 +208,6 @@ class UserControllerTest {
 
         //test for not authenticated
         this.mockMvc.perform(get("/api/users/1"))
-                .andExpect(status().isForbidden())
-                .andReturn();
-    }
-
-    @Test
-    void getBasicUser() throws Exception {
-        //test for success get user detail
-        MvcResult getBasicUserResult = this.mockMvc.perform(get("/api/users/1/basic"))
-                .andExpect(status().isOk())
-                .andReturn();
-        GetBasicUserResponse response = new Gson().fromJson(getBasicUserResult.getResponse().getContentAsString(), GetBasicUserResponse.class);
-        assertNotNull(response.getAvatarUrl(),"不能为空");
-        assertNotNull(response.getUsername(),"不能为空");
-        assertNotNull(response.getId(),"不能为空");
-        assertNotNull(response.getNickname(),"不能为空");
-        if(repository.findById(1L).isEmpty()){
-            throw new Exception("用户不存在");
-        }
-        var user = repository.findById(1L).get();
-        assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
-        assertEquals(response.getAvatarUrl(), user.getAva_url(),"头像路径不正确");
-        assertEquals(response.getId(), user.getId() ,"id不正确");
-        assertEquals(response.getNickname(), user.getNickname(), "昵称不正确");
-
-        long id = repository.count() + 1;
-
-        //test for not existed user
-        this.mockMvc.perform(get("/api/users/" + id + "/basic")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-    }
-
-    @Test
-    void permitQuest() throws Exception{
-
-
-        //test for success get user permission
-        MvcResult getPermissionResult = this.mockMvc.perform(get("/api/users/1/permission")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        if(repository.findById(1L).isEmpty()){
-            throw new Exception("用户不存在");
-        }
-        var user = repository.findById(1L).get();
-
-        PermitAttribute response = new Gson().fromJson(getPermissionResult.getResponse().getContentAsString(), PermitAttribute.class);
-        assertEquals(response.getPermit(), user.getPermit());
-
-        //test for get user not existed permission
-        long id = repository.count() + 1;
-        this.mockMvc.perform(get("/api/users/" + id + "/permission")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        //test for not authenticated
-        this.mockMvc.perform(get("/api/users/1/permission"))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -308,16 +248,6 @@ class UserControllerTest {
     }
 
     @Test
-    void genAvatar() throws Exception{
-
-        //test getting avatar
-        this.mockMvc.perform(get("/api/users/avatar/" + 1 + ".png")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andReturn();
-    }
-
-    @Test
     void register() throws Exception{
 
         long expected = repository.count() + 1;
@@ -345,7 +275,7 @@ class UserControllerTest {
 
     @Test
     void modifyUser() throws Exception{
-        UserAttribute modify = new UserAttribute();
+        UserRequest modify = new UserRequest();
         modify.setUsername("eeeee");
         modify.setPassword("eeeee");
         modify.setBirthday("2000-10-03");
@@ -412,7 +342,7 @@ class UserControllerTest {
 
     @Test
     void modifyPass() throws Exception{
-        ModifyPasswordAttribute modify = new ModifyPasswordAttribute();
+        ChangePasswordRequest modify = new ChangePasswordRequest();
         modify.setOrigin("password");
         modify.setPassword("pass");
 
@@ -455,111 +385,6 @@ class UserControllerTest {
         this.password = "password";
     }
 
-    @Test
-    void getPrice() throws Exception {
-        // initial testUser
-        generateAnswerer("testAnswerer_g");
-        generateUser("testQuestioner_g");
-        Long id_ans = repository.findByUsernameAndEnable("testAnswerer_g", true)
-                .get().getId();
-        Long id_usr = repository.findByUsernameAndEnable("testQuestioner_g", true)
-                .get().getId();
-
-        //test for success get
-        MvcResult getPriceResult = this.mockMvc.perform(get("/api/users/" + id_ans + "/price")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andReturn();
-        GetPriceResponse response = new Gson().fromJson(getPriceResult.getResponse().getContentAsString(), GetPriceResponse.class);
-        assertEquals(response.getPrice(), repository.findById(id_ans).get().getPrice());
-
-        //test for questioner get
-        this.mockMvc.perform(get("/api/users/" + id_usr + "/price")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isForbidden())
-                .andReturn();
-
-        //test for not existed user get
-        this.mockMvc.perform(get("/api/users/" + (repository.count() + 1) + "/price")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        //delete testUser
-        repository.deleteById(id_ans);
-        repository.deleteById(id_usr);
-    }
-
-    @Test
-    void modifyPrice() throws Exception {
-        // initial testUser
-        generateAnswerer("testAnswerer");
-        generateUser("testQuestioner");
-        Long id_ans = repository.findByUsernameAndEnable("testAnswerer", true)
-                .get().getId();
-        Long id_usr = repository.findByUsernameAndEnable("testQuestioner", true)
-                .get().getId();
-
-        //test for success modification
-        int modifiedPrice = 60;
-        PriceAttribute modifyPrice = new PriceAttribute(modifiedPrice);
-        this.mockMvc.perform(put("/api/users/" + id_ans + "/price")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modifyPrice)))
-                .andExpect(status().isOk())
-                .andReturn();
-        assertEquals(modifiedPrice, repository.findById(id_ans).get().getPrice());
-
-        //test for questioner modification
-        this.mockMvc.perform(put("/api/users/" + id_usr + "/price")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modifyPrice)))
-                .andExpect(status().isForbidden())
-                .andReturn();
-
-        //test for not existed user modification
-        this.mockMvc.perform(put("/api/users/" + (repository.count() + 1) + "/price")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modifyPrice)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-    }
-
-    @Test
-    void modifyPermission() throws Exception {
-        PermitAttribute modifyPermission = new PermitAttribute("q");
-
-        //test for successful modification
-        this.mockMvc.perform(put("/api/users/1/permission")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modifyPermission)))
-                .andExpect(status().isOk())
-                .andReturn();
-        assertEquals(repository.findById(1L).get().getPermit(), "q");
-
-        //test for useless modification
-        this.mockMvc.perform(put("/api/users/1/permission")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modifyPermission)))
-                .andExpect(status().isInternalServerError())
-                .andReturn();
-        assertEquals(repository.findById(1L).get().getPermit(), "q");
-
-        //test for not existed user modification
-        this.mockMvc.perform(put("/api/users/"+(repository.count() + 1) + "/permission")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modifyPermission)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-        assertEquals(repository.findById(1L).get().getPermit(), "q");
-    }
-
     /**
      * generate testUsers with permission a
      * @param username name of answerers
@@ -567,7 +392,7 @@ class UserControllerTest {
     void generateAnswerer(String username){
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new AppUser(username, passwordEncoder.encode("password"),authorities);
+        var user = new User(username, passwordEncoder.encode("password"),authorities);
         user.setPermit("a");
         user.setPrice(30);
         repository.save(user);
@@ -580,7 +405,7 @@ class UserControllerTest {
     void generateUser(String username){
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new AppUser(username, passwordEncoder.encode("password"),authorities);
+        var user = new User(username, passwordEncoder.encode("password"),authorities);
         repository.save(user);
     }
 }
