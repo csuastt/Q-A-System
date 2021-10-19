@@ -41,7 +41,7 @@ class OrderControllerTest {
     private static final String password = "password";
     private static final String question = "TestQuestion";
     private static final String email = "example@example.com";
-    private final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();;
+    private final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
     private static long askerId;
     private static long answererId;
 

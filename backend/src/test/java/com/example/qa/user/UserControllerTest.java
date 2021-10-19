@@ -10,7 +10,6 @@ import com.example.qa.user.response.GetUserResponse;
 import com.example.qa.user.response.LoginResponse;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -44,65 +44,69 @@ class UserControllerTest {
     private UserRepository repository;
 
     private String token;
-    private final String password = "password";
-    private final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();;
+    private int userCounter = 0;
+    private static final String password = "password";
+    private static final String email = "example@example.com";
+    private final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
-    @BeforeAll
-    static void addTestUser(
-            @Autowired PasswordEncoder passwordEncoder,
-            @Autowired UserRepository repository
-    ) {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new User("testUser", passwordEncoder.encode("password"), authorities);
-        user.setPermit("a");
-        repository.save(user);
+    private MvcResult postUrl(String url, Object request, ResultMatcher matcher) throws Exception {
+        return mockMvc
+                .perform(post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(matcher)
+                .andReturn();
+    }
+
+    private RegisterRequest newRegisterRequest() {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUsername("testUser" + userCounter);
+        userCounter++;
+        registerRequest.setPassword(passwordEncoder.encode(password));
+        registerRequest.setEmail(email);
+        return registerRequest;
+    }
+
+    @Test
+    void createUser() throws Exception {
+        RegisterRequest request = newRegisterRequest();
+        postUrl("/api/users", request, status().isOk());
+        postUrl("/api/users", request, status().isForbidden());
     }
 
     @BeforeEach
     @Test
     void login() throws Exception {
-        //test for login success
+        RegisterRequest registerRequest = newRegisterRequest();
+        postUrl("/api/users", registerRequest, status().isOk());
+
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername("testUser");
+        loginRequest.setUsername(registerRequest.getUsername());
         loginRequest.setPassword(password);
-        MvcResult loginResult = this.mockMvc
-                .perform(post("/api/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andReturn();
-
+        MvcResult loginResult = postUrl("/api/user/login", loginRequest, status().isOk());
         LoginResponse response = mapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        this.token = response.getToken();
-        assertNotNull(response.getToken(), "Token must not be null!");
-        assertEquals(response.getUser().getUsername(), "testUser");
+        assertNotNull(response.getToken(), "token 不为空");
+        token = response.getToken();
 
-        loginRequest.setPassword("pa");
-
-        //test for wrong password login
-        this.mockMvc.perform(post("/api/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isUnauthorized())
-                .andReturn();
-        //test for wrong username
-        loginRequest.setUsername("t");
-        this.mockMvc.perform(post("/api/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isUnauthorized())
-                .andReturn();
+        loginRequest.setPassword("");
+        postUrl("/api/user/login", loginRequest, status().isForbidden());
+        loginRequest.setPassword(null);
+        postUrl("/api/user/login", loginRequest, status().isBadRequest());
+        loginRequest.setUsername("Random");
+        loginRequest.setPassword(password);
+        postUrl("/api/user/login", loginRequest, status().isForbidden());
+        loginRequest.setUsername(null);
+        postUrl("/api/user/login", loginRequest, status().isBadRequest());
     }
 
     @Test
     void getUsers() throws Exception {
 
         //init testUsers
-        for(int i = 0; i < 40; i++){
+        for (int i = 0; i < 40; i++) {
             generateUser("user" + i);
         }
-        for(int i = 0; i < 20; i++){
+        for (int i = 0; i < 20; i++) {
             generateAnswerer("answerer" + i);
         }
 
@@ -160,7 +164,7 @@ class UserControllerTest {
 
         GetAllResponse res_ans = mapper.readValue(page_ans.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(res_ans.getUsers().size(), 20);
-        for(var res : res_ans.getUsers()){
+        for (var res : res_ans.getUsers()) {
             assertEquals(repository.findById(res.getId()).get().getPermit(), "a");
         }
 
@@ -170,13 +174,13 @@ class UserControllerTest {
                 .andReturn();
 
         //delete testUsers
-        for(int i = 7; i <= 66; i++){
+        for (int i = 7; i <= 66; i++) {
             repository.deleteById((long) i);
         }
     }
 
     @Test
-    void getUser() throws Exception{
+    void getUser() throws Exception {
 
         //test for success get user detail
         MvcResult getUserResult = this.mockMvc.perform(get("/api/users/1")
@@ -184,21 +188,21 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         GetUserResponse response = mapper.readValue(getUserResult.getResponse().getContentAsString(), GetUserResponse.class);
-        assertNotNull(response.getAvatarUrl(),"不能为空");
-        assertNotNull(response.getBirthday(),"不能为空");
-        assertNotNull(response.getUsername(),"不能为空");
-        assertNotNull(response.getGender(),"不能为空");
-        assertNotNull(response.getId(),"不能为空");
-        assertNotNull(response.getEmail(),"不能为空");
-        assertNotNull(response.getNickname(),"不能为空");
-        assertNotNull(response.getCreateTime(),"不能为空");
-        if(repository.findById(1L).isEmpty()){
+        assertNotNull(response.getAvatarUrl(), "不能为空");
+        assertNotNull(response.getBirthday(), "不能为空");
+        assertNotNull(response.getUsername(), "不能为空");
+        assertNotNull(response.getGender(), "不能为空");
+        assertNotNull(response.getId(), "不能为空");
+        assertNotNull(response.getEmail(), "不能为空");
+        assertNotNull(response.getNickname(), "不能为空");
+        assertNotNull(response.getCreateTime(), "不能为空");
+        if (repository.findById(1L).isEmpty()) {
             throw new Exception("用户不存在");
         }
         var user = repository.findById(1L).get();
-        assertEquals(response.getUsername(), user.getUsername(),"用户名不正确");
-        assertEquals(response.getGender(), user.getGender(),"性别不正确");
-        assertEquals(response.getId(), user.getId() ,"id不正确");
+        assertEquals(response.getUsername(), user.getUsername(), "用户名不正确");
+        assertEquals(response.getGender(), user.getGender(), "性别不正确");
+        assertEquals(response.getId(), user.getId(), "id不正确");
         assertEquals(response.getEmail(), user.getEmail(), "邮件不正确");
         assertEquals(response.getNickname(), user.getNickname(), "昵称不正确");
 
@@ -217,7 +221,7 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteUser() throws Exception{
+    void deleteUser() throws Exception {
 
         //test for success delete user
         long expected = repository.count() - 1;
@@ -252,11 +256,11 @@ class UserControllerTest {
     }
 
     @Test
-    void register() throws Exception{
+    void register() throws Exception {
 
         long expected = repository.count() + 1;
 
-       RegisterRequest register = new RegisterRequest();
+        RegisterRequest register = new RegisterRequest();
         register.setUsername("eeee");
         register.setPassword("eeee");
 
@@ -278,7 +282,7 @@ class UserControllerTest {
     }
 
     @Test
-    void modifyUser() throws Exception{
+    void modifyUser() throws Exception {
         UserRequest modify = new UserRequest();
         modify.setUsername("eeeee");
         modify.setPassword("eeeee");
@@ -305,7 +309,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        if(repository.findById(1L).isEmpty()){
+        if (repository.findById(1L).isEmpty()) {
             throw new Exception("用户不存在");
         }
         var user = repository.findById(1L).get();
@@ -314,8 +318,8 @@ class UserControllerTest {
         assertEquals(user.getBirthday(), LocalDate.parse("2000-10-03"));
         assertEquals(user.getEmail(), "@mails.tsinghua.edu.cn");
         assertEquals(user.getDescription(), "A student");
-        assertEquals(user.getGender(),"male");
-        assertEquals(user.getPhone(),"1010");
+        assertEquals(user.getGender(), "male");
+        assertEquals(user.getPhone(), "1010");
         assertEquals(user.getNickname(), "little");
 
         //test modify user not existed
@@ -345,7 +349,7 @@ class UserControllerTest {
     }
 
     @Test
-    void modifyPass() throws Exception{
+    void modifyPass() throws Exception {
         ChangePasswordRequest modify = new ChangePasswordRequest();
         modify.setOrigin("password");
         modify.setPassword("pass");
@@ -391,12 +395,13 @@ class UserControllerTest {
 
     /**
      * generate testUsers with permission a
+     *
      * @param username name of answerers
      */
-    void generateAnswerer(String username){
+    void generateAnswerer(String username) {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new User(username, passwordEncoder.encode("password"),authorities);
+        var user = new User(username, passwordEncoder.encode("password"), authorities);
         user.setPermit("a");
         user.setPrice(30);
         repository.save(user);
@@ -404,12 +409,13 @@ class UserControllerTest {
 
     /**
      * generate testUsers
+     *
      * @param username name to create
      */
-    void generateUser(String username){
+    void generateUser(String username) {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new User(username, passwordEncoder.encode("password"),authorities);
+        var user = new User(username, passwordEncoder.encode("password"), authorities);
         repository.save(user);
     }
 }
