@@ -41,7 +41,7 @@ public class AppUser implements UserDetails {
 	private Boolean enable = true;
 	private String permit = "q";
 	private Integer money = 100;
-    // TODO: It may not be the best way to deal with database updates. We will change it after the stabilization of data models
+    // It may not be the best way to deal with database updates. We will change it after the stabilization of data models
 	@ColumnDefault("0")
 	private Integer price = 0;
 	private String description = "";
@@ -133,17 +133,17 @@ public class AppUser implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return enable;
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return enable;
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return enable;
+		return true;
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class ManagerService implements UserDetailsService {
     private ManagerRepository managerRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String managername) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String managername) {
         Optional<AppManager> manager = managerRepository.findByManagerName(managername);
         if (manager.isPresent())
             return manager.get();

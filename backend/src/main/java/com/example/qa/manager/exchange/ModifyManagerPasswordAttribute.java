@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ModifyManagerPasswordAttribute {
-    public String origin_password;
-    public String new_password;
+    private String originPassword;
+    private String newPassword;
 }

@@ -104,7 +104,11 @@ public class UserController {
     @DeleteMapping("/api/users")
     public SuccessResponse deleteUser(@RequestParam(value = "id") Long id) {
         if(userRepository.existsByIdAndEnable(id, true)){
-            var user = userRepository.findById(id).get();
+            var user = new AppUser();
+            Optional<AppUser> optionalAppUser = userRepository.findById(id);
+            if (optionalAppUser.isPresent()) {
+                user = optionalAppUser.get();
+            }
             user.setEnable(false);
             try{
                 userRepository.save(user);
@@ -277,7 +281,7 @@ public class UserController {
      * @param optionalUser   The user to test
      */
     private void checkActivity(Optional<AppUser> optionalUser) {
-        if (optionalUser.isEmpty()|| !optionalUser.get().getEnable())
+        if (optionalUser.isEmpty()|| Boolean.TRUE.equals(!optionalUser.get().getEnable()))
             throw new ApiException(HttpStatus.BAD_REQUEST, "未找到用户");
     }
 }

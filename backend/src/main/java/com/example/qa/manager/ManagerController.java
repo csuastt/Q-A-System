@@ -2,9 +2,6 @@ package com.example.qa.manager;
 
 
 import com.example.qa.errorhandling.ApiException;
-import com.example.qa.manager.exception.DeleteException;
-import com.example.qa.manager.exception.NotFoundException;
-import com.example.qa.manager.exception.NotMatchException;
 import com.example.qa.manager.exchange.*;
 import com.example.qa.manager.model.AppManager;
 import com.example.qa.manager.repository.ManagerRepository;
@@ -48,14 +45,17 @@ public class ManagerController {
 
     @GetMapping("/api/managers/{id}/permission")
     public QuestPermission permitQuest(@PathVariable(value = "id") Long id) {
-        String permission = managerRepository.findById(id).get().getPermission();
+        Optional<AppManager> appManager= managerRepository.findById(id);
+        String permission = "";
+        if(appManager.isPresent())
+            permission = appManager.get().getPermission();
 
         return new QuestPermission("200", permission);
     }
 
 
     @DeleteMapping("/api/managers")
-    public DeleteResponse deleteUser(@RequestParam(value = "id") Long id) throws DeleteException, NotFoundException {
+    public DeleteResponse deleteUser(@RequestParam(value = "id") Long id) throws ApiException {
         if (managerRepository.existsById(id)) {
 
             try {
@@ -63,12 +63,12 @@ public class ManagerController {
                 return new DeleteResponse("Successfully delete");
             } catch (Exception e) {
 
-                throw new DeleteException(e.getMessage());
+                throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "数据库出错");
             }
 
         } else {
 
-            throw new NotFoundException("No Such Method");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "用户不存在");
         }
     }
 
@@ -99,13 +99,13 @@ public class ManagerController {
 
 
     @PutMapping("/api/managers/{id}/password")
-    public ModifyPassResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyManagerPasswordAttribute modifiedManager) throws NotMatchException {
+    public ModifyPassResponse modifyPass(@PathVariable(value = "id") Long id, @RequestBody ModifyManagerPasswordAttribute modifiedManager) throws ApiException {
         Optional<AppManager> optionalManager = managerRepository.findById(id);
 
         if (optionalManager.isEmpty())
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR);
-        if (optionalManager.get().getPassword().equals(passwordEncoder.encode(modifiedManager.getOrigin_password()))) {
-            optionalManager.get().setPassword(passwordEncoder.encode(modifiedManager.getNew_password()));
+        if (optionalManager.get().getPassword().equals(passwordEncoder.encode(modifiedManager.getOriginPassword()))) {
+            optionalManager.get().setPassword(passwordEncoder.encode(modifiedManager.getNewPassword()));
             managerRepository.save(optionalManager.get());
             return new ModifyPassResponse("修改密码成功");
         }

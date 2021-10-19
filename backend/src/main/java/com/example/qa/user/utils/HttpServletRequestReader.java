@@ -7,11 +7,14 @@ import java.io.IOException;
 public class HttpServletRequestReader
 {
 
+    private HttpServletRequestReader(){
+        throw new IllegalStateException("Util");
+    }
     /**
      * @param request  Http请求包
      * @return         request中的请求体的字符串
      */
-    public static String ReadAsChars(HttpServletRequest request) {
+    public static String readAsChars(HttpServletRequest request) {
         BufferedReader br = null;
         StringBuilder sb = new StringBuilder();
 

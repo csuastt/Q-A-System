@@ -2,10 +2,12 @@ package com.example.qa.manager.exchange;
 
 
 import com.example.qa.manager.model.AppManager;
+import lombok.Data;
 
+@Data
 public class AuthenticationSuccessResponse {
-    public String token;
-    public ManagerData manager;
+    private String token;
+    private ManagerData manager;
 
     public AuthenticationSuccessResponse(String token, AppManager appManager) {
         this.token = token;

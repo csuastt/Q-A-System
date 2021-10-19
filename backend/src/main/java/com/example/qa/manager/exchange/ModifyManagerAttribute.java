@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class ModifyManagerAttribute {
-    public String managername;
-    public String password;
-    public String permission;
-    public String email;
-    public String nickname;
-    public String phone;
+    private String managername;
+    private String password;
+    private String permission;
+    private String email;
+    private String nickname;
+    private String phone;
 }
