@@ -1,8 +1,11 @@
 package com.example.qa.manager.exchange;
 
+import lombok.Data;
+
+@Data
 public class QuestPermission {
-    public String code;
-    public String permission;
+    private String code;
+    private String permission;
 
     public QuestPermission(String code, String permission){
         this.code = code;

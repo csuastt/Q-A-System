@@ -1,11 +1,7 @@
 package com.example.qa.user.security;
 
 import com.example.qa.user.utils.SecurityConstants;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +45,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             try {
                 var signingKey = SecurityConstants.JWT_SECRET.getBytes();
 
-                var parsedToken = Jwts.parser()
-                    .setSigningKey(signingKey)
-                    .parseClaimsJws(token.replace("Bearer ", ""));
+                var parsedToken = getParsedToken(token, signingKey);
 
-                var username = parsedToken
-                    .getBody()
-                    .getSubject();
+                var username = getUsername(parsedToken);
 
                 // a workaround to identify user for user-only operation
                 var url = request.getRequestURI();
@@ -65,27 +57,35 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                         return null;
                 }
 
-                var authorities = ((List<?>) parsedToken.getBody()
-                    .get("rol")).stream()
-                    .map(authority -> new SimpleGrantedAuthority((String) authority))
-                    .toList();
+                var authorities = getAuthorities(parsedToken);
 
                 if (StringUtils.isNotEmpty(username)) {
                     return new UsernamePasswordAuthenticationToken(username, null, authorities);
                 }
-            } catch (ExpiredJwtException exception) {
+            } catch (Exception exception) {
                 log.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
-            } catch (UnsupportedJwtException exception) {
-                log.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
-            } catch (MalformedJwtException exception) {
-                log.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
-            } catch (SignatureException exception) {
-                log.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
-            } catch (IllegalArgumentException exception) {
-                log.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
             }
         }
 
         return null;
+    }
+
+    private List<SimpleGrantedAuthority> getAuthorities(Jws<Claims> parsedToken) {
+        return ((List<?>) parsedToken.getBody()
+            .get("rol")).stream()
+            .map(authority -> new SimpleGrantedAuthority((String) authority))
+            .toList();
+    }
+
+    private String getUsername(Jws<Claims> parsedToken) {
+        return parsedToken
+            .getBody()
+            .getSubject();
+    }
+
+    private Jws<Claims> getParsedToken(String token, byte[] signingKey) {
+        return Jwts.parser()
+            .setSigningKey(signingKey)
+            .parseClaimsJws(token.replace("Bearer ", ""));
     }
 }

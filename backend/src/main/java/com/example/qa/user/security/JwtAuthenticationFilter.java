@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static com.example.qa.user.utils.HttpServletRequestReader.ReadAsChars;
+import static com.example.qa.user.utils.HttpServletRequestReader.readAsChars;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        LoginRequest login = new Gson().fromJson(ReadAsChars(request), LoginRequest.class);
+        LoginRequest login = new Gson().fromJson(readAsChars(request), LoginRequest.class);
 
         var username = login.getUsername();
         var password = login.getPassword();

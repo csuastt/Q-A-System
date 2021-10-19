@@ -67,18 +67,18 @@ public class AppManager implements UserDetails {
 
 
     public void updateManagerInfo(ModifyManagerAttribute newInfo) {
-        if (newInfo.managername != null)
-            this.managerName = newInfo.managername;
-        if (newInfo.permission != null)
-            this.permission = newInfo.permission;
-        if (newInfo.password != null)
-            this.password = newInfo.password;
-        if (newInfo.email != null)
-            this.email = newInfo.email;
-        if (newInfo.nickname != null)
-            this.nickname = newInfo.nickname;
-        if(newInfo.phone != null)
-            this.phone = newInfo.phone;
+        if (newInfo.getManagername() != null)
+            this.managerName = newInfo.getManagername();
+        if (newInfo.getPermission() != null)
+            this.permission = newInfo.getPermission();
+        if (newInfo.getPassword() != null)
+            this.password = newInfo.getPassword();
+        if (newInfo.getEmail() != null)
+            this.email = newInfo.getEmail();
+        if (newInfo.getNickname() != null)
+            this.nickname = newInfo.getNickname();
+        if(newInfo.getPhone() != null)
+            this.phone = newInfo.getPhone();
     }
 
     @Override
