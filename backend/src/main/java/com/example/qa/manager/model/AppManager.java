@@ -47,25 +47,6 @@ public class AppManager implements UserDetails {
         this.createTime = Instant.now().getEpochSecond();
     }
 
-    public AppManager(String managerName,
-                      String password,
-                      Collection<GrantedAuthority> authorities,
-                      String permission,
-                      String email,
-                      String phone,
-                      String nickname) {
-        this.managerName = managerName;
-        this.password = password;
-        this.authorities = authorities;
-        this.permission = permission;
-        this.createTime = Instant.now().getEpochSecond();
-        this.email = email;
-        this.nickname = nickname;
-        this.phone = phone;
-    }
-
-
-
     public void updateManagerInfo(ModifyManagerAttribute newInfo) {
         if (newInfo.getManagername() != null)
             this.managerName = newInfo.getManagername();
@@ -124,7 +105,4 @@ public class AppManager implements UserDetails {
     public int hashCode() {
         return Objects.hash(managerName,password,permission,email, phone,nickname);
     }
-
-
-
 }
