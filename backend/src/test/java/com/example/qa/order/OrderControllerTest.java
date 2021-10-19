@@ -4,13 +4,13 @@ import com.example.qa.order.exchange.AcceptData;
 import com.example.qa.order.exchange.OrderData;
 import com.example.qa.order.exchange.OrderEditData;
 import com.example.qa.order.model.OrderState;
-import com.example.qa.order.repository.OrderRepository;
+import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.LoginRequest;
-import com.example.qa.user.model.AppUser;
-import com.example.qa.user.repository.UserRepository;
+import com.example.qa.user.exchange.RegisterRequest;
+import com.example.qa.user.model.User;
+import com.example.qa.user.model.UserRole;
 import com.example.qa.user.response.LoginResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,14 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,20 +39,23 @@ class OrderControllerTest {
     private String token;
     private static final String password = "password";
     private static final String question = "TestQuestion";
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final String email = "example@example.com";
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private static long askerId;
     private static long answererId;
 
     @BeforeAll
     static void addUsers(@Autowired UserRepository userRepository, @Autowired PasswordEncoder passwordEncoder) {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("user"));
-        AppUser asker = new AppUser("testAsker", passwordEncoder.encode(password), authorities);
-        asker.setPermit("q");
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUsername("testAsker");
+        registerRequest.setPassword(passwordEncoder.encode(password));
+        registerRequest.setEmail(email);
+        User asker = new User(registerRequest);
         userRepository.save(asker);
         askerId = asker.getId();
-        AppUser answerer = new AppUser("testAnswerer", passwordEncoder.encode(password), authorities);
-        answerer.setPermit("a");
+        registerRequest.setUsername("testAnswerer");
+        User answerer = new User(registerRequest);
+        answerer.setRole(UserRole.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
     }
@@ -70,13 +68,11 @@ class OrderControllerTest {
         MvcResult loginResult = this.mockMvc
                 .perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(loginRequest)))
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
-        LoginResponse response = new Gson().fromJson(loginResult.getResponse().getContentAsString(), LoginResponse.class);
+        LoginResponse response = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
         this.token = response.getToken();
-
-        mapper.findAndRegisterModules();
     }
 
     @Test
@@ -89,12 +85,12 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
-        assertEquals(result.getAsker().id, askerId);
-        assertEquals(result.getAnswerer().id, answererId);
+        OrderData result = objectMapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
+        assertEquals(result.getAsker().getId(), askerId);
+        assertEquals(result.getAnswerer().getId(), answererId);
         assertEquals(result.getQuestion(), question);
         assertEquals(result.getState(), OrderState.CREATED);
         return result.getId();
@@ -110,7 +106,7 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -125,7 +121,7 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -140,7 +136,7 @@ class OrderControllerTest {
                 .perform(post("/api/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -189,7 +185,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/review")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(accept)))
+                        .content(objectMapper.writeValueAsString(accept)))
                 .andExpect(status().isOk());
         assertEquals(query(id).getState(), OrderState.REVIEWED);
     }
@@ -201,7 +197,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/review")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(accept)))
+                        .content(objectMapper.writeValueAsString(accept)))
                 .andExpect(status().isForbidden());
     }
 
@@ -215,7 +211,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/respond")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(accept)))
+                        .content(objectMapper.writeValueAsString(accept)))
                 .andExpect(status().isOk());
         assertEquals(query(id).getState(), OrderState.ACCEPTED);
     }
@@ -227,7 +223,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/api/orders/" + id + "/respond")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(accept)))
+                        .content(objectMapper.writeValueAsString(accept)))
                 .andExpect(status().isForbidden());
     }
 
@@ -259,7 +255,7 @@ class OrderControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData[] result = mapper.readerForArrayOf(OrderData.class).readValue(mvcResult.getResponse().getContentAsString());
+        OrderData[] result = objectMapper.readerForArrayOf(OrderData.class).readValue(mvcResult.getResponse().getContentAsString());
         assertTrue(result.length > 0);
     }
 
@@ -269,7 +265,7 @@ class OrderControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData result = mapper.readValue(queryResult.getResponse().getContentAsString(), OrderData.class);
+        OrderData result = objectMapper.readValue(queryResult.getResponse().getContentAsString(), OrderData.class);
         assertEquals(result.getId(), id);
         return result;
     }
@@ -278,7 +274,7 @@ class OrderControllerTest {
         mockMvc.perform(put("/api/orders/" + id)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(data)))
+                        .content(objectMapper.writeValueAsString(data)))
                 .andExpect(status().isOk());
     }
 }

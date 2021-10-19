@@ -2,7 +2,7 @@ package com.example.qa.manager;
 
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.exchange.RegisterRequest;
-import com.example.qa.user.repository.UserRepository;
+import com.example.qa.user.UserRepository;
 import com.example.qa.user.response.LoginResponse;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;

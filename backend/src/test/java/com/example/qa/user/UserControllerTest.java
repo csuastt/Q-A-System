@@ -5,7 +5,6 @@ import com.example.qa.user.model.User;
 import com.example.qa.user.response.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,11 +64,11 @@ class UserControllerTest {
         MvcResult loginResult = this.mockMvc
                 .perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(loginRequest)))
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse response = new Gson().fromJson(loginResult.getResponse().getContentAsString(), LoginResponse.class);
+        LoginResponse response = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
         this.token = response.getToken();
         assertNotNull(response.getToken(), "Token must not be null!");
         assertEquals(response.getUser().getUsername(), "testUser");
@@ -79,14 +78,14 @@ class UserControllerTest {
         //test for wrong password login
         this.mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(loginRequest)))
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized())
                 .andReturn();
         //test for wrong username
         loginRequest.setUsername("t");
         this.mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(loginRequest)))
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized())
                 .andReturn();
     }
@@ -108,7 +107,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        GetAllResponse response = new Gson().fromJson(getAllResult.getResponse().getContentAsString(), GetAllResponse.class);
+        GetAllResponse response = objectMapper.readValue(getAllResult.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(response.getUsers().size(), 20);
         assertEquals(response.getUsers().get(0).getId(), 1);
 
@@ -121,7 +120,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        GetAllResponse res_one = new Gson().fromJson(page_one.getResponse().getContentAsString(), GetAllResponse.class);
+        GetAllResponse res_one = objectMapper.readValue(page_one.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(res_one.getUsers().size(), 30);
         assertEquals(res_one.getUsers().get(0).getId(), 1);
 
@@ -132,7 +131,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        GetAllResponse res_two = new Gson().fromJson(page_two.getResponse().getContentAsString(), GetAllResponse.class);
+        GetAllResponse res_two = objectMapper.readValue(page_two.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(res_two.getUsers().size(), 30);
         assertEquals(res_two.getUsers().get(0).getId(), res_one.getUsers().get(29).getId() + 1);
         assertEquals(res_two.getUsers().get(29).getId(), res_one.getUsers().get(29).getId() + 30);
@@ -144,7 +143,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        GetAllResponse res_three = new Gson().fromJson(page_three.getResponse().getContentAsString(), GetAllResponse.class);
+        GetAllResponse res_three = objectMapper.readValue(page_three.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(res_three.getUsers().size(), repository.findAll().size() - res_two.getUsers().get(29).getId() + 2);
         assertEquals(res_three.getUsers().get(0).getId(), res_two.getUsers().get(29).getId() + 1);
 
@@ -154,7 +153,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        GetAllResponse res_ans = new Gson().fromJson(page_ans.getResponse().getContentAsString(), GetAllResponse.class);
+        GetAllResponse res_ans = objectMapper.readValue(page_ans.getResponse().getContentAsString(), GetAllResponse.class);
         assertEquals(res_ans.getUsers().size(), 20);
         for(var res : res_ans.getUsers()){
             assertEquals(repository.findById(res.getId()).get().getPermit(), "a");
@@ -179,7 +178,7 @@ class UserControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        GetUserResponse response = new Gson().fromJson(getUserResult.getResponse().getContentAsString(), GetUserResponse.class);
+        GetUserResponse response = objectMapper.readValue(getUserResult.getResponse().getContentAsString(), GetUserResponse.class);
         assertNotNull(response.getAvatarUrl(),"不能为空");
         assertNotNull(response.getBirthday(),"不能为空");
         assertNotNull(response.getUsername(),"不能为空");
@@ -259,7 +258,7 @@ class UserControllerTest {
         //test register success
         this.mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(register)))
+                        .content(objectMapper.writeValueAsString(register)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -268,7 +267,7 @@ class UserControllerTest {
         //test register existed username
         this.mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(register)))
+                        .content(objectMapper.writeValueAsString(register)))
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
@@ -289,7 +288,7 @@ class UserControllerTest {
         this.mockMvc.perform(put("/api/users/2")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isInternalServerError())
                 .andReturn();
 
@@ -297,7 +296,7 @@ class UserControllerTest {
         this.mockMvc.perform(put("/api/users/1")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -319,14 +318,14 @@ class UserControllerTest {
         this.mockMvc.perform(put("/api/users/" + id)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
         //test not authenticated
         this.mockMvc.perform(put("/api/users/2")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isForbidden())
                 .andReturn();
 
@@ -335,7 +334,7 @@ class UserControllerTest {
         this.mockMvc.perform(put("/api/users/1")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -350,7 +349,7 @@ class UserControllerTest {
         this.mockMvc.perform(put("/api/users/1/password")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isOk())
                 .andReturn();
         this.password = "pass";
@@ -362,7 +361,7 @@ class UserControllerTest {
         this.mockMvc.perform(put("/api/users/1/password")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isForbidden())
                 .andReturn();
 
@@ -371,7 +370,7 @@ class UserControllerTest {
         modify.setPassword("password");
         this.mockMvc.perform(put("/api/users/1/password")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isForbidden())
                 .andReturn();
 
@@ -379,7 +378,7 @@ class UserControllerTest {
         this.mockMvc.perform(put("/api/users/1/password")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(modify)))
+                        .content(objectMapper.writeValueAsString(modify)))
                 .andExpect(status().isOk())
                 .andReturn();
         this.password = "password";
