@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CreationResult, OrderList } from "./definations";
+import {CreationResult, OrderInfo, OrderList, UserInfo} from "./definations";
 import AuthService from "../services/auth.service";
 import ManagerService from "../services/manager.service";
 
@@ -11,7 +11,22 @@ class OrderService {
             })
             .then((response) => response.data);
     }
-
+    modifyOrderInfo(info: OrderInfo) {
+        return axios.put(
+            `/orders/${info.id}`,
+            {
+                asker:info.asker,
+                answerer:info.answerer,
+                state: info.state,
+                endReason: info.endReason,
+                price: info.price,
+                question: info.question,
+            },
+            {
+                headers: ManagerService.managerToken(),
+            }
+        );
+    }
     reviewOrder(orderId: number,accept:boolean){
         return axios.post(
             `/orders/${orderId}/review`,

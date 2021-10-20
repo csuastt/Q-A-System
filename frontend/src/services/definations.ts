@@ -84,6 +84,7 @@ export interface OrderInfo {
     createTime: string;
     endReason: string;
     price: number;
+    finished:boolean;
 }
 
 export type OrderList = Array<OrderInfo>;
