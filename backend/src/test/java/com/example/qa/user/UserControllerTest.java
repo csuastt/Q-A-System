@@ -5,9 +5,6 @@ import com.example.qa.user.exchange.ChangePasswordRequest;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.exchange.UserRequest;
-import com.example.qa.user.model.User;
-import com.example.qa.user.response.GetAllResponse;
-import com.example.qa.user.response.GetUserResponse;
 import com.example.qa.user.response.LoginResponse;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -17,18 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -138,166 +128,25 @@ class UserControllerTest {
     }
 
     @Test
-    void register() throws Exception {
-
-        long expected = repository.count() + 1;
-
-        RegisterRequest register = new RegisterRequest();
-        register.setUsername("eeee");
-        register.setPassword("eeee");
-
-        //test register success
-        this.mockMvc.perform(post("/api/users")
+    void editUser() throws Exception {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setNickname("myNickname");
+        mockMvc.perform(put("/api/users/" + id)
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(register)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        assertEquals(expected, repository.count());
-
-        //test register existed username
-        this.mockMvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(register)))
-                .andExpect(status().isForbidden())
-                .andReturn();
+                        .contentType(mapper.writeValueAsString(userRequest)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void modifyUser() throws Exception {
-        UserRequest modify = new UserRequest();
-        modify.setUsername("eeeee");
-        modify.setPassword("eeeee");
-        modify.setBirthday("2000-10-03");
-        modify.setDescription("A student");
-        modify.setEmail("@mails.tsinghua.edu.cn");
-        modify.setGender("male");
-        modify.setPhone("1010");
-        modify.setNickname("little");
-
-        //test modify without permission
-        this.mockMvc.perform(put("/api/users/2")
-                        .header("Authorization", "Bearer " + token)
+    void changePassword() throws Exception {
+        ChangePasswordRequest request = new ChangePasswordRequest();
+        request.setOriginal(password);
+        request.setPassword(password);
+        mockMvc.perform(put("/api/users/" + id + "/password")
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isInternalServerError())
-                .andReturn();
-
-        //test modify without permission
-        this.mockMvc.perform(put("/api/users/1")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        if (repository.findById(1L).isEmpty()) {
-            throw new Exception("用户不存在");
-        }
-        var user = repository.findById(1L).get();
-
-        assertEquals(user.getUsername(), "eeeee");
-        assertEquals(user.getBirthday(), LocalDate.parse("2000-10-03"));
-        assertEquals(user.getEmail(), "@mails.tsinghua.edu.cn");
-        assertEquals(user.getDescription(), "A student");
-        assertEquals(user.getGender(), "male");
-        assertEquals(user.getPhone(), "1010");
-        assertEquals(user.getNickname(), "little");
-
-        //test modify user not existed
-        long id = repository.count() + 1;
-        this.mockMvc.perform(put("/api/users/" + id)
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        //test not authenticated
-        this.mockMvc.perform(put("/api/users/2")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isForbidden())
-                .andReturn();
-
-        //re-modify
-        modify.setUsername("testUser");
-        this.mockMvc.perform(put("/api/users/1")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isOk())
-                .andReturn();
-    }
-
-    @Test
-    void modifyPass() throws Exception {
-        ChangePasswordRequest modify = new ChangePasswordRequest();
-        modify.setOrigin("password");
-        modify.setPassword("pass");
-
-        //test success modify password
-        this.mockMvc.perform(put("/api/users/1/password")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isOk())
-                .andReturn();
-        this.password = "pass";
-        login();
-
-        //test wrong origin
-        modify.setOrigin("password");
-        modify.setPassword("password");
-        this.mockMvc.perform(put("/api/users/1/password")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isForbidden())
-                .andReturn();
-
-        //test not authenticated
-        modify.setOrigin("pass");
-        modify.setPassword("password");
-        this.mockMvc.perform(put("/api/users/1/password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isForbidden())
-                .andReturn();
-
-        //change back to origin
-        this.mockMvc.perform(put("/api/users/1/password")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(modify)))
-                .andExpect(status().isOk())
-                .andReturn();
-        this.password = "password";
-    }
-
-    /**
-     * generate testUsers with permission a
-     *
-     * @param username name of answerers
-     */
-    void generateAnswerer(String username) {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new User(username, passwordEncoder.encode("password"), authorities);
-        user.setPermit("a");
-        user.setPrice(30);
-        repository.save(user);
-    }
-
-    /**
-     * generate testUsers
-     *
-     * @param username name to create
-     */
-    void generateUser(String username) {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("user"));
-        var user = new User(username, passwordEncoder.encode("password"), authorities);
-        repository.save(user);
+                        .contentType(mapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
     }
 }
