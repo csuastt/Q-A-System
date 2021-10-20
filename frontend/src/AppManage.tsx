@@ -37,6 +37,7 @@ export default function AppManage() {
         ["/manager/users", <UserList />],
         ["/manager/review_orders", <ReviewList />],
 
+
         ["/manager/profile", <AccountProfile isAdmin={true} />],
 
         ["/manager/manager_profile", <ManagerProfile />],

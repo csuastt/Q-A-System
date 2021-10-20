@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CreationResult, OrderList } from "./definations";
 import AuthService from "../services/auth.service";
+import ManagerService from "../services/manager.service";
 
 class OrderService {
     getOrdersOfUser(userId: number): Promise<OrderList> {
@@ -9,6 +10,18 @@ class OrderService {
                 headers: AuthService.authToken(),
             })
             .then((response) => response.data);
+    }
+
+    reviewOrder(orderId: number,accept:boolean){
+        return axios.post(
+            `/orders/${orderId}/review`,
+            {
+                description: accept
+            },
+            {
+                headers: ManagerService.managerToken(),
+            }
+        );
     }
 
     create_question(
