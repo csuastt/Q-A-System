@@ -1,5 +1,6 @@
 package com.example.qa.user;
 
+import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.exchange.ChangePasswordRequest;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.exchange.RegisterRequest;
@@ -44,6 +45,8 @@ class UserControllerTest {
     private UserRepository repository;
 
     private String token;
+    private String username;
+    private long id;
     private int userCounter = 0;
     private static final String password = "password";
     private static final String email = "example@example.com";
@@ -56,6 +59,10 @@ class UserControllerTest {
                         .content(mapper.writeValueAsString(request)))
                 .andExpect(matcher)
                 .andReturn();
+    }
+
+    private <T> T postAndDeserialize(String url, Object request, ResultMatcher matcher, Class<T> type) throws Exception {
+        return mapper.readValue(postUrl(url, request, matcher).getResponse().getContentAsString(), type);
     }
 
     private RegisterRequest newRegisterRequest() {
@@ -83,10 +90,11 @@ class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(registerRequest.getUsername());
         loginRequest.setPassword(password);
-        MvcResult loginResult = postUrl("/api/user/login", loginRequest, status().isOk());
-        LoginResponse response = mapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        assertNotNull(response.getToken(), "token 不为空");
-        token = response.getToken();
+        LoginResponse result = postAndDeserialize("/api/user/login", loginRequest, status().isOk(), LoginResponse.class);
+        assertNotNull(result.getToken(), "token 不为空");
+        token = result.getToken();
+        username = registerRequest.getUsername();
+        id = result.getUser().getId();
 
         loginRequest.setPassword("");
         postUrl("/api/user/login", loginRequest, status().isForbidden());
@@ -100,159 +108,33 @@ class UserControllerTest {
     }
 
     @Test
-    void getUsers() throws Exception {
-
-        //init testUsers
-        for (int i = 0; i < 40; i++) {
-            generateUser("user" + i);
-        }
-        for (int i = 0; i < 20; i++) {
-            generateAnswerer("answerer" + i);
-        }
-
-        //test for default values
-        MvcResult getAllResult = this.mockMvc.perform(get("/api/users")
-                        .header("Authorization", "Bearer " + token))
+    void listUsers() throws Exception {
+        mockMvc.perform(get("/api/users")
+                        .param("role", "ANSWERER"))
                 .andExpect(status().isOk())
                 .andReturn();
-
-        GetAllResponse response = mapper.readValue(getAllResult.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(response.getUsers().size(), 20);
-        assertEquals(response.getUsers().get(0).getId(), 1);
-
-        //test for page feature
-
-        MvcResult page_one = this.mockMvc.perform(get("/api/users")
-                        .header("Authorization", "Bearer " + token)
-                        .queryParam("page", "1")
-                        .queryParam("limit", "30"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        GetAllResponse res_one = mapper.readValue(page_one.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(res_one.getUsers().size(), 30);
-        assertEquals(res_one.getUsers().get(0).getId(), 1);
-
-        MvcResult page_two = this.mockMvc.perform(get("/api/users")
-                        .header("Authorization", "Bearer " + token)
-                        .queryParam("page", "2")
-                        .queryParam("limit", "30"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        GetAllResponse res_two = mapper.readValue(page_two.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(res_two.getUsers().size(), 30);
-        assertEquals(res_two.getUsers().get(0).getId(), res_one.getUsers().get(29).getId() + 1);
-        assertEquals(res_two.getUsers().get(29).getId(), res_one.getUsers().get(29).getId() + 30);
-
-        MvcResult page_three = this.mockMvc.perform(get("/api/users")
-                        .header("Authorization", "Bearer " + token)
-                        .queryParam("page", "3")
-                        .queryParam("limit", "30"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        GetAllResponse res_three = mapper.readValue(page_three.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(res_three.getUsers().size(), repository.findAll().size() - res_two.getUsers().get(29).getId() + 2);
-        assertEquals(res_three.getUsers().get(0).getId(), res_two.getUsers().get(29).getId() + 1);
-
-        //test for answerer filter
-        MvcResult page_ans = this.mockMvc.perform(get("/api/users")
-                        .queryParam("answerer", "true"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        GetAllResponse res_ans = mapper.readValue(page_ans.getResponse().getContentAsString(), GetAllResponse.class);
-        assertEquals(res_ans.getUsers().size(), 20);
-        for (var res : res_ans.getUsers()) {
-            assertEquals(repository.findById(res.getId()).get().getPermit(), "a");
-        }
-
-        //test for not authenticated
-        this.mockMvc.perform(get("/api/users"))
-                .andExpect(status().isForbidden())
-                .andReturn();
-
-        //delete testUsers
-        for (int i = 7; i <= 66; i++) {
-            repository.deleteById((long) i);
-        }
     }
 
     @Test
     void getUser() throws Exception {
-
-        //test for success get user detail
-        MvcResult getUserResult = this.mockMvc.perform(get("/api/users/1")
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/users/" + id)
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        GetUserResponse response = mapper.readValue(getUserResult.getResponse().getContentAsString(), GetUserResponse.class);
-        assertNotNull(response.getAvatarUrl(), "不能为空");
-        assertNotNull(response.getBirthday(), "不能为空");
-        assertNotNull(response.getUsername(), "不能为空");
-        assertNotNull(response.getGender(), "不能为空");
-        assertNotNull(response.getId(), "不能为空");
-        assertNotNull(response.getEmail(), "不能为空");
-        assertNotNull(response.getNickname(), "不能为空");
-        assertNotNull(response.getCreateTime(), "不能为空");
-        if (repository.findById(1L).isEmpty()) {
-            throw new Exception("用户不存在");
-        }
-        var user = repository.findById(1L).get();
-        assertEquals(response.getUsername(), user.getUsername(), "用户名不正确");
-        assertEquals(response.getGender(), user.getGender(), "性别不正确");
-        assertEquals(response.getId(), user.getId(), "id不正确");
-        assertEquals(response.getEmail(), user.getEmail(), "邮件不正确");
-        assertEquals(response.getNickname(), user.getNickname(), "昵称不正确");
-
-        long id = repository.count() + 1;
-
-        //test for not existed user
-        this.mockMvc.perform(get("/api/users/" + id)
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        //test for not authenticated
-        this.mockMvc.perform(get("/api/users/1"))
-                .andExpect(status().isForbidden())
+        mockMvc.perform(get("/api/users/" + 1)
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
+                .andExpect(status().isOk())
                 .andReturn();
     }
 
     @Test
     void deleteUser() throws Exception {
-
-        //test for success delete user
-        long expected = repository.count() - 1;
-        this.mockMvc.perform(delete("/api/users")
-                        .header("Authorization", "Bearer " + token)
-                        .param("id", "2"))
-                .andExpect(status().isOk())
-                .andReturn();
-        assertEquals(expected, repository.findAllByEnable(true).size());
-
-        //test for user deleted delete
-        this.mockMvc.perform(delete("/api/users")
-                        .header("Authorization", "Bearer " + token)
-                        .param("id", "2"))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-        assertEquals(expected, repository.findAllByEnable(true).size());
-
-        //test for user not existed delete
-        this.mockMvc.perform(delete("/api/users")
-                        .header("Authorization", "Bearer " + token)
-                        .param("id", "10"))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-        assertEquals(expected, repository.findAllByEnable(true).size());
-
-        //test for not authenticated
-        this.mockMvc.perform(delete("/api/users")
-                        .param("id", "1"))
-                .andExpect(status().isForbidden())
-                .andReturn();
+        mockMvc.perform(delete("/api/users/" + id)
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
+                .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/users/" + id)
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
+                .andExpect(status().isForbidden());
     }
 
     @Test

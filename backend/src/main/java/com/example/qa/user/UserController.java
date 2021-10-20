@@ -150,7 +150,7 @@ public class UserController {
         userRepository.save(user);
     }
 
-    private User getUserOrThrow(long id, boolean allowDeleted) {
+    public User getUserOrThrow(long id, boolean allowDeleted) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
             throw new ApiException(404);
@@ -162,14 +162,14 @@ public class UserController {
         return user;
     }
 
-    private void validatePassword(String password) {
+    public void validatePassword(String password) {
         if (!FieldValidator.length
                 (password, SystemConfig.PASSWORD_MIN_LENGTH, SystemConfig.PASSWORD_MAX_LENGTH)) {
             throw new ApiException(403, "PASSWORD_INVALID");
         }
     }
 
-    private void checkUserData(RegisterRequest request) {
+    public void checkUserData(RegisterRequest request) {
         if (!FieldValidator.length
                 (request.getUsername(), SystemConfig.USERNAME_MIN_LENGTH, SystemConfig.USERNAME_MAX_LENGTH)
                 || request.getUsername().contains("@")) {
@@ -181,7 +181,7 @@ public class UserController {
         }
     }
 
-    private void checkUserData(UserRequest request) {
+    public void checkUserData(UserRequest request) {
         if (!FieldValidator.lengthIfNotNull
                 (request.getNickname(), SystemConfig.NICKNAME_MIN_LENGTH, SystemConfig.NICKNAME_MAX_LENGTH)
         ) {
@@ -197,7 +197,7 @@ public class UserController {
         }
     }
 
-    private void checkUserData(ApplyRequest request) {
+    public void checkUserData(ApplyRequest request) {
         if (!FieldValidator.length
                 (request.getDescription(), SystemConfig.DESCRIPTION_MIN_LENGTH, SystemConfig.DESCRIPTION_MAX_LENGTH)
         ) {
@@ -208,7 +208,7 @@ public class UserController {
         }
     }
 
-    private void checkRecharge(int balance, Integer recharge) {
+    public void checkRecharge(int balance, Integer recharge) {
         if (!FieldValidator.value(recharge, 1, SystemConfig.RECHARGE_MAX)) {
             throw new ApiException(403, "RECHARGE_INVALID");
         }
