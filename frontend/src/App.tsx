@@ -13,15 +13,15 @@ import Logout from "./components/Logout";
 import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import { UserInfo } from "./services/definations";
-import authService from "./services/auth.service";
+import authService from "./services/authService";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
 
     useEffect(() => {
-        authService.refreshToken()?.then((user) => {
-            if (user) {
-                setUser(user);
+        authService.refreshToken()?.then((usr) => {
+            if (usr) {
+                setUser(usr);
             }
         });
     }, []);

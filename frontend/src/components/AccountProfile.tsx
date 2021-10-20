@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import userService from "../services/user.service";
+import userService from "../services/userService";
 import AccountBriefProfile from "./AccountBriefProfile";
 import { UserFullyInfo, UserInfo } from "../services/definations";
 // mui
@@ -224,6 +224,7 @@ export default class AccountProfile extends Component<
                     target: { value: this.state.user.password },
                 })
             ) {
+                console.log("some requests for admin");
             }
         } else {
             userService.modifyUserInfo(temp).then(
