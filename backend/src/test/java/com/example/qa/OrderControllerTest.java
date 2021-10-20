@@ -1,5 +1,6 @@
-package com.example.qa.order;
+package com.example.qa;
 
+import com.example.qa.order.OrderRepository;
 import com.example.qa.order.exchange.AcceptData;
 import com.example.qa.order.exchange.OrderData;
 import com.example.qa.order.exchange.OrderEditData;

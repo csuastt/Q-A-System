@@ -1,7 +1,11 @@
-package com.example.qa.user;
+package com.example.qa;
 
 import com.example.qa.security.SecurityConstants;
+import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.*;
+import com.example.qa.user.model.Gender;
+import com.example.qa.user.model.User;
+import com.example.qa.user.model.UserRole;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,6 +134,20 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userRequest)))
                 .andExpect(status().isOk());
+
+        userRequest.setNickname(null);
+        userRequest.setPhone("example");
+        userRequest.setGender(Gender.MALE);
+        userRequest.setPrice(50);
+        userRequest.setDescription("MyDescription");
+        userRequest.setEmail(email);
+        userRequest.setRole(UserRole.ANSWERER);
+        userRequest.setBalance(200);
+        mockMvc.perform(put("/api/users/" + id)
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(userRequest)))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -165,5 +183,21 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void userModel() {
+        User user = new User();
+        user.getAuthorities();
+        user.isAccountNonExpired();
+        user.isAccountNonLocked();
+        user.isEnabled();
+        user.isCredentialsNonExpired();
+        user.setDeleted(true);
+        user.getAuthorities();
+        user.isAccountNonExpired();
+        user.isAccountNonLocked();
+        user.isEnabled();
+        user.isCredentialsNonExpired();
     }
 }
