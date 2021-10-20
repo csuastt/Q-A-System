@@ -43,7 +43,6 @@ public class UserAuthenticationController {
             throw new ApiException(403);
         }
         logger.info("login: login success for user '{}'", loginRequest.getUsername());
-        // TODO: 只返回 token，放在 headers 里面（还有 id）
         return new AuthenticationSuccessResponse(userToken(user.getId()), user);
     }
 

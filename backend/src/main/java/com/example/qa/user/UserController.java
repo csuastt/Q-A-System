@@ -23,7 +23,6 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    // TODO: add logger
 
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -62,7 +61,6 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserResponse getUser(@PathVariable(value = "id") long id) {
-        // TODO: 非本人或者管理员直接返回 403
         User user = getUserOrThrow(id, authIsAdmin());
         int userResponseLevel = 0;
         if (authIsUser(id)) {

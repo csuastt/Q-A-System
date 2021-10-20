@@ -47,10 +47,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 if (role.equals(SecurityConstants.ROLE_USER)) {
                     return new UserAuthentication(id, User.class);
                 }
-                // else if (role.equals(SecurityConstants.ROLE_ADMIN)) {
-                // TODO: change to admin
-                // return new UserAuthentication(id, User.class);
-                // }
             } catch (ExpiredJwtException exception) {
                 classLogger.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
             } catch (UnsupportedJwtException exception) {

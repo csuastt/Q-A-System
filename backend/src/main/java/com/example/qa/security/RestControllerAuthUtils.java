@@ -42,7 +42,7 @@ public class RestControllerAuthUtils {
     }
 
     public static void authUserOrAdminOrThrow(long id) {
-        if (!authIsUser(id)) {  // TODO: or admin
+        if (!authIsUser(id)) {
             throw new ApiException(403, "NO_PERMISSION");
         }
     }

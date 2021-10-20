@@ -77,7 +77,6 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.OK)
     public void respond(@PathVariable(value = "id") long id, @RequestBody AcceptData data) {
         Order order = getById(id, false);
-        // TODO: 检查是否是回答者
         if (order.getState() != OrderState.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
         }
@@ -89,7 +88,6 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.OK)
     public void endChat(@PathVariable(value = "id") long id) {
         Order order = getById(id, false);
-        // TODO: 检查是否是合法的操作者
         if (order.getState() != OrderState.ANSWERED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_ENDED");
         }
@@ -99,7 +97,6 @@ public class OrderController {
 
     @GetMapping
     public OrderData[] queryList() {
-        // TODO: 完成此接口
         return orderRepository.findAll().stream().map(OrderData::new).toArray(OrderData[]::new);
     }
 
