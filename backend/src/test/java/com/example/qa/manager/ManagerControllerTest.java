@@ -1,10 +1,11 @@
 package com.example.qa.manager;
 
+import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.exchange.RegisterRequest;
-import com.example.qa.user.UserRepository;
-import com.example.qa.user.response.LoginResponse;
-import com.google.gson.Gson;
+import com.example.qa.user.exchange.AuthenticationSuccessResponse;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,7 +30,7 @@ class ManagerControllerTest {
     @Autowired
     private UserRepository repository;
 
-
+    private final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
 
     @BeforeEach
@@ -43,7 +43,7 @@ class ManagerControllerTest {
         //test register success
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(register)))
+                        .content(mapper.writeValueAsString(register)))
                 .andReturn();
 
         //test for login success
@@ -53,11 +53,11 @@ class ManagerControllerTest {
         MvcResult loginResult = this.mockMvc
                 .perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(loginRequest)))
+                        .content(mapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse response = new Gson().fromJson(loginResult.getResponse().getContentAsString(), LoginResponse.class);
+        AuthenticationSuccessResponse response = mapper.readValue(loginResult.getResponse().getContentAsString(), AuthenticationSuccessResponse.class);
         this.token = response.getToken();
         assertNotNull(response.getToken(), "Token must not be null!");
         assertEquals(response.getUser().getUsername(), "testUser");
@@ -67,14 +67,14 @@ class ManagerControllerTest {
         //test for wrong password login
         this.mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(loginRequest)))
+                        .content(mapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized())
                 .andReturn();
         //test for wrong username
         loginRequest.setUsername("t");
         this.mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(loginRequest)))
+                        .content(mapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized())
                 .andReturn();
     }

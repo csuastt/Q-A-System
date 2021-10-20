@@ -7,6 +7,8 @@ import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.FieldValidator;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,7 +25,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    // private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -203,7 +205,7 @@ public class UserController {
         ) {
             throw new ApiException(403, "DESCRIPTION_INVALID");
         }
-        if (FieldValidator.value(request.getPrice(), SystemConfig.PRICE_MIN, SystemConfig.PRICE_MAX)) {
+        if (!FieldValidator.value(request.getPrice(), SystemConfig.PRICE_MIN, SystemConfig.PRICE_MAX)) {
             throw new ApiException(403, "PRICE_INVALID");
         }
     }

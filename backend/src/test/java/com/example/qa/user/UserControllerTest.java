@@ -1,11 +1,7 @@
 package com.example.qa.user;
 
 import com.example.qa.security.SecurityConstants;
-import com.example.qa.user.exchange.ChangePasswordRequest;
-import com.example.qa.user.exchange.LoginRequest;
-import com.example.qa.user.exchange.RegisterRequest;
-import com.example.qa.user.exchange.UserRequest;
-import com.example.qa.user.response.LoginResponse;
+import com.example.qa.user.exchange.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +33,10 @@ class UserControllerTest {
     private String token;
     private String username;
     private long id;
-    private int userCounter = 0;
+    private static int userCounter = 0;
     private static final String password = "password";
     private static final String email = "example@example.com";
-    private final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
+    private static final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
     private MvcResult postUrl(String url, Object request, ResultMatcher matcher) throws Exception {
         return mockMvc
@@ -57,9 +53,8 @@ class UserControllerTest {
 
     private RegisterRequest newRegisterRequest() {
         RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername("testUser" + userCounter);
-        userCounter++;
-        registerRequest.setPassword(passwordEncoder.encode(password));
+        registerRequest.setUsername("testUser" + userCounter++);
+        registerRequest.setPassword(password);
         registerRequest.setEmail(email);
         return registerRequest;
     }
@@ -80,7 +75,7 @@ class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(registerRequest.getUsername());
         loginRequest.setPassword(password);
-        LoginResponse result = postAndDeserialize("/api/user/login", loginRequest, status().isOk(), LoginResponse.class);
+        AuthenticationSuccessResponse result = postAndDeserialize("/api/user/login", loginRequest, status().isOk(), AuthenticationSuccessResponse.class);
         assertNotNull(result.getToken(), "token 不为空");
         token = result.getToken();
         username = registerRequest.getUsername();
@@ -111,8 +106,7 @@ class UserControllerTest {
                         .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        mockMvc.perform(get("/api/users/" + 1)
-                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
+        mockMvc.perform(get("/api/users/" + 1))
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -134,7 +128,7 @@ class UserControllerTest {
         mockMvc.perform(put("/api/users/" + id)
                         .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .contentType(mapper.writeValueAsString(userRequest)))
+                        .content(mapper.writeValueAsString(userRequest)))
                 .andExpect(status().isOk());
     }
 
@@ -146,7 +140,30 @@ class UserControllerTest {
         mockMvc.perform(put("/api/users/" + id + "/password")
                         .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .contentType(mapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void apply() throws Exception {
+        ApplyRequest request = new ApplyRequest();
+        request.setDescription("MyDescription");
+        request.setPrice(50);
+        mockMvc.perform(post("/api/users/" + id + "/apply")
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void recharge() throws Exception {
+        ValueRequest request = new ValueRequest();
+        request.setValue(50);
+        mockMvc.perform(post("/api/users/" + id + "/recharge")
+                        .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
 }

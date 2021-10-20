@@ -1,26 +1,34 @@
 package com.example.qa.security;
 
 import com.example.qa.errorhandling.ApiException;
-import com.example.qa.manager.model.AppManager;
 import com.example.qa.user.model.User;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class RestControllerAuthUtils {
     private RestControllerAuthUtils() {
     }
 
+    private static Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
     public static boolean authLogin() {
-        return SecurityContextHolder.getContext().getAuthentication() != null;
+        return getAuthentication() != null && getAuthentication().getClass() == UserAuthentication.class;
     }
 
     public static boolean authIsUser(long id) {
-        UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getRole() == User.class && (long) auth.getPrincipal() == id;
+        if (!authLogin()) {
+            return false;
+        }
+        UserAuthentication auth = (UserAuthentication) getAuthentication();
+        return auth.getRole() == User.class && (long) auth.getPrincipal() == id;
     }
 
     public static boolean authIsAdmin() {
-        UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getRole() == AppManager.class;
+        // UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        // return auth != null && auth.getRole() == AppManager.class;
+        return true;
     }
 
     public static void authLoginOrThrow() {

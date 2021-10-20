@@ -3,6 +3,7 @@ package com.example.qa.user.exchange;
 
 import com.example.qa.user.model.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -10,6 +11,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class AuthenticationSuccessResponse {
 	private String token;
 	private UserResponse user;

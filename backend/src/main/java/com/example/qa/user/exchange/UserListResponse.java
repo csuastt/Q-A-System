@@ -2,11 +2,13 @@ package com.example.qa.user.exchange;
 
 import com.example.qa.user.model.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserListResponse {
     int pageSize;
     int page;
