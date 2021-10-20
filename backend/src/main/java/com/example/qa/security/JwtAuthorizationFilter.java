@@ -1,6 +1,5 @@
 package com.example.qa.security;
 
-import com.example.qa.manager.model.AppManager;
 import com.example.qa.user.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
@@ -48,7 +47,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 if (role.equals(SecurityConstants.ROLE_USER)) {
                     return new UserAuthentication(id, User.class);
                 } else if (role.equals(SecurityConstants.ROLE_ADMIN)) {
-                    return new UserAuthentication(id, AppManager.class);
+                    // TODO: change to admin
+                    return new UserAuthentication(id, User.class);
                 }
             } catch (ExpiredJwtException exception) {
                 logger.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
