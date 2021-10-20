@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import authService from "../services/auth.service";
+import authService from "../services/authService";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";

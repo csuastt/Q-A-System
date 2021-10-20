@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserBasicInfo, UserType } from "../services/definations";
-import userService from "../services/user.service";
+import userService from "../services/userService";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import UserCard from "./UserCard";

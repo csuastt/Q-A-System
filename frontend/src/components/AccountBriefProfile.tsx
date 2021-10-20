@@ -16,7 +16,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import { validate_required } from "./Login";
-import userService from "../services/user.service";
+import userService from "../services/userService";
 import UserContext from "../UserContext";
 
 interface AccountBriefProfileProps {

@@ -3,7 +3,7 @@ import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Redirect } from "react-router-dom";
 import { OrderInfo, OrderList } from "../services/definations";
-import questionService from "../services/order.service";
+import questionService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";

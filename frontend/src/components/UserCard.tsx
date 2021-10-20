@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import { UserBasicInfo, UserType } from "../services/definations";
-import userService from "../services/user.service";
+import userService from "../services/userService";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";

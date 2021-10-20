@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import AuthService from "../services/auth.service";
+import AuthService from "../services/authService";
 import { Redirect } from "react-router-dom";
 // mui
 import Snackbar from "@mui/material/Snackbar";

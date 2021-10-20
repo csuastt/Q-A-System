@@ -1,6 +1,6 @@
 import axios from "axios";
 import { UserInfo } from "./definations";
-import userService from "./user.service";
+import userService from "./userService";
 
 class AuthService {
     login(username: string, password: string): Promise<UserInfo> {
