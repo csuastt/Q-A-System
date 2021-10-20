@@ -16,13 +16,12 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
-import MenuItem from '@mui/material/MenuItem';
+import MenuItem from "@mui/material/MenuItem";
 // email checker
 // @ts-ignore
 // other validators
 import { validate_required, validate_length } from "./Login";
 import { Link as RouterLink } from "react-router-dom";
-
 
 // permission options
 const manager_permission_options = [
@@ -30,21 +29,20 @@ const manager_permission_options = [
     { value: "Auditor", label: "审核员" },
 ];
 
-export const validate_permission =(value: any)=>{
-    if(value.toString()!=="Observer"&&value.toString()!=="Auditor"){
+export const validate_permission = (value: any) => {
+    if (value.toString() !== "Observer" && value.toString() !== "Auditor") {
         return "权限设置非法，选择Observer或者Auditor";
-    }else{
+    } else {
         return "";
     }
 };
-
 
 // state interface
 interface CreateState {
     manager_name: string;
     permission: string;
     error_msg_manager_name: string;
-    error_msg_permission:string;
+    error_msg_permission: string;
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
@@ -72,18 +70,15 @@ export default class ManageCreate extends Component<any, CreateState> {
     }
 
     // listener on /manager_name/permission
-    onChangeValue(
-        e: any,
-        type: "manager_name" | "permission"
-    ) {
+    onChangeValue(e: any, type: "manager_name" | "permission") {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
         // then validate other requirements
-        if (error === ""&&type ==="manager_name") {
+        if (error === "" && type === "manager_name") {
             error = validate_length(value);
-        }else if(error === ""&&type ==="permission"){
-            error=validate_permission(value);
+        } else if (error === "" && type === "permission") {
+            error = validate_permission(value);
         }
         // set new state
         const nextState = {};
@@ -112,7 +107,7 @@ export default class ManageCreate extends Component<any, CreateState> {
             // register request
             ManagerService.create(
                 this.state.manager_name,
-                this.state.permission,
+                this.state.permission
             ).then(
                 () => {
                     // register success
@@ -142,8 +137,6 @@ export default class ManageCreate extends Component<any, CreateState> {
             );
         }
     }
-
-
 
     render() {
         if (this.state.redirect) {
@@ -183,9 +176,13 @@ export default class ManageCreate extends Component<any, CreateState> {
                             name="manager_name"
                             autoComplete="manager_name"
                             autoFocus
-                            onChange={(e) => this.onChangeValue(e, "manager_name")}
+                            onChange={(e) =>
+                                this.onChangeValue(e, "manager_name")
+                            }
                             // @ts-ignore
-                            error={this.state.error_msg_manager_name.length !== 0}
+                            error={
+                                this.state.error_msg_manager_name.length !== 0
+                            }
                             // @ts-ignore
                             helperText={this.state.error_msg_manager_name}
                             inputProps={{ maxLength: 15 }}
@@ -199,35 +196,27 @@ export default class ManageCreate extends Component<any, CreateState> {
                             SelectProps={{
                                 native: true,
                             }}
-                            value={
-                                this.state.permission
-                            }
-
+                            value={this.state.permission}
                             name="permission"
                             label="管理员权限"
                             type="permission"
                             id="reg_permission"
                             autoComplete="new-permission"
-                            onChange={(e) => this.onChangeValue(e, "permission")}
+                            onChange={(e) =>
+                                this.onChangeValue(e, "permission")
+                            }
                             // @ts-ignore
                             error={this.state.error_msg_permission.length !== 0}
                             // @ts-ignore
                             helperText={this.state.error_msg_permission}
                             inputProps={{ maxLength: 10 }}
-                        >{manager_permission_options.map(
-                        (option) => (
-                            <option
-                                key={
-                                    option.value
-                                }
-                                value={
-                                    option.value
-                                }
-                            >
-                                {option.label}
-                            </option>
-                        )
-                    )} </TextField>
+                        >
+                            {manager_permission_options.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}{" "}
+                        </TextField>
 
                         <Button
                             type="submit"
@@ -237,7 +226,6 @@ export default class ManageCreate extends Component<any, CreateState> {
                         >
                             创建
                         </Button>
-
                     </Box>
                 </Box>
                 <Snackbar

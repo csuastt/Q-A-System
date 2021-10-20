@@ -29,7 +29,6 @@ export interface ManagerInfo {
     type: ManagerType;
 }
 
-
 export type UserInfoList = Array<UserBasicInfo>;
 
 export interface UserInfo {
@@ -76,7 +75,7 @@ export enum OrderState {
     TRANSACTION_COMPLETE,
 }
 
-    export interface OrderInfo {
+export interface OrderInfo {
     id: number;
     state: OrderState;
     asker: UserBasicInfo;

@@ -19,7 +19,6 @@ import ChangePassword from "./components/ChangePassword";
 import ManagerService from "./services/manager.service";
 import ManagerProfile from "./components/ManagerProfile";
 
-
 export default function AppManage() {
     // logout
     const managerLogout = () => {
@@ -38,16 +37,18 @@ export default function AppManage() {
         ["/manager/users", <UserList />],
         ["/manager/review_orders", <ReviewList />],
 
-
-
-
-
         ["/manager/profile", <AccountProfile isAdmin={true} />],
 
         ["/manager/manager_profile", <ManagerProfile />],
 
-        ["/manager/login", <Login login={managerLogin} redirect={"/"} isAdmin={true} />],
-        ["/manager/logout", <Logout logout={managerLogout} redirect={"/"} isAdmin={true} />],
+        [
+            "/manager/login",
+            <Login login={managerLogin} redirect={"/"} isAdmin={true} />,
+        ],
+        [
+            "/manager/logout",
+            <Logout logout={managerLogout} redirect={"/"} isAdmin={true} />,
+        ],
         ["/manager/create", <Create />],
         [
             "/manager/change_password",

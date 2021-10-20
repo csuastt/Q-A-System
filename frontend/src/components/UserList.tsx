@@ -8,7 +8,7 @@ import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import _ from "lodash";
 import { Divider } from "@mui/material";
-import UserService from "../services/user.service"
+import UserService from "../services/user.service";
 
 const UserList: React.FC<{ type?: string }> = (props) => {
     const [userList] = useState<Array<UserInfo>>();

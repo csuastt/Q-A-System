@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 import ManagerService from "../services/manager.service";
-import {ManagerInfo} from "../services/definations";
+import { ManagerInfo } from "../services/definations";
 import userService from "../services/user.service";
 import authService from "../services/auth.service";
-import {validate_length, validate_required} from "./Login";
-import {validate_email} from "./Register";
+import { validate_length, validate_required } from "./Login";
+import { validate_email } from "./Register";
 import Grid from "@mui/material/Grid";
 import AccountBriefProfile from "./AccountBriefProfile";
 import Card from "@mui/material/Card";
@@ -19,8 +19,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import {UserFullyInfo, UserInfo} from "../services/definations";
-
+import { UserFullyInfo, UserInfo } from "../services/definations";
 
 // state interface
 interface ManagerProfileState {
@@ -29,17 +28,11 @@ interface ManagerProfileState {
     token: string;
     manager: ManagerInfo | null;
     alert: boolean;
-    alertContent:string;
+    alertContent: string;
     alertType: "info" | "error";
-
 }
 
-
-
-export default class ManagerProfile extends Component<{},
-    ManagerProfileState
-    > {
-
+export default class ManagerProfile extends Component<{}, ManagerProfileState> {
     constructor(props: any) {
         super(props);
 
@@ -56,13 +49,8 @@ export default class ManagerProfile extends Component<{},
         this.handleRedirect = this.handleRedirect.bind(this);
     }
 
-
-
     // alert handler
-    handleAlert(
-        _alertType:  "info" | "error",
-        _alertContent: string
-    ) {
+    handleAlert(_alertType: "info" | "error", _alertContent: string) {
         this.setState({
             alert: true,
             alertType: _alertType,
@@ -90,14 +78,13 @@ export default class ManagerProfile extends Component<{},
             manager: currentManager,
             managerReady: true,
         });
-
     }
 
-    render(){
+    render() {
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />;
         }
-        return(
+        return (
             <Grid
                 container
                 spacing={4}
@@ -109,78 +96,65 @@ export default class ManagerProfile extends Component<{},
                 <Grid item md={8} xs={12} mt={3}>
                     <form noValidate>
                         <Card>
-
-                                <CardHeader
-                                    title="管理员信息"
-                                />
+                            <CardHeader title="管理员信息" />
 
                             <Divider />
                             <CardContent>
                                 <Grid container spacing={4}>
                                     <Grid item md={6} xs={12}>
-
-                                            <TextField
-                                                fullWidth
-                                                label="用户名"
-                                                name="username"
-                                                InputProps={{ readOnly: true }}
-                                                value={
-                                                    this.state.manager?.manager_name
-                                                }
-                                                variant="outlined"
-                                            />
-
+                                        <TextField
+                                            fullWidth
+                                            label="用户名"
+                                            name="username"
+                                            InputProps={{ readOnly: true }}
+                                            value={
+                                                this.state.manager?.manager_name
+                                            }
+                                            variant="outlined"
+                                        />
                                     </Grid>
 
                                     <Grid item md={6} xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                label="邮箱"
-                                                name="email"
-                                                InputProps={{
-                                                    readOnly: true,
-                                                }}
-                                                value={this.state.manager?.email}
-                                                variant="outlined"
-                                            />
+                                        <TextField
+                                            fullWidth
+                                            label="邮箱"
+                                            name="email"
+                                            InputProps={{
+                                                readOnly: true,
+                                            }}
+                                            value={this.state.manager?.email}
+                                            variant="outlined"
+                                        />
                                     </Grid>
 
-
-                                            <Grid item md={6} xs={12}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="密码"
-                                                    name="password"
-                                                    InputProps={{
-                                                        readOnly: true,
-                                                    }}
-                                                    value={
-                                                        this.state.manager
-                                                            ?.password
-                                                    }
-                                                    variant="outlined"
-                                                    // @ts-ignore
-                                                />
-                                            </Grid>
-                                            <Grid item md={6} xs={12}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="权限"
-                                                    name="permission"
-                                                    InputProps={{
-                                                        readOnly: true,
-                                                    }}
-                                                    value={
-                                                        this.state.manager
-                                                            ?.permission
-                                                    }
-                                                    variant="outlined"
-                                                >
-
-                                                </TextField>
-                                            </Grid>
+                                    <Grid item md={6} xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="密码"
+                                            name="password"
+                                            InputProps={{
+                                                readOnly: true,
+                                            }}
+                                            value={this.state.manager?.password}
+                                            variant="outlined"
+                                            // @ts-ignore
+                                        />
+                                    </Grid>
+                                    <Grid item md={6} xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="权限"
+                                            name="permission"
+                                            InputProps={{
+                                                readOnly: true,
+                                            }}
+                                            value={
+                                                this.state.manager?.permission
+                                            }
+                                            variant="outlined"
+                                        ></TextField>
+                                    </Grid>
                                 </Grid>
-
                             </CardContent>
 
                             <Divider />
@@ -189,7 +163,8 @@ export default class ManagerProfile extends Component<{},
                                     display: "flex",
                                     justifyContent: "flex-end",
                                     p: 1,
-                                }}>
+                                }}
+                            >
                                 <Grid item>
                                     <Button
                                         color="error"
@@ -202,13 +177,10 @@ export default class ManagerProfile extends Component<{},
                                 </Grid>
                             </Box>
                         </Card>
-
                     </form>
-
-
                 </Grid>
 
-                 <Snackbar
+                <Snackbar
                     autoHideDuration={2000}
                     open={this.state.alert}
                     onClose={() => {
@@ -229,12 +201,5 @@ export default class ManagerProfile extends Component<{},
                 </Snackbar>
             </Grid>
         );
-
-
     }
 }
-
-
-
-
-
