@@ -8,6 +8,9 @@ import AccountProfile from "./components/AccountProfile";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import AnswererList from "./components/AnswererList";
+import UserList from "./components/UserList";
+import ReviewList from "./components/ReviewList";
+//import ReviewList from "./components/ReviewList";
 import Logout from "./components/Logout";
 import Create from "./components/Create";
 import { useEffect, useState } from "react";
@@ -15,6 +18,7 @@ import authService from "./services/auth.service";
 import ChangePassword from "./components/ChangePassword";
 import ManagerService from "./services/manager.service";
 import ManagerProfile from "./components/ManagerProfile";
+
 
 export default function AppManage() {
     // logout
@@ -30,11 +34,12 @@ export default function AppManage() {
     // todo also need to add login & logout function for the admin
 
     const routes = [
-        // ["/answerers/select", <AnswererList selectModel />],
-        // ["/answerers", <AnswererList />],
-        // ["/orders", <QuestionList />],
-        // ["/order/create/:answerer", <OrderCreationWizard />],
-        // ["/order/create", <OrderCreationWizard />],
+        ["/manager/answerers", <AnswererList />],
+        ["/manager/users", <UserList />],
+        ["/manager/review_orders", <ReviewList />],
+
+
+
 
 
         ["/manager/profile", <AccountProfile isAdmin={true} />],

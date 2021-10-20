@@ -182,20 +182,27 @@ export default class ManagerProfile extends Component<{},
                                 </Grid>
 
                             </CardContent>
-                            <Box>
+
+                            <Divider />
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                    p: 1,
+                                }}>
                                 <Grid item>
                                     <Button
                                         color="error"
                                         variant="contained"
                                         component={RouterLink}
-                                        to="/change_password"
+                                        to="/manager/change_password"
                                     >
                                         修改密码
                                     </Button>
                                 </Grid>
                             </Box>
-
                         </Card>
+
                     </form>
 
 

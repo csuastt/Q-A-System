@@ -114,7 +114,7 @@ GET /api/orders/{id}
 PUT /api/orders/{id}
 ```
 
-参数：任意 Order 属性，无视 id、deleted、finished、createTime，设置 price > 0 可以修改（后续添加上限检查）。已被删除的用户必须修改。
+参数：任意 Order 属性，无视 id、deleted、finished、createTime，设置 price > 0 可以修改（后续添加上限检查）。已被删除的用户必须修改。	
 
 返回值：
 

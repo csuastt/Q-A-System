@@ -8,12 +8,13 @@ import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import _ from "lodash";
 import { Divider } from "@mui/material";
+import UserService from "../services/user.service"
 
-const UserList: React.FC<{ type: string }> = (props) => {
+const UserList: React.FC<{ type?: string }> = (props) => {
     const [userList] = useState<Array<UserInfo>>();
     useEffect(() => {
         // TODO: Unsupported api
-        // userService
+        // UserService
         //     .get_users_of_type(props.type)
         //     .then((list) => setUserList(list));
     }, []);
