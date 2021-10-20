@@ -7,8 +7,6 @@ import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.FieldValidator;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,7 +23,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    // TODO: add logger
 
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;

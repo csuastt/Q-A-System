@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UserRequest {
-    // private String avatar;
+    // TODO: avatar
     private String nickname;
     private String email;
     private String phone;

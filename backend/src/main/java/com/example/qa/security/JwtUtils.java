@@ -7,6 +7,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 
 public class JwtUtils {
+    private JwtUtils() {
+    }
 
     private static String generateToken(String subject, String role, long expiration) {
         return Jwts.builder()

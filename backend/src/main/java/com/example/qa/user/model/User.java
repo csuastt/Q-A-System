@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 @Setter
@@ -70,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

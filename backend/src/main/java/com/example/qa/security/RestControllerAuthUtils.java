@@ -26,8 +26,6 @@ public class RestControllerAuthUtils {
     }
 
     public static boolean authIsAdmin() {
-        // UserAuthentication auth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        // return auth != null && auth.getRole() == AppManager.class;
         return true;
     }
 
@@ -44,7 +42,7 @@ public class RestControllerAuthUtils {
     }
 
     public static void authUserOrAdminOrThrow(long id) {
-        if (!authIsUser(id) && !authIsAdmin()) {
+        if (!authIsUser(id)) {  // TODO: or admin
             throw new ApiException(403, "NO_PERMISSION");
         }
     }

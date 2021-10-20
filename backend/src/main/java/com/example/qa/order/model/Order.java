@@ -10,7 +10,6 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name = "APP_ORDER")
 public class Order {

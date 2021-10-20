@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 
 public class UserAuthentication extends AbstractAuthenticationToken {
     private final long id;
-    private final Type role;
+    private final transient Type role;
 
     public UserAuthentication(long id, Type role) {
         super(null);
@@ -26,5 +26,12 @@ public class UserAuthentication extends AbstractAuthenticationToken {
 
     public Type getRole() {
         return role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserAuthentication that = (UserAuthentication) o;
+        return id == that.id && role == that.role;
     }
 }

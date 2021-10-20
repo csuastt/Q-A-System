@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SpringSecurityConfiguration {
+    public SpringSecurityConfiguration() {
+    }
+
     @Configuration
     @Order(1)
     public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {

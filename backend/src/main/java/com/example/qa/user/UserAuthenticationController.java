@@ -50,5 +50,6 @@ public class UserAuthenticationController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     public void logout() {
+        // 目前退出无需任何操作
     }
 }
