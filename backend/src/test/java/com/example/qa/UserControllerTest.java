@@ -1,6 +1,8 @@
 package com.example.qa;
 
+import com.example.qa.errorhandling.ApiException;
 import com.example.qa.security.SecurityConstants;
+import com.example.qa.user.UserController;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.Gender;
@@ -19,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -199,5 +201,44 @@ class UserControllerTest {
         user.isAccountNonLocked();
         user.isEnabled();
         user.isCredentialsNonExpired();
+    }
+
+    @Test
+    void userValidators() {
+        UserController userController = new UserController(repository, passwordEncoder);
+        userController.validatePassword(password);
+        assertThrows(ApiException.class, () -> userController.validatePassword(""));
+        assertThrows(ApiException.class, () -> userController.validatePassword("passwordTooLongPasswordTooLong"));
+
+        RegisterRequest registerRequest = newRegisterRequest();
+        registerRequest.setUsername("");
+        assertThrows(ApiException.class, () -> userController.checkUserData(registerRequest));
+        registerRequest.setUsername("usernameTooLongUsernameTooLong");
+        assertThrows(ApiException.class, () -> userController.checkUserData(registerRequest));
+        registerRequest.setUsername("@Username");
+        assertThrows(ApiException.class, () -> userController.checkUserData(registerRequest));
+        registerRequest.setUsername("testUser");
+        registerRequest.setEmail("email");
+        assertThrows(ApiException.class, () -> userController.checkUserData(registerRequest));
+
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPrice(50);
+        userController.checkUserData(userRequest);
+        userRequest.setNickname("");
+        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+        userRequest.setNickname("nickname");
+        userRequest.setDescription("");
+        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+        userRequest.setDescription("myDescription");
+        userRequest.setPrice(-1);
+        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+
+        ApplyRequest applyRequest = new ApplyRequest();
+        assertThrows(ApiException.class, () -> userController.checkUserData(applyRequest));
+        applyRequest.setDescription("myDescription");
+        assertThrows(ApiException.class, () -> userController.checkUserData(applyRequest));
+
+        assertThrows(ApiException.class, () -> userController.checkRecharge(0, -1));
+        assertThrows(ApiException.class, () -> userController.checkRecharge(10000000, 1));
     }
 }
