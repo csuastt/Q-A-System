@@ -19,6 +19,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import SmsFailedIcon from "@mui/icons-material/SmsFailed";
 import Stack from "@mui/material/Stack";
+import Skeleton from "@mui/material/Skeleton";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(UserContext);
@@ -194,7 +195,47 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     }
     if (orderInfo == null) {
         // Loading order info
-        return <></>;
+        return (
+            <Container component="main" maxWidth="xs">
+                <Stack spacing={2}>
+                    <Card>
+                        <CardHeader
+                            avatar={
+                                <Skeleton
+                                    animation="wave"
+                                    variant="circular"
+                                    width={40}
+                                    height={40}
+                                />
+                            }
+                            title={
+                                <Skeleton
+                                    animation="wave"
+                                    height={10}
+                                    width="80%"
+                                    style={{ marginBottom: 6 }}
+                                />
+                            }
+                            subheader={"Loading..."}
+                        />
+                        <CardContent>
+                            <React.Fragment>
+                                <Skeleton
+                                    animation="wave"
+                                    height={10}
+                                    style={{ marginBottom: 6 }}
+                                />
+                                <Skeleton
+                                    animation="wave"
+                                    height={10}
+                                    width="80%"
+                                />
+                            </React.Fragment>
+                        </CardContent>
+                    </Card>
+                </Stack>
+            </Container>
+        );
     }
 
     return (
@@ -207,8 +248,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 alt={orderInfo.asker.username}
                                 src={orderInfo.asker.ava_url}
                                 sx={{
-                                    height: 70,
-                                    width: 70,
+                                    height: 40,
+                                    width: 40,
                                 }}
                             />
                         }
@@ -276,8 +317,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 alt={orderInfo.answerer.username}
                                 src={orderInfo.answerer.ava_url}
                                 sx={{
-                                    height: 70,
-                                    width: 70,
+                                    height: 40,
+                                    width: 40,
                                 }}
                             />
                         }

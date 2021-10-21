@@ -45,11 +45,7 @@ const UserCard: React.FC<UserCardProps> = (props) => {
     return userInfo ? (
         <Card sx={{ maxWidth: 345 }}>
             <CardHeader
-                avatar={
-                    <Avatar aria-label="recipe">
-                        R
-                    </Avatar>
-                }
+                avatar={<Avatar aria-label="recipe">R</Avatar>}
                 title="Shrimp and Chorizo Paella"
                 subheader="September 14, 2016"
             />
@@ -57,11 +53,7 @@ const UserCard: React.FC<UserCardProps> = (props) => {
     ) : (
         <Card sx={{ maxWidth: 345 }}>
             <CardHeader
-                avatar={
-                    <Avatar aria-label="recipe">
-                        R
-                    </Avatar>
-                }
+                avatar={<Avatar aria-label="recipe">R</Avatar>}
                 title="Shrimp and Chorizo Paella"
                 subheader="September 14, 2016"
             />
