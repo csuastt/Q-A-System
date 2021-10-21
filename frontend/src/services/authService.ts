@@ -3,6 +3,11 @@ import { UserInfo } from "./definations";
 import userService from "./userService";
 
 class AuthService {
+    clearToken() {
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
+    }
+
     login(username: string, password: string): Promise<UserInfo> {
         return axios
             .post("/user/login", {
@@ -18,10 +23,7 @@ class AuthService {
     }
 
     logout() {
-        return axios.post("/user/logout").finally(() => {
-            localStorage.removeItem("token");
-            delete axios.defaults.headers.common["Authorization"];
-        });
+        return axios.post("/user/logout").finally(this.clearToken);
     }
 
     register(username: string, email: string, password: string) {
@@ -39,21 +41,21 @@ class AuthService {
         });
     }
 
-    refreshToken() {
+    refreshToken(): Promise<UserInfo> {
         const storedToken: string | null = localStorage.getItem("token");
         if (storedToken) {
-            console.log("Found stored token: " + storedToken);
             axios.defaults.headers.common["Authorization"] =
                 "Bearer " + storedToken;
-            const payload = JSON.parse(atob(storedToken.split(".")[1]));
-            const userId = payload.sub;
-            console.log("UserId: " + userId);
-            return userService.getUserInfo(userId).catch(() => {
-                localStorage.removeItem("token");
-                delete axios.defaults.headers.common["Authorization"];
-                return null;
-            });
+            console.log("Found stored token: " + storedToken);
+
+            try {
+                const user = JSON.parse(atob(storedToken.split(".")[1]));
+                return userService.getUserInfo(user["sub"]);
+            } catch (e) {
+                this.clearToken();
+            }
         }
+        return Promise.reject(new Error("No token found"));
     }
 }
 

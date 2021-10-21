@@ -3,7 +3,7 @@ import { UserBasicInfo, UserType } from "../services/definations";
 import userService from "../services/userService";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import UserCard from "./UserCard";
+import AnswererCard from "./AnswererCard";
 import Typography from "@mui/material/Typography";
 
 const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
@@ -20,7 +20,7 @@ const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
             <Box sx={{ pt: 3 }} mt={1}>
                 <Grid container spacing={3}>
                     <Grid item lg={4} md={6} xs={12}>
-                        <UserCard placeholder={true} />
+                        <AnswererCard placeholder={true} />
                     </Grid>
                 </Grid>
             </Box>
@@ -37,7 +37,7 @@ const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
                 <Grid container spacing={3}>
                     {answerList.map((user: UserBasicInfo, index: number) => (
                         <Grid item key={index} lg={4} md={6} xs={12}>
-                            <UserCard
+                            <AnswererCard
                                 userInfo={user}
                                 nextUrl={
                                     props.selectModel

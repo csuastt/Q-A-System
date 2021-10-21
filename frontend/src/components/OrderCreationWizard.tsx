@@ -7,7 +7,7 @@ import Stepper from "@mui/material/Stepper";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import Typography from "@mui/material/Typography";
-import UserCard from "./UserCard";
+import AnswererCard from "./AnswererCard";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -115,7 +115,7 @@ const OrderCreationWizard: React.FC = (props) => {
     const renderFirstStep = () => {
         return answerer >= 0 ? (
             <>
-                <UserCard userId={answerer} />
+                <AnswererCard userId={answerer} />
                 <Stack
                     spacing={matches ? 4 : 2}
                     direction="row"

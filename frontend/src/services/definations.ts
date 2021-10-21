@@ -47,15 +47,27 @@ export interface UserFullyInfo {
 }
 
 export enum OrderState {
-    WAITING_FOR_REVIEW,
+    CREATED,
+    PAYED,
+    PAY_TIMEOUT,
+    REVIEWED,
     REJECTED_BY_REVIEWER,
-    WAITING_TO_BE_ACCEPTED,
+    ACCEPTED,
     REJECTED_BY_ANSWERER,
-    WAITING_FOR_INITIAL_ANSWER,
-    COMMUNICATING,
-    CANCELLED,
-    SOLVED,
-    TRANSACTION_COMPLETE,
+    RESPOND_TIMEOUT,
+    ANSWERED,
+    ANSWER_TIMEOUT,
+    CHAT_ENDED,
+    FULFILLED,
+}
+
+export enum OrderEndReason {
+    UNKNOWN,
+    ASKER,
+    ANSWERER,
+    TIME_LIMIT,
+    MESSAGE_LIMIT,
+    SYSTEM,
 }
 
 export interface OrderInfo {
@@ -65,7 +77,10 @@ export interface OrderInfo {
     answerer: UserBasicInfo;
     question: string;
     createTime: string;
-    endReason: string;
+    endReason: OrderEndReason;
+    finished: boolean;
+    deleted: boolean;
+    answerSummary: boolean;
     price: number;
 }
 

@@ -3,30 +3,31 @@ import React from "react";
 import Chip from "@mui/material/Chip";
 import _ from "lodash";
 
-const renderMap: Map<QS, [string, string]> = new Map([
-    [QS.WAITING_FOR_REVIEW, ["等待审核", "warning"]],
-    [QS.REJECTED_BY_REVIEWER, ["审核驳回", "error"]],
-    [QS.WAITING_TO_BE_ACCEPTED, ["等待接单", "warning"]],
-    [QS.REJECTED_BY_ANSWERER, ["拒绝接单", "error"]],
-    [QS.WAITING_FOR_INITIAL_ANSWER, ["等待作答", "info"]],
-    [QS.COMMUNICATING, ["交流中", "info"]],
-    [QS.CANCELLED, ["已取消", "default"]],
-    [QS.SOLVED, ["已解决", "success"]],
-    [QS.TRANSACTION_COMPLETE, ["交易完成", "default"]],
+const renderMap: Map<QS, [string, string, string]> = new Map([
+    [QS.CREATED, ["已创建", "default", "outlined"]],
+    [QS.PAYED, ["已支付", "success", "filled"]],
+    [QS.PAY_TIMEOUT, ["支付超时", "warning", "outlined"]],
+    [QS.REVIEWED, ["审核通过", "success", "filled"]],
+    [QS.REJECTED_BY_REVIEWER, ["审核失败", "error", "outlined"]],
+    [QS.ACCEPTED, ["已接单", "success", "filled"]],
+    [QS.REJECTED_BY_ANSWERER, ["拒绝接单", "error", "outlined"]],
+    [QS.RESPOND_TIMEOUT, ["接单超时", "warning", "outlined"]],
+    [QS.ANSWERED, ["已回答", "success", "filled"]],
+    [QS.ANSWER_TIMEOUT, ["回答超时", "warning", "outlined"]],
+    [QS.CHAT_ENDED, ["交流结束", "default", "filled"]],
+    [QS.FULFILLED, ["交易完成", "default", "outlined"]],
 ]);
 
-const OrderStateChip: React.FC<any & { state: QS }> = (props) => {
-    const [label, style] = _.defaultTo(renderMap.get(props.state), [
-        "未知",
-        "default",
-    ]);
-    // According to Material-UI document, color accepts any string. However it doesn't in my code.
+const OrderStateChip: React.FC<{ state: QS }> = (props) => {
+    const [label, style, variant]: [string, any, any] = _.defaultTo(
+        renderMap.get(props.state),
+        ["未知", "default", "outlined"]
+    );
     return (
         <Chip
             label={label}
-            // @ts-ignore
             color={style}
-            variant="outlined"
+            variant={variant}
             sx={{ my: "auto" }}
         />
     );

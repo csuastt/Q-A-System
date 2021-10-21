@@ -14,9 +14,19 @@ import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import { UserInfo } from "./services/definations";
 import authService from "./services/authService";
+import OrderDetail from "./components/OrderDetail";
+import PathParamParser from "./PathParamParser";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
+    const [refreshing, setRefreshing] = useState(true);
+
+    useEffect(() => {
+        authService
+            .refreshToken()
+            .then(setUser)
+            .finally(() => setRefreshing(false));
+    }, []);
 
     useEffect(() => {
         authService.refreshToken()?.then((usr) => {
@@ -29,6 +39,13 @@ export default function App() {
     const routes = [
         ["/answerers/select", <AnswererList selectModel />],
         ["/answerers", <AnswererList />],
+        [
+            "/orders/:orderId",
+            <PathParamParser
+                params={[["orderId", "number"]]}
+                C={OrderDetail}
+            />,
+        ],
         ["/orders", <QuestionList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
@@ -47,7 +64,9 @@ export default function App() {
         ["/", <Welcome />],
     ];
 
-    return (
+    return refreshing ? (
+        <></>
+    ) : (
         <UserContext.Provider
             value={{
                 user: user,
