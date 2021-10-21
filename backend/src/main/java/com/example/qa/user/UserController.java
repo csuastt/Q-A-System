@@ -190,7 +190,7 @@ public class UserController {
         ) {
             throw new ApiException(403, "DESCRIPTION_INVALID");
         }
-        if (FieldValidator.valueIfNotNull(request.getPrice(), SystemConfig.PRICE_MIN, SystemConfig.PRICE_MAX)) {
+        if (!FieldValidator.valueIfNotNull(request.getPrice(), SystemConfig.PRICE_MIN, SystemConfig.PRICE_MAX)) {
             throw new ApiException(403, "PRICE_INVALID");
         }
     }
