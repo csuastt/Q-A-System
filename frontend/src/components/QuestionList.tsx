@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
-import { Redirect } from "react-router-dom";
+import { Link as RouterLink, Redirect } from "react-router-dom";
 import { OrderInfo, OrderList } from "../services/definations";
 import questionService from "../services/order.service";
 import Card from "@mui/material/Card";
@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
 import UserContext from "../UserContext";
+import CardActionArea from "@mui/material/CardActionArea";
 
 const QuestionList: React.FC<{ userId?: number }> = (props) => {
     const [questionList, setQuestionList] = useState<OrderList>();
@@ -29,7 +30,7 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
         questionService.getOrdersOfUser(props.userId!).then((response) => {
             setQuestionList(response);
         });
-    }, []);
+    }, [props.userId, user?.id]);
 
     const renderCardPlaceholder = () => (
         <Card>
@@ -62,37 +63,59 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
         <>
             {questionList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
-                    <CardContent>
-                        <Box sx={{ display: "flex", flexDirection: "column" }}>
-                            <Box sx={{ display: "flex", flexDirection: "row" }}>
-                                <Typography
-                                    variant="h6"
-                                    noWrap
-                                    style={{ fontWeight: 600 }}
-                                >
-                                    {order.question}
-                                </Typography>
-                                <Box sx={{ flexGrow: 1 }} />
-                                {/*<OrderStateChip state={order.state} />*/}
-                            </Box>
+                    <CardActionArea
+                        component={RouterLink}
+                        to={`/orders/${order.id}`}
+                    >
+                        <CardContent>
                             <Box
-                                sx={{ display: "flex", flexDirection: "row" }}
-                                mt={1}
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
                             >
-                                <Avatar
-                                    src={order.answerer.ava_url}
-                                    alt={order.answerer.username}
-                                    sx={{ width: 30, height: 30 }}
-                                />
-                                <Typography variant="subtitle1" sx={{ ml: 1 }}>
-                                    {order.answerer.username}
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                    }}
+                                >
+                                    <Typography
+                                        variant="h6"
+                                        noWrap
+                                        style={{ fontWeight: 600 }}
+                                    >
+                                        {order.question}
+                                    </Typography>
+                                    <Box sx={{ flexGrow: 1 }} />
+                                    {/*<OrderStateChip state={order.state} />*/}
+                                </Box>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                    }}
+                                    mt={1}
+                                >
+                                    <Avatar
+                                        src={order.answerer.ava_url}
+                                        alt={order.answerer.username}
+                                        sx={{ width: 30, height: 30 }}
+                                    />
+                                    <Typography
+                                        variant="subtitle1"
+                                        sx={{ ml: 1 }}
+                                    >
+                                        {order.answerer.username}
+                                    </Typography>
+                                </Box>
+                                <Typography variant="caption" mb={-1} mt={1}>
+                                    创建时间：
+                                    {formatTimestamp(order.createTime)}
                                 </Typography>
                             </Box>
-                            <Typography variant="caption" mb={-1} mt={1}>
-                                创建时间：{formatTimestamp(order.createTime)}
-                            </Typography>
-                        </Box>
-                    </CardContent>
+                        </CardContent>
+                    </CardActionArea>
                 </Card>
             ))}
         </>

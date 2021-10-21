@@ -6,7 +6,6 @@ import axios from "axios";
 import authService from "./services/auth.service";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE;
-authService.refreshToken();
 
 ReactDOM.render(
     <React.StrictMode>

@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import Container from "@mui/material/Container";
 import { OrderInfo, OrderState } from "../services/definations";
 import orderService from "../services/order.service";
 import UserContext from "../UserContext";
@@ -43,11 +42,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
         orderService
             .getOrderInfo(props.orderId)
             .then((order) => {
-                if (order.id !== user?.id && order.id !== user?.id) {
-                    setNoPermission(true);
-                } else {
-                    setOrderInfo(order);
-                }
+                // if (order.id !== user?.id && order.id !== user?.id) {
+                //     setNoPermission(true);
+                // } else {
+                setOrderInfo(order);
+                // }
             })
             .catch((err) => {
                 if (err.response.status === 401) {
@@ -188,162 +187,162 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
         }
     };
     if (needLogin) {
+        console.log("needLogin");
         return <Redirect to="/login" />;
     }
     if (noPermission) {
+        console.log("noPermission");
         return <Redirect to="/orders" />;
     }
     if (orderInfo == null) {
         // Loading order info
         return (
-            <Container component="main" maxWidth="xs">
-                <Stack spacing={2}>
-                    <Card>
-                        <CardHeader
-                            avatar={
-                                <Skeleton
-                                    animation="wave"
-                                    variant="circular"
-                                    width={40}
-                                    height={40}
-                                />
-                            }
-                            title={
-                                <Skeleton
-                                    animation="wave"
-                                    height={10}
-                                    width="80%"
-                                    style={{ marginBottom: 6 }}
-                                />
-                            }
-                            subheader={"Loading..."}
-                        />
-                        <CardContent>
-                            <React.Fragment>
-                                <Skeleton
-                                    animation="wave"
-                                    height={10}
-                                    style={{ marginBottom: 6 }}
-                                />
-                                <Skeleton
-                                    animation="wave"
-                                    height={10}
-                                    width="80%"
-                                />
-                            </React.Fragment>
-                        </CardContent>
-                    </Card>
-                </Stack>
-            </Container>
-        );
-    }
-
-    return (
-        <Container component="main" maxWidth="xs">
             <Stack spacing={2}>
                 <Card>
                     <CardHeader
                         avatar={
-                            <Avatar
-                                alt={orderInfo.asker.username}
-                                src={orderInfo.asker.ava_url}
-                                sx={{
-                                    height: 40,
-                                    width: 40,
-                                }}
+                            <Skeleton
+                                animation="wave"
+                                variant="circular"
+                                width={40}
+                                height={40}
                             />
                         }
-                        title={orderInfo.asker.username}
-                        subheader="提问者"
-                    />
-                    <CardContent>
-                        {editingQuestion ? (
-                            <TextField
-                                value={newQuestion}
-                                onChange={handleNewQuestionChange}
-                                multiline
-                            />
-                        ) : (
-                            <Typography variant="body2" color="text.secondary">
-                                {orderInfo.question}
-                            </Typography>
-                        )}
-                    </CardContent>
-                    {orderInfo.asker.id === user?.id && (
-                        <CardActions disableSpacing>
-                            {editingQuestion ? (
-                                <>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<CheckIcon />}
-                                        onClick={commitEditingQuestion}
-                                    >
-                                        确认修改
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        startIcon={<CancelIcon />}
-                                        onClick={cancelEditingQuestion}
-                                        color="warning"
-                                    >
-                                        丢弃修改
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <Button
-                                        variant="outlined"
-                                        startIcon={<SettingsIcon />}
-                                        onClick={startEditingQuestion}
-                                    >
-                                        修改问题
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        startIcon={<DeleteIcon />}
-                                        color="warning"
-                                    >
-                                        取消提问
-                                    </Button>
-                                </>
-                            )}
-                        </CardActions>
-                    )}
-                </Card>
-                <Card>
-                    <CardHeader
-                        avatar={
-                            <Avatar
-                                alt={orderInfo.answerer.username}
-                                src={orderInfo.answerer.ava_url}
-                                sx={{
-                                    height: 40,
-                                    width: 40,
-                                }}
+                        title={
+                            <Skeleton
+                                animation="wave"
+                                height={10}
+                                width="80%"
+                                style={{ marginBottom: 6 }}
                             />
                         }
-                        title={orderInfo.answerer.username}
-                        subheader="回答者"
+                        subheader={"Loading..."}
                     />
                     <CardContent>
-                        {answering ? (
-                            <TextField
-                                value={answer}
-                                onChange={handleAnswerChange}
-                                multiline
+                        <React.Fragment>
+                            <Skeleton
+                                animation="wave"
+                                height={10}
+                                style={{ marginBottom: 6 }}
                             />
-                        ) : (
-                            <Typography variant="body2" color="text.secondary">
-                                {orderInfo.state === OrderState.ANSWERED
-                                    ? orderInfo.answerSummary
-                                    : "该问题还未回答"}
-                            </Typography>
-                        )}
+                            <Skeleton
+                                animation="wave"
+                                height={10}
+                                width="80%"
+                            />
+                        </React.Fragment>
                     </CardContent>
-                    <CardActions>{renderAnswererActions()}</CardActions>
                 </Card>
             </Stack>
-        </Container>
+        );
+    }
+
+    return (
+        <Stack spacing={2}>
+            <Card>
+                <CardHeader
+                    avatar={
+                        <Avatar
+                            alt={orderInfo.asker.username}
+                            src={orderInfo.asker.ava_url}
+                            sx={{
+                                height: 40,
+                                width: 40,
+                            }}
+                        />
+                    }
+                    title={orderInfo.asker.username}
+                    subheader="提问者"
+                />
+                <CardContent>
+                    {editingQuestion ? (
+                        <TextField
+                            value={newQuestion}
+                            onChange={handleNewQuestionChange}
+                            multiline
+                            fullWidth
+                        />
+                    ) : (
+                        <Typography variant="body1" color="text.primary">
+                            {orderInfo.question}
+                        </Typography>
+                    )}
+                </CardContent>
+                {orderInfo.asker.id === user?.id && (
+                    <CardActions>
+                        {editingQuestion ? (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<CheckIcon />}
+                                    onClick={commitEditingQuestion}
+                                >
+                                    确认修改
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<CancelIcon />}
+                                    onClick={cancelEditingQuestion}
+                                    color="warning"
+                                >
+                                    丢弃修改
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<SettingsIcon />}
+                                    onClick={startEditingQuestion}
+                                >
+                                    修改问题
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<DeleteIcon />}
+                                    color="warning"
+                                >
+                                    取消提问
+                                </Button>
+                            </>
+                        )}
+                    </CardActions>
+                )}
+            </Card>
+            <Card>
+                <CardHeader
+                    avatar={
+                        <Avatar
+                            alt={orderInfo.answerer.username}
+                            src={orderInfo.answerer.ava_url}
+                            sx={{
+                                height: 40,
+                                width: 40,
+                            }}
+                        />
+                    }
+                    title={orderInfo.answerer.username}
+                    subheader="回答者"
+                />
+                <CardContent>
+                    {answering ? (
+                        <TextField
+                            value={answer}
+                            onChange={handleAnswerChange}
+                            multiline
+                            fullWidth
+                        />
+                    ) : (
+                        <Typography variant="body1" color="text.primary">
+                            {orderInfo.state === OrderState.ANSWERED
+                                ? orderInfo.answerSummary
+                                : "该问题还未回答"}
+                        </Typography>
+                    )}
+                </CardContent>
+                <CardActions>{renderAnswererActions()}</CardActions>
+            </Card>
+        </Stack>
     );
 };
 

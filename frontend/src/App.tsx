@@ -10,19 +10,27 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import { UserInfo } from "./services/definations";
-import PathParamParser from "./PathParamParser";
 import OrderDetail from "./components/OrderDetail";
+import authService from "./services/auth.service";
+import PathParamParser from "./PathParamParser";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
+    const [refreshing, setRefreshing] = useState(true);
+
+    useEffect(() => {
+        authService
+            .refreshToken()
+            .then(setUser)
+            .finally(() => setRefreshing(false));
+    }, []);
 
     const routes = [
         ["/answerers/select", <AnswererList selectModel />],
         ["/answerers", <AnswererList />],
-        ["/orders", <QuestionList />],
         [
             "/orders/:orderId",
             <PathParamParser
@@ -30,6 +38,7 @@ export default function App() {
                 C={OrderDetail}
             />,
         ],
+        ["/orders", <QuestionList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile isAdmin={false} />],
@@ -47,7 +56,9 @@ export default function App() {
         ["/", <Welcome />],
     ];
 
-    return (
+    return refreshing ? (
+        <></>
+    ) : (
         <UserContext.Provider
             value={{
                 user: user,

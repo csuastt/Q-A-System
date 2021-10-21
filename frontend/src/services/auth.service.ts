@@ -1,7 +1,13 @@
 import axios from "axios";
 import { UserInfo } from "./definations";
+import userService from "./user.service";
 
 class AuthService {
+    clearToken() {
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
+    }
+
     login(username: string, password: string): Promise<UserInfo> {
         return axios
             .post("/user/login", {
@@ -17,10 +23,7 @@ class AuthService {
     }
 
     logout() {
-        return axios.post("/user/logout").finally(() => {
-            localStorage.removeItem("token");
-            delete axios.defaults.headers.common["Authorization"];
-        });
+        return axios.post("/user/logout").finally(this.clearToken);
     }
 
     register(username: string, email: string, password: string) {
@@ -38,13 +41,23 @@ class AuthService {
         });
     }
 
-    refreshToken() {
+    refreshToken(): Promise<UserInfo> {
         const storedToken: string | null = localStorage.getItem("token");
         if (storedToken) {
-            axios.defaults.headers.common["Authorization"] = storedToken;
+            axios.defaults.headers.common["Authorization"] =
+                "Bearer " + storedToken;
             console.log("Found stored token: " + storedToken);
+
+            try {
+                const user = JSON.parse(atob(storedToken.split(".")[1]));
+                return userService.getUserInfo(user["sub"]);
+            } catch (e) {
+                this.clearToken();
+            }
         }
+        return Promise.reject(new Error("No token found"));
     }
 }
 
-export default new AuthService();
+const authService = new AuthService();
+export default authService;
