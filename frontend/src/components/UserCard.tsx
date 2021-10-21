@@ -1,145 +1,70 @@
 import React, { useEffect, useState } from "react";
+import { UserBasicInfo } from "../services/definations";
 import Card from "@mui/material/Card";
-import { UserBasicInfo, UserType } from "../services/definations";
-import userService from "../services/user.service";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
-import CardContent from "@mui/material/CardContent";
-import Skeleton from "@mui/material/Skeleton";
+import IconButton from "@mui/material/IconButton";
+import userService from "../services/user.service";
 import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
-import Box from "@mui/material/Box";
-import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
-import { Grid } from "@mui/material";
 
-const UserCard: React.FC<{
+export interface UserCardProps {
     userInfo?: UserBasicInfo;
     userId?: number;
-    placeholder?: boolean;
-    nextUrl?: string;
-}> = (props) => {
+    link?: boolean;
+}
+
+const CardWrapper: React.FC<{ link?: boolean; userId: number }> = (props) => {
+    return props.link ? (
+        <Card>
+            <CardActionArea
+                component={RouterLink}
+                to={`/profile/${props.userId}`}
+            >
+                {props.children}
+            </CardActionArea>
+        </Card>
+    ) : (
+        <Card>{props.children}</Card>
+    );
+};
+
+const UserCard: React.FC<UserCardProps> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
 
     useEffect(() => {
-        if (props.placeholder) {
-            return;
-        } else if (props.userId) {
-            userService
-                .getUserBasicInfo(props.userId)
-                .then((user) => setUserInfo(user));
-        } else if (props.userInfo) {
+        if (props.userInfo) {
             setUserInfo(props.userInfo);
+        } else {
+            userService
+                .getUserBasicInfo(props.userId!)
+                .then((value) => setUserInfo(value));
         }
-    }, [props.placeholder, props.userId, props.userInfo]);
-
-    const CardActionWrapper: React.FC<{ nextUrl?: string }> = (
-        wrapperProps
-    ) => {
-        return wrapperProps.nextUrl ? (
-            <CardActionArea component={RouterLink} to={wrapperProps.nextUrl}>
-                {wrapperProps.children}
-            </CardActionArea>
-        ) : (
-            <>{wrapperProps.children}</>
-        );
-    };
+    }, [props.userId, props.userInfo]);
 
     return userInfo ? (
-        <Card>
-            <CardActionWrapper nextUrl={props.nextUrl}>
-                <CardContent>
-                    <Box
-                        sx={{
-                            alignItems: "center",
-                            display: "flex",
-                            flexDirection: "column",
-                        }}
-                    >
-                        <Avatar
-                            alt={userInfo.username}
-                            src={userInfo.ava_url}
-                            sx={{
-                                height: 70,
-                                width: 70,
-                            }}
-                        />
-                        <Box mt={1}>
-                            <Typography
-                                color="textPrimary"
-                                gutterBottom
-                                variant="h5"
-                            >
-                                {userInfo.username}
-                            </Typography>
-                        </Box>
-                        <Box mx={2} mt={-1}>
-                            <Typography color="textSecondary" variant="body1">
-                                {userInfo.description}
-                            </Typography>
-                        </Box>
-                        {userInfo.type === 1 ? (
-                            <Grid
-                                container
-                                mt={0.5}
-                                direction="row"
-                                justifyContent="center"
-                                alignItems="flex-end"
-                            >
-                                <Grid item>
-                                    <Typography color="primary" variant="h6">
-                                        ￥
-                                    </Typography>
-                                </Grid>
-                                <Grid item>
-                                    <Typography color="primary" variant="h4">
-                                        49.9
-                                    </Typography>
-                                </Grid>
-                                <Grid item>
-                                    <Typography color="primary" variant="h6">
-                                        /次
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        ) : (
-                            <></>
-                        )}
-                    </Box>
-                </CardContent>
-                {userInfo.type === UserType.Answerer && props.nextUrl ? (
-                    <CardActions style={{ justifyContent: "center" }}>
-                        <Box mb={1.5} mt={-2}>
-                            <Button
-                                color="primary"
-                                size="large"
-                                variant="contained"
-                                component={RouterLink}
-                                to={props.nextUrl}
-                            >
-                                向TA提问
-                            </Button>
-                        </Box>
-                    </CardActions>
-                ) : (
-                    <></>
-                )}
-            </CardActionWrapper>
-        </Card>
-    ) : (
-        <Card>
+        <Card sx={{ maxWidth: 345 }}>
             <CardHeader
                 avatar={
-                    <Skeleton variant="circular">
-                        <Avatar />
-                    </Skeleton>
+                    <Avatar aria-label="recipe">
+                        R
+                    </Avatar>
                 }
-                title={<Skeleton variant="text" height={30} />}
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
             />
-            <CardContent>
-                <Skeleton variant="rectangular" height={50} />
-            </CardContent>
+        </Card>
+    ) : (
+        <Card sx={{ maxWidth: 345 }}>
+            <CardHeader
+                avatar={
+                    <Avatar aria-label="recipe">
+                        R
+                    </Avatar>
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+            />
         </Card>
     );
 };

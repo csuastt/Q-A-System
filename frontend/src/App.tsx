@@ -13,6 +13,8 @@ import Logout from "./components/Logout";
 import React, { useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import { UserInfo } from "./services/definations";
+import PathParamParser from "./PathParamParser";
+import OrderDetail from "./components/OrderDetail";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
@@ -21,6 +23,13 @@ export default function App() {
         ["/answerers/select", <AnswererList selectModel />],
         ["/answerers", <AnswererList />],
         ["/orders", <QuestionList />],
+        [
+            "/orders/:orderId",
+            <PathParamParser
+                params={[["orderId", "number"]]}
+                C={OrderDetail}
+            />,
+        ],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile isAdmin={false} />],
