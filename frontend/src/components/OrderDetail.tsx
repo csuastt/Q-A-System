@@ -81,6 +81,46 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
         setEditingQuestion(false);
     };
 
+    // Question editor helper function
+    const renderQuestionModifyActions = () => {
+        return editingQuestion ? (
+            <>
+                <Button
+                    variant="contained"
+                    startIcon={<CheckIcon />}
+                    onClick={commitEditingQuestion}
+                >
+                    确认修改
+                </Button>
+                <Button
+                    variant="outlined"
+                    startIcon={<CancelIcon />}
+                    onClick={cancelEditingQuestion}
+                    color="warning"
+                >
+                    丢弃修改
+                </Button>
+            </>
+        ) : (
+            <>
+                <Button
+                    variant="outlined"
+                    startIcon={<SettingsIcon />}
+                    onClick={startEditingQuestion}
+                >
+                    修改问题
+                </Button>
+                <Button
+                    variant="outlined"
+                    startIcon={<DeleteIcon />}
+                    color="warning"
+                >
+                    取消提问
+                </Button>
+            </>
+        );
+    };
+
     // Answerering helper functions
     const handleAnswerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAnswer(event.target.value);
@@ -268,46 +308,10 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         </Typography>
                     )}
                 </CardContent>
-                {orderInfo.asker.id === user?.id && (
-                    <CardActions>
-                        {editingQuestion ? (
-                            <>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<CheckIcon />}
-                                    onClick={commitEditingQuestion}
-                                >
-                                    确认修改
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<CancelIcon />}
-                                    onClick={cancelEditingQuestion}
-                                    color="warning"
-                                >
-                                    丢弃修改
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<SettingsIcon />}
-                                    onClick={startEditingQuestion}
-                                >
-                                    修改问题
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<DeleteIcon />}
-                                    color="warning"
-                                >
-                                    取消提问
-                                </Button>
-                            </>
-                        )}
-                    </CardActions>
-                )}
+                {/* TODO: Question editing is currently disabled for normal users */}
+                {/*{orderInfo.asker.id === user?.id && (*/}
+                {/*    <CardActions>{renderQuestionModifyActions()}</CardActions>*/}
+                {/*)}*/}
             </Card>
             <Card>
                 <CardHeader
