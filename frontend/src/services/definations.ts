@@ -1,15 +1,15 @@
-export enum UserType {
-    Normal,
-    Answerer,
+export enum UserRole {
+    USER,
+    ANSWERER,
 }
 
 export interface UserBasicInfo {
     id: number;
     username: string;
     nickname: string;
-    ava_url: string;
+    avatar: string;
     description: string;
-    type: UserType;
+    role: UserRole;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
@@ -18,15 +18,15 @@ export interface UserInfo {
     id: number;
     username: string;
     nickname: string;
-    ava_url: string;
+    avatar: string;
     sign_up_timestamp: number;
     email: string;
     phone: string;
     gender: string;
     permission: string;
-    money: number;
+    balance: number;
     description: string;
-    type: UserType;
+    role: UserRole;
 }
 
 export interface UserFullyInfo {
@@ -34,16 +34,16 @@ export interface UserFullyInfo {
     username: string;
     password: string;
     nickname: string;
-    ava_url: string;
+    avatar: string;
     sign_up_timestamp: number;
     email: string;
     phone: string;
     gender: string;
     permission: string;
-    money: number;
+    balance: number;
     description: string;
     price: number;
-    type: UserType;
+    role: UserRole;
 }
 
 export enum OrderState {

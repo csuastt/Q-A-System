@@ -98,7 +98,7 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={order.answerer.ava_url}
+                                        src={order.answerer.avatar}
                                         alt={order.answerer.username}
                                         sx={{ width: 30, height: 30 }}
                                     />

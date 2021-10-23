@@ -14,7 +14,7 @@ const UserList: React.FC<{ type: string }> = (props) => {
     useEffect(() => {
         // TODO: Unsupported api
         // userService
-        //     .get_users_of_type(props.type)
+        //     .get_users_of_type(props.role)
         //     .then((list) => setUserList(list));
     }, []);
 
@@ -43,7 +43,7 @@ const UserList: React.FC<{ type: string }> = (props) => {
                             <ListItemAvatar>
                                 <Avatar
                                     alt={user.username}
-                                    src={user.ava_url}
+                                    src={user.avatar}
                                 />
                             </ListItemAvatar>
                             <ListItemText

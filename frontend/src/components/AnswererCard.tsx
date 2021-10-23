@@ -69,7 +69,7 @@ const AnswererCard: React.FC<{
                         >
                             <Avatar
                                 alt={userInfo.username}
-                                src={userInfo.ava_url}
+                                src={userInfo.avatar}
                                 sx={{
                                     height: 70,
                                     width: 70,
@@ -92,7 +92,7 @@ const AnswererCard: React.FC<{
                                     {userInfo.description}
                                 </Typography>
                             </Box>
-                            {userInfo.type === 1 ? (
+                            {userInfo.role === 1 ? (
                                 <Grid
                                     container
                                     mt={0.5}

@@ -43,9 +43,9 @@ interface ProfileProps {
 
 // gender options
 const gender_options = [
-    { value: "female", label: "女性" },
-    { value: "male", label: "男性" },
-    { value: "unknown", label: "未知" },
+    { value: "FEMALE", label: "女性" },
+    { value: "MALE", label: "男性" },
+    { value: "UNKNOWN", label: "保密" },
 ];
 
 // permission options
@@ -116,16 +116,16 @@ export default class AccountProfile extends Component<
                 username: "tester123",
                 password: "thisIsPassword",
                 nickname: "Nickname",
-                ava_url: "www.ava.com",
+                avatar: "www.ava.com",
                 sign_up_timestamp: 112323333,
                 email: "sdassss@qq.com",
                 phone: "",
-                gender: "unknown",
+                gender: "UNKNOWN",
                 permission: "a",
-                money: 100,
+                balance: 100,
                 description: "This is the description",
                 price: 50,
-                type: 0,
+                role: 0,
             };
             this.setState({
                 user: currentUser,
@@ -157,8 +157,8 @@ export default class AccountProfile extends Component<
         // set new state
         const new_user_info = { ...this.state.user };
         if (typeof e === "string") new_user_info["phone"] = e;
-        else if (e.target.name === "money" && e.target.value < 0)
-            new_user_info["money"] = 0;
+        else if (e.target.name === "balance" && e.target.value < 0)
+            new_user_info["balance"] = 0;
         else if (
             e.target.name === "price" &&
             e.target.value < this.state.minPrice
@@ -280,7 +280,7 @@ export default class AccountProfile extends Component<
                     <Grid item md={4} xs={8} mt={2}>
                         <AccountBriefProfile
                             id={this.state.user?.id}
-                            avatar={this.state.user?.ava_url}
+                            avatar={this.state.user?.avatar}
                             nickname={this.now_nickname}
                             username={this.state.user?.username}
                             permission={this.state.user?.permission}
@@ -509,7 +509,7 @@ export default class AccountProfile extends Component<
                                         <TextField
                                             fullWidth
                                             label="钱包余额"
-                                            name="money"
+                                            name="balance"
                                             onChange={this.handleChange}
                                             type="number"
                                             InputProps={
@@ -533,7 +533,7 @@ export default class AccountProfile extends Component<
                                                           ),
                                                       }
                                             }
-                                            value={this.state.user?.money}
+                                            value={this.state.user?.balance}
                                             variant="outlined"
                                         />
                                     </Grid>
