@@ -146,7 +146,13 @@ export default class AccountBriefProfile extends Component<
                         },
                         (error) => {
                             // show the error message
-                            this.props.alertHandler("error", "网络错误");
+                            if (error.response.status === 403) {
+                                this.props.alertHandler("error",
+                                    "服务器验证异常");
+                            } else {
+                                this.props.alertHandler("error",
+                                    "网络错误");
+                            }
                         }
                     );
             }

@@ -175,7 +175,7 @@ export default class Register extends Component<any, RegisterState> {
                             this.setState({
                                 alert: true,
                                 alertType: "error",
-                                alertContent: "服务器验证错误",
+                                alertContent: "服务器验证异常",
                             });
                         }
                     } else {

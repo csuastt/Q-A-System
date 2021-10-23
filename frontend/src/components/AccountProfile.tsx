@@ -245,7 +245,13 @@ export default class AccountProfile extends Component<
                             },
                             (error) => {
                                 // show the error message
-                                this.handleAlert("error", "网络错误");
+                                if (error.response.status === 403) {
+                                    this.handleAlert("error",
+                                        "服务器验证异常");
+                                } else {
+                                    this.handleAlert("error",
+                                        "网络错误");
+                                }
                             }
                         );
                     }
