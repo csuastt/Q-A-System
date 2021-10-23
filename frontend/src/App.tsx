@@ -25,15 +25,8 @@ export default function App() {
         authService
             .refreshToken()
             .then(setUser)
+            .catch(() => authService.clearToken())
             .finally(() => setRefreshing(false));
-    }, []);
-
-    useEffect(() => {
-        authService.refreshToken()?.then((usr) => {
-            if (usr) {
-                setUser(usr);
-            }
-        });
     }, []);
 
     const routes = [
