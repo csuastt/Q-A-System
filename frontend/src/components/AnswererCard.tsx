@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
-import { UserBasicInfo } from "../services/definations";
+import { UserBasicInfo, UserRole } from "../services/definations";
 import userService from "../services/userService";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
@@ -92,7 +92,7 @@ const AnswererCard: React.FC<{
                                     {userInfo.description}
                                 </Typography>
                             </Box>
-                            {userInfo.role === 1 ? (
+                            {userInfo.role === UserRole.ANSWERER ? (
                                 <Grid
                                     container
                                     mt={0.5}
@@ -113,7 +113,7 @@ const AnswererCard: React.FC<{
                                             color="primary"
                                             variant="h4"
                                         >
-                                            49.9
+                                            {userInfo.price}
                                         </Typography>
                                     </Grid>
                                     <Grid item>

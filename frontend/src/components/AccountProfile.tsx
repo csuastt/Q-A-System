@@ -2,7 +2,12 @@ import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 import userService from "../services/userService";
 import AccountBriefProfile from "./AccountBriefProfile";
-import { UserFullyInfo, UserInfo } from "../services/definations";
+import {
+    UserFullyInfo,
+    UserGender,
+    UserInfo,
+    UserRole,
+} from "../services/definations";
 // mui
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -43,15 +48,15 @@ interface ProfileProps {
 
 // gender options
 const gender_options = [
-    { value: "FEMALE", label: "女性" },
-    { value: "MALE", label: "男性" },
-    { value: "UNKNOWN", label: "保密" },
+    { value: UserGender.FEMALE, label: "女性" },
+    { value: UserGender.MALE, label: "男性" },
+    { value: UserGender.UNKNOWN, label: "保密" },
 ];
 
 // permission options
 const permission_options = [
-    { value: "q", label: "提问者" },
-    { value: "a", label: "问答者" },
+    { value: UserRole.USER, label: "提问者" },
+    { value: UserRole.ANSWERER, label: "问答者" },
 ];
 
 export default class AccountProfile extends Component<
@@ -120,12 +125,12 @@ export default class AccountProfile extends Component<
                 sign_up_timestamp: 112323333,
                 email: "sdassss@qq.com",
                 phone: "",
-                gender: "UNKNOWN",
+                gender: UserGender.UNKNOWN,
                 permission: "a",
                 balance: 100,
                 description: "This is the description",
                 price: 50,
-                role: 0,
+                role: UserRole.ANSWERER,
             };
             this.setState({
                 user: currentUser,
@@ -245,7 +250,11 @@ export default class AccountProfile extends Component<
                             },
                             (error) => {
                                 // show the error message
-                                this.handleAlert("error", "网络错误");
+                                if (error.response.status === 403) {
+                                    this.handleAlert("error", "服务器验证异常");
+                                } else {
+                                    this.handleAlert("error", "网络错误");
+                                }
                             }
                         );
                     }
@@ -283,7 +292,7 @@ export default class AccountProfile extends Component<
                             avatar={this.state.user?.avatar}
                             nickname={this.now_nickname}
                             username={this.state.user?.username}
-                            permission={this.state.user?.permission}
+                            role={this.state.user?.role}
                             alertHandler={this.handleAlert}
                             redirectHandler={this.handleRedirect}
                             minPrice={this.state.minPrice}
@@ -431,8 +440,7 @@ export default class AccountProfile extends Component<
                                                         native: true,
                                                     }}
                                                     value={
-                                                        this.state.user
-                                                            ?.permission
+                                                        this.state.user?.role
                                                     }
                                                     variant="outlined"
                                                 >
@@ -540,7 +548,8 @@ export default class AccountProfile extends Component<
                                     </Grid>
                                     {this.props.isAdmin &&
                                     this.state.user &&
-                                    this.state.user.permission === "a" &&
+                                    this.state.user.role ===
+                                        UserRole.ANSWERER &&
                                     "price" in this.state.user ? (
                                         <>
                                             <Grid item md={6} xs={12}>
@@ -606,8 +615,8 @@ export default class AccountProfile extends Component<
                                             InputProps={
                                                 !this.props.isAdmin &&
                                                 this.state.user &&
-                                                this.state.user.permission ===
-                                                    "a"
+                                                this.state.user.role ===
+                                                    UserRole.ANSWERER
                                                     ? {
                                                           readOnly: true,
                                                       }

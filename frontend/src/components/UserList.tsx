@@ -41,10 +41,7 @@ const UserList: React.FC<{ type: string }> = (props) => {
                     ) : (
                         <ListItem alignItems="flex-start" key={index}>
                             <ListItemAvatar>
-                                <Avatar
-                                    alt={user.username}
-                                    src={user.avatar}
-                                />
+                                <Avatar alt={user.username} src={user.avatar} />
                             </ListItemAvatar>
                             <ListItemText
                                 primary={user.username}

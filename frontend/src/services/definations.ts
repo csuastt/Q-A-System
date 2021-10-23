@@ -1,6 +1,12 @@
 export enum UserRole {
-    USER,
-    ANSWERER,
+    USER = "USER",
+    ANSWERER = "ANSWERER",
+}
+
+export enum UserGender {
+    FEMALE = "FEMALE",
+    MALE = "MALE",
+    UNKNOWN = "UNKNOWN",
 }
 
 export interface UserBasicInfo {
@@ -9,6 +15,7 @@ export interface UserBasicInfo {
     nickname: string;
     avatar: string;
     description: string;
+    price: number;
     role: UserRole;
 }
 
@@ -19,11 +26,10 @@ export interface UserInfo {
     username: string;
     nickname: string;
     avatar: string;
-    sign_up_timestamp: number;
     email: string;
     phone: string;
-    gender: string;
-    permission: string;
+    price: number;
+    gender: UserGender;
     balance: number;
     description: string;
     role: UserRole;
@@ -38,8 +44,7 @@ export interface UserFullyInfo {
     sign_up_timestamp: number;
     email: string;
     phone: string;
-    gender: string;
-    permission: string;
+    gender: UserGender;
     balance: number;
     description: string;
     price: number;
