@@ -18,8 +18,8 @@ class AuthService {
                 localStorage.setItem("token", response.data.token);
                 axios.defaults.headers.common["Authorization"] =
                     "Bearer " + response.data.token;
-                return response.data.user;
-            });
+            })
+            .then(this.refreshToken);
     }
 
     logout() {
@@ -29,14 +29,14 @@ class AuthService {
     register(username: string, email: string, password: string) {
         return axios.post("/users", {
             username: username,
-            email: email,
             password: password,
+            email: email,
         });
     }
 
     modifyPassword(id: number, old_password: string, password: string) {
         return axios.put(`/users/${id}/password`, {
-            origin: old_password,
+            original: old_password,
             password: password,
         });
     }
@@ -46,8 +46,6 @@ class AuthService {
         if (storedToken) {
             axios.defaults.headers.common["Authorization"] =
                 "Bearer " + storedToken;
-            console.log("Found stored token: " + storedToken);
-
             try {
                 const user = JSON.parse(atob(storedToken.split(".")[1]));
                 return userService.getUserInfo(user["sub"]);

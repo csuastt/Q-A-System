@@ -145,7 +145,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .then(() => setNeedReload(true));
     };
 
-    // Answerer helper functions
+    // ANSWERER helper functions
     const renderAnswererActions = () => {
         const state = orderInfo!.state;
         const isAnswerer = orderInfo!.answerer.id === user!.id;
@@ -284,7 +284,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     avatar={
                         <Avatar
                             alt={orderInfo.asker.username}
-                            src={orderInfo.asker.ava_url}
+                            src={orderInfo.asker.avatar}
                             sx={{
                                 height: 40,
                                 width: 40,
@@ -318,7 +318,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     avatar={
                         <Avatar
                             alt={orderInfo.answerer.username}
-                            src={orderInfo.answerer.ava_url}
+                            src={orderInfo.answerer.avatar}
                             sx={{
                                 height: 40,
                                 width: 40,

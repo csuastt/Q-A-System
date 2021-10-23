@@ -20,7 +20,7 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
                 <Card elevation={0}>
                     <CardHeader
                         avatar={
-                            <Avatar alt={info.username} src={info.ava_url} />
+                            <Avatar alt={info.username} src={info.avatar} />
                         }
                         title={info.nickname ? info.nickname : info.username}
                         subheader={info.nickname && "@" + info.username}

@@ -2,7 +2,12 @@ import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 import userService from "../services/userService";
 import AccountBriefProfile from "./AccountBriefProfile";
-import { UserFullyInfo, UserInfo } from "../services/definations";
+import {
+    UserFullyInfo,
+    UserGender,
+    UserInfo,
+    UserRole,
+} from "../services/definations";
 // mui
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -43,15 +48,15 @@ interface ProfileProps {
 
 // gender options
 const gender_options = [
-    { value: "female", label: "女性" },
-    { value: "male", label: "男性" },
-    { value: "unknown", label: "未知" },
+    { value: UserGender.FEMALE, label: "女性" },
+    { value: UserGender.MALE, label: "男性" },
+    { value: UserGender.UNKNOWN, label: "保密" },
 ];
 
 // permission options
 const permission_options = [
-    { value: "q", label: "提问者" },
-    { value: "a", label: "问答者" },
+    { value: UserRole.USER, label: "提问者" },
+    { value: UserRole.ANSWERER, label: "问答者" },
 ];
 
 export default class AccountProfile extends Component<
@@ -116,16 +121,16 @@ export default class AccountProfile extends Component<
                 username: "tester123",
                 password: "thisIsPassword",
                 nickname: "Nickname",
-                ava_url: "www.ava.com",
+                avatar: "www.ava.com",
                 sign_up_timestamp: 112323333,
                 email: "sdassss@qq.com",
                 phone: "",
-                gender: "unknown",
+                gender: UserGender.UNKNOWN,
                 permission: "a",
-                money: 100,
+                balance: 100,
                 description: "This is the description",
                 price: 50,
-                type: 0,
+                role: UserRole.ANSWERER,
             };
             this.setState({
                 user: currentUser,
@@ -157,8 +162,8 @@ export default class AccountProfile extends Component<
         // set new state
         const new_user_info = { ...this.state.user };
         if (typeof e === "string") new_user_info["phone"] = e;
-        else if (e.target.name === "money" && e.target.value < 0)
-            new_user_info["money"] = 0;
+        else if (e.target.name === "balance" && e.target.value < 0)
+            new_user_info["balance"] = 0;
         else if (
             e.target.name === "price" &&
             e.target.value < this.state.minPrice
@@ -245,7 +250,11 @@ export default class AccountProfile extends Component<
                             },
                             (error) => {
                                 // show the error message
-                                this.handleAlert("error", "网络错误");
+                                if (error.response.status === 403) {
+                                    this.handleAlert("error", "服务器验证异常");
+                                } else {
+                                    this.handleAlert("error", "网络错误");
+                                }
                             }
                         );
                     }
@@ -280,10 +289,10 @@ export default class AccountProfile extends Component<
                     <Grid item md={4} xs={8} mt={2}>
                         <AccountBriefProfile
                             id={this.state.user?.id}
-                            avatar={this.state.user?.ava_url}
+                            avatar={this.state.user?.avatar}
                             nickname={this.now_nickname}
                             username={this.state.user?.username}
-                            permission={this.state.user?.permission}
+                            role={this.state.user?.role}
                             alertHandler={this.handleAlert}
                             redirectHandler={this.handleRedirect}
                             minPrice={this.state.minPrice}
@@ -431,8 +440,7 @@ export default class AccountProfile extends Component<
                                                         native: true,
                                                     }}
                                                     value={
-                                                        this.state.user
-                                                            ?.permission
+                                                        this.state.user?.role
                                                     }
                                                     variant="outlined"
                                                 >
@@ -465,6 +473,7 @@ export default class AccountProfile extends Component<
                                             value={this.state.user?.nickname}
                                             variant="outlined"
                                             placeholder={"请填写昵称~"}
+                                            inputProps={{ maxLength: 30 }}
                                         />
                                     </Grid>
                                     <Grid item md={6} xs={12}>
@@ -509,7 +518,7 @@ export default class AccountProfile extends Component<
                                         <TextField
                                             fullWidth
                                             label="钱包余额"
-                                            name="money"
+                                            name="balance"
                                             onChange={this.handleChange}
                                             type="number"
                                             InputProps={
@@ -533,13 +542,14 @@ export default class AccountProfile extends Component<
                                                           ),
                                                       }
                                             }
-                                            value={this.state.user?.money}
+                                            value={this.state.user?.balance}
                                             variant="outlined"
                                         />
                                     </Grid>
                                     {this.props.isAdmin &&
                                     this.state.user &&
-                                    this.state.user.permission === "a" &&
+                                    this.state.user.role ===
+                                        UserRole.ANSWERER &&
                                     "price" in this.state.user ? (
                                         <>
                                             <Grid item md={6} xs={12}>
@@ -605,8 +615,8 @@ export default class AccountProfile extends Component<
                                             InputProps={
                                                 !this.props.isAdmin &&
                                                 this.state.user &&
-                                                this.state.user.permission ===
-                                                    "a"
+                                                this.state.user.role ===
+                                                    UserRole.ANSWERER
                                                     ? {
                                                           readOnly: true,
                                                       }
@@ -614,6 +624,7 @@ export default class AccountProfile extends Component<
                                                           readOnly: false,
                                                       }
                                             }
+                                            inputProps={{ maxLength: 200 }}
                                             placeholder="快来介绍一下你自己吧~"
                                             variant="outlined"
                                         />

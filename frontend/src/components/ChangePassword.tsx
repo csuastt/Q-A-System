@@ -175,11 +175,21 @@ export default class ChangePassword extends Component<
                     (error) => {
                         // show the error message
                         if (error.response.status === 403) {
-                            this.setState({
-                                alert: true,
-                                alertType: "error",
-                                alertContent: "原密码不正确",
-                            });
+                            if (
+                                error.response.data.message === "WRONG_PASSWORD"
+                            ) {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "原密码不正确",
+                                });
+                            } else {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "服务器验证异常",
+                                });
+                            }
                         } else {
                             this.setState({
                                 alert: true,

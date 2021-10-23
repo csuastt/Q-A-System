@@ -1,15 +1,22 @@
-export enum UserType {
-    Normal,
-    Answerer,
+export enum UserRole {
+    USER = "USER",
+    ANSWERER = "ANSWERER",
+}
+
+export enum UserGender {
+    FEMALE = "FEMALE",
+    MALE = "MALE",
+    UNKNOWN = "UNKNOWN",
 }
 
 export interface UserBasicInfo {
     id: number;
     username: string;
     nickname: string;
-    ava_url: string;
+    avatar: string;
     description: string;
-    type: UserType;
+    price: number;
+    role: UserRole;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
@@ -18,15 +25,14 @@ export interface UserInfo {
     id: number;
     username: string;
     nickname: string;
-    ava_url: string;
-    sign_up_timestamp: number;
+    avatar: string;
     email: string;
     phone: string;
-    gender: string;
-    permission: string;
-    money: number;
+    price: number;
+    gender: UserGender;
+    balance: number;
     description: string;
-    type: UserType;
+    role: UserRole;
 }
 
 export interface UserFullyInfo {
@@ -34,16 +40,15 @@ export interface UserFullyInfo {
     username: string;
     password: string;
     nickname: string;
-    ava_url: string;
+    avatar: string;
     sign_up_timestamp: number;
     email: string;
     phone: string;
-    gender: string;
-    permission: string;
-    money: number;
+    gender: UserGender;
+    balance: number;
     description: string;
     price: number;
-    type: UserType;
+    role: UserRole;
 }
 
 export enum OrderState {
