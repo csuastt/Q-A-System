@@ -7,7 +7,7 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import Divider from "@mui/material/Divider";
 import CardContent from "@mui/material/CardContent";
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -15,16 +15,17 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import { validate_required } from "./Login";
+import {validate_required} from "./Login";
 import userService from "../services/userService";
 import UserContext from "../UserContext";
+import {UserRole} from "../services/definations";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
     avatar: string | undefined;
     nickname: string | undefined;
     username: string | undefined;
-    permission: string | undefined;
+    role: UserRole | undefined;
     alertHandler: (
         arg1: "success" | "info" | "warning" | "error",
         arg2: string
@@ -217,7 +218,7 @@ export default class AccountBriefProfile extends Component<
                                     color="textSecondary"
                                     variant="body1"
                                 >
-                                    {this.props.permission === "q"
+                                    {this.props.role === UserRole.USER
                                         ? "你还不是问答者，快去申请吧~"
                                         : "你已经是问答者了，快去回答问题吧~"}
                                 </Typography>
@@ -226,7 +227,7 @@ export default class AccountBriefProfile extends Component<
                     </CardContent>
                     <Divider />
                     <CardActions>
-                        {this.props.permission === "q" ? (
+                        {this.props.role === UserRole.USER ? (
                             <Button
                                 color="primary"
                                 fullWidth
