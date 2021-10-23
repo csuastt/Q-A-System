@@ -10,7 +10,7 @@ import com.example.qa.user.exchange.LoginRequest;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
-import com.example.qa.user.exchange.AuthenticationSuccessResponse;
+import com.example.qa.user.exchange.TokenResponse;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeAll;
@@ -73,7 +73,7 @@ class OrderControllerTest {
                         .content(mapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
-        AuthenticationSuccessResponse response = mapper.readValue(loginResult.getResponse().getContentAsString(), AuthenticationSuccessResponse.class);
+        TokenResponse response = mapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
         this.token = response.getToken();
     }
 

@@ -6,10 +6,9 @@ import com.example.qa.order.exchange.OrderData;
 import com.example.qa.order.exchange.OrderEditData;
 import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderState;
-import com.example.qa.user.UserRepository;
+import com.example.qa.user.UserService;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +17,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final OrderRepository orderRepository;
 
-    @Autowired
-    public OrderController(UserRepository userRepository, OrderRepository orderRepository) {
-        this.userRepository = userRepository;
+    public OrderController(UserService userService, OrderRepository orderRepository) {
+        this.userService = userService;
         this.orderRepository = orderRepository;
     }
 
@@ -114,19 +112,19 @@ public class OrderController {
             throw new ApiException(HttpStatus.BAD_REQUEST);
         }
         long newAsker = isCreation || data.getAsker() != null ? data.getAsker() : original.getAsker().getId();
-        if (!userRepository.existsByIdAndDeleted(newAsker, false)) {
+        if (!userService.existsById(newAsker)) {
             throw new ApiException(HttpStatus.FORBIDDEN, "ASKER_INVALID");
         }
         long newAnswerer = isCreation || data.getAnswerer() != null ? data.getAnswerer() : original.getAnswerer().getId();
         if (newAsker == newAnswerer
-                || !userRepository.existsByIdAndDeleted(newAnswerer, false)
-                || userRepository.getById(newAnswerer).getRole() != UserRole.ANSWERER) {
+                || !userService.existsById(newAnswerer)
+                || userService.getById(newAnswerer).getRole() != UserRole.ANSWERER) {
             throw new ApiException(HttpStatus.FORBIDDEN, "ANSWERER_INVALID");
         }
         String newQuestion = isCreation || data.getQuestion() != null ? data.getQuestion() : original.getQuestion();
         if (newQuestion == null || newQuestion.length() < 5 || newQuestion.length() > 100) {
             throw new ApiException(HttpStatus.FORBIDDEN, "QUESTION_INVALID");
         }
-        return new User[]{userRepository.getById(newAsker), userRepository.getById(newAnswerer)};
+        return new User[]{userService.getById(newAsker), userService.getById(newAnswerer)};
     }
 }
