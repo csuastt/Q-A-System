@@ -21,6 +21,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import UserContext from "../UserContext";
+import userService from "../services/userService";
 
 // some validators
 // not empty
@@ -126,7 +127,7 @@ export default class Login extends Component<LoginProps, LoginState> {
 
             // login request
             service.login(this.state.username, this.state.password).then(
-                (user) => {
+                (token) => {
                     // login success
                     // alert
                     this.setState({
@@ -134,12 +135,25 @@ export default class Login extends Component<LoginProps, LoginState> {
                         alertType: "success",
                         alertContent: "登录成功",
                     });
-                    // update state
-                    this.context.setUser(user);
-                    // redirect
-                    this.setState({
-                        redirect: this.props.redirect,
-                    });
+                    // fetch user
+                    let user = decodeURIComponent(escape(window.atob(token.split('.')[1])));
+                    userService.getUserInfo(Number(JSON.parse(user).sub)).then(
+                        (user) => {
+                            this.context.setUser(user);
+                            // redirect
+                            this.setState({
+                                redirect: this.props.redirect,
+                            });
+                        },
+                        (error) => {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "获取用户信息错误",
+                            });
+                        }
+                    )
+
                 },
                 (error) => {
                     // show the error message

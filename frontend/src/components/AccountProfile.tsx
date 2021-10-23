@@ -134,7 +134,7 @@ export default class AccountProfile extends Component<
             this.now_nickname = currentUser.nickname;
         } else {
             const currentUser = this.context.user;
-            console.log(currentUser);
+
             if (!currentUser) {
                 // redirect and alert
                 this.handleAlert("error", "非法访问");

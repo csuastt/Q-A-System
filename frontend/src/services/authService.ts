@@ -8,7 +8,7 @@ class AuthService {
         delete axios.defaults.headers.common["Authorization"];
     }
 
-    login(username: string, password: string): Promise<UserInfo> {
+    login(username: string, password: string) {
         return axios
             .post("/user/login", {
                 username: username,
@@ -18,7 +18,7 @@ class AuthService {
                 localStorage.setItem("token", response.data.token);
                 axios.defaults.headers.common["Authorization"] =
                     "Bearer " + response.data.token;
-                return response.data.user;
+                return response.data.token
             });
     }
 
