@@ -465,6 +465,7 @@ export default class AccountProfile extends Component<
                                             value={this.state.user?.nickname}
                                             variant="outlined"
                                             placeholder={"请填写昵称~"}
+                                            inputProps={{ maxLength: 30 }}
                                         />
                                     </Grid>
                                     <Grid item md={6} xs={12}>
@@ -614,6 +615,7 @@ export default class AccountProfile extends Component<
                                                           readOnly: false,
                                                       }
                                             }
+                                            inputProps={{ maxLength: 200 }}
                                             placeholder="快来介绍一下你自己吧~"
                                             variant="outlined"
                                         />

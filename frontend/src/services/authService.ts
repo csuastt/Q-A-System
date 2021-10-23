@@ -29,14 +29,14 @@ class AuthService {
     register(username: string, email: string, password: string) {
         return axios.post("/users", {
             username: username,
-            email: email,
             password: password,
+            email: email,
         });
     }
 
     modifyPassword(id: number, old_password: string, password: string) {
         return axios.put(`/users/${id}/password`, {
-            origin: old_password,
+            original: old_password,
             password: password,
         });
     }
