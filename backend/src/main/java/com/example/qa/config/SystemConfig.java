@@ -6,14 +6,15 @@ public final class SystemConfig {
 
     public static final int USERNAME_MIN_LENGTH = 6;
     public static final int USERNAME_MAX_LENGTH = 12;
-    public static final int NICKNAME_MIN_LENGTH = 6;
-    public static final int NICKNAME_MAX_LENGTH = 12;
+    public static final int NICKNAME_MIN_LENGTH = 0;
+    public static final int NICKNAME_MAX_LENGTH = 30;
     public static final int PASSWORD_MIN_LENGTH = 6;
     public static final int PASSWORD_MAX_LENGTH = 12;
-    public static final int DESCRIPTION_MIN_LENGTH = 6;
+    public static final int DESCRIPTION_MIN_LENGTH = 0;
     public static final int DESCRIPTION_MAX_LENGTH = 200;
     public static final int PRICE_MIN = 1;
     public static final int PRICE_MAX = 100;
+    // RECHARGE_MIN = 1
     public static final int RECHARGE_MAX = 1000;
     public static final int BALANCE_MAX = 10000;
 

@@ -47,6 +47,7 @@ public class User implements UserDetails {
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();
         password = registerRequest.getPassword();
+        nickname = registerRequest.getUsername();
         email = registerRequest.getEmail();
         createTime = ZonedDateTime.now();
     }
