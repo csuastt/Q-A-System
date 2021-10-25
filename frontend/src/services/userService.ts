@@ -31,7 +31,7 @@ class UserService {
 
     moneyRecharge(id: number, value: number) {
         return axios.post(`/users/${id}/recharge`, {
-            value: value
+            value: value,
         });
     }
 

@@ -29,8 +29,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import AddIcon from '@mui/icons-material/Add';
-import {IconButton} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { IconButton } from "@mui/material";
 
 // state interface
 interface ProfileState {
@@ -94,14 +94,16 @@ export default class AccountProfile extends Component<
             error_msg_money: "",
             error_msg_email: "",
             money: 1,
-            openRechargeDialog: false
+            openRechargeDialog: false,
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeUser = this.handleChangeUser.bind(this);
-        this.handleOpenRechargeDialog = this.handleOpenRechargeDialog.bind(this);
-        this.handleCloseRechargeDialog = this.handleCloseRechargeDialog.bind(this);
+        this.handleOpenRechargeDialog =
+            this.handleOpenRechargeDialog.bind(this);
+        this.handleCloseRechargeDialog =
+            this.handleCloseRechargeDialog.bind(this);
         this.handleMoneyChange = this.handleMoneyChange.bind(this);
         this.fetchUserInfo = this.fetchUserInfo.bind(this);
         this.handleSubmitRecharge = this.handleSubmitRecharge.bind(this);
@@ -123,13 +125,13 @@ export default class AccountProfile extends Component<
     // dialog close/open handler
     handleCloseRechargeDialog() {
         this.setState({
-            openRechargeDialog: false
+            openRechargeDialog: false,
         });
     }
 
     handleOpenRechargeDialog() {
         this.setState({
-            openRechargeDialog: true
+            openRechargeDialog: true,
         });
     }
 
@@ -141,43 +143,58 @@ export default class AccountProfile extends Component<
             })
         ) {
             if (this.state.user !== null) {
-                userService.moneyRecharge(this.state.user.id, this.state.money).then(
-                    () => {
-                        // apply success
-                        this.handleAlert("success", "充值成功");
-                        // fetch new info
-                        this.fetchUserInfo();
-                        // modify balance
-                        if (this.state.user !== null && typeof this.state.user.balance !== "undefined")
-                            this.handleChange({target:{
-                                name : "balance",
-                                    value: Number(this.state.user?.balance) + Number(this.state.money)
-                                }});
-                    },
-                    (error) => {
-                        // show the error message
-                        if (error.response.status === 401) {
-                            this.handleAlert("error", "尚未登录");
-                        }
-                        if (error.response.status === 403) {
+                userService
+                    .moneyRecharge(this.state.user.id, this.state.money)
+                    .then(
+                        () => {
+                            // apply success
+                            this.handleAlert("success", "充值成功");
+                            // fetch new info
+                            this.fetchUserInfo();
+                            // modify balance
                             if (
-                                error.response.data.message === "RECHARGE_INVALID"
-                            ) {
-                                this.handleAlert("error", "充值金额超过范围");
+                                this.state.user !== null &&
+                                typeof this.state.user.balance !== "undefined"
+                            )
+                                this.handleChange({
+                                    target: {
+                                        name: "balance",
+                                        value:
+                                            Number(this.state.user?.balance) +
+                                            Number(this.state.money),
+                                    },
+                                });
+                        },
+                        (error) => {
+                            // show the error message
+                            if (error.response.status === 401) {
+                                this.handleAlert("error", "尚未登录");
                             }
-                            else if (
-                                error.response.data.message === "BALANCE_INVALID"
-                            ){
-                                this.handleAlert("error", "钱包余额超过范围");
+                            if (error.response.status === 403) {
+                                if (
+                                    error.response.data.message ===
+                                    "RECHARGE_INVALID"
+                                ) {
+                                    this.handleAlert(
+                                        "error",
+                                        "充值金额超过范围"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "BALANCE_INVALID"
+                                ) {
+                                    this.handleAlert(
+                                        "error",
+                                        "钱包余额超过范围"
+                                    );
+                                } else {
+                                    this.handleAlert("error", "服务器验证异常");
+                                }
+                            } else {
+                                this.handleAlert("error", "网络错误");
                             }
-                            else {
-                                this.handleAlert("error", "服务器验证异常");
-                            }
-                        } else {
-                            this.handleAlert("error", "网络错误");
                         }
-                    }
-                );
+                    );
             }
             this.handleCloseRechargeDialog();
         }
@@ -195,13 +212,11 @@ export default class AccountProfile extends Component<
         }
         // clear the error msg
         this.setState({
-            error_msg_money: ""
+            error_msg_money: "",
         });
         // the value must be a positive number
-        if (value < 1)
-            value = 1;
-        else if (value > 1000)
-            value = 1000;
+        if (value < 1) value = 1;
+        else if (value > 1000) value = 1000;
         this.setState({
             money: value,
         });
@@ -382,7 +397,6 @@ export default class AccountProfile extends Component<
             );
         }
     }
-
 
     render() {
         if (this.state.redirect) {
@@ -631,11 +645,7 @@ export default class AccountProfile extends Component<
                                             variant="outlined"
                                         />
                                     </Grid>
-                                    <Grid item md={
-                                        6
-                                    } xs={
-                                        12
-                                    }>
+                                    <Grid item md={6} xs={12}>
                                         <TextField
                                             fullWidth
                                             label="钱包余额"
@@ -661,13 +671,17 @@ export default class AccountProfile extends Component<
                                                                   ￥
                                                               </InputAdornment>
                                                           ),
-                                                          endAdornment : (
-                                                              <IconButton color="secondary"
-                                                                          onClick={this.handleOpenRechargeDialog}
+                                                          endAdornment: (
+                                                              <IconButton
+                                                                  color="secondary"
+                                                                  onClick={
+                                                                      this
+                                                                          .handleOpenRechargeDialog
+                                                                  }
                                                               >
-                                                                  <AddIcon/>
+                                                                  <AddIcon />
                                                               </IconButton>
-                                                          )
+                                                          ),
                                                       }
                                             }
                                             value={this.state.user?.balance}
@@ -837,7 +851,8 @@ export default class AccountProfile extends Component<
                             <Box component="span" fontWeight="fontWeightBold">
                                 {1000}
                             </Box>
-                            ￥。<br/>
+                            ￥。
+                            <br />
                             请输入您的充值金额：
                         </DialogContentText>
                         <TextField
@@ -870,7 +885,9 @@ export default class AccountProfile extends Component<
                         >
                             取消
                         </Button>
-                        <Button onClick={this.handleSubmitRecharge}>提交</Button>
+                        <Button onClick={this.handleSubmitRecharge}>
+                            提交
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </Grid>
