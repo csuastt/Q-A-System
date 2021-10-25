@@ -103,6 +103,8 @@ export default class AccountProfile extends Component<
         this.handleOpenRechargeDialog = this.handleOpenRechargeDialog.bind(this);
         this.handleCloseRechargeDialog = this.handleCloseRechargeDialog.bind(this);
         this.handleMoneyChange = this.handleMoneyChange.bind(this);
+        this.fetchUserInfo = this.fetchUserInfo.bind(this);
+        this.handleSubmitRecharge = this.handleSubmitRecharge.bind(this);
     }
 
     // alert handler
@@ -133,7 +135,46 @@ export default class AccountProfile extends Component<
 
     // handle submit recharge
     handleSubmitRecharge() {
-
+        if (
+            this.handleMoneyChange({
+                target: { value: this.state.money },
+            })
+        ) {
+            if (this.state.user !== null) {
+                userService.moneyRecharge(this.state.user.id, this.state.money).then(
+                    () => {
+                        // apply success
+                        this.handleAlert("success", "充值成功");
+                        // fetch new info
+                        this.fetchUserInfo();
+                    },
+                    (error) => {
+                        // show the error message
+                        if (error.response.status === 401) {
+                            this.handleAlert("error", "尚未登录");
+                        }
+                        if (error.response.status === 403) {
+                            if (
+                                error.response.data.message === "RECHARGE_INVALID"
+                            ) {
+                                this.handleAlert("error", "充值金额超过范围");
+                            }
+                            else if (
+                                error.response.data.message === "BALANCE_INVALID"
+                            ){
+                                this.handleAlert("error", "钱包余额超过范围");
+                            }
+                            else {
+                                this.handleAlert("error", "服务器验证异常");
+                            }
+                        } else {
+                            this.handleAlert("error", "网络错误");
+                        }
+                    }
+                );
+            }
+            this.handleCloseRechargeDialog();
+        }
     }
 
     // handle money change in recharge dialog
@@ -265,6 +306,27 @@ export default class AccountProfile extends Component<
         return error === "";
     }
 
+    // get info of user
+    fetchUserInfo() {
+        if (this.state.user) {
+            userService.getUserInfo(this.state.user.id).then(
+                (response) => {
+                    if (response) {
+                        this.context.setUser(response);
+                    }
+                },
+                (error) => {
+                    // show the error message
+                    if (error.response.status === 403) {
+                        this.handleAlert("error", "服务器验证异常");
+                    } else {
+                        this.handleAlert("error", "网络错误");
+                    }
+                }
+            );
+        }
+    }
+
     // submit handler
     handleSubmit() {
         // avoid null
@@ -303,23 +365,7 @@ export default class AccountProfile extends Component<
                     // alert
                     this.handleAlert("success", "修改成功");
                     // get info again
-                    if (this.state.user) {
-                        userService.getUserInfo(this.state.user.id).then(
-                            (response) => {
-                                if (response) {
-                                    this.context.setUser(response);
-                                }
-                            },
-                            (error) => {
-                                // show the error message
-                                if (error.response.status === 403) {
-                                    this.handleAlert("error", "服务器验证异常");
-                                } else {
-                                    this.handleAlert("error", "网络错误");
-                                }
-                            }
-                        );
-                    }
+                    this.fetchUserInfo();
                 },
                 (error) => {
                     // show the error message
