@@ -24,6 +24,11 @@ import Snackbar from "@mui/material/Snackbar";
 import { validate_length, validate_required } from "./Login";
 import { validate_email } from "./Register";
 import UserContext from "../UserContext";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 // state interface
 interface ProfileState {
@@ -39,6 +44,9 @@ interface ProfileState {
     error_msg_username: string;
     error_msg_password: string;
     error_msg_email: string;
+    error_msg_money: string;
+    money: number;
+    openRechargeDialog: boolean;
 }
 
 // props interface
@@ -81,7 +89,10 @@ export default class AccountProfile extends Component<
             maxPrice: 100,
             error_msg_username: "",
             error_msg_password: "",
+            error_msg_money: "",
             error_msg_email: "",
+            money: 1,
+            openRechargeDialog: false
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
@@ -100,6 +111,50 @@ export default class AccountProfile extends Component<
             alertContent: _alertContent,
         });
     }
+
+    // dialog helper functions
+    // dialog close/open handler
+    handleCloseRechargeDialog() {
+        this.setState({
+            openRechargeDialog: false
+        });
+    }
+
+    handleOpenRechargeDialog() {
+        this.setState({
+            openRechargeDialog: true
+        });
+    }
+
+    // handle submit recharge
+    handleSubmitRecharge() {
+
+    }
+
+    // handle money change in recharge dialog
+    handleMoneyChange(e: any) {
+        let value = e.target.value;
+        if (validate_required(e.target.value)) {
+            this.setState({
+                error_msg_money: "充值金额为空或格式错误",
+                money: value,
+            });
+            return false;
+        }
+        // clear the error msg
+        this.setState({
+            error_msg_money: ""
+        });
+        // the value must be a positive number
+        if (value < 1)
+            value = 1;
+        this.setState({
+            money: value,
+        });
+        return true;
+    }
+
+    // end dialog helper functions
 
     // redirect handler
     handleRedirect(target: string) {
@@ -266,6 +321,7 @@ export default class AccountProfile extends Component<
             );
         }
     }
+
 
     render() {
         if (this.state.redirect) {
