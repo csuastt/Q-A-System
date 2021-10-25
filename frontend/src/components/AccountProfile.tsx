@@ -29,6 +29,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import AddIcon from '@mui/icons-material/Add';
+import {IconButton} from "@mui/material";
 
 // state interface
 interface ProfileState {
@@ -98,6 +100,9 @@ export default class AccountProfile extends Component<
         this.handleRedirect = this.handleRedirect.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeUser = this.handleChangeUser.bind(this);
+        this.handleOpenRechargeDialog = this.handleOpenRechargeDialog.bind(this);
+        this.handleCloseRechargeDialog = this.handleCloseRechargeDialog.bind(this);
+        this.handleMoneyChange = this.handleMoneyChange.bind(this);
     }
 
     // alert handler
@@ -148,6 +153,8 @@ export default class AccountProfile extends Component<
         // the value must be a positive number
         if (value < 1)
             value = 1;
+        else if (value > 1000)
+            value = 1000;
         this.setState({
             money: value,
         });
@@ -570,7 +577,11 @@ export default class AccountProfile extends Component<
                                             variant="outlined"
                                         />
                                     </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={
+                                        6
+                                    } xs={
+                                        12
+                                    }>
                                         <TextField
                                             fullWidth
                                             label="钱包余额"
@@ -596,6 +607,13 @@ export default class AccountProfile extends Component<
                                                                   ￥
                                                               </InputAdornment>
                                                           ),
+                                                          endAdornment : (
+                                                              <IconButton color="secondary"
+                                                                          onClick={this.handleOpenRechargeDialog}
+                                                              >
+                                                                  <AddIcon/>
+                                                              </IconButton>
+                                                          )
                                                       }
                                             }
                                             value={this.state.user?.balance}
@@ -749,6 +767,58 @@ export default class AccountProfile extends Component<
                         {this.state.alertContent}
                     </Alert>
                 </Snackbar>
+                <Dialog
+                    maxWidth={"xs"}
+                    open={this.state.openRechargeDialog}
+                    onClose={this.handleCloseRechargeDialog}
+                >
+                    <DialogTitle>充值钱包</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText mb={3}>
+                            您当前的钱包余额为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {this.state.user?.balance}
+                            </Box>
+                            ￥。单笔最高充值金额为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {1000}
+                            </Box>
+                            ￥。<br/>
+                            请输入您的充值金额：
+                        </DialogContentText>
+                        <TextField
+                            fullWidth
+                            label="充值金额"
+                            name="money"
+                            onChange={this.handleMoneyChange}
+                            type="number"
+                            InputProps={{
+                                inputProps: {
+                                    min: 0,
+                                    max: 1000,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        ￥
+                                    </InputAdornment>
+                                ),
+                            }}
+                            value={this.state.money}
+                            error={this.state.error_msg_money.length !== 0}
+                            helperText={this.state.error_msg_money}
+                            variant="outlined"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={this.handleCloseRechargeDialog}
+                            color="error"
+                        >
+                            取消
+                        </Button>
+                        <Button onClick={this.handleSubmitRecharge}>提交</Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         );
     }
