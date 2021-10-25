@@ -147,6 +147,12 @@ export default class AccountProfile extends Component<
                         this.handleAlert("success", "充值成功");
                         // fetch new info
                         this.fetchUserInfo();
+                        // modify balance
+                        if (this.state.user !== null && typeof this.state.user.balance !== "undefined")
+                            this.handleChange({target:{
+                                name : "balance",
+                                    value: Number(this.state.user?.balance) + Number(this.state.money)
+                                }});
                     },
                     (error) => {
                         // show the error message
@@ -267,6 +273,8 @@ export default class AccountProfile extends Component<
         if (typeof e === "string") new_user_info["phone"] = e;
         else if (e.target.name === "balance" && e.target.value < 0)
             new_user_info["balance"] = 0;
+        else if (e.target.name === "balance" && e.target.value > 10000)
+            new_user_info["balance"] = 10000;
         else if (
             e.target.name === "price" &&
             e.target.value < this.state.minPrice
