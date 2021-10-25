@@ -1,9 +1,9 @@
 package com.example.qa.order;
 
 import com.example.qa.errorhandling.ApiException;
-import com.example.qa.order.exchange.AcceptData;
-import com.example.qa.order.exchange.OrderData;
-import com.example.qa.order.exchange.OrderEditData;
+import com.example.qa.order.exchange.AcceptRequest;
+import com.example.qa.order.exchange.OrderResponse;
+import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserService;
@@ -26,12 +26,12 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderData create(@RequestBody OrderEditData data) {
+    public OrderResponse create(@RequestBody OrderRequest data) {
         boolean isAdmin = false;
         User[] users = checkOrderData(data, null);
         Order order = new Order(data, users[0], users[1], isAdmin);
         orderRepository.save(order);
-        return new OrderData(order);
+        return new OrderResponse(order);
     }
 
     @DeleteMapping("/{id}")
@@ -46,14 +46,14 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public OrderData query(@PathVariable(value = "id") long id) {
+    public OrderResponse query(@PathVariable(value = "id") long id) {
         boolean isAdmin = false;
-        return new OrderData(getById(id, isAdmin));
+        return new OrderResponse(getById(id, isAdmin));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void edit(@PathVariable(value = "id") long id, @RequestBody OrderEditData data) {
+    public void edit(@PathVariable(value = "id") long id, @RequestBody OrderRequest data) {
         Order order = getById(id, false);
         User[] users = checkOrderData(data, order);
         order.update(data, users[0], users[1]);
@@ -62,7 +62,7 @@ public class OrderController {
 
     @PostMapping("/{id}/review")
     @ResponseStatus(value = HttpStatus.OK)
-    public void review(@PathVariable(value = "id") long id, @RequestBody AcceptData data) {
+    public void review(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         Order order = getById(id, false);
         if (order.getState() != OrderState.PAYED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
@@ -73,7 +73,7 @@ public class OrderController {
 
     @PostMapping("/{id}/respond")
     @ResponseStatus(value = HttpStatus.OK)
-    public void respond(@PathVariable(value = "id") long id, @RequestBody AcceptData data) {
+    public void respond(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         Order order = getById(id, false);
         if (order.getState() != OrderState.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
@@ -94,8 +94,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public OrderData[] queryList() {
-        return orderRepository.findAll().stream().map(OrderData::new).toArray(OrderData[]::new);
+    public OrderResponse[] queryList() {
+        return orderRepository.findAll().stream().map(OrderResponse::new).toArray(OrderResponse[]::new);
     }
 
     private Order getById(long id, boolean allowDeleted) {
@@ -106,7 +106,7 @@ public class OrderController {
         return order.get();
     }
 
-    private User[] checkOrderData(OrderEditData data, Order original) {
+    private User[] checkOrderData(OrderRequest data, Order original) {
         boolean isCreation = original == null;
         if (isCreation && (data.getAsker() == null || data.getAnswerer() == null || data.getQuestion() == null)) {
             throw new ApiException(HttpStatus.BAD_REQUEST);

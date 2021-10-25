@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class OrderData {
+public class OrderResponse {
     private long id;
     private boolean deleted;
     private UserResponse asker;
@@ -28,7 +28,7 @@ public class OrderData {
     private String question;
     private int price;
 
-    public OrderData(Order order) {
+    public OrderResponse(Order order) {
         this.id = order.getId();
         this.deleted = order.isDeleted();
         this.asker = new UserResponse(order.getAsker());

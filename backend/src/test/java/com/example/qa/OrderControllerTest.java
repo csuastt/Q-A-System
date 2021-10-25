@@ -1,9 +1,9 @@
 package com.example.qa;
 
 import com.example.qa.order.OrderRepository;
-import com.example.qa.order.exchange.AcceptData;
-import com.example.qa.order.exchange.OrderData;
-import com.example.qa.order.exchange.OrderEditData;
+import com.example.qa.order.exchange.AcceptRequest;
+import com.example.qa.order.exchange.OrderResponse;
+import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.LoginRequest;
@@ -79,7 +79,7 @@ class OrderControllerTest {
 
     @Test
     long createOrder() throws Exception {
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(answererId);
         request.setQuestion(question);
@@ -90,7 +90,7 @@ class OrderControllerTest {
                         .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderData.class);
+        OrderResponse result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderResponse.class);
         assertEquals(result.getAsker().getId(), askerId);
         assertEquals(result.getAnswerer().getId(), answererId);
         assertEquals(result.getQuestion(), question);
@@ -100,7 +100,7 @@ class OrderControllerTest {
 
     @Test
     void createOrderWithInvalidAsker() throws Exception {
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setAsker(99L);
         request.setAnswerer(answererId);
         request.setQuestion(question);
@@ -115,7 +115,7 @@ class OrderControllerTest {
 
     @Test
     void createOrderWithInvalidAnswerer() throws Exception {
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(askerId);
         request.setQuestion(question);
@@ -130,7 +130,7 @@ class OrderControllerTest {
 
     @Test
     void createOrderWithInvalidQuestion() throws Exception {
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(answererId);
         request.setQuestion("q");
@@ -171,7 +171,7 @@ class OrderControllerTest {
     void editOrder() throws Exception {
         long id = createOrder();
         String newQuestion = "NewQuestion";
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setQuestion(newQuestion);
         edit(id, request);
         assertEquals(query(id).getQuestion(), newQuestion);
@@ -180,10 +180,10 @@ class OrderControllerTest {
     @Test
     void reviewOrder() throws Exception {
         long id = createOrder();
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setState(OrderState.PAYED);
         edit(id, request);
-        AcceptData accept = new AcceptData(true);
+        AcceptRequest accept = new AcceptRequest(true);
         mockMvc.perform(post("/api/orders/" + id + "/review")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -195,7 +195,7 @@ class OrderControllerTest {
     @Test
     void reviewInvalidOrder() throws Exception {
         long id = createOrder();
-        AcceptData accept = new AcceptData(true);
+        AcceptRequest accept = new AcceptRequest(true);
         mockMvc.perform(post("/api/orders/" + id + "/review")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -206,10 +206,10 @@ class OrderControllerTest {
     @Test
     void respondOrder() throws Exception {
         long id = createOrder();
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setState(OrderState.REVIEWED);
         edit(id, request);
-        AcceptData accept = new AcceptData(true);
+        AcceptRequest accept = new AcceptRequest(true);
         mockMvc.perform(post("/api/orders/" + id + "/respond")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -221,7 +221,7 @@ class OrderControllerTest {
     @Test
     void respondInvalidOrder() throws Exception {
         long id = createOrder();
-        AcceptData accept = new AcceptData(true);
+        AcceptRequest accept = new AcceptRequest(true);
         mockMvc.perform(post("/api/orders/" + id + "/respond")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -232,7 +232,7 @@ class OrderControllerTest {
     @Test
     void endOrder() throws Exception {
         long id = createOrder();
-        OrderEditData request = new OrderEditData();
+        OrderRequest request = new OrderRequest();
         request.setState(OrderState.ANSWERED);
         edit(id, request);
         mockMvc.perform(post("/api/orders/" + id + "/end")
@@ -257,22 +257,22 @@ class OrderControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData[] result = mapper.readerForArrayOf(OrderData.class).readValue(mvcResult.getResponse().getContentAsString());
+        OrderResponse[] result = mapper.readerForArrayOf(OrderResponse.class).readValue(mvcResult.getResponse().getContentAsString());
         assertTrue(result.length > 0);
     }
 
-    OrderData query(long id) throws Exception {
+    OrderResponse query(long id) throws Exception {
         MvcResult queryResult = mockMvc
                 .perform(get("/api/orders/" + id)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        OrderData result = mapper.readValue(queryResult.getResponse().getContentAsString(), OrderData.class);
+        OrderResponse result = mapper.readValue(queryResult.getResponse().getContentAsString(), OrderResponse.class);
         assertEquals(result.getId(), id);
         return result;
     }
 
-    void edit(long id, OrderEditData data) throws Exception {
+    void edit(long id, OrderRequest data) throws Exception {
         mockMvc.perform(put("/api/orders/" + id)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
