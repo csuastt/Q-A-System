@@ -29,6 +29,12 @@ class UserService {
         });
     }
 
+    moneyRecharge(id: number, value: number) {
+        return axios.post(`/users/${id}/recharge`, {
+            value: value,
+        });
+    }
+
     modifyPrice(id: number, price: number) {
         return axios.put(`/users/${id}`, {
             price: price,
