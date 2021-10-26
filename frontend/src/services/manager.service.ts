@@ -1,48 +1,34 @@
 import axios from "axios";
+import {ManagerInfo,ManagerRole} from "./definations";
 
 class ManagerService {
     login(manager_name: string, password: string) {
         return axios
-            .post("/manager/login", {
+            .post("/admins/login", {
                 username: manager_name,
                 password: password,
             })
             .then((response) => {
-                if (response.data.token) {
-                    localStorage.setItem("token", response.data.token);
-                    localStorage.setItem(
-                        "manager",
-                        JSON.stringify(response.data.manager)
-                    );
-                }
-                return response.data;
-            });
+                localStorage.setItem("token", response.data.token);
+                axios.defaults.headers.common["Authorization"] =
+                    "Bearer " + response.data.token;
+            })
+            .then(this.refreshToken);
+
     }
 
     logout() {
-        let tokenConfig = this.managerToken();
-        localStorage.removeItem("token");
-        localStorage.removeItem("manager");
-        return axios.post(
-            "/manager/logout",
-            {},
-            {
-                headers: tokenConfig,
-            }
-        );
+        return axios.post("/admins/logout").finally(this.clearToken);
     }
 
-    create(manager_name: string, permission: string) {
-        return axios.post("/users", {
-            managername: manager_name,
-            permission: permission,
+    create(manager_name: string, role: ManagerRole) {
+        return axios.post("/admins", {
+            username: manager_name,
+            role: role,
         });
     }
 
-    getCurrentManager() {
-        let manager_raw = localStorage.getItem("manager");
-        return manager_raw ? JSON.parse(manager_raw) : null;
-    }
+   
 
     modifyPassword(id: number, old_password: string, password: string) {
         return axios.put(
@@ -56,10 +42,38 @@ class ManagerService {
             }
         );
     }
+
+
+    getManagerInfo(id: number): Promise<ManagerInfo> {
+        return axios.get(`/admins/${id}`).then((response) => response.data);
+    }
+
+
     managerToken() {
         const storedToken: string | null = localStorage.getItem("token");
         return storedToken ? { Authorization: `Bearer ${storedToken}` } : {};
     }
+    refreshToken(): Promise<ManagerInfo> {
+        const storedToken: string | null = localStorage.getItem("token");
+        if (storedToken) {
+            axios.defaults.headers.common["Authorization"] =
+                "Bearer " + storedToken;
+            try {
+                const manager = JSON.parse(atob(storedToken.split(".")[1]));
+                return this.getManagerInfo(manager["sub"]);
+            } catch (e) {
+                this.clearToken();
+            }
+        }
+        return Promise.reject(new Error("No token found"));
+    }
+
+    clearToken() {
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
+    }
+
+
 }
 
 export default new ManagerService();
