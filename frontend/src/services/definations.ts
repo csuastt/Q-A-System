@@ -1,11 +1,12 @@
+import {ZonedDateTime} from 'js-joda'
 export enum UserType {
     Normal,
     Answerer,
 }
-export enum ManagerType {
-    Admin,
-    Auditor,
-    Observer,
+export enum ManagerRole {
+    ADMIN="ADMIN",
+    REVIEWER="REVIEWER",
+    SUPER_ADMIN="SUPER_ADMIN",
 }
 
 export interface UserBasicInfo {
@@ -20,13 +21,11 @@ export type ManagerInfoList = Array<ManagerInfo>;
 
 export interface ManagerInfo {
     id: number;
-    manager_name: string;
-    sign_up_timestamp: number;
-    email: string;
-    phone: string;
-    permission: string;
+    username: string;
     password: string;
-    type: ManagerType;
+    deleted: boolean;
+    role: ManagerRole;
+    createTime: ZonedDateTime;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
