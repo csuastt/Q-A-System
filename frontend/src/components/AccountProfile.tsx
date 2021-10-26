@@ -187,6 +187,11 @@ export default class AccountProfile extends Component<
                                         "error",
                                         "钱包余额超过范围"
                                     );
+                                } else if (
+                                    error.response.data.message ===
+                                    "NO_PERMISSION"
+                                ) {
+                                    this.handleAlert("error", "权限不足");
                                 } else {
                                     this.handleAlert("error", "服务器验证异常");
                                 }
@@ -392,7 +397,28 @@ export default class AccountProfile extends Component<
                 },
                 (error) => {
                     // show the error message
-                    this.handleAlert("error", "网络错误");
+                    if (error.response.status === 403) {
+                        if (error.response.data.message === "NO_PERMISSION") {
+                            this.handleAlert("error", "权限不足");
+                        } else if (
+                            error.response.data.message === "NICKNAME_INVALID"
+                        ) {
+                            this.handleAlert("error", "昵称格式错误");
+                        } else if (
+                            error.response.data.message ===
+                            "DESCRIPTION_INVALID"
+                        ) {
+                            this.handleAlert("error", "个人介绍格式错误");
+                        } else {
+                            this.handleAlert("error", "服务器验证异常");
+                        }
+                    } else if (error.response.status === 401) {
+                        this.handleAlert("error", "尚未登录");
+                    } else if (error.response.status === 404) {
+                        this.handleAlert("error", "用户不存在");
+                    } else {
+                        this.handleAlert("error", "网络错误");
+                    }
                 }
             );
         }

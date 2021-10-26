@@ -148,10 +148,46 @@ export default class AccountBriefProfile extends Component<
                         (error) => {
                             // show the error message
                             if (error.response.status === 403) {
-                                this.props.alertHandler(
-                                    "error",
-                                    "服务器验证异常"
-                                );
+                                if (
+                                    error.response.data.message ===
+                                    "NO_PERMISSION"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "权限不足"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "ALREADY_ANSWERER"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "已经是回答者"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "DESCRIPTION_INVALID"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "个人介绍格式错误"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "PRICE_INVALID"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "价格格式错误"
+                                    );
+                                } else {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "服务器验证异常"
+                                    );
+                                }
+                            } else if (error.response.status === 401) {
+                                this.props.alertHandler("error", "尚未登录");
                             } else {
                                 this.props.alertHandler("error", "网络错误");
                             }
@@ -176,7 +212,25 @@ export default class AccountBriefProfile extends Component<
                     },
                     (error) => {
                         // show the error message
-                        this.props.alertHandler("error", "网络错误");
+                        if (error.response.status === 403) {
+                            if (
+                                error.response.data.message === "PRICE_INVALID"
+                            ) {
+                                this.props.alertHandler(
+                                    "error",
+                                    "定价超过范围"
+                                );
+                            } else {
+                                this.props.alertHandler(
+                                    "error",
+                                    "服务器验证异常"
+                                );
+                            }
+                        } else if (error.response.status === 404) {
+                            this.props.alertHandler("error", "用户不存在");
+                        } else {
+                            this.props.alertHandler("error", "网络错误");
+                        }
                     }
                 );
             }
