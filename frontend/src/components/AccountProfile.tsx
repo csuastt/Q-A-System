@@ -187,7 +187,16 @@ export default class AccountProfile extends Component<
                                         "error",
                                         "钱包余额超过范围"
                                     );
-                                } else {
+                                } else if (
+                                    error.response.data.message ===
+                                    "NO_PERMISSION"
+                                ) {
+                                    this.handleAlert(
+                                        "error",
+                                        "权限不足"
+                                    );
+                                }
+                                else {
                                     this.handleAlert("error", "服务器验证异常");
                                 }
                             } else {
