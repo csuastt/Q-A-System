@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import AuthService from "../services/authService";
+import AdminAuthService from "../services/adminAuthService";
 import { Link as RouterLink, Redirect } from "react-router-dom";
+
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
@@ -119,7 +121,7 @@ export default class Login extends Component<LoginProps, LoginState> {
             let service;
             if (this.props.isAdmin) {
                 // todo substitute it with admin service
-                service = AuthService;
+                service = AdminAuthService;
             } else {
                 service = AuthService;
             }
@@ -207,7 +209,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                             required
                             fullWidth
                             id="username"
-                            label="用户名"
+                            label={this.props.isAdmin ? "管理员名称" : "用户名"}
                             name="username"
                             autoComplete="username"
                             autoFocus
@@ -223,7 +225,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                             required
                             fullWidth
                             name="password"
-                            label="密码"
+                            label={this.props.isAdmin ? "管理员密码" : "密码"}
                             type="password"
                             id="password"
                             autoComplete="current-password"
