@@ -36,10 +36,6 @@ class AdminAuthService {
         });
     }
 
-    managerToken() {
-        const storedToken: string | null = localStorage.getItem("token");
-        return storedToken ? { Authorization: `Bearer ${storedToken}` } : {};
-    }
     refreshToken(): Promise<ManagerInfo> {
         const storedToken: string | null = localStorage.getItem("token");
         if (storedToken) {

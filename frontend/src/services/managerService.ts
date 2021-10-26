@@ -26,9 +26,17 @@ class ManagerService {
         return axios.get(`/admins/${id}`).then((response) => response.data);
     }
 
+    modifyManagerInfo(info: ManagerInfo) {
+        return axios.put(`/admins/${info.id}`, {
+            password: info.password,
+            role: info.role,
+        });
+    }
 
-
-
+    deleteManager(id: number) {
+        return axios.delete(`/admins/${id}`, {
+        });
+    }
 
 }
 const managerService = new ManagerService();
