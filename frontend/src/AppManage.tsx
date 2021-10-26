@@ -16,7 +16,7 @@ import Create from "./components/Create";
 import { useEffect, useState } from "react";
 import authService from "./services/auth.service";
 import ChangePassword from "./components/ChangePassword";
-import ManagerService from "./services/manager.service";
+import ManagerService from "./services/adminAuthService";
 import ManagerProfile from "./components/ManagerProfile";
 
 export default function AppManage() {

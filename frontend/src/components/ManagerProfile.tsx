@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import ManagerService from "../services/manager.service";
+import ManagerService from "../services/adminAuthService";
 import { ManagerInfo } from "../services/definations";
 import userService from "../services/user.service";
 import authService from "../services/auth.service";

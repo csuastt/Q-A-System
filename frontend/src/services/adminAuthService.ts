@@ -1,7 +1,8 @@
 import axios from "axios";
 import {ManagerInfo,ManagerRole} from "./definations";
+import managerService from "./managerService";
 
-class ManagerService {
+class AdminAuthService {
     login(manager_name: string, password: string) {
         return axios
             .post("/admins/login", {
@@ -28,26 +29,12 @@ class ManagerService {
         });
     }
 
-   
-
     modifyPassword(id: number, old_password: string, password: string) {
-        return axios.put(
-            `/managers/${id}/password`,
-            {
-                origin: old_password,
-                password: password,
-            },
-            {
-                headers: this.managerToken(),
-            }
-        );
+        return axios.put(`/admins/${id}/password`, {
+            original: old_password,
+            password: password,
+        });
     }
-
-
-    getManagerInfo(id: number): Promise<ManagerInfo> {
-        return axios.get(`/admins/${id}`).then((response) => response.data);
-    }
-
 
     managerToken() {
         const storedToken: string | null = localStorage.getItem("token");
@@ -60,7 +47,7 @@ class ManagerService {
                 "Bearer " + storedToken;
             try {
                 const manager = JSON.parse(atob(storedToken.split(".")[1]));
-                return this.getManagerInfo(manager["sub"]);
+                return managerService.getManagerInfo(manager["sub"]);
             } catch (e) {
                 this.clearToken();
             }
@@ -75,5 +62,5 @@ class ManagerService {
 
 
 }
-
-export default new ManagerService();
+const adminAuthService = new AdminAuthService();
+export default new AdminAuthService();

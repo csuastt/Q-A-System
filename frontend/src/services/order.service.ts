@@ -1,7 +1,7 @@
 import axios from "axios";
 import {CreationResult, OrderInfo, OrderList, UserInfo} from "./definations";
 import AuthService from "../services/auth.service";
-import ManagerService from "../services/manager.service";
+import ManagerService from "./adminAuthService";
 
 class OrderService {
     getOrdersOfUser(userId: number): Promise<OrderList> {

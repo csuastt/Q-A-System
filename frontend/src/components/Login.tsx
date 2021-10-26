@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
 import { Redirect } from "react-router-dom";
-import ManagerService from "../services/manager.service";
+import ManagerService from "../services/adminAuthService";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";

@@ -1,7 +1,7 @@
 import React from "react";
 import authService from "../services/auth.service";
 import { Redirect } from "react-router-dom";
-import ManagerService from "../services/manager.service";
+import ManagerService from "../services/adminAuthService";
 
 const Logout: React.FC<{
     logout: () => void;
