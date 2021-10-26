@@ -176,7 +176,21 @@ export default class AccountBriefProfile extends Component<
                     },
                     (error) => {
                         // show the error message
-                        this.props.alertHandler("error", "网络错误");
+                        if (error.response.status === 403) {
+                            if (
+                                error.response.data.message === "PRICE_INVALID"
+                            ) {
+                                this.props.alertHandler("error", "价格格式错误");
+                            } else {
+                                this.props.alertHandler("error", "服务器验证异常");
+                            }
+                        }
+                        else if (error.response.status === 404) {
+                            this.props.alertHandler("error", "用户不存在");
+                        }
+                        else{
+                            this.props.alertHandler("error", "网络错误");
+                        }
                     }
                 );
             }
