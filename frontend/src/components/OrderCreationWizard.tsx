@@ -16,8 +16,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import UserContext from "../UserContext";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 function processInt(str?: string): number {
     if (str) {
@@ -81,21 +81,16 @@ const OrderCreationWizard: React.FC = (props) => {
         if (result) {
             if (result.state === "CREATED") {
                 return (
-                    <Box textAlign={
-                        matches ?
-                            "center" : "start"
-                    }
-                         mt={1}
-                    >
+                    <Box textAlign={matches ? "center" : "start"} mt={1}>
                         <CheckCircleOutlineIcon
                             color="success"
                             sx={
-                                matches ?
-                                    {fontSize: 80} :
-                                    {
-                                        fontSize: 60,
-                                        marginLeft: 8
-                                    }
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                          fontSize: 60,
+                                          marginLeft: 8,
+                                      }
                             }
                         />
                         <Typography
@@ -109,21 +104,16 @@ const OrderCreationWizard: React.FC = (props) => {
                 );
             } else {
                 return (
-                    <Box textAlign={
-                        matches ?
-                            "center" : "start"
-                    }
-                         mt={1}
-                    >
+                    <Box textAlign={matches ? "center" : "start"} mt={1}>
                         <ErrorOutlineIcon
                             color="error"
                             sx={
-                                matches ?
-                                    {fontSize: 80} :
-                                    {
-                                        fontSize: 60,
-                                        marginLeft: 7
-                                    }
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                          fontSize: 60,
+                                          marginLeft: 7,
+                                      }
                             }
                         />
                         <Typography
@@ -212,22 +202,17 @@ const OrderCreationWizard: React.FC = (props) => {
             </>
         ) : (
             <>
-                <Box textAlign={
-                    matches ?
-                        "center" : "start"
-                }
-                     mt={1}
-                >
+                <Box textAlign={matches ? "center" : "start"} mt={1}>
                     <ErrorOutlineIcon
-                    color="warning"
-                    sx={
-                        matches ?
-                        {fontSize: 80} :
-                            {
-                                fontSize: 60,
-                                marginLeft: 7.5
-                            }
-                    }
+                        color="warning"
+                        sx={
+                            matches
+                                ? { fontSize: 80 }
+                                : {
+                                      fontSize: 60,
+                                      marginLeft: 7.5,
+                                  }
+                        }
                     />
                     <Typography
                         variant={matches ? "h5" : "h6"}

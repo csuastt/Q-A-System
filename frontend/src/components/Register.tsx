@@ -172,26 +172,23 @@ export default class Register extends Component<any, RegisterState> {
                                 alertType: "error",
                                 alertContent: "用户名已注册",
                             });
-                        }
-                        else if (
+                        } else if (
                             error.response.data.message === "PASSWORD_INVALID"
-                        ){
+                        ) {
                             this.setState({
                                 alert: true,
                                 alertType: "error",
                                 alertContent: "密码格式错误",
                             });
-                        }
-                        else if (
+                        } else if (
                             error.response.data.message === "EMAIL_INVALID"
-                        ){
+                        ) {
                             this.setState({
                                 alert: true,
                                 alertType: "error",
                                 alertContent: "邮箱格式错误",
                             });
-                        }
-                        else {
+                        } else {
                             this.setState({
                                 alert: true,
                                 alertType: "error",

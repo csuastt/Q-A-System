@@ -183,8 +183,7 @@ export default class ChangePassword extends Component<
                                     alertType: "error",
                                     alertContent: "原密码错误",
                                 });
-                            }
-                            else if (
+                            } else if (
                                 error.response.data.message === "NO_PERMISSION"
                             ) {
                                 this.setState({
@@ -192,39 +191,35 @@ export default class ChangePassword extends Component<
                                     alertType: "error",
                                     alertContent: "权限不足",
                                 });
-                            }
-                            else if (
-                                error.response.data.message === "PASSWORD_INVALID"
+                            } else if (
+                                error.response.data.message ===
+                                "PASSWORD_INVALID"
                             ) {
                                 this.setState({
                                     alert: true,
                                     alertType: "error",
                                     alertContent: "新密码格式错误",
                                 });
-                            }
-                            else {
+                            } else {
                                 this.setState({
                                     alert: true,
                                     alertType: "error",
                                     alertContent: "服务器验证异常",
                                 });
                             }
-                        }
-                        else if (error.response.status === 401) {
+                        } else if (error.response.status === 401) {
                             this.setState({
                                 alert: true,
                                 alertType: "error",
                                 alertContent: "尚未登录",
                             });
-                        }
-                        else if (error.response.status === 404) {
+                        } else if (error.response.status === 404) {
                             this.setState({
                                 alert: true,
                                 alertType: "error",
                                 alertContent: "用户不存在",
                             });
-                        }
-                        else {
+                        } else {
                             this.setState({
                                 alert: true,
                                 alertType: "error",

@@ -191,12 +191,8 @@ export default class AccountProfile extends Component<
                                     error.response.data.message ===
                                     "NO_PERMISSION"
                                 ) {
-                                    this.handleAlert(
-                                        "error",
-                                        "权限不足"
-                                    );
-                                }
-                                else {
+                                    this.handleAlert("error", "权限不足");
+                                } else {
                                     this.handleAlert("error", "服务器验证异常");
                                 }
                             } else {
@@ -402,32 +398,25 @@ export default class AccountProfile extends Component<
                 (error) => {
                     // show the error message
                     if (error.response.status === 403) {
-                        if (
-                            error.response.data.message === "NO_PERMISSION"
-                        ) {
+                        if (error.response.data.message === "NO_PERMISSION") {
                             this.handleAlert("error", "权限不足");
-                        }
-                        else if (
+                        } else if (
                             error.response.data.message === "NICKNAME_INVALID"
-                        ){
+                        ) {
                             this.handleAlert("error", "昵称格式错误");
-                        }
-                        else if (
-                            error.response.data.message === "DESCRIPTION_INVALID"
-                        ){
+                        } else if (
+                            error.response.data.message ===
+                            "DESCRIPTION_INVALID"
+                        ) {
                             this.handleAlert("error", "个人介绍格式错误");
-                        }
-                        else {
+                        } else {
                             this.handleAlert("error", "服务器验证异常");
                         }
-                    }
-                    else if (error.response.status === 401) {
+                    } else if (error.response.status === 401) {
                         this.handleAlert("error", "尚未登录");
-                    }
-                    else if (error.response.status === 404) {
+                    } else if (error.response.status === 404) {
                         this.handleAlert("error", "用户不存在");
-                    }
-                    else {
+                    } else {
                         this.handleAlert("error", "网络错误");
                     }
                 }
