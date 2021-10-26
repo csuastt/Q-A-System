@@ -53,15 +53,16 @@ POST /api/orders
 
 参数：（用户）
 
-| 名称     | 类型   | 说明                  |
-| -------- | ------ | --------------------- |
-| asker    | number | 用户 ID（仅限管理员） |
-| answerer | number | 用户 ID               |
-| question | string | 问题                  |
+| 名称     | 类型   | 说明    |
+| -------- | ------ | ------- |
+| answerer | number | 用户 ID |
+| question | string | 问题    |
 
-参数：（管理员）
+参数：（超级管理员）
 
-任意 Order 属性，必须有 asker、answerer、question，无视 id、deleted、finished、createTime，设置 price > 0（后续添加上限检查）即为覆盖默认。
+必须 `{ asker, answerer, question }` 
+
+可选 `{ state, endReason, answerSummary, price }`
 
 返回值：
 
@@ -69,19 +70,19 @@ POST /api/orders
   
 - `400` 格式错误
 
-- `401` 未登录（后续实现）
+- `401` 未登录
 
 - `403` 错误
 
   | message 属性       | 说明                                           |
   | ------------------ | ---------------------------------------------- |
-  | `ASKER_INVALID`    | 未找到提问者（后续改为仅管理员创建时提示）     |
+  | `ASKER_INVALID`    | 未找到提问者（仅管理员）                       |
   | `ANSWERER_INVALID` | 回答者与提问者相同/未找到回答者/回答者没有权限 |
   | `QUESTION_INVALID` | 问题字数不符合系统要求（暂设 5≤length≤100）    |
 
 ### 删除订单
 
-（仅限管理员）
+（仅限超级管理员）
 
 ```
 DELETE /api/orders/{id}
@@ -91,7 +92,11 @@ DELETE /api/orders/{id}
 
 - `200` OK
 - `401` 未登录（后续实现）
-- `403` 错误（没权限或已删除）
+- `403` 错误
+  | message 属性      | 说明       |
+  | ----------------- | ---------- |
+  | `NO_PERMISSION`   | 不是管理员 |
+  | `ALREADY_DELETED` | 已经删除   |
 - `404` 订单不存在
 
 ### 获取订单信息
@@ -117,7 +122,11 @@ GET /api/orders/{id}
 PUT /api/orders/{id}
 ```
 
-参数：任意 Order 属性，无视 id、deleted、finished、createTime，设置 price > 0 可以修改（后续添加上限检查）。已被删除的用户必须修改。
+参数：
+
+可选 `{ state, endReason, question, answerSummary, price }`
+
+问答方不可修改。
 
 返回值：
 
@@ -125,15 +134,9 @@ PUT /api/orders/{id}
 
 - `400` 格式错误
 
-- `401` 未登录或权限不足（仅限管理员，后续实现）
+- `401` 未登录（后续实现）
 
-- `403` 错误
-
-  | message 属性       | 说明                                                         |
-  | ------------------ | ------------------------------------------------------------ |
-  | `ASKER_INVALID`    | 未找到新提问者/旧提问者已被删除却没有修改                    |
-  | `ANSWERER_INVALID` | 任何会导致回答者与提问者相同的情况/未找到新回答者/旧回答者已被删除却没有修改/回答者没有权限 |
-  | `QUESTION_INVALID` | 新问题字数不符合系统要求（暂设 5≤length≤100）                |
+- `403` 错误（仅限管理员，无权限）
 
 - `404` 订单不存在或已删除
 
@@ -165,7 +168,7 @@ GET /api/orders
 
 返回值：
 
-- `200` OK `{ "pageSize": 20, "page": 1, "totalPages": 2, "orders": [...] }` （时间降序）
+- `200` OK `{ "pageSize": 20, "page": 1, "totalPages": 2, "totalOrders": 999, "orders": [...] }` （时间降序）
 - `400` 格式错误
 - `401` 未登录
 - `403` 错误
@@ -184,9 +187,11 @@ POST /api/orders/{id}/pay
 
 - `403` 错误（余额不足）
 
-  | message 属性         | 说明     |
-  | -------------------- | -------- |
-  | `BALANCE_NOT_ENOUGH` | 余额不足 |
+  | message 属性         | 说明           |
+  | -------------------- | -------------- |
+  | `BALANCE_NOT_ENOUGH` | 余额不足       |
+  | `NO_PERMISSION`      | 不是提问者     |
+  | `NOT_TO_BE_PAYED`    | 不是待支付状态 |
 
 ### 审核订单
 
@@ -277,6 +282,10 @@ POST /api/orders/{id}/cancel
 
 - `200` OK
 - `401` 未登录
-- `403` 错误（订单无法取消 或者没权限）
+- `403` 错误
+  | message 属性    | 说明           |
+  | --------------- | -------------- |
+  | `NO_PERMISSION` | 不是提问者     |
+  | `CANNOT_CANCEL` | 已接单无法取消 |
 - `404` 订单不存在或已删除
 

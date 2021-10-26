@@ -113,7 +113,7 @@ GET /api/users
 
 返回值：
 
-- `200` OK `{ pageSize: 20, page: 1, totalPages: 2, users: [...] }`
+- `200` OK `{ pageSize: 20, page: 1, totalPages: 2, totalUsers: 999, users: [...] }`
 - `400` 格式错误
 - `403` 权限不足
 
