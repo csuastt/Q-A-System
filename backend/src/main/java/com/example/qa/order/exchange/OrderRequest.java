@@ -15,5 +15,6 @@ public class OrderRequest {
     private OrderState state;
     private OrderEndReason endReason;
     private String question;
+    private String answerSummary;
     private Integer price;
 }

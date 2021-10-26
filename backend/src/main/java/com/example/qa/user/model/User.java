@@ -6,20 +6,16 @@ import com.example.qa.user.exchange.UserRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.Collections;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "app_user")
-public class User implements UserDetails {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -68,30 +64,5 @@ public class User implements UserDetails {
     public void update(ApplyRequest data) {
         description = data.getDescription();
         price = data.getPrice();
-    }
-
-    @Override
-    public Collection<GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return !deleted;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !deleted;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return !deleted;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return !deleted;
     }
 }

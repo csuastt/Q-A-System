@@ -14,23 +14,27 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderResponse {
-    private long id;
-    private boolean deleted;
+    private Long id;
+    private Boolean deleted;
     private UserResponse asker;
     private UserResponse answerer;
     private OrderState state;
-    private boolean finished;
+    private Boolean finished;
     // @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private ZonedDateTime createTime;
     private OrderEndReason endReason;
     private String question;
-    private int price;
+    private String answerSummary;
+    private Integer price;
 
     public OrderResponse(Order order) {
+        this(order, 0);
+    }
+
+    public OrderResponse(Order order, int level) {
         this.id = order.getId();
-        this.deleted = order.isDeleted();
         this.asker = new UserResponse(order.getAsker());
         this.answerer = new UserResponse(order.getAnswerer());
         this.state = order.getState();
@@ -39,5 +43,11 @@ public class OrderResponse {
         this.endReason = order.getEndReason();
         this.question = order.getQuestion();
         this.price = order.getPrice();
+        if (level >= 1) {
+            this.answerSummary = order.getAnswerSummary();
+        }
+        if (level >= 2) {
+            this.deleted = order.isDeleted();
+        }
     }
 }
