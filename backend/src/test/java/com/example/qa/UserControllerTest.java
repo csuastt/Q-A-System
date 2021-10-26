@@ -6,10 +6,10 @@ import com.example.qa.user.UserController;
 import com.example.qa.user.UserService;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.Gender;
-import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +86,7 @@ class UserControllerTest {
         assertNotNull(result.getToken(), "token 不为空");
         token = result.getToken();
         username = registerRequest.getUsername();
-        id = 0; // TODO: result.getUser().getId();
+        id = Long.parseLong(Jwts.parser().setSigningKey(SecurityConstants.JWT_SECRET.getBytes()).parseClaimsJws(token).getBody().getSubject());
 
         loginRequest.setPassword("");
         postUrl("/api/user/login", loginRequest, status().isForbidden());
@@ -122,7 +122,7 @@ class UserControllerTest {
     void deleteUser() throws Exception {
         mockMvc.perform(delete("/api/users/" + id)
                         .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
         mockMvc.perform(delete("/api/users/" + id)
                         .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
                 .andExpect(status().isForbidden());
@@ -189,22 +189,6 @@ class UserControllerTest {
     }
 
     @Test
-    void userModel() {
-        User user = new User();
-        user.getAuthorities();
-        user.isAccountNonExpired();
-        user.isAccountNonLocked();
-        user.isEnabled();
-        user.isCredentialsNonExpired();
-        user.setDeleted(true);
-        user.getAuthorities();
-        user.isAccountNonExpired();
-        user.isAccountNonLocked();
-        user.isEnabled();
-        user.isCredentialsNonExpired();
-    }
-
-    @Test
     void userValidators() {
         UserController userController = new UserController(userService, passwordEncoder);
         userController.validatePassword(password);
@@ -226,10 +210,10 @@ class UserControllerTest {
         userRequest.setPrice(50);
         userController.checkUserData(userRequest);
         userRequest.setNickname("");
-        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+        userController.checkUserData(userRequest);
         userRequest.setNickname("nickname");
         userRequest.setDescription("");
-        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+        userController.checkUserData(userRequest);
         userRequest.setDescription("myDescription");
         userRequest.setPrice(-1);
         assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
