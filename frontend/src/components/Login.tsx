@@ -35,9 +35,9 @@ export const validate_required = (value: any) => {
     }
 };
 // eslint-disable-next-line react-hooks/rules-of-hooks
-const managerContext = useContext(ManagerContext);
+// const managerContext = useContext(ManagerContext);
 // eslint-disable-next-line react-hooks/rules-of-hooks
-const userContext = useContext(UserContext);
+// const userContext = useContext(UserContext);
 
 // 6 to 12 in length
 export const validate_length = (value: any) => {
@@ -138,7 +138,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                             alertContent: "管理员登录成功",
                         });
                         // update state
-                        managerContext.setManager(manager);
+                        //managerContext.setManager(manager);
 
                         // redirect
                         this.setState({
@@ -175,7 +175,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                             alertContent: "登录成功",
                         });
                         // update state
-                        userContext.setUser(user);
+                        //userContext.setUser(user);
 
                         // redirect
                         this.setState({

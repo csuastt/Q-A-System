@@ -16,6 +16,7 @@ import { ManagerInfo } from "./services/definations";
 import adminAuthService from "./services/adminAuthService";
 import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
+import ReviewList from "./components/ReviewList";
 
 export default function AppManage() {
     const [manager, setManager] = useState<ManagerInfo>();
@@ -43,7 +44,7 @@ export default function AppManage() {
 
         ["/admins/profile", <AccountProfile isAdmin={true} />],
 
-
+        ["/admins/review", <ReviewList />],
         ["/admins/login", <Login redirect={"/"} isAdmin={true} />],
         ["/admins/logout", <Logout redirect={"/"} isAdmin={true} />],
         ["/admins/create", <Create />],
