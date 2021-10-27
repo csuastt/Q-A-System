@@ -2,13 +2,13 @@ import { ManagerInfo } from "./services/definations";
 import React from "react";
 
 interface ManagerContextType {
-    Manager?: ManagerInfo;
-    setManager: (Manager: ManagerInfo) => void;
+    manager?: ManagerInfo;
+    setManager: (manager: ManagerInfo) => void;
     clearManager: () => void;
 }
 
 const ManagerContext = React.createContext<ManagerContextType>({
-    Manager: undefined,
+    manager: undefined,
     setManager: () => {},
     clearManager: () => {},
 });

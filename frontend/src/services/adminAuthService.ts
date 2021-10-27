@@ -2,6 +2,7 @@ import axios from "axios";
 import {ManagerInfo,ManagerRole} from "./definations";
 import managerService from "./managerService";
 
+
 class AdminAuthService {
     login(manager_name: string, password: string) {
         return axios
@@ -59,4 +60,4 @@ class AdminAuthService {
 
 }
 const adminAuthService = new AdminAuthService();
-export default new AdminAuthService();
+export default adminAuthService;

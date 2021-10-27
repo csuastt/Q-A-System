@@ -59,6 +59,24 @@ class UserService {
             description: info.description,
         });
     }
+    deleteUser(id: number) {
+        return axios.delete(`/users/${id}`, {
+        });
+    }
+    modifyUserInfoByAdmin(info: UserInfo) {
+        return axios.put(`/users/${info.id}`, {
+            nickname: info.nickname,
+            gender: info.gender,
+            phone: info.phone,
+            description: info.description,
+            price: info.price,
+            email: info.email,
+            role: info.role,
+            balance: info.balance,
+        });
+    }
+
+
 }
 
 const userService = new UserService();

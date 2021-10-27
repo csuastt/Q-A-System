@@ -120,7 +120,6 @@ export default class Login extends Component<LoginProps, LoginState> {
         ) {
             let service;
             if (this.props.isAdmin) {
-                // todo substitute it with admin service
                 service = AdminAuthService;
             } else {
                 service = AuthService;
