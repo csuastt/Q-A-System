@@ -52,7 +52,7 @@ public class RestControllerAuthUtils {
             return false;
         }
         UserAuthentication auth = (UserAuthentication) getAuthentication();
-        return auth.getRole() == Admin.class;
+        return auth.getRole() == Admin.class && (long) auth.getPrincipal() == id;
     }
 
     public static void authLoginOrThrow() {

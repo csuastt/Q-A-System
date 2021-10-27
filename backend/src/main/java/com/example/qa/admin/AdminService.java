@@ -39,7 +39,7 @@ public class AdminService {
         return adminRepository.findAll(pageable);
     }
 
-    public Admin getById(long id, boolean allowDeleted) throws UsernameNotFoundException {
+    public Admin getById(long id, boolean allowDeleted) {
         Optional<Admin> adminOptional = adminRepository.findById(id);
         if (adminOptional.isEmpty()) {
             throw new UsernameNotFoundException(null);
@@ -51,7 +51,7 @@ public class AdminService {
         return admin;
     }
 
-    public Admin getByUsername(String username) throws UsernameNotFoundException {
+    public Admin getByUsername(String username) {
         Optional<Admin> adminOptional = adminRepository.findByUsername(username);
         if (adminOptional.isEmpty()) {
             throw new UsernameNotFoundException(null);
