@@ -13,9 +13,9 @@ const Logout: React.FC<{
     const { clearUser } = useContext(UserContext);
     const { clearManager } = useContext(ManagerContext);
     useEffect(() => {
-        if(props.isAdmin){
+        if (props.isAdmin) {
             adminAuthService.logout().then(clearManager);
-        }else{
+        } else {
             authService.logout().then(clearUser);
         }
     });

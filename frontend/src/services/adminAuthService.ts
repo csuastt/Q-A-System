@@ -1,7 +1,6 @@
 import axios from "axios";
-import {ManagerInfo,ManagerRole} from "./definations";
+import { ManagerInfo, ManagerRole } from "./definations";
 import managerService from "./managerService";
-
 
 class AdminAuthService {
     login(manager_name: string, password: string) {
@@ -16,7 +15,6 @@ class AdminAuthService {
                     "Bearer " + response.data.token;
             })
             .then(this.refreshToken);
-
     }
 
     logout() {
@@ -56,8 +54,6 @@ class AdminAuthService {
         localStorage.removeItem("token");
         delete axios.defaults.headers.common["Authorization"];
     }
-
-
 }
 const adminAuthService = new AdminAuthService();
 export default adminAuthService;

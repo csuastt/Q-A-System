@@ -1,4 +1,4 @@
-import React, {Component, useContext} from "react";
+import React, { Component, useContext } from "react";
 import AuthService from "../services/authService";
 import AdminAuthService from "../services/adminAuthService";
 import { Link as RouterLink, Redirect } from "react-router-dom";
@@ -35,9 +35,9 @@ export const validate_required = (value: any) => {
     }
 };
 // eslint-disable-next-line react-hooks/rules-of-hooks
-const managerContext =  useContext(ManagerContext)
+const managerContext = useContext(ManagerContext);
 // eslint-disable-next-line react-hooks/rules-of-hooks
-const userContext = useContext(UserContext)
+const userContext = useContext(UserContext);
 
 // 6 to 12 in length
 export const validate_length = (value: any) => {
@@ -70,7 +70,6 @@ interface LoginProps {
     isAdmin: boolean;
     redirect: string;
 }
-
 
 export default class Login extends Component<LoginProps, LoginState> {
     constructor(props: any) {
@@ -201,8 +200,6 @@ export default class Login extends Component<LoginProps, LoginState> {
                     }
                 );
             }
-
-
         }
     }
 

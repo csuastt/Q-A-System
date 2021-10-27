@@ -1,5 +1,10 @@
 import axios from "axios";
-import {UserBasicInfo, UserFullyInfo, UserInfo, UserInfoList} from "./definations";
+import {
+    UserBasicInfo,
+    UserFullyInfo,
+    UserInfo,
+    UserInfoList,
+} from "./definations";
 
 class UserService {
     getUserList(
@@ -62,8 +67,7 @@ class UserService {
         });
     }
     deleteUser(id: number) {
-        return axios.delete(`/users/${id}`, {
-        });
+        return axios.delete(`/users/${id}`, {});
     }
     modifyUserInfoByAdmin(info: UserInfo) {
         return axios.put(`/users/${info.id}`, {
@@ -77,8 +81,6 @@ class UserService {
             balance: info.balance,
         });
     }
-
-
 }
 
 const userService = new UserService();
