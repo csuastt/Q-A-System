@@ -21,12 +21,12 @@ import AdminAuthService from "../services/adminAuthService";
 
 // role options
 const manager_role_options = [
-    { value: "ADMIN", label: "管理员" },
-    { value: "REVIEWER", label: "审核员" },
+    { value: ManagerRole.ADMIN, label: "管理员" },
+    { value: ManagerRole.REVIEWER, label: "审核员" },
 ];
 
 export const validate_role = (value: any) => {
-    if (value.toString() !== "ADMIN" && value.toString() !== "REVIEWER") {
+    if (value.toString() !== ManagerRole.ADMIN && value.toString() !== ManagerRole.REVIEWER) {
         return "权限设置非法，选择Observer或者Auditor";
     } else {
         return "";
@@ -99,14 +99,16 @@ export default class ManageCreate extends Component<any, CreateState> {
         ) {
             // register request
             AdminAuthService.create(this.state.username, this.state.role).then(
-                () => {
+                (response) => {
                     // register success
-                    // alert
-                    this.setState({
-                        alert: true,
-                        alertType: "success",
-                        alertContent: "创建成功，请记住您的密码！",
-                    });
+                    if (response) {
+                        // alert
+                        this.setState({
+                            alert: true,
+                            alertType: "success",
+                            alertContent: "创建成功，请记住您的密码:"+response,
+                        });
+                    }
                 },
                 (error) => {
                     // show the error message
