@@ -40,9 +40,9 @@ export default function AppManage() {
             />,
         ],
         ["/admins/orders", <QuestionList />],
-        ["/admins/order/create/:answerer", <OrderCreationWizard />],
-        ["/admins/order/create", <OrderCreationWizard />],
+
         ["/admins/profile", <AccountProfile isAdmin={true} />],
+
 
         ["/admins/login", <Login redirect={"/"} isAdmin={true} />],
         ["/admins/logout", <Logout redirect={"/"} isAdmin={true} />],
