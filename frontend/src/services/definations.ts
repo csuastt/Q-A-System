@@ -1,4 +1,4 @@
-import {ZonedDateTime} from 'js-joda'
+import { ZonedDateTime } from "js-joda";
 export enum UserRole {
     USER = "USER",
     ANSWERER = "ANSWERER",
@@ -15,9 +15,9 @@ export enum UserType {
     Answerer,
 }
 export enum ManagerRole {
-    ADMIN="ADMIN",
-    REVIEWER="REVIEWER",
-    SUPER_ADMIN="SUPER_ADMIN",
+    ADMIN = "ADMIN",
+    REVIEWER = "REVIEWER",
+    SUPER_ADMIN = "SUPER_ADMIN",
 }
 
 export interface UserBasicInfo {
