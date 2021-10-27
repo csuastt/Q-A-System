@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UserBasicInfo, UserInfo, UserInfoList } from "./definations";
+import {UserBasicInfo, UserFullyInfo, UserInfo, UserInfoList} from "./definations";
 
 class UserService {
     getUserList(
@@ -44,7 +44,9 @@ class UserService {
     getUserInfo(id: number): Promise<UserInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
-
+    getUserFullyInfo(id: number): Promise<UserFullyInfo> {
+        return axios.get(`/users/${id}`).then((response) => response.data);
+    }
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
         return axios
             .get(`/users/${id}/basic`)
