@@ -1,5 +1,6 @@
 package com.example.qa.security;
 
+import com.example.qa.admin.model.Admin;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.user.model.User;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,14 @@ public class RestControllerAuthUtils {
         return getAuthentication() != null && getAuthentication().getClass() == UserAuthentication.class;
     }
 
+    public static boolean authIsUser() {
+        if (!authLogin()) {
+            return false;
+        }
+        UserAuthentication auth = (UserAuthentication) getAuthentication();
+        return auth.getRole() == User.class;
+    }
+
     public static boolean authIsUser(long id) {
         if (!authLogin()) {
             return false;
@@ -25,8 +34,25 @@ public class RestControllerAuthUtils {
         return auth.getRole() == User.class && (long) auth.getPrincipal() == id;
     }
 
+    public static long authGetUserId() {
+        UserAuthentication auth = (UserAuthentication) getAuthentication();
+        return (long) auth.getPrincipal();
+    }
+
     public static boolean authIsAdmin() {
-        return true;
+        if (!authLogin()) {
+            return false;
+        }
+        UserAuthentication auth = (UserAuthentication) getAuthentication();
+        return auth.getRole() == Admin.class;
+    }
+
+    public static boolean authIsAdmin(long id) {
+        if (!authLogin()) {
+            return false;
+        }
+        UserAuthentication auth = (UserAuthentication) getAuthentication();
+        return auth.getRole() == Admin.class;
     }
 
     public static void authLoginOrThrow() {

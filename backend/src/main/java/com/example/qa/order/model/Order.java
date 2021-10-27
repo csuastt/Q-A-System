@@ -1,6 +1,6 @@
 package com.example.qa.order.model;
 
-import com.example.qa.order.exchange.OrderEditData;
+import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.user.model.User;
 import lombok.*;
 
@@ -24,9 +24,11 @@ public class Order {
     private OrderState state = OrderState.CREATED;
     @Setter(AccessLevel.NONE)
     private boolean finished = false;
+    private boolean reviewed = false;
     private ZonedDateTime createTime;
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
     private String question;
+    private String answerSummary;
     private int price;
 
     public void setState(OrderState state) {
@@ -37,7 +39,7 @@ public class Order {
     }
 
     // 传 data 前先用 checkOrderData 检查
-    public Order(OrderEditData data, @NonNull User asker, @NonNull User answerer, boolean allProperties) {
+    public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {
         this.asker = asker;
         this.answerer = answerer;
         question = data.getQuestion();
@@ -46,14 +48,13 @@ public class Order {
         if (allProperties) {
             setState(data.getState());
             endReason = data.getEndReason() != null ? data.getEndReason() : endReason;
+            answerSummary = data.getAnswerSummary();
             price = data.getPrice() != null && data.getPrice() > 0 ? data.getPrice() : price;
         }
     }
 
     // 传 data 前先用 checkOrderData 检查，仅限管理员，默认所有修改
-    public void update(OrderEditData data, @NonNull User asker, @NonNull User answerer) {
-        this.asker = asker;
-        this.answerer = answerer;
+    public void update(OrderRequest data) {
         setState(data.getState());
         endReason = data.getEndReason() != null ? data.getEndReason() : endReason;
         question = data.getQuestion() != null ? data.getQuestion() : question;
