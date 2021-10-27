@@ -4,8 +4,6 @@ import { UserBasicInfo } from "../services/definations";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import userService from "../services/userService";
-import CardActionArea from "@mui/material/CardActionArea";
-import { Link as RouterLink } from "react-router-dom";
 
 export interface UserCardProps {
     userInfo?: UserBasicInfo;
