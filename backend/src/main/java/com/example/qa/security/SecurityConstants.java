@@ -1,6 +1,8 @@
 package com.example.qa.security;
 
 public final class SecurityConstants {
+    private SecurityConstants() {
+    }
 
     public static final String AUTH_LOGIN_URL = "/api/user/login";
 
@@ -15,7 +17,6 @@ public final class SecurityConstants {
     public static final String ROLE_USER = "user";
     public static final String ROLE_ADMIN = "admin";
 
-    private SecurityConstants() {
-        throw new IllegalStateException("Cannot create instance of static util class");
-    }
+    public static final String SUPER_ADMIN_USERNAME = "admin";
+    public static final String SUPER_ADMIN_PASSWORD = "password";
 }

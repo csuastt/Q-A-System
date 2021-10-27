@@ -10,10 +10,9 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
 
@@ -21,11 +20,11 @@ import static com.example.qa.security.RestControllerAuthUtils.*;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -33,11 +32,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void createUser(@RequestBody RegisterRequest registerRequest) {
         checkUserData(registerRequest);
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+        if (userService.existsByUsername(registerRequest.getUsername())) {
             throw new ApiException(HttpStatus.FORBIDDEN, "USERNAME_INVALID");
         }
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        userRepository.save(new User(registerRequest));
+        userService.save(new User(registerRequest));
     }
 
     @GetMapping
@@ -53,8 +52,7 @@ public class UserController {
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.USER_LIST_MAX_PAGE_SIZE);
         Pageable pageable = Pageable.ofSize(pageSize).withPage(page - 1);
-        Page<User> result =
-                role == null ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
+        Page<User> result = userService.listByRole(role, pageable);
         int userResponseLevel = authIsAdmin() ? 2 : 0;
         return new UserListResponse(result, userResponseLevel);
     }
@@ -86,7 +84,7 @@ public class UserController {
         }
         user.setDeleted(true);
         user.setUsername(user.getUsername() + "@" + user.getId());
-        userRepository.save(user);
+        userService.save(user);
     }
 
     @PutMapping("/{id}")
@@ -103,7 +101,7 @@ public class UserController {
             checkUserData(userRequest);
         }
         user.update(userRequest, isAdmin);
-        userRepository.save(user);
+        userService.save(user);
     }
 
     @PutMapping("/{id}/password")
@@ -114,11 +112,11 @@ public class UserController {
         authUserOrAdminOrThrow(id);
         validatePassword(changePasswordRequest.getPassword());
         User user = getUserOrThrow(id, false);
-        if (!authIsAdmin() && !passwordEncoder.matches(changePasswordRequest.getPassword(), user.getPassword())) {
+        if (!authIsAdmin() && !passwordEncoder.matches(changePasswordRequest.getOriginal(), user.getPassword())) {
             throw new ApiException(403, "WRONG_PASSWORD");
         }
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
-        userRepository.save(user);
+        userService.save(user);
     }
 
     @PostMapping("/{id}/apply")
@@ -133,7 +131,8 @@ public class UserController {
         }
         checkUserData(applyRequest);
         user.update(applyRequest);
-        userRepository.save(user);
+        user.setRole(UserRole.ANSWERER);
+        userService.save(user);
     }
 
     @PostMapping("/{id}/recharge")
@@ -145,19 +144,15 @@ public class UserController {
         User user = getUserOrThrow(id, false);
         checkRecharge(user.getBalance(), valueRequest.getValue());
         user.setBalance(user.getBalance() + valueRequest.getValue());
-        userRepository.save(user);
+        userService.save(user);
     }
 
-    public User getUserOrThrow(long id, boolean allowDeleted) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
+    private User getUserOrThrow(long id, boolean allowDeleted) {
+        try {
+            return userService.getById(id, allowDeleted);
+        } catch (UsernameNotFoundException e) {
             throw new ApiException(404);
         }
-        User user = userOptional.get();
-        if (user.isDeleted() && !allowDeleted) {
-            throw new ApiException(404);
-        }
-        return user;
     }
 
     public void validatePassword(String password) {

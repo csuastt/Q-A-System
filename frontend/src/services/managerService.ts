@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ManagerInfo, ManagerInfoList } from "./definations";
-import userService from "./userService";
 
 class ManagerService {
     getManagerList(

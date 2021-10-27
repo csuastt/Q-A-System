@@ -9,11 +9,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderEditData {
+public class OrderRequest {
     private Long asker;
     private Long answerer;
     private OrderState state;
     private OrderEndReason endReason;
     private String question;
+    private String answerSummary;
     private Integer price;
 }
