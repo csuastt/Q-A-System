@@ -7,7 +7,7 @@ import QuestionList from "./components/QuestionList";
 import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
 import Login from "./components/Login";
-import Register from "./components/Register";
+import Create from "./components/Create";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
 import React, { useEffect, useState } from "react";
@@ -46,7 +46,7 @@ export default function AppManage() {
 
         ["/admins/login", <Login redirect={"/"} isAdmin={true} />],
         ["/admins/logout", <Logout redirect={"/"} isAdmin={true} />],
-        ["/admins/register", <Register />],
+        ["/admins/create", <Create />],
         [
             "/admins/change_password",
             <ChangePassword
