@@ -45,7 +45,6 @@ export default function AppManage() {
         ["/admins/profile", <AccountProfile isAdmin={true} />],
 
         ["/admins/login", <Login redirect={"/"} isAdmin={true} />],
-
         ["/admins/logout", <Logout redirect={"/"} isAdmin={true} />],
         ["/admins/register", <Register />],
         [
