@@ -18,13 +18,14 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { validate_required } from "./Login";
 import userService from "../services/userService";
 import UserContext from "../UserContext";
+import { UserRole } from "../services/definations";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
     avatar: string | undefined;
     nickname: string | undefined;
     username: string | undefined;
-    permission: string | undefined;
+    role: UserRole | undefined;
     alertHandler: (
         arg1: "success" | "info" | "warning" | "error",
         arg2: string
@@ -146,7 +147,50 @@ export default class AccountBriefProfile extends Component<
                         },
                         (error) => {
                             // show the error message
-                            this.props.alertHandler("error", "网络错误");
+                            if (error.response.status === 403) {
+                                if (
+                                    error.response.data.message ===
+                                    "NO_PERMISSION"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "权限不足"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "ALREADY_ANSWERER"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "已经是回答者"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "DESCRIPTION_INVALID"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "个人介绍格式错误"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "PRICE_INVALID"
+                                ) {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "价格格式错误"
+                                    );
+                                } else {
+                                    this.props.alertHandler(
+                                        "error",
+                                        "服务器验证异常"
+                                    );
+                                }
+                            } else if (error.response.status === 401) {
+                                this.props.alertHandler("error", "尚未登录");
+                            } else {
+                                this.props.alertHandler("error", "网络错误");
+                            }
                         }
                     );
             }
@@ -168,7 +212,25 @@ export default class AccountBriefProfile extends Component<
                     },
                     (error) => {
                         // show the error message
-                        this.props.alertHandler("error", "网络错误");
+                        if (error.response.status === 403) {
+                            if (
+                                error.response.data.message === "PRICE_INVALID"
+                            ) {
+                                this.props.alertHandler(
+                                    "error",
+                                    "定价超过范围"
+                                );
+                            } else {
+                                this.props.alertHandler(
+                                    "error",
+                                    "服务器验证异常"
+                                );
+                            }
+                        } else if (error.response.status === 404) {
+                            this.props.alertHandler("error", "用户不存在");
+                        } else {
+                            this.props.alertHandler("error", "网络错误");
+                        }
                     }
                 );
             }
@@ -211,7 +273,7 @@ export default class AccountBriefProfile extends Component<
                                     color="textSecondary"
                                     variant="body1"
                                 >
-                                    {this.props.permission === "q"
+                                    {this.props.role === UserRole.USER
                                         ? "你还不是问答者，快去申请吧~"
                                         : "你已经是问答者了，快去回答问题吧~"}
                                 </Typography>
@@ -220,7 +282,7 @@ export default class AccountBriefProfile extends Component<
                     </CardContent>
                     <Divider />
                     <CardActions>
-                        {this.props.permission === "q" ? (
+                        {this.props.role === UserRole.USER ? (
                             <Button
                                 color="primary"
                                 fullWidth

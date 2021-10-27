@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { UserBasicInfo, UserType } from "../services/definations";
+import { UserBasicInfo, UserRole } from "../services/definations";
 import userService from "../services/userService";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -10,7 +10,7 @@ const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
     const [answerList, setAnswerList] = useState<Array<UserBasicInfo>>();
     useEffect(() => {
         userService.getUserList(true).then((list) => {
-            list.forEach((user) => (user.type = UserType.Answerer));
+            list.forEach((user) => (user.role = UserRole.ANSWERER));
             setAnswerList(list);
         });
     }, []);

@@ -1,17 +1,12 @@
 import axios from "axios";
-import { UserInfo } from "./definations";
-import userService from "./userService";
+import {ManagerInfo,ManagerRole} from "./definations";
+import managerService from "./managerService";
 
-class AuthService {
-    clearToken() {
-        localStorage.removeItem("token");
-        delete axios.defaults.headers.common["Authorization"];
-    }
-
-    login(username: string, password: string): Promise<UserInfo> {
+class AdminAuthService {
+    login(manager_name: string, password: string) {
         return axios
-            .post("/user/login", {
-                username: username,
+            .post("/admins/login", {
+                username: manager_name,
                 password: password,
             })
             .then((response) => {
@@ -20,42 +15,48 @@ class AuthService {
                     "Bearer " + response.data.token;
             })
             .then(this.refreshToken);
+
     }
 
     logout() {
-        return axios.post("/user/logout").finally(this.clearToken);
+        return axios.post("/admins/logout").finally(this.clearToken);
     }
 
-    register(username: string, email: string, password: string) {
-        return axios.post("/users", {
-            username: username,
-            password: password,
-            email: email,
+    create(manager_name: string, role: ManagerRole) {
+        return axios.post("/admins", {
+            username: manager_name,
+            role: role,
         });
     }
 
     modifyPassword(id: number, old_password: string, password: string) {
-        return axios.put(`/users/${id}/password`, {
+        return axios.put(`/admins/${id}/password`, {
             original: old_password,
             password: password,
         });
     }
 
-    refreshToken(): Promise<UserInfo> {
+    refreshToken(): Promise<ManagerInfo> {
         const storedToken: string | null = localStorage.getItem("token");
         if (storedToken) {
             axios.defaults.headers.common["Authorization"] =
                 "Bearer " + storedToken;
             try {
-                const user = JSON.parse(atob(storedToken.split(".")[1]));
-                return userService.getUserInfo(user["sub"]);
+                const manager = JSON.parse(atob(storedToken.split(".")[1]));
+                return managerService.getManagerInfo(manager["sub"]);
             } catch (e) {
                 this.clearToken();
             }
         }
         return Promise.reject(new Error("No token found"));
     }
-}
 
-const authService = new AuthService();
-export default authService;
+    clearToken() {
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
+    }
+
+
+}
+const adminAuthService = new AdminAuthService();
+export default new AdminAuthService();

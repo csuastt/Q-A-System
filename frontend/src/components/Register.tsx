@@ -164,11 +164,37 @@ export default class Register extends Component<any, RegisterState> {
                 (error) => {
                     // show the error message
                     if (error.response.status === 403) {
-                        this.setState({
-                            alert: true,
-                            alertType: "error",
-                            alertContent: "用户名已注册",
-                        });
+                        if (
+                            error.response.data.message === "USERNAME_INVALID"
+                        ) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "用户名已注册",
+                            });
+                        } else if (
+                            error.response.data.message === "PASSWORD_INVALID"
+                        ) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "密码格式错误",
+                            });
+                        } else if (
+                            error.response.data.message === "EMAIL_INVALID"
+                        ) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "邮箱格式错误",
+                            });
+                        } else {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "服务器验证异常",
+                            });
+                        }
                     } else {
                         this.setState({
                             alert: true,
