@@ -1,4 +1,4 @@
-package com.example.qa;
+package com.example.qa.test;
 
 import com.example.qa.order.OrderRepository;
 import com.example.qa.order.exchange.AcceptRequest;
