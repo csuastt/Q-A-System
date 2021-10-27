@@ -13,21 +13,6 @@ export interface UserCardProps {
     link?: boolean;
 }
 
-const CardWrapper: React.FC<{ link?: boolean; userId: number }> = (props) => {
-    return props.link ? (
-        <Card>
-            <CardActionArea
-                component={RouterLink}
-                to={`/profile/${props.userId}`}
-            >
-                {props.children}
-            </CardActionArea>
-        </Card>
-    ) : (
-        <Card>{props.children}</Card>
-    );
-};
-
 const UserCard: React.FC<UserCardProps> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
 

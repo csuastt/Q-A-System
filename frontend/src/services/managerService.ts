@@ -37,5 +37,5 @@ class ManagerService {
         return axios.delete(`/admins/${id}`, {});
     }
 }
-const managerService = new ManagerService();
+
 export default new ManagerService();
