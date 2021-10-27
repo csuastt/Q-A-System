@@ -25,11 +25,11 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
-    public User getById(long id) throws UsernameNotFoundException {
+    public User getById(long id) {
         return getById(id, false);
     }
 
-    public User getById(long id, boolean allowDeleted) throws UsernameNotFoundException {
+    public User getById(long id, boolean allowDeleted) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException(null);
@@ -41,7 +41,7 @@ public class UserService {
         return user;
     }
 
-    public User getByUsername(String username) throws UsernameNotFoundException {
+    public User getByUsername(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException(null);

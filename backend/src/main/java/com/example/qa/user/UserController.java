@@ -112,7 +112,7 @@ public class UserController {
         authUserOrAdminOrThrow(id);
         validatePassword(changePasswordRequest.getPassword());
         User user = getUserOrThrow(id, false);
-        if (!authIsAdmin() && !passwordEncoder.matches(changePasswordRequest.getPassword(), user.getPassword())) {
+        if (!authIsAdmin() && !passwordEncoder.matches(changePasswordRequest.getOriginal(), user.getPassword())) {
             throw new ApiException(403, "WRONG_PASSWORD");
         }
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
