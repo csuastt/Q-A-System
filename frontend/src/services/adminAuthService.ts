@@ -55,5 +55,5 @@ class AdminAuthService {
         delete axios.defaults.headers.common["Authorization"];
     }
 }
-const adminAuthService = new AdminAuthService();
+
 export default new AdminAuthService();

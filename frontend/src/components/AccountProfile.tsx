@@ -341,6 +341,14 @@ export default class AccountProfile extends Component<
                 (response) => {
                     if (response) {
                         this.context.setUser(response);
+                        const currentUser = this.context.user;
+
+                        this.setState({
+                            // token: authToken(),
+                            user: currentUser,
+                            userReady: true,
+                        });
+                        this.now_nickname = currentUser.nickname;
                     }
                 },
                 (error) => {
@@ -454,6 +462,7 @@ export default class AccountProfile extends Component<
                             redirectHandler={this.handleRedirect}
                             minPrice={this.state.minPrice}
                             maxPrice={this.state.maxPrice}
+                            fetchUserInfo={this.fetchUserInfo}
                         />
                     </Grid>
                 )}
