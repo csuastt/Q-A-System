@@ -35,6 +35,8 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import GroupIcon from "@mui/icons-material/Group";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import UserContext from "../UserContext";
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import { UserRole } from "../services/definations";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -187,6 +189,28 @@ const AppFrame: React.FC = (props) => {
         </List>
     );
 
+    const drawerList3: () => Array<[string, string, typeof SvgIcon]> = () => {
+        if (user == null) {
+            return [
+                ["回答者列表", "/answerers", GroupIcon],
+                ["提出问题", "/order/create", HelpOutlineIcon],
+            ];
+        }
+        if (user.role === UserRole.USER) {
+            return [
+                ["回答者列表", "/answerers", GroupIcon],
+                ["我的问题", "/orders", FormatListBulletedIcon],
+                ["提出问题", "/order/create", HelpOutlineIcon],
+            ];
+        }
+        return [
+            ["回答者列表", "/answerers", GroupIcon],
+            ["我提出的问题", "/orders", FormatListBulletedIcon],
+            ["我回答的问题", "/orders?answerer=true", RateReviewIcon],
+            ["提出问题", "/order/create", HelpOutlineIcon],
+        ];
+    };
+
     return (
         <Box sx={{ display: "flex" }}>
             <CssBaseline />
@@ -249,11 +273,7 @@ const AppFrame: React.FC = (props) => {
                           ]
                 )}
                 <Divider />
-                {renderDrawerList([
-                    ["回答者列表", "/answerers", GroupIcon],
-                    ["订单列表", "/orders", FormatListBulletedIcon],
-                    ["提出问题", "/order/create", HelpOutlineIcon],
-                ])}
+                {renderDrawerList(drawerList3())}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
