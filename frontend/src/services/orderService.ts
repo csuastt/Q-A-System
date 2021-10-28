@@ -3,14 +3,16 @@ import { CreationResult, OrderInfo, PagedList } from "./definations";
 
 class OrderService {
     getOrdersOfUser(
-        userId: number,
+        asker?: number,
+        answerer?: number,
         page?: number,
         prePage?: number
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
                 params: {
-                    asker: userId,
+                    asker: asker,
+                    answerer: answerer,
                     page: page,
                     pageSize: prePage,
                 },

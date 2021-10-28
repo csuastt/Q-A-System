@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import { OrderInfo, OrderList } from "../services/definations";
+import { OrderInfo, OrderList, UserRole } from "../services/definations";
 import questionService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -30,21 +30,28 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
     const { user } = useContext(UserContext);
 
     useEffect(() => {
-        let userId = props.userId;
-        if (userId === undefined) {
-            userId = user?.id;
-        }
-        if (userId === undefined) {
+        if (user == null) {
             setShouldRedirect("/login");
             return;
         }
-        questionService
-            .getOrdersOfUser(userId, currentPage, itemPrePage)
-            .then((response) => {
-                setQuestionList(response.data);
-                setMaxPage(response.totalPages);
-                setTotalCount(response.totalCount);
-            });
+        (user.role === UserRole.USER
+            ? questionService.getOrdersOfUser(
+                  user.id,
+                  undefined,
+                  currentPage,
+                  itemPrePage
+              )
+            : questionService.getOrdersOfUser(
+                  undefined,
+                  user.id,
+                  currentPage,
+                  itemPrePage
+              )
+        ).then((response) => {
+            setQuestionList(response.data);
+            setMaxPage(response.totalPages);
+            setTotalCount(response.totalCount);
+        });
     }, [currentPage, itemPrePage, props.userId, user?.id]);
 
     const onPageChanged = (newPage: number) => {
