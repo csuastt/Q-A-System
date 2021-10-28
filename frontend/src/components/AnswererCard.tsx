@@ -44,12 +44,16 @@ const AnswererCard: React.FC<{
     ) => {
         return wrapperProps.nextUrl ? (
             // If has nextUrl, Card will follow it
-            <CardActionArea component={RouterLink} to={wrapperProps.nextUrl}>
+            <CardActionArea
+                component={RouterLink}
+                to={wrapperProps.nextUrl}
+                sx={{ flex: 1 }}
+            >
                 {wrapperProps.children}
             </CardActionArea>
         ) : (
             // Or it will show answerer's detail dialog
-            <CardActionArea onClick={handleOpenDialog}>
+            <CardActionArea onClick={handleOpenDialog} sx={{ flex: 1 }}>
                 {wrapperProps.children}
             </CardActionArea>
         );
@@ -57,7 +61,7 @@ const AnswererCard: React.FC<{
 
     return userInfo ? (
         <>
-            <Card>
+            <Card sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
                 <CardActionWrapper nextUrl={props.nextUrl}>
                     <CardContent sx={{ paddingBottom: 0 }}>
                         <Box

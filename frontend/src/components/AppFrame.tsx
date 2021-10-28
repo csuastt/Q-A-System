@@ -34,12 +34,16 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import GroupIcon from "@mui/icons-material/Group";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 
 import AuthContext from "../AuthContext";
+
+import RateReviewIcon from "@mui/icons-material/RateReview";
+import { UserRole } from "../services/definations";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -192,6 +196,28 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
         </List>
     );
 
+    const drawerList3: () => Array<[string, string, typeof SvgIcon]> = () => {
+        if (user == null) {
+            return [
+                ["回答者列表", "/answerers", GroupIcon],
+                ["提出问题", "/order/create", HelpOutlineIcon],
+            ];
+        }
+        if (user.role === UserRole.USER) {
+            return [
+                ["回答者列表", "/answerers", GroupIcon],
+                ["我的问题", "/orders", FormatListBulletedIcon],
+                ["提出问题", "/order/create", HelpOutlineIcon],
+            ];
+        }
+        return [
+            ["回答者列表", "/answerers", GroupIcon],
+            ["我提出的问题", "/orders", FormatListBulletedIcon],
+            ["我回答的问题", "/orders?answerer=true", RateReviewIcon],
+            ["提出问题", "/order/create", HelpOutlineIcon],
+        ];
+    };
+
     return (
         <Box sx={{ display: "flex" }}>
             <CssBaseline />{" "}
@@ -306,21 +332,15 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ]
                 )}
                 <Divider />
-                {renderDrawerList(
-                    props.isAdmin
-                        ? [
-                              ["审核列表", "/admins/review", FactCheckIcon],
-                              ["用户列表", "/admins/users", GroupIcon],
-                              ["回答者列表", "/admins/answerers", SchoolIcon],
-                              ["订单列表", "/admins/orders", LibraryBooksIcon],
-                              ["系统参数", "/admins/settings", SettingsIcon],
-                          ]
-                        : [
-                              ["回答者列表", "/answerers", GroupIcon],
-                              ["订单列表", "/orders", FormatListBulletedIcon],
-                              ["提出问题", "/order/create", HelpOutlineIcon],
-                          ]
-                )}
+                {props.isAdmin
+                    ? renderDrawerList([
+                          ["审核列表", "/admins/review", FactCheckIcon],
+                          ["用户列表", "/admins/users", GroupIcon],
+                          ["回答者列表", "/admins/answerers", SchoolIcon],
+                          ["订单列表", "/admins/orders", LibraryBooksIcon],
+                          ["系统参数", "/admins/settings", SettingsIcon],
+                      ])
+                    : renderDrawerList(drawerList3())}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
