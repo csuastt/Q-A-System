@@ -31,7 +31,6 @@ export default function AppManage() {
     }, []);
 
     const routes = [
-        ["/admins/answerers/select", <AnswererList selectModel />],
         ["/admins/answerers", <AnswererList />],
         [
             "/admins/orders/:orderId",
@@ -70,7 +69,7 @@ export default function AppManage() {
             }}
         >
             <BrowserRouter>
-                <AppFrame>
+                <AppFrame isAdmin={true}>
                     <Container maxWidth="md">
                         <Switch>
                             {routes.map((routeItem) => {

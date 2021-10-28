@@ -35,6 +35,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import GroupIcon from "@mui/icons-material/Group";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import UserContext from "../UserContext";
+import ManagerContext from "../ManagerContext";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -149,9 +150,10 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const AppFrame: React.FC = (props) => {
+const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const { user } = useContext(UserContext);
+    const { manager } = useContext(ManagerContext);
 
     const theme = useTheme();
 
@@ -189,41 +191,75 @@ const AppFrame: React.FC = (props) => {
 
     return (
         <Box sx={{ display: "flex" }}>
-            <CssBaseline />
-            <AppBar open={drawerOpen}>
-                <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        sx={{ mr: 5, ...(drawerOpen && { display: "none" }) }}
-                        onClick={handleDrawerOpen}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: "none", sm: "block" },
-                        }}
-                    >
-                        付费问答系统
-                    </Typography>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="搜索问题…"
-                            inputProps={{ "aria-label": "search" }}
-                        />
-                    </Search>
-                </Toolbar>
-            </AppBar>
+            <CssBaseline />{" "}
+            {props.isAdmin ? (
+                <AppBar open={drawerOpen} style={{ background: "#714288" }}>
+                    <Toolbar>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            sx={{
+                                mr: 5,
+                                ...(drawerOpen && { display: "none" }),
+                            }}
+                            onClick={handleDrawerOpen}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: "none", sm: "block" },
+                            }}
+                        >
+                            付费问答管理员系统
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+            ) : (
+                <AppBar open={drawerOpen}>
+                    <Toolbar>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            sx={{
+                                mr: 5,
+                                ...(drawerOpen && { display: "none" }),
+                            }}
+                            onClick={handleDrawerOpen}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: "none", sm: "block" },
+                            }}
+                        >
+                            付费问答系统
+                        </Typography>
+                        <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="搜索问题…"
+                                inputProps={{ "aria-label": "search" }}
+                            />
+                        </Search>
+                    </Toolbar>
+                </AppBar>
+            )}
             <Drawer variant="permanent" open={drawerOpen}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>

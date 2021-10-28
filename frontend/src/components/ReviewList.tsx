@@ -17,7 +17,7 @@ const ReviewList: React.FC<{ selectModel?: boolean }> = (props) => {
 
     const renderPlaceholder = () => (
         <ListItem alignItems="flex-start">
-            <Grid container  justifyContent={"flex-end"}>
+            <Grid container justifyContent={"flex-end"}>
                 <Grid item xs={8}>
                     <ListItemText
                         primary={"2333"}
@@ -26,41 +26,40 @@ const ReviewList: React.FC<{ selectModel?: boolean }> = (props) => {
                 </Grid>
                 <Grid item xs={4}>
                     <ListItem alignItems="center">
-                            <Grid item xs={4}>
-                                <Button
-                                    size="small"
-                                    color="success"
-                                    variant="outlined"
-                                    component={RouterLink}
-                                    to="/manager"
-                                >
-                                    通过
-                                </Button>
-                            </Grid>
+                        <Grid item xs={4}>
+                            <Button
+                                size="small"
+                                color="success"
+                                variant="outlined"
+                                component={RouterLink}
+                                to="/manager"
+                            >
+                                通过
+                            </Button>
+                        </Grid>
 
-                            <Grid item xs={4}>
-                                <Button
-                                    size="small"
-                                    color="error"
-                                    variant="outlined"
-                                    component={RouterLink}
-                                    to="/manager"
-                                >
-                                    驳回
-                                </Button>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Button
-                                    size="small"
-                                    color="info"
-                                    variant="outlined"
-                                    component={RouterLink}
-                                    to="/manager"
-                                >
-                                    详情
-                                </Button>
-                            </Grid>
-
+                        <Grid item xs={4}>
+                            <Button
+                                size="small"
+                                color="error"
+                                variant="outlined"
+                                component={RouterLink}
+                                to="/manager"
+                            >
+                                驳回
+                            </Button>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Button
+                                size="small"
+                                color="info"
+                                variant="outlined"
+                                component={RouterLink}
+                                to="/manager"
+                            >
+                                详情
+                            </Button>
+                        </Grid>
                     </ListItem>
                 </Grid>
             </Grid>
@@ -86,7 +85,7 @@ const ReviewList: React.FC<{ selectModel?: boolean }> = (props) => {
                         <Divider variant="inset" component="li" key={index} />
                     ) : (
                         <ListItem alignItems="flex-start">
-                            <Grid container  justifyContent={"flex-end"}>
+                            <Grid container justifyContent={"flex-end"}>
                                 <Grid item xs={8}>
                                     <ListItemText
                                         primary={order.id.toString()}
@@ -129,7 +128,6 @@ const ReviewList: React.FC<{ selectModel?: boolean }> = (props) => {
                                                 详情
                                             </Button>
                                         </Grid>
-
                                     </ListItem>
                                 </Grid>
                             </Grid>

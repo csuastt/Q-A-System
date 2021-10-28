@@ -68,7 +68,7 @@ export default function App() {
             }}
         >
             <BrowserRouter>
-                <AppFrame>
+                <AppFrame isAdmin={false}>
                     <Container maxWidth="md">
                         <Switch>
                             {routes.map((routeItem) => {
