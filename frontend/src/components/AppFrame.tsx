@@ -34,6 +34,11 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import GroupIcon from "@mui/icons-material/Group";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
+import SchoolIcon from '@mui/icons-material/School';
+
 import UserContext from "../UserContext";
 import ManagerContext from "../ManagerContext";
 
@@ -271,10 +276,28 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                {renderDrawerList([["主页", "/", HomeIcon]])}
+                {renderDrawerList(
+                    props.isAdmin
+                        ? [["管理员主页", "/admins/", HomeIcon]]
+                        : [["主页", "/", HomeIcon]]
+                )}
                 <Divider />
                 {renderDrawerList(
-                    user
+                    props.isAdmin
+                        ? manager
+                            ? [
+                                  [
+                                      "管理员信息",
+                                      "/admins/profile",
+                                      AccountCircleIcon,
+                                  ],
+                                  ["登出", "/admins/logout", LogoutIcon],
+                              ]
+                            : [
+                                  ["登录", "/admins/login", LoginIcon],
+                                  ["创建", "/admins/create", PersonAddIcon],
+                              ]
+                        : user
                         ? [
                               ["个人信息", "/profile", AccountCircleIcon],
                               ["登出", "/logout", LogoutIcon],
@@ -285,11 +308,21 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ]
                 )}
                 <Divider />
-                {renderDrawerList([
-                    ["回答者列表", "/answerers", GroupIcon],
-                    ["订单列表", "/orders", FormatListBulletedIcon],
-                    ["提出问题", "/order/create", HelpOutlineIcon],
-                ])}
+                {renderDrawerList(
+                    props.isAdmin
+                        ? [
+                              ["审核列表", "/admins/review", FactCheckIcon],
+                              ["用户列表", "/admins/users", GroupIcon],
+                              ["回答者列表", "/admins/answerers", SchoolIcon],
+                              ["订单列表", "/admins/orders", LibraryBooksIcon],
+                          ]
+                        : [
+                              ["回答者列表", "/answerers", GroupIcon],
+                              ["订单列表", "/orders", FormatListBulletedIcon],
+                              ["提出问题", "/order/create", HelpOutlineIcon],
+                          ]
+                )}
+                <Divider />
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
