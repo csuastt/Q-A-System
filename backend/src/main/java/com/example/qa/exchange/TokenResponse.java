@@ -1,4 +1,4 @@
-package com.example.qa.user.exchange;
+package com.example.qa.exchange;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

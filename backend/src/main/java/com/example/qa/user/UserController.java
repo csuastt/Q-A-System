@@ -2,6 +2,7 @@ package com.example.qa.user;
 
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
+import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;

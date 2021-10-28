@@ -1,4 +1,4 @@
-package com.example.qa;
+package com.example.qa.test;
 
 import com.example.qa.order.OrderRepository;
 import com.example.qa.order.exchange.AcceptRequest;
@@ -6,9 +6,9 @@ import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserRepository;
-import com.example.qa.user.exchange.LoginRequest;
+import com.example.qa.exchange.LoginRequest;
 import com.example.qa.user.exchange.RegisterRequest;
-import com.example.qa.user.exchange.TokenResponse;
+import com.example.qa.exchange.TokenResponse;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -230,6 +230,34 @@ class OrderControllerTest {
     }
 
     @Test
+    void payOrder() throws Exception {
+        long id = createOrder();
+        mockMvc.perform(post("/api/orders/" + id + "/pay")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+        assertEquals(query(id).getState(), OrderState.PAYED);
+    }
+
+    @Test
+    void payInvalidOrder() throws Exception {
+        long id = createOrder();
+        mockMvc.perform(post("/api/orders/" + id + "/pay"))
+                .andExpect(status().isUnauthorized());
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.REVIEWED);
+        edit(id, request);
+        mockMvc.perform(post("/api/orders/" + id + "/pay")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+        request.setState(OrderState.CREATED);
+        request.setPrice(Integer.MAX_VALUE);
+        edit(id, request);
+        mockMvc.perform(post("/api/orders/" + id + "/pay")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void endOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
@@ -250,12 +278,69 @@ class OrderControllerTest {
     }
 
     @Test
+    void cancelOrder() throws Exception {
+        long id = createOrder();
+        mockMvc.perform(post("/api/orders/" + id + "/cancel")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.PAYED);
+        edit(id, request);
+        mockMvc.perform(post("/api/orders/" + id + "/cancel")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+        request.setState(OrderState.REVIEWED);
+        edit(id, request);
+        mockMvc.perform(post("/api/orders/" + id + "/cancel")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+        assertEquals(query(id).getState(), OrderState.CANCELLED);
+    }
+
+    @Test
+    void cancelInvalidOrder() throws Exception {
+        long id = createOrder();
+        mockMvc.perform(post("/api/orders/" + id + "/cancel"))
+                .andExpect(status().isUnauthorized());
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.ACCEPTED);
+        edit(id, request);
+        mockMvc.perform(post("/api/orders/" + id + "/cancel")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void queryOrderList() throws Exception {
         createOrder();
-        MvcResult mvcResult = mockMvc
+        mockMvc
                 .perform(get("/api/orders?asker=" + askerId)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
+                .andReturn();
+        mockMvc
+                .perform(get("/api/orders?asker=" + Long.MAX_VALUE)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andReturn();
+        mockMvc
+                .perform(get("/api/orders?answerer=" + askerId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        mockMvc
+                .perform(get("/api/orders?answerer=" + Long.MAX_VALUE)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andReturn();
+        mockMvc
+                .perform(get("/api/orders")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andReturn();
+        mockMvc
+                .perform(get("/api/orders"))
+                .andExpect(status().isUnauthorized())
                 .andReturn();
     }
 
