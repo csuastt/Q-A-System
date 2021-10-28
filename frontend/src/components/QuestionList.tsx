@@ -12,16 +12,20 @@ import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
 import Stack from "@mui/material/Stack";
 import UserContext from "../UserContext";
 import CardActionArea from "@mui/material/CardActionArea";
-import Pagination, { usePagination } from "./Pagination";
+import Pagination from "./Pagination";
 
 const QuestionList: React.FC<{ userId?: number }> = (props) => {
     const query = useQuery();
     const [questionList, setQuestionList] = useState<OrderList>();
     const [shouldRedirect, setShouldRedirect] = useState<string>();
-    const paginationInfo = usePagination(
-        parseIntWithDefault(query.get("page"), 1),
+    const [currentPage, setCurrentPage] = useState(
+        parseIntWithDefault(query.get("page"), 1)
+    );
+    const [itemPrePage] = useState(
         parseIntWithDefault(query.get("prepage"), 20)
     );
+    const [maxPage, setMaxPage] = useState(currentPage);
+    const [totalCount, setTotalCount] = useState(0);
 
     const { user } = useContext(UserContext);
 
@@ -35,21 +39,16 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
             return;
         }
         questionService
-            .getOrdersOfUser(
-                userId,
-                paginationInfo.currentPage,
-                paginationInfo.itemPrePage
-            )
+            .getOrdersOfUser(userId, currentPage, itemPrePage)
             .then((response) => {
                 setQuestionList(response.data);
-                paginationInfo.applyPagedList(response);
+                setMaxPage(response.totalPages);
+                setTotalCount(response.totalCount);
             });
-    }, [paginationInfo, props.userId, user?.id]);
+    }, [currentPage, itemPrePage, props.userId, user?.id]);
 
     const onPageChanged = (newPage: number) => {
-        setShouldRedirect(
-            `/orders?page=${newPage}&prepage=${paginationInfo.itemPrePage}`
-        );
+        setCurrentPage(newPage);
     };
 
     const renderCardPlaceholder = () => (
@@ -138,8 +137,14 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
                     </CardActionArea>
                 </Card>
             ))}
-            {paginationInfo.maxPage > 1 && (
-                <Pagination {...paginationInfo} onPageChanged={onPageChanged} />
+            {maxPage > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    maxPage={maxPage}
+                    totalCount={totalCount}
+                    itemPrePage={itemPrePage}
+                    onPageChanged={onPageChanged}
+                />
             )}
         </>
     );
@@ -154,7 +159,7 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
             </Stack>
         );
     }
-    if (questionList.length === 0) {
+    if (totalCount === 0) {
         return (
             <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
                 没有订单

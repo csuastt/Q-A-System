@@ -6,35 +6,33 @@ import Grid from "@mui/material/Grid";
 import AnswererCard from "./AnswererCard";
 import Typography from "@mui/material/Typography";
 import { parseIntWithDefault, useQuery } from "../util";
-import Pagination, { usePagination } from "./Pagination";
-import { Redirect } from "react-router-dom";
+import Pagination from "./Pagination";
 
 const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
     const query = useQuery();
     const [answerList, setAnswerList] = useState<Array<UserBasicInfo>>();
-    const [shouldRedirect, setShouldRedirect] = useState<string>();
-    const paginationInfo = usePagination(
-        parseIntWithDefault(query.get("page"), 1),
+    const [currentPage, setCurrentPage] = useState(
+        parseIntWithDefault(query.get("page"), 1)
+    );
+    const [itemPrePage] = useState(
         parseIntWithDefault(query.get("prepage"), 20)
     );
+    const [maxPage, setMaxPage] = useState(currentPage);
+    const [totalCount, setTotalCount] = useState(0);
 
     useEffect(() => {
-        userService.getUserList(true).then((list) => {
+        userService.getUserList(true, currentPage, itemPrePage).then((list) => {
             list.data.forEach((user) => (user.role = UserRole.ANSWERER));
             setAnswerList(list.data);
-            paginationInfo.applyPagedList(list);
+            setMaxPage(list.totalPages);
+            setTotalCount(list.totalCount);
         });
-    }, [paginationInfo]);
+    }, [currentPage, itemPrePage]);
 
     const onPageChanged = (newPage: number) => {
-        setShouldRedirect(
-            `/answerers?page=${newPage}&prepage=${paginationInfo.itemPrePage}`
-        );
+        setCurrentPage(newPage);
     };
 
-    if (shouldRedirect) {
-        return <Redirect to={shouldRedirect} />;
-    }
     if (answerList == null) {
         return (
             <Box sx={{ pt: 3 }} mt={1}>
@@ -46,7 +44,7 @@ const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
             </Box>
         );
     }
-    if (answerList.length === 0) {
+    if (totalCount === 0) {
         return (
             <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
                 没有可用的回答者
@@ -55,7 +53,7 @@ const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
     }
     return (
         <Box sx={{ pt: 3 }} mt={1}>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} marginBottom={3}>
                 {answerList.map((user: UserBasicInfo, index: number) => (
                     <Grid item key={index} lg={4} md={6} xs={12}>
                         <AnswererCard
@@ -69,8 +67,14 @@ const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
                     </Grid>
                 ))}
             </Grid>
-            {paginationInfo.maxPage > 1 && (
-                <Pagination {...paginationInfo} onPageChanged={onPageChanged} />
+            {maxPage > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    maxPage={maxPage}
+                    totalCount={totalCount}
+                    itemPrePage={itemPrePage}
+                    onPageChanged={onPageChanged}
+                />
             )}
         </Box>
     );
