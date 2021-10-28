@@ -109,8 +109,6 @@ export interface OrderInfo {
     price: number;
 }
 
-export type OrderList = Array<OrderInfo>;
-
 export enum CreationResultType {
     SUCCESS,
     INVALID_INPUT,

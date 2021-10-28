@@ -6,7 +6,8 @@ class OrderService {
         asker?: number,
         answerer?: number,
         page?: number,
-        prePage?: number
+        prePage?: number,
+        finished?: boolean
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
@@ -15,6 +16,7 @@ class OrderService {
                     answerer: answerer,
                     page: page,
                     pageSize: prePage,
+                    finished: finished,
                 },
             })
             .then((response) => response.data);

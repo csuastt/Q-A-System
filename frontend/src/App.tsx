@@ -3,7 +3,6 @@ import UserContext from "./UserContext";
 import AppFrame from "./components/AppFrame";
 import { Container } from "@mui/material";
 import Welcome from "./components/Welcome";
-import QuestionList from "./components/QuestionList";
 import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
 import Login from "./components/Login";
@@ -16,6 +15,7 @@ import { UserInfo } from "./services/definations";
 import authService from "./services/authService";
 import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
+import UserOrderList from "./components/UserOrderList";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
@@ -39,7 +39,7 @@ export default function App() {
                 C={OrderDetail}
             />,
         ],
-        ["/orders", <QuestionList />],
+        ["/orders", <UserOrderList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile isAdmin={false} />],
