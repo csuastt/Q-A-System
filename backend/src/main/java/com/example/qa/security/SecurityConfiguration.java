@@ -22,7 +22,6 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .anyRequest().permitAll()
                 .and()
-                .antMatcher("/h2-console/**")
                 .headers().frameOptions().disable()
                 .and()
                 .addFilter(new JwtAuthorizationFilter(authenticationManager()))
