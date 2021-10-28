@@ -86,9 +86,9 @@ class AdminBeanTest {
         admin.setUsername(Username);
         admin.setCreateTime(CreateTime);
         admin.setRole(Role);
-        assertEquals(adminId, admin.getId());
-        assertEquals(adminUsername, admin.getUsername());
-        assertEquals(adminCreateTime, admin.getCreateTime());
-        assertEquals(adminRole, admin.getRole());
+        assertEquals(Id, admin.getId());
+        assertEquals(Username, admin.getUsername());
+        assertEquals(CreateTime, admin.getCreateTime());
+        assertEquals(Role, admin.getRole());
     }
 }
