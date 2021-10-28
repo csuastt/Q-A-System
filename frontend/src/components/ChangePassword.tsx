@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import authService from "../services/auth.service";
+
+import authService from "../services/authService";
+import adminAuthService from "../services/adminAuthService";
 // mui
 import Snackbar from "@mui/material/Snackbar";
 import Avatar from "@mui/material/Avatar";
@@ -81,6 +83,14 @@ export default class ChangePassword extends Component<
             // todo
             // you need to init admin id first
             // refer to what I've done below
+            const currentManager = this.context.manager;
+            if (!currentManager) {
+                console.error("Try to change password without login!");
+                return;
+            }
+            this.setState({
+                id: currentManager.id,
+            });
         } else {
             const currentUser = this.context.user;
 
@@ -146,7 +156,7 @@ export default class ChangePassword extends Component<
             let service;
             if (this.props.isAdmin) {
                 // todo substitute it with admin service
-                service = authService;
+                service = adminAuthService;
             } else {
                 service = authService;
             }
@@ -175,10 +185,49 @@ export default class ChangePassword extends Component<
                     (error) => {
                         // show the error message
                         if (error.response.status === 403) {
+                            if (
+                                error.response.data.message === "WRONG_PASSWORD"
+                            ) {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "原密码错误",
+                                });
+                            } else if (
+                                error.response.data.message === "NO_PERMISSION"
+                            ) {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "权限不足",
+                                });
+                            } else if (
+                                error.response.data.message ===
+                                "PASSWORD_INVALID"
+                            ) {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "新密码格式错误",
+                                });
+                            } else {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "服务器验证异常",
+                                });
+                            }
+                        } else if (error.response.status === 401) {
                             this.setState({
                                 alert: true,
                                 alertType: "error",
-                                alertContent: "原密码不正确",
+                                alertContent: "尚未登录",
+                            });
+                        } else if (error.response.status === 404) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "用户不存在",
                             });
                         } else {
                             this.setState({

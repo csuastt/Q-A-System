@@ -1,23 +1,23 @@
 import React, { useContext, useState } from "react";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
 import CircularProgress from "@mui/material/CircularProgress";
 import Step from "@mui/material/Step";
 import Stepper from "@mui/material/Stepper";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import Typography from "@mui/material/Typography";
-import UserCard from "./UserCard";
+import AnswererCard from "./AnswererCard";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
-import questionService from "../services/order.service";
+import questionService from "../services/orderService";
 import { CreationResult } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import UserContext from "../UserContext";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 function processInt(str?: string): number {
     if (str) {
@@ -80,13 +80,50 @@ const OrderCreationWizard: React.FC = (props) => {
     const renderResult = () => {
         if (result) {
             if (result.state === "CREATED") {
-                return <Alert severity="success">您的问题已经创建成功！</Alert>;
+                return (
+                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                        <CheckCircleOutlineIcon
+                            color="success"
+                            sx={
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                          fontSize: 60,
+                                          marginLeft: 8,
+                                      }
+                            }
+                        />
+                        <Typography
+                            variant={matches ? "h5" : "h6"}
+                            mt={1}
+                            mb={matches ? 4 : 2}
+                        >
+                            {"您的问题已经创建成功"}
+                        </Typography>
+                    </Box>
+                );
             } else {
                 return (
-                    <Alert severity="error">
-                        <AlertTitle>问题创建出错</AlertTitle>
-                        {result.err_msg}
-                    </Alert>
+                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                        <ErrorOutlineIcon
+                            color="error"
+                            sx={
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                          fontSize: 60,
+                                          marginLeft: 7,
+                                      }
+                            }
+                        />
+                        <Typography
+                            variant={matches ? "h5" : "h6"}
+                            mt={1}
+                            mb={matches ? 4 : 2}
+                        >
+                            {"您的问题创建出错"}
+                        </Typography>
+                    </Box>
                 );
             }
         } else {
@@ -115,7 +152,7 @@ const OrderCreationWizard: React.FC = (props) => {
     const renderFirstStep = () => {
         return answerer >= 0 ? (
             <>
-                <UserCard userId={answerer} />
+                <AnswererCard userId={answerer} />
                 <Stack
                     spacing={matches ? 4 : 2}
                     direction="row"
@@ -165,16 +202,35 @@ const OrderCreationWizard: React.FC = (props) => {
             </>
         ) : (
             <>
-                <Typography variant="subtitle1">您还没有选择回答者</Typography>
-                <Button
-                    variant="outlined"
-                    color="warning"
-                    component={RouterLink}
-                    to={`/answerers/select`}
-                    size={matches ? "large" : "medium"}
-                >
-                    浏览列表
-                </Button>
+                <Box textAlign={matches ? "center" : "start"} mt={1}>
+                    <ErrorOutlineIcon
+                        color="warning"
+                        sx={
+                            matches
+                                ? { fontSize: 80 }
+                                : {
+                                      fontSize: 60,
+                                      marginLeft: 7.5,
+                                  }
+                        }
+                    />
+                    <Typography
+                        variant={matches ? "h5" : "h6"}
+                        mt={1}
+                        mb={matches ? 4 : 2}
+                    >
+                        {"您还没有选择回答者"}
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        color="warning"
+                        component={RouterLink}
+                        to={`/answerers/select`}
+                        size={matches ? "large" : "medium"}
+                    >
+                        浏览列表
+                    </Button>
+                </Box>
             </>
         );
     };

@@ -9,12 +9,12 @@ import Skeleton from "@mui/material/Skeleton";
 import _ from "lodash";
 import { Divider } from "@mui/material";
 
-const UserList: React.FC<{ type: string }> = (props) => {
+const UserList: React.FC<{ type?: string }> = (props) => {
     const [userList] = useState<Array<UserInfo>>();
     useEffect(() => {
         // TODO: Unsupported api
         // userService
-        //     .get_users_of_type(props.type)
+        //     .get_users_of_type(props.role)
         //     .then((list) => setUserList(list));
     }, []);
 
@@ -41,10 +41,7 @@ const UserList: React.FC<{ type: string }> = (props) => {
                     ) : (
                         <ListItem alignItems="flex-start" key={index}>
                             <ListItemAvatar>
-                                <Avatar
-                                    alt={user.username}
-                                    src={user.ava_url}
-                                />
+                                <Avatar alt={user.username} src={user.avatar} />
                             </ListItemAvatar>
                             <ListItemText
                                 primary={user.username}

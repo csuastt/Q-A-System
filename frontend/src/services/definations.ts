@@ -1,15 +1,43 @@
+import { ZonedDateTime } from "js-joda";
+export enum UserRole {
+    USER = "USER",
+    ANSWERER = "ANSWERER",
+}
+
+export enum UserGender {
+    FEMALE = "FEMALE",
+    MALE = "MALE",
+    UNKNOWN = "UNKNOWN",
+}
+
 export enum UserType {
     Normal,
     Answerer,
+}
+export enum ManagerRole {
+    ADMIN = "ADMIN",
+    REVIEWER = "REVIEWER",
+    SUPER_ADMIN = "SUPER_ADMIN",
 }
 
 export interface UserBasicInfo {
     id: number;
     username: string;
     nickname: string;
-    ava_url: string;
+    avatar: string;
     description: string;
-    type: UserType;
+    price: number;
+    role: UserRole;
+}
+export type ManagerInfoList = Array<ManagerInfo>;
+
+export interface ManagerInfo {
+    id: number;
+    username: string;
+    password: string;
+    deleted: boolean;
+    role: ManagerRole;
+    createTime: ZonedDateTime;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
@@ -18,15 +46,14 @@ export interface UserInfo {
     id: number;
     username: string;
     nickname: string;
-    ava_url: string;
-    sign_up_timestamp: number;
+    avatar: string;
     email: string;
     phone: string;
-    gender: string;
-    permission: string;
-    money: number;
+    price: number;
+    gender: UserGender;
+    balance: number;
     description: string;
-    type: UserType;
+    role: UserRole;
 }
 
 export interface UserFullyInfo {
@@ -34,28 +61,39 @@ export interface UserFullyInfo {
     username: string;
     password: string;
     nickname: string;
-    ava_url: string;
+    avatar: string;
     sign_up_timestamp: number;
     email: string;
     phone: string;
-    gender: string;
-    permission: string;
-    money: number;
+    gender: UserGender;
+    balance: number;
     description: string;
     price: number;
-    type: UserType;
+    role: UserRole;
 }
 
 export enum OrderState {
-    WAITING_FOR_REVIEW,
+    CREATED,
+    PAYED,
+    PAY_TIMEOUT,
+    REVIEWED,
     REJECTED_BY_REVIEWER,
-    WAITING_TO_BE_ACCEPTED,
+    ACCEPTED,
     REJECTED_BY_ANSWERER,
-    WAITING_FOR_INITIAL_ANSWER,
-    COMMUNICATING,
-    CANCELLED,
-    SOLVED,
-    TRANSACTION_COMPLETE,
+    RESPOND_TIMEOUT,
+    ANSWERED,
+    ANSWER_TIMEOUT,
+    CHAT_ENDED,
+    FULFILLED,
+}
+
+export enum OrderEndReason {
+    UNKNOWN,
+    ASKER,
+    ANSWERER,
+    TIME_LIMIT,
+    MESSAGE_LIMIT,
+    SYSTEM,
 }
 
 export interface OrderInfo {
@@ -65,7 +103,10 @@ export interface OrderInfo {
     answerer: UserBasicInfo;
     question: string;
     createTime: string;
-    endReason: string;
+    endReason: OrderEndReason;
+    finished: boolean;
+    deleted: boolean;
+    answerSummary: boolean;
     price: number;
 }
 
@@ -81,4 +122,12 @@ export interface CreationResult {
     state: string;
     created_id: number;
     err_msg?: string;
+}
+
+export interface PagedList<T> {
+    data: Array<T>;
+    pageSize: number;
+    page: number;
+    totalPages: number;
+    totalCount: number;
 }

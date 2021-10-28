@@ -1,8 +1,13 @@
 import React, { Component } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import userService from "../services/user.service";
+import userService from "../services/userService";
 import AccountBriefProfile from "./AccountBriefProfile";
-import { UserFullyInfo, UserInfo } from "../services/definations";
+import {
+    UserFullyInfo,
+    UserGender,
+    UserInfo,
+    UserRole,
+} from "../services/definations";
 // mui
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -19,6 +24,13 @@ import Snackbar from "@mui/material/Snackbar";
 import { validate_length, validate_required } from "./Login";
 import { validate_email } from "./Register";
 import UserContext from "../UserContext";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import AddIcon from "@mui/icons-material/Add";
+import { IconButton } from "@mui/material";
 
 // state interface
 interface ProfileState {
@@ -34,6 +46,9 @@ interface ProfileState {
     error_msg_username: string;
     error_msg_password: string;
     error_msg_email: string;
+    error_msg_money: string;
+    money: number;
+    openRechargeDialog: boolean;
 }
 
 // props interface
@@ -43,15 +58,15 @@ interface ProfileProps {
 
 // gender options
 const gender_options = [
-    { value: "female", label: "女性" },
-    { value: "male", label: "男性" },
-    { value: "unknown", label: "未知" },
+    { value: UserGender.FEMALE, label: "女性" },
+    { value: UserGender.MALE, label: "男性" },
+    { value: UserGender.UNKNOWN, label: "保密" },
 ];
 
 // permission options
 const permission_options = [
-    { value: "q", label: "提问者" },
-    { value: "a", label: "问答者" },
+    { value: UserRole.USER, label: "提问者" },
+    { value: UserRole.ANSWERER, label: "问答者" },
 ];
 
 export default class AccountProfile extends Component<
@@ -76,12 +91,22 @@ export default class AccountProfile extends Component<
             maxPrice: 100,
             error_msg_username: "",
             error_msg_password: "",
+            error_msg_money: "",
             error_msg_email: "",
+            money: 1,
+            openRechargeDialog: false,
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeUser = this.handleChangeUser.bind(this);
+        this.handleOpenRechargeDialog =
+            this.handleOpenRechargeDialog.bind(this);
+        this.handleCloseRechargeDialog =
+            this.handleCloseRechargeDialog.bind(this);
+        this.handleMoneyChange = this.handleMoneyChange.bind(this);
+        this.fetchUserInfo = this.fetchUserInfo.bind(this);
+        this.handleSubmitRecharge = this.handleSubmitRecharge.bind(this);
     }
 
     // alert handler
@@ -95,6 +120,115 @@ export default class AccountProfile extends Component<
             alertContent: _alertContent,
         });
     }
+
+    // dialog helper functions
+    // dialog close/open handler
+    handleCloseRechargeDialog() {
+        this.setState({
+            openRechargeDialog: false,
+        });
+    }
+
+    handleOpenRechargeDialog() {
+        this.setState({
+            openRechargeDialog: true,
+        });
+    }
+
+    // handle submit recharge
+    handleSubmitRecharge() {
+        if (
+            this.handleMoneyChange({
+                target: { value: this.state.money },
+            })
+        ) {
+            if (this.state.user !== null) {
+                userService
+                    .moneyRecharge(this.state.user.id, this.state.money)
+                    .then(
+                        () => {
+                            // apply success
+                            this.handleAlert("success", "充值成功");
+                            // fetch new info
+                            this.fetchUserInfo();
+                            // modify balance
+                            if (
+                                this.state.user !== null &&
+                                typeof this.state.user.balance !== "undefined"
+                            )
+                                this.handleChange({
+                                    target: {
+                                        name: "balance",
+                                        value:
+                                            Number(this.state.user?.balance) +
+                                            Number(this.state.money),
+                                    },
+                                });
+                        },
+                        (error) => {
+                            // show the error message
+                            if (error.response.status === 401) {
+                                this.handleAlert("error", "尚未登录");
+                            }
+                            if (error.response.status === 403) {
+                                if (
+                                    error.response.data.message ===
+                                    "RECHARGE_INVALID"
+                                ) {
+                                    this.handleAlert(
+                                        "error",
+                                        "充值金额超过范围"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "BALANCE_INVALID"
+                                ) {
+                                    this.handleAlert(
+                                        "error",
+                                        "钱包余额超过范围"
+                                    );
+                                } else if (
+                                    error.response.data.message ===
+                                    "NO_PERMISSION"
+                                ) {
+                                    this.handleAlert("error", "权限不足");
+                                } else {
+                                    this.handleAlert("error", "服务器验证异常");
+                                }
+                            } else {
+                                this.handleAlert("error", "网络错误");
+                            }
+                        }
+                    );
+            }
+            this.handleCloseRechargeDialog();
+        }
+    }
+
+    // handle money change in recharge dialog
+    handleMoneyChange(e: any) {
+        let value = e.target.value;
+        if (validate_required(e.target.value)) {
+            this.setState({
+                error_msg_money: "充值金额为空或格式错误",
+                money: value,
+            });
+            return false;
+        }
+        // clear the error msg
+        this.setState({
+            error_msg_money: "",
+        });
+        // the value must be a positive number
+        if (value < 1) value = 1;
+        else if (value > 1000) value = 1000;
+        this.setState({
+            money: value,
+        });
+        return true;
+    }
+
+    // end dialog helper functions
 
     // redirect handler
     handleRedirect(target: string) {
@@ -116,16 +250,16 @@ export default class AccountProfile extends Component<
                 username: "tester123",
                 password: "thisIsPassword",
                 nickname: "Nickname",
-                ava_url: "www.ava.com",
+                avatar: "www.ava.com",
                 sign_up_timestamp: 112323333,
                 email: "sdassss@qq.com",
                 phone: "",
-                gender: "unknown",
+                gender: UserGender.UNKNOWN,
                 permission: "a",
-                money: 100,
+                balance: 100,
                 description: "This is the description",
                 price: 50,
-                type: 0,
+                role: UserRole.ANSWERER,
             };
             this.setState({
                 user: currentUser,
@@ -157,8 +291,10 @@ export default class AccountProfile extends Component<
         // set new state
         const new_user_info = { ...this.state.user };
         if (typeof e === "string") new_user_info["phone"] = e;
-        else if (e.target.name === "money" && e.target.value < 0)
-            new_user_info["money"] = 0;
+        else if (e.target.name === "balance" && e.target.value < 0)
+            new_user_info["balance"] = 0;
+        else if (e.target.name === "balance" && e.target.value > 10000)
+            new_user_info["balance"] = 10000;
         else if (
             e.target.name === "price" &&
             e.target.value < this.state.minPrice
@@ -198,6 +334,35 @@ export default class AccountProfile extends Component<
         return error === "";
     }
 
+    // get info of user
+    fetchUserInfo() {
+        if (this.state.user) {
+            userService.getUserInfo(this.state.user.id).then(
+                (response) => {
+                    if (response) {
+                        this.context.setUser(response);
+                        const currentUser = this.context.user;
+
+                        this.setState({
+                            // token: authToken(),
+                            user: currentUser,
+                            userReady: true,
+                        });
+                        this.now_nickname = currentUser.nickname;
+                    }
+                },
+                (error) => {
+                    // show the error message
+                    if (error.response.status === 403) {
+                        this.handleAlert("error", "服务器验证异常");
+                    } else {
+                        this.handleAlert("error", "网络错误");
+                    }
+                }
+            );
+        }
+    }
+
     // submit handler
     handleSubmit() {
         // avoid null
@@ -224,6 +389,7 @@ export default class AccountProfile extends Component<
                     target: { value: this.state.user.password },
                 })
             ) {
+                console.log("some requests for admin");
             }
         } else {
             userService.modifyUserInfo(temp).then(
@@ -235,23 +401,32 @@ export default class AccountProfile extends Component<
                     // alert
                     this.handleAlert("success", "修改成功");
                     // get info again
-                    if (this.state.user) {
-                        userService.getUserInfo(this.state.user.id).then(
-                            (response) => {
-                                if (response) {
-                                    this.context.setUser(response);
-                                }
-                            },
-                            (error) => {
-                                // show the error message
-                                this.handleAlert("error", "网络错误");
-                            }
-                        );
-                    }
+                    this.fetchUserInfo();
                 },
                 (error) => {
                     // show the error message
-                    this.handleAlert("error", "网络错误");
+                    if (error.response.status === 403) {
+                        if (error.response.data.message === "NO_PERMISSION") {
+                            this.handleAlert("error", "权限不足");
+                        } else if (
+                            error.response.data.message === "NICKNAME_INVALID"
+                        ) {
+                            this.handleAlert("error", "昵称格式错误");
+                        } else if (
+                            error.response.data.message ===
+                            "DESCRIPTION_INVALID"
+                        ) {
+                            this.handleAlert("error", "个人介绍格式错误");
+                        } else {
+                            this.handleAlert("error", "服务器验证异常");
+                        }
+                    } else if (error.response.status === 401) {
+                        this.handleAlert("error", "尚未登录");
+                    } else if (error.response.status === 404) {
+                        this.handleAlert("error", "用户不存在");
+                    } else {
+                        this.handleAlert("error", "网络错误");
+                    }
                 }
             );
         }
@@ -279,14 +454,15 @@ export default class AccountProfile extends Component<
                     <Grid item md={4} xs={8} mt={2}>
                         <AccountBriefProfile
                             id={this.state.user?.id}
-                            avatar={this.state.user?.ava_url}
+                            avatar={this.state.user?.avatar}
                             nickname={this.now_nickname}
                             username={this.state.user?.username}
-                            permission={this.state.user?.permission}
+                            role={this.state.user?.role}
                             alertHandler={this.handleAlert}
                             redirectHandler={this.handleRedirect}
                             minPrice={this.state.minPrice}
                             maxPrice={this.state.maxPrice}
+                            fetchUserInfo={this.fetchUserInfo}
                         />
                     </Grid>
                 )}
@@ -430,8 +606,7 @@ export default class AccountProfile extends Component<
                                                         native: true,
                                                     }}
                                                     value={
-                                                        this.state.user
-                                                            ?.permission
+                                                        this.state.user?.role
                                                     }
                                                     variant="outlined"
                                                 >
@@ -464,6 +639,7 @@ export default class AccountProfile extends Component<
                                             value={this.state.user?.nickname}
                                             variant="outlined"
                                             placeholder={"请填写昵称~"}
+                                            inputProps={{ maxLength: 30 }}
                                         />
                                     </Grid>
                                     <Grid item md={6} xs={12}>
@@ -508,7 +684,7 @@ export default class AccountProfile extends Component<
                                         <TextField
                                             fullWidth
                                             label="钱包余额"
-                                            name="money"
+                                            name="balance"
                                             onChange={this.handleChange}
                                             type="number"
                                             InputProps={
@@ -530,15 +706,27 @@ export default class AccountProfile extends Component<
                                                                   ￥
                                                               </InputAdornment>
                                                           ),
+                                                          endAdornment: (
+                                                              <IconButton
+                                                                  color="secondary"
+                                                                  onClick={
+                                                                      this
+                                                                          .handleOpenRechargeDialog
+                                                                  }
+                                                              >
+                                                                  <AddIcon />
+                                                              </IconButton>
+                                                          ),
                                                       }
                                             }
-                                            value={this.state.user?.money}
+                                            value={this.state.user?.balance}
                                             variant="outlined"
                                         />
                                     </Grid>
                                     {this.props.isAdmin &&
                                     this.state.user &&
-                                    this.state.user.permission === "a" &&
+                                    this.state.user.role ===
+                                        UserRole.ANSWERER &&
                                     "price" in this.state.user ? (
                                         <>
                                             <Grid item md={6} xs={12}>
@@ -604,8 +792,8 @@ export default class AccountProfile extends Component<
                                             InputProps={
                                                 !this.props.isAdmin &&
                                                 this.state.user &&
-                                                this.state.user.permission ===
-                                                    "a"
+                                                this.state.user.role ===
+                                                    UserRole.ANSWERER
                                                     ? {
                                                           readOnly: true,
                                                       }
@@ -613,6 +801,7 @@ export default class AccountProfile extends Component<
                                                           readOnly: false,
                                                       }
                                             }
+                                            inputProps={{ maxLength: 200 }}
                                             placeholder="快来介绍一下你自己吧~"
                                             variant="outlined"
                                         />
@@ -681,6 +870,61 @@ export default class AccountProfile extends Component<
                         {this.state.alertContent}
                     </Alert>
                 </Snackbar>
+                <Dialog
+                    maxWidth={"xs"}
+                    open={this.state.openRechargeDialog}
+                    onClose={this.handleCloseRechargeDialog}
+                >
+                    <DialogTitle>充值钱包</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText mb={3}>
+                            您当前的钱包余额为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {this.state.user?.balance}
+                            </Box>
+                            ￥。单笔最高充值金额为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {1000}
+                            </Box>
+                            ￥。
+                            <br />
+                            请输入您的充值金额：
+                        </DialogContentText>
+                        <TextField
+                            fullWidth
+                            label="充值金额"
+                            name="money"
+                            onChange={this.handleMoneyChange}
+                            type="number"
+                            InputProps={{
+                                inputProps: {
+                                    min: 0,
+                                    max: 1000,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        ￥
+                                    </InputAdornment>
+                                ),
+                            }}
+                            value={this.state.money}
+                            error={this.state.error_msg_money.length !== 0}
+                            helperText={this.state.error_msg_money}
+                            variant="outlined"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={this.handleCloseRechargeDialog}
+                            color="error"
+                        >
+                            取消
+                        </Button>
+                        <Button onClick={this.handleSubmitRecharge}>
+                            提交
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         );
     }
