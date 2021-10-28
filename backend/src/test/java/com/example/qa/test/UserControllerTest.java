@@ -1,4 +1,4 @@
-package com.example.qa;
+package com.example.qa.test;
 
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;

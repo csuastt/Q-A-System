@@ -1,6 +1,7 @@
 package com.example.qa.admin;
 
 import com.example.qa.admin.exchange.AdminListResponse;
+import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.CreateAdminRequest;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
@@ -14,9 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import static com.example.qa.security.RestControllerAuthUtils.authIsAdmin;
-import static com.example.qa.security.RestControllerAuthUtils.authLogin;
 
 @RestController
 @RequestMapping("/api/admins")
@@ -58,26 +56,15 @@ public class AdminController {
         return new AdminListResponse(result);
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void getAdmin(@PathVariable(value = "id") long id) {
-        if (!authLogin()) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED);
-        }
-        if (!authIsAdmin()) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "NO_PERMISSION");
-        }
+    public AdminResponse getAdmin(@PathVariable(value = "id") long id) {
         Admin admin;
         try {
-            admin = adminService.getById(id, true);
+            admin = adminService.getById(id, false);
         } catch (UsernameNotFoundException e) {
             throw new ApiException(404);
         }
-        if (admin.isDeleted()) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
-        }
-        admin.setDeleted(true);
-        admin.setUsername(admin.getUsername() + "@" + admin.getId());
-        adminService.save(admin);
+        return new AdminResponse(admin);
     }
 }
