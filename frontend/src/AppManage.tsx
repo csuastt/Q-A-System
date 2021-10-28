@@ -3,8 +3,6 @@ import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
 import { Container } from "@mui/material";
 import Welcome from "./components/Welcome";
-import QuestionList from "./components/QuestionList";
-import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
 import Login from "./components/Login";
 import Create from "./components/Create";
@@ -39,7 +37,7 @@ export default function AppManage() {
                 C={OrderDetail}
             />,
         ],
-        ["/admins/orders", <QuestionList />],
+        //["/admins/orders", <QuestionList />],
 
         ["/admins/profile", <AccountProfile isAdmin={true} />],
 
