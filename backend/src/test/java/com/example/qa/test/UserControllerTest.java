@@ -1,6 +1,9 @@
-package com.example.qa;
+package com.example.qa.test;
 
 import com.example.qa.errorhandling.ApiException;
+import com.example.qa.exchange.ChangePasswordRequest;
+import com.example.qa.exchange.LoginRequest;
+import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserController;
 import com.example.qa.user.UserService;

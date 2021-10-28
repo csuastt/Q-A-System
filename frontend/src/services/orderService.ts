@@ -1,15 +1,23 @@
 import axios from "axios";
-import {
-    CreationResult,
-    OrderState,
-    OrderInfo,
-    OrderList,
-    UserBasicInfo,
-} from "./definations";
+import { CreationResult, OrderInfo, PagedList } from "./definations";
 
 class OrderService {
-    getOrdersOfUser(userId: number): Promise<OrderList> {
-        return axios.get("/orders").then((response) => response.data);
+    getOrdersOfUser(
+        asker?: number,
+        answerer?: number,
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    asker: asker,
+                    answerer: answerer,
+                    page: page,
+                    pageSize: prePage,
+                },
+            })
+            .then((response) => response.data);
     }
     getOrderListByUser(
         asker: boolean,
