@@ -1,7 +1,8 @@
 import axios from "axios";
 import {
     PagedList,
-    UserBasicInfo, UserFullyInfo,
+    UserBasicInfo,
+    UserFullyInfo,
     UserInfo,
     UserInfoList,
 } from "./definations";

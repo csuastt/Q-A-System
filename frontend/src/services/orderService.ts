@@ -1,5 +1,10 @@
 import axios from "axios";
-import {CreationResult, OrderInfo, OrderState, PagedList} from "./definations";
+import {
+    CreationResult,
+    OrderInfo,
+    OrderState,
+    PagedList,
+} from "./definations";
 
 class OrderService {
     getOrdersOfUser(
