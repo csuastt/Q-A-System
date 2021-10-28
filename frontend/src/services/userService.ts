@@ -1,21 +1,26 @@
 import axios from "axios";
-import { UserBasicInfo, UserInfo, UserInfoList } from "./definations";
+import {
+    PagedList,
+    UserBasicInfo,
+    UserInfo,
+    UserInfoList,
+} from "./definations";
 
 class UserService {
     getUserList(
         answerer: boolean,
-        page: number = 1,
-        limit: number = 20
-    ): Promise<Array<UserBasicInfo>> {
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<UserBasicInfo>> {
         return axios
             .get("/users", {
                 params: {
-                    answerer: answerer,
+                    role: answerer ? "ANSWERER" : "USER",
                     page: page,
-                    limit: limit,
+                    pageSize: prePage,
                 },
             })
-            .then((response) => response.data["users"]);
+            .then((response) => response.data);
     }
 
     getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
