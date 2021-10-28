@@ -9,7 +9,7 @@ const Logout: React.FC<{
     redirect: string;
     isAdmin: boolean;
 }> = (props) => {
-    const { clearUser,clearManager } = useContext(AuthContext);
+    const { clearUser, clearManager } = useContext(AuthContext);
     useEffect(() => {
         if (props.isAdmin) {
             adminAuthService.logout().then(clearManager);

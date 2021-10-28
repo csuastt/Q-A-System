@@ -1,4 +1,4 @@
-import React, { Component, useContext } from "react";
+import React, { Component } from "react";
 import AuthService from "../services/authService";
 import AdminAuthService from "../services/adminAuthService";
 import { Link as RouterLink, Redirect } from "react-router-dom";
@@ -33,7 +33,6 @@ export const validate_required = (value: any) => {
         return "";
     }
 };
-
 
 // 6 to 12 in length
 export const validate_length = (value: any) => {

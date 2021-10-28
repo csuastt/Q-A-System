@@ -36,8 +36,8 @@ import GroupIcon from "@mui/icons-material/Group";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import SettingsIcon from '@mui/icons-material/Settings';
-import SchoolIcon from '@mui/icons-material/School';
+import SettingsIcon from "@mui/icons-material/Settings";
+import SchoolIcon from "@mui/icons-material/School";
 
 import AuthContext from "../AuthContext";
 
@@ -156,7 +156,7 @@ const AppBar = styled(MuiAppBar, {
 
 const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-    const { user,manager } = useContext(AuthContext);
+    const { user, manager } = useContext(AuthContext);
 
     const theme = useTheme();
 
@@ -313,6 +313,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                               ["用户列表", "/admins/users", GroupIcon],
                               ["回答者列表", "/admins/answerers", SchoolIcon],
                               ["订单列表", "/admins/orders", LibraryBooksIcon],
+                              ["系统参数", "/admins/settings", SettingsIcon],
                           ]
                         : [
                               ["回答者列表", "/answerers", GroupIcon],
@@ -320,16 +321,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                               ["提出问题", "/order/create", HelpOutlineIcon],
                           ]
                 )}
-                <Divider />
-                {renderDrawerList(
-                    props.isAdmin
-                        ? [["系统参数", "/admins/settings", SettingsIcon]]
-                        :[["设置", "/settings", SettingsIcon]]
-
-                )}
-
             </Drawer>
-
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 {props.children}

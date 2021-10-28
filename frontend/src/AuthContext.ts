@@ -1,4 +1,4 @@
-import {ManagerInfo, UserInfo} from "./services/definations";
+import { ManagerInfo, UserInfo } from "./services/definations";
 import React from "react";
 
 interface AuthContextType {
