@@ -1,8 +1,8 @@
 package com.example.qa.user;
 
 import com.example.qa.errorhandling.ApiException;
-import com.example.qa.user.exchange.LoginRequest;
-import com.example.qa.user.exchange.TokenResponse;
+import com.example.qa.exchange.LoginRequest;
+import com.example.qa.exchange.TokenResponse;
 import com.example.qa.user.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
