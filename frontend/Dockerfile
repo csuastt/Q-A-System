@@ -5,6 +5,7 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN yarn install
 COPY . ./
+ENV NODE_OPTIONS --openssl-legacy-provider
 RUN yarn build
 
 FROM nginx:alpine
