@@ -55,7 +55,18 @@ const AnswererList: React.FC<{ selectModel?: boolean }> = (props) => {
         <Box sx={{ pt: 3 }} mt={1}>
             <Grid container spacing={3} marginBottom={3}>
                 {answerList.map((user: UserBasicInfo, index: number) => (
-                    <Grid item key={index} lg={4} md={6} xs={12}>
+                    <Grid
+                        item
+                        key={index}
+                        lg={4}
+                        md={6}
+                        xs={12}
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            flex: 1,
+                        }}
+                    >
                         <AnswererCard
                             userInfo={user}
                             nextUrl={

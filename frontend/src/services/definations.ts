@@ -1,4 +1,3 @@
-import { ZonedDateTime } from "js-joda";
 export enum UserRole {
     USER = "USER",
     ANSWERER = "ANSWERER",
@@ -37,7 +36,7 @@ export interface ManagerInfo {
     password: string;
     deleted: boolean;
     role: ManagerRole;
-    createTime: ZonedDateTime;
+    createTime: string;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
@@ -109,8 +108,6 @@ export interface OrderInfo {
     answerSummary: boolean;
     price: number;
 }
-
-export type OrderList = Array<OrderInfo>;
 
 export enum CreationResultType {
     SUCCESS,
