@@ -1,5 +1,11 @@
 import axios from "axios";
-import {CreationResult, OrderState, OrderInfo, OrderList, UserBasicInfo} from "./definations";
+import {
+    CreationResult,
+    OrderState,
+    OrderInfo,
+    OrderList,
+    UserBasicInfo,
+} from "./definations";
 
 class OrderService {
     getOrdersOfUser(userId: number): Promise<OrderList> {

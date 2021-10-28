@@ -21,12 +21,12 @@ class AdminAuthService {
         return axios.post("/admins/logout").finally(this.clearToken);
     }
 
-    create(manager_name: string, role: ManagerRole):Promise<String> {
+    create(manager_name: string, role: ManagerRole): Promise<String> {
         return axios
             .post("/admins", {
-            username: manager_name,
-            role: role,
-        })
+                username: manager_name,
+                role: role,
+            })
             .then((response) => response.data["password"]);
     }
 

@@ -26,7 +26,10 @@ const manager_role_options = [
 ];
 
 export const validate_role = (value: any) => {
-    if (value.toString() !== ManagerRole.ADMIN && value.toString() !== ManagerRole.REVIEWER) {
+    if (
+        value.toString() !== ManagerRole.ADMIN &&
+        value.toString() !== ManagerRole.REVIEWER
+    ) {
         return "权限设置非法，选择Observer或者Auditor";
     } else {
         return "";
@@ -106,7 +109,8 @@ export default class ManageCreate extends Component<any, CreateState> {
                         this.setState({
                             alert: true,
                             alertType: "success",
-                            alertContent: "创建成功，请记住您的密码:"+response,
+                            alertContent:
+                                "创建成功，请记住您的密码:" + response,
                         });
                     }
                 },
