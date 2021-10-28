@@ -2,14 +2,14 @@ import React, { useContext, useState } from "react";
 import Tab from "@mui/material/Tab";
 import TabPanel from "@mui/lab/TabPanel";
 import OrderList from "./OrderList";
-import UserContext from "../UserContext";
+import AuthContext from "../AuthContext";
 import { Redirect } from "react-router-dom";
 import { parseIntWithDefault, useQuery } from "../util";
 import { UserRole } from "../services/definations";
 import { TabContext, TabList } from "@mui/lab";
 
 const UserOrderList: React.FC = (props) => {
-    const { user } = useContext(UserContext);
+    const { user } = useContext(AuthContext);
     const query = useQuery();
     const [tabValue, setTabValue] = useState("inProgress");
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
