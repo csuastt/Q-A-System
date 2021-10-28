@@ -10,15 +10,17 @@ import org.springframework.data.domain.Page;
 @Setter
 @NoArgsConstructor
 public class UserListResponse {
-    int pageSize;
-    int page;
-    int totalPages;
-    UserResponse[] users;
+    private int pageSize;
+    private int page;
+    private int totalPages;
+    private long totalCount;
+    private UserResponse[] data;
 
     public UserListResponse(Page<User> userPage, int userResponseLevel) {
         pageSize = userPage.getSize();
         page = userPage.getNumber() + 1;
         totalPages = userPage.getTotalPages();
-        users = userPage.get().map(user -> new UserResponse(user, userResponseLevel)).toArray(UserResponse[]::new);
+        totalCount = userPage.getTotalElements();
+        data = userPage.get().map(user -> new UserResponse(user, userResponseLevel)).toArray(UserResponse[]::new);
     }
 }

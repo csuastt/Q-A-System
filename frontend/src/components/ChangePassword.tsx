@@ -18,7 +18,7 @@ import { validate_length, validate_required } from "./Login";
 import { validate_second_password } from "./Register";
 // router
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 
 // state interface
 interface ChangePasswordState {

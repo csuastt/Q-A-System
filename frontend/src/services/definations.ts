@@ -1,4 +1,3 @@
-import {ZonedDateTime} from 'js-joda'
 export enum UserRole {
     USER = "USER",
     ANSWERER = "ANSWERER",
@@ -15,9 +14,9 @@ export enum UserType {
     Answerer,
 }
 export enum ManagerRole {
-    ADMIN="ADMIN",
-    REVIEWER="REVIEWER",
-    SUPER_ADMIN="SUPER_ADMIN",
+    ADMIN = "ADMIN",
+    REVIEWER = "REVIEWER",
+    SUPER_ADMIN = "SUPER_ADMIN",
 }
 
 export interface UserBasicInfo {
@@ -37,7 +36,7 @@ export interface ManagerInfo {
     password: string;
     deleted: boolean;
     role: ManagerRole;
-    createTime: ZonedDateTime;
+    createTime: string;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
@@ -122,4 +121,12 @@ export interface CreationResult {
     state: string;
     created_id: number;
     err_msg?: string;
+}
+
+export interface PagedList<T> {
+    data: Array<T>;
+    pageSize: number;
+    page: number;
+    totalPages: number;
+    totalCount: number;
 }

@@ -1,5 +1,6 @@
-package com.example.qa.user.exchange;
+package com.example.qa.admin.exchange;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ChangePasswordRequest {
-    private String original;
+@AllArgsConstructor
+public class PasswordResponse {
     private String password;
 }

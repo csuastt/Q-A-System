@@ -7,11 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AcceptData {
+public class AcceptRequest {
     private boolean accept;
 
     @JsonCreator
-    public AcceptData(@JsonProperty(required = true, value = "accept") boolean accept) {
+    public AcceptRequest(@JsonProperty(required = true, value = "accept") boolean accept) {
         this.accept = accept;
     }
 }

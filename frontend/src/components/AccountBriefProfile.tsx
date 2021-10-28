@@ -17,7 +17,7 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import { validate_required } from "./Login";
 import userService from "../services/userService";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 import { UserRole } from "../services/definations";
 
 interface AccountBriefProfileProps {
@@ -33,6 +33,7 @@ interface AccountBriefProfileProps {
     redirectHandler: (arg1: string) => void;
     minPrice: number;
     maxPrice: number;
+    fetchUserInfo: () => void;
 }
 
 interface AccountBriefProfileState {
@@ -144,6 +145,9 @@ export default class AccountBriefProfile extends Component<
                         () => {
                             // apply success
                             this.props.alertHandler("success", "提交成功");
+                            // update info
+                            this.props.fetchUserInfo();
+                            this.forceUpdate();
                         },
                         (error) => {
                             // show the error message
@@ -209,6 +213,8 @@ export default class AccountBriefProfile extends Component<
                     () => {
                         // apply success
                         this.props.alertHandler("success", "提交成功");
+                        // update info
+                        this.props.fetchUserInfo();
                     },
                     (error) => {
                         // show the error message

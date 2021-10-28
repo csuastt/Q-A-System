@@ -13,7 +13,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { LiveHelp } from "@mui/icons-material";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 
 export default function Welcome() {
     const theme = useTheme();

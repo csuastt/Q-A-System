@@ -23,7 +23,7 @@ import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
 import { validate_length, validate_required } from "./Login";
 import { validate_email } from "./Register";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -341,6 +341,14 @@ export default class AccountProfile extends Component<
                 (response) => {
                     if (response) {
                         this.context.setUser(response);
+                        const currentUser = this.context.user;
+
+                        this.setState({
+                            // token: authToken(),
+                            user: currentUser,
+                            userReady: true,
+                        });
+                        this.now_nickname = currentUser.nickname;
                     }
                 },
                 (error) => {
@@ -454,6 +462,7 @@ export default class AccountProfile extends Component<
                             redirectHandler={this.handleRedirect}
                             minPrice={this.state.minPrice}
                             maxPrice={this.state.maxPrice}
+                            fetchUserInfo={this.fetchUserInfo}
                         />
                     </Grid>
                 )}

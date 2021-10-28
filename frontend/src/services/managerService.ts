@@ -1,5 +1,5 @@
 import axios from "axios";
-import {ManagerInfo,ManagerInfoList} from "./definations";
+import { ManagerInfo, ManagerInfoList } from "./definations";
 
 class ManagerService {
     getManagerList(
@@ -34,10 +34,8 @@ class ManagerService {
     }
 
     deleteManager(id: number) {
-        return axios.delete(`/admins/${id}`, {
-        });
+        return axios.delete(`/admins/${id}`, {});
     }
-
 }
 const managerService = new ManagerService();
-export default new ManagerService();
+export default managerService;

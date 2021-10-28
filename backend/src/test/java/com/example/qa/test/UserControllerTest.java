@@ -1,15 +1,18 @@
-package com.example.qa;
+package com.example.qa.test;
 
 import com.example.qa.errorhandling.ApiException;
+import com.example.qa.exchange.ChangePasswordRequest;
+import com.example.qa.exchange.LoginRequest;
+import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserController;
-import com.example.qa.user.UserRepository;
+import com.example.qa.user.UserService;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.Gender;
-import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,7 +38,7 @@ class UserControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private UserRepository repository;
+    private UserService userService;
 
     private String token;
     private String username;
@@ -81,11 +85,11 @@ class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(registerRequest.getUsername());
         loginRequest.setPassword(password);
-        AuthenticationSuccessResponse result = postAndDeserialize("/api/user/login", loginRequest, status().isOk(), AuthenticationSuccessResponse.class);
+        TokenResponse result = postAndDeserialize("/api/user/login", loginRequest, status().isOk(), TokenResponse.class);
         assertNotNull(result.getToken(), "token 不为空");
         token = result.getToken();
         username = registerRequest.getUsername();
-        id = result.getUser().getId();
+        id = Long.parseLong(Jwts.parser().setSigningKey(SecurityConstants.JWT_SECRET.getBytes()).parseClaimsJws(token).getBody().getSubject());
 
         loginRequest.setPassword("");
         postUrl("/api/user/login", loginRequest, status().isForbidden());
@@ -121,7 +125,7 @@ class UserControllerTest {
     void deleteUser() throws Exception {
         mockMvc.perform(delete("/api/users/" + id)
                         .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
         mockMvc.perform(delete("/api/users/" + id)
                         .header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token))
                 .andExpect(status().isForbidden());
@@ -188,24 +192,8 @@ class UserControllerTest {
     }
 
     @Test
-    void userModel() {
-        User user = new User();
-        user.getAuthorities();
-        user.isAccountNonExpired();
-        user.isAccountNonLocked();
-        user.isEnabled();
-        user.isCredentialsNonExpired();
-        user.setDeleted(true);
-        user.getAuthorities();
-        user.isAccountNonExpired();
-        user.isAccountNonLocked();
-        user.isEnabled();
-        user.isCredentialsNonExpired();
-    }
-
-    @Test
     void userValidators() {
-        UserController userController = new UserController(repository, passwordEncoder);
+        UserController userController = new UserController(userService, passwordEncoder);
         userController.validatePassword(password);
         assertThrows(ApiException.class, () -> userController.validatePassword(""));
         assertThrows(ApiException.class, () -> userController.validatePassword("passwordTooLongPasswordTooLong"));
@@ -225,10 +213,10 @@ class UserControllerTest {
         userRequest.setPrice(50);
         userController.checkUserData(userRequest);
         userRequest.setNickname("");
-        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+        userController.checkUserData(userRequest);
         userRequest.setNickname("nickname");
         userRequest.setDescription("");
-        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+        userController.checkUserData(userRequest);
         userRequest.setDescription("myDescription");
         userRequest.setPrice(-1);
         assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));

@@ -1,9 +1,60 @@
 import axios from "axios";
-import { CreationResult, OrderInfo, OrderList } from "./definations";
+import {
+    CreationResult,
+    OrderInfo,
+    OrderState,
+    PagedList,
+} from "./definations";
 
 class OrderService {
-    getOrdersOfUser(userId: number): Promise<OrderList> {
-        return axios.get("/orders").then((response) => response.data);
+    getOrdersOfUser(
+        asker?: number,
+        answerer?: number,
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    asker: asker,
+                    answerer: answerer,
+                    page: page,
+                    pageSize: prePage,
+                },
+            })
+            .then((response) => response.data);
+    }
+    getOrderListByUser(
+        asker: boolean,
+        answerer: boolean,
+        page: number = 1,
+        limit: number = 20
+    ): Promise<Array<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    asker: asker,
+                    answerer: answerer,
+                    page: page,
+                    limit: limit,
+                },
+            })
+            .then((response) => response.data["orders"]);
+    }
+    getOrderListByAdmin(
+        state: OrderState,
+        page: number = 1,
+        limit: number = 20
+    ): Promise<Array<OrderInfo>> {
+        return axios
+            .get("/users", {
+                params: {
+                    state: state,
+                    page: page,
+                    limit: limit,
+                },
+            })
+            .then((response) => response.data["users"]);
     }
 
     create_question(

@@ -1,21 +1,27 @@
 import axios from "axios";
-import { UserBasicInfo, UserInfo, UserInfoList } from "./definations";
+import {
+    PagedList,
+    UserBasicInfo,
+    UserFullyInfo,
+    UserInfo,
+    UserInfoList,
+} from "./definations";
 
 class UserService {
     getUserList(
         answerer: boolean,
-        page: number = 1,
-        limit: number = 20
-    ): Promise<Array<UserBasicInfo>> {
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<UserBasicInfo>> {
         return axios
             .get("/users", {
                 params: {
-                    answerer: answerer,
+                    role: answerer ? "ANSWERER" : "USER",
                     page: page,
-                    limit: limit,
+                    pageSize: prePage,
                 },
             })
-            .then((response) => response.data["users"]);
+            .then((response) => response.data);
     }
 
     getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
@@ -44,7 +50,9 @@ class UserService {
     getUserInfo(id: number): Promise<UserInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
-
+    getUserFullyInfo(id: number): Promise<UserFullyInfo> {
+        return axios.get(`/users/${id}`).then((response) => response.data);
+    }
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
         return axios
             .get(`/users/${id}/basic`)
@@ -57,6 +65,21 @@ class UserService {
             gender: info.gender,
             phone: info.phone,
             description: info.description,
+        });
+    }
+    deleteUser(id: number) {
+        return axios.delete(`/users/${id}`, {});
+    }
+    modifyUserInfoByAdmin(info: UserInfo) {
+        return axios.put(`/users/${info.id}`, {
+            nickname: info.nickname,
+            gender: info.gender,
+            phone: info.phone,
+            description: info.description,
+            price: info.price,
+            email: info.email,
+            role: info.role,
+            balance: info.balance,
         });
     }
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import {ManagerInfo,ManagerRole} from "./definations";
+import { ManagerInfo, ManagerRole } from "./definations";
 import managerService from "./managerService";
 
 class AdminAuthService {
@@ -15,18 +15,19 @@ class AdminAuthService {
                     "Bearer " + response.data.token;
             })
             .then(this.refreshToken);
-
     }
 
     logout() {
         return axios.post("/admins/logout").finally(this.clearToken);
     }
 
-    create(manager_name: string, role: ManagerRole) {
-        return axios.post("/admins", {
-            username: manager_name,
-            role: role,
-        });
+    create(manager_name: string, role: ManagerRole): Promise<String> {
+        return axios
+            .post("/admins", {
+                username: manager_name,
+                role: role,
+            })
+            .then((response) => response.data["password"]);
     }
 
     modifyPassword(id: number, old_password: string, password: string) {
@@ -55,8 +56,6 @@ class AdminAuthService {
         localStorage.removeItem("token");
         delete axios.defaults.headers.common["Authorization"];
     }
-
-
 }
 const adminAuthService = new AdminAuthService();
-export default new AdminAuthService();
+export default adminAuthService;

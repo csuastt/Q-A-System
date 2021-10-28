@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { OrderInfo, OrderState } from "../services/definations";
 import orderService from "../services/orderService";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 import { Redirect } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -29,7 +29,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [needLogin, setNeedLogin] = useState(user == null);
     const [noPermission, setNoPermission] = useState(false);
 
-    const [editingQuestion, setEditingQuestion] = useState(false);
+    const [editingQuestion] = useState(false);
     const [answering, setAnswering] = useState(false);
 
     const [newQuestion, setNewQuestion] = useState<string>("");
@@ -63,62 +63,6 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         setNewQuestion(event.target.value);
-    };
-    const startEditingQuestion = () => {
-        setNewQuestion(orderInfo!.question);
-        setEditingQuestion(true);
-    };
-    const commitEditingQuestion = () => {
-        const newOrderInfo = orderInfo!;
-        newOrderInfo.question = newQuestion;
-        setOrderInfo(undefined);
-        setEditingQuestion(false);
-        orderService
-            .modifyOrderInfo(newOrderInfo.id, newOrderInfo)
-            .then(() => setNeedReload(true));
-    };
-    const cancelEditingQuestion = () => {
-        setEditingQuestion(false);
-    };
-
-    // Question editor helper function
-    const renderQuestionModifyActions = () => {
-        return editingQuestion ? (
-            <>
-                <Button
-                    variant="contained"
-                    startIcon={<CheckIcon />}
-                    onClick={commitEditingQuestion}
-                >
-                    确认修改
-                </Button>
-                <Button
-                    variant="outlined"
-                    startIcon={<CancelIcon />}
-                    onClick={cancelEditingQuestion}
-                    color="warning"
-                >
-                    丢弃修改
-                </Button>
-            </>
-        ) : (
-            <>
-                <Button
-                    variant="outlined"
-                    startIcon={<SettingsIcon />}
-                    onClick={startEditingQuestion}
-                >
-                    修改问题
-                </Button>
-                <Button
-                    variant="outlined"
-                    startIcon={<DeleteIcon />}
-                    color="warning"
-                >
-                    取消提问
-                </Button>
-            </>
-        );
     };
 
     // Answerering helper functions

@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import UserContext from "./UserContext";
+import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
 import { Container } from "@mui/material";
 import Welcome from "./components/Welcome";
@@ -60,15 +60,18 @@ export default function App() {
     return refreshing ? (
         <></>
     ) : (
-        <UserContext.Provider
+        <AuthContext.Provider
             value={{
                 user: user,
                 setUser: setUser,
                 clearUser: () => setUser(undefined),
+                manager: undefined,
+                setManager: () => {},
+                clearManager: () => {},
             }}
         >
             <BrowserRouter>
-                <AppFrame>
+                <AppFrame isAdmin={false}>
                     <Container maxWidth="md">
                         <Switch>
                             {routes.map((routeItem) => {
@@ -85,6 +88,6 @@ export default function App() {
                     </Container>
                 </AppFrame>
             </BrowserRouter>
-        </UserContext.Provider>
+        </AuthContext.Provider>
     );
 }
