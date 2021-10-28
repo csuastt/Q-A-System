@@ -13,14 +13,14 @@ public class OrderListResponse {
     private int pageSize;
     private int page;
     private int totalPages;
-    private long totalOrders;
-    private OrderResponse[] orders;
+    private long totalCount;
+    private OrderResponse[] data;
 
     public OrderListResponse(Page<Order> orderPage, int level) {
         pageSize = orderPage.getSize();
         page = orderPage.getNumber() + 1;
         totalPages = orderPage.getTotalPages();
-        totalOrders = orderPage.getTotalElements();
-        orders = orderPage.get().map(order -> new OrderResponse(order, level)).toArray(OrderResponse[]::new);
+        totalCount = orderPage.getTotalElements();
+        data = orderPage.get().map(order -> new OrderResponse(order, level)).toArray(OrderResponse[]::new);
     }
 }
