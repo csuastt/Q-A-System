@@ -23,7 +23,7 @@ import MuiPhoneNumber from "mui-phone-number";
 import Snackbar from "@mui/material/Snackbar";
 import { validate_length, validate_required } from "./Login";
 import { validate_email } from "./Register";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";

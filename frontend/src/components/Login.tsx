@@ -22,8 +22,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import UserContext from "../UserContext";
-import ManagerContext from "../ManagerContext";
+import AuthContext from "../AuthContext";
 
 // some validators
 // not empty
@@ -34,10 +33,7 @@ export const validate_required = (value: any) => {
         return "";
     }
 };
-// eslint-disable-next-line react-hooks/rules-of-hooks
-// const managerContext = useContext(ManagerContext);
-// eslint-disable-next-line react-hooks/rules-of-hooks
-// const userContext = useContext(UserContext);
+
 
 // 6 to 12 in length
 export const validate_length = (value: any) => {
@@ -138,7 +134,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                             alertContent: "管理员登录成功",
                         });
                         // update state
-                        //managerContext.setManager(manager);
+                        this.context.setManager(manager);
 
                         // redirect
                         this.setState({
@@ -175,7 +171,7 @@ export default class Login extends Component<LoginProps, LoginState> {
                             alertContent: "登录成功",
                         });
                         // update state
-                        //userContext.setUser(user);
+                        this.context.setUser(user);
 
                         // redirect
                         this.setState({
@@ -352,4 +348,4 @@ export default class Login extends Component<LoginProps, LoginState> {
     }
 }
 
-//Login.contextType = UserContext;
+Login.contextType = AuthContext;

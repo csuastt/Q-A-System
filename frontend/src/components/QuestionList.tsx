@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 import CardActionArea from "@mui/material/CardActionArea";
 
 const QuestionList: React.FC<{ userId?: number }> = (props) => {

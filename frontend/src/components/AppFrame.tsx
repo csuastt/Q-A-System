@@ -36,11 +36,10 @@ import GroupIcon from "@mui/icons-material/Group";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
+import SettingsIcon from '@mui/icons-material/Settings';
 import SchoolIcon from '@mui/icons-material/School';
 
-import UserContext from "../UserContext";
-import ManagerContext from "../ManagerContext";
+import AuthContext from "../AuthContext";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -157,8 +156,7 @@ const AppBar = styled(MuiAppBar, {
 
 const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-    const { user } = useContext(UserContext);
-    const { manager } = useContext(ManagerContext);
+    const { user,manager } = useContext(AuthContext);
 
     const theme = useTheme();
 
@@ -323,7 +321,15 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ]
                 )}
                 <Divider />
+                {renderDrawerList(
+                    props.isAdmin
+                        ? [["系统参数", "/admins/settings", SettingsIcon]]
+                        :[["设置", "/settings", SettingsIcon]]
+
+                )}
+
             </Drawer>
+
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 {props.children}
