@@ -8,14 +8,21 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { formatTimestamp } from "../util";
+import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
 import Stack from "@mui/material/Stack";
 import UserContext from "../UserContext";
 import CardActionArea from "@mui/material/CardActionArea";
+import Pagination, { usePagination } from "./Pagination";
 
 const QuestionList: React.FC<{ userId?: number }> = (props) => {
+    const query = useQuery();
     const [questionList, setQuestionList] = useState<OrderList>();
-    const [shouldLogin, setShouldLogin] = useState<boolean>(false);
+    const [shouldRedirect, setShouldRedirect] = useState<string>();
+    const paginationInfo = usePagination(
+        parseIntWithDefault(query.get("page"), 1),
+        parseIntWithDefault(query.get("prepage"), 20)
+    );
+
     const { user } = useContext(UserContext);
 
     useEffect(() => {
@@ -24,13 +31,26 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
             userId = user?.id;
         }
         if (userId === undefined) {
-            setShouldLogin(true);
+            setShouldRedirect("/login");
             return;
         }
-        questionService.getOrdersOfUser(props.userId!).then((response) => {
-            setQuestionList(response);
-        });
-    }, [props.userId, user?.id]);
+        questionService
+            .getOrdersOfUser(
+                userId,
+                paginationInfo.currentPage,
+                paginationInfo.itemPrePage
+            )
+            .then((response) => {
+                setQuestionList(response.data);
+                paginationInfo.applyPagedList(response);
+            });
+    }, [paginationInfo, props.userId, user?.id]);
+
+    const onPageChanged = (newPage: number) => {
+        setShouldRedirect(
+            `/orders?page=${newPage}&prepage=${paginationInfo.itemPrePage}`
+        );
+    };
 
     const renderCardPlaceholder = () => (
         <Card>
@@ -118,14 +138,32 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
                     </CardActionArea>
                 </Card>
             ))}
+            {paginationInfo.maxPage > 1 && (
+                <Pagination {...paginationInfo} onPageChanged={onPageChanged} />
+            )}
         </>
     );
 
-    return shouldLogin ? (
-        <Redirect to={"/login"} />
-    ) : (
+    if (shouldRedirect) {
+        return <Redirect to={shouldRedirect} />;
+    }
+    if (questionList == null) {
+        return (
+            <Stack spacing={2} mt={4}>
+                {renderPlaceholder()}
+            </Stack>
+        );
+    }
+    if (questionList.length === 0) {
+        return (
+            <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
+                没有订单
+            </Typography>
+        );
+    }
+    return (
         <Stack spacing={2} mt={4}>
-            {questionList == null ? renderPlaceholder() : renderQuestionList()}
+            {renderQuestionList()}
         </Stack>
     );
 };

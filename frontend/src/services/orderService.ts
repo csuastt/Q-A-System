@@ -1,9 +1,21 @@
 import axios from "axios";
-import { CreationResult, OrderInfo, OrderList } from "./definations";
+import { CreationResult, OrderInfo, PagedList } from "./definations";
 
 class OrderService {
-    getOrdersOfUser(userId: number): Promise<OrderList> {
-        return axios.get("/orders").then((response) => response.data);
+    getOrdersOfUser(
+        userId: number,
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    asker: userId,
+                    page: page,
+                    pageSize: prePage,
+                },
+            })
+            .then((response) => response.data);
     }
 
     create_question(

@@ -102,3 +102,11 @@ export interface CreationResult {
     created_id: number;
     err_msg?: string;
 }
+
+export interface PagedList<T> {
+    data: Array<T>;
+    pageSize: number;
+    page: number;
+    totalPages: number;
+    totalCount: number;
+}
