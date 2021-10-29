@@ -3,6 +3,7 @@ package com.example.qa.test;
 import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
+import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserRepository;
 import com.example.qa.exchange.LoginRequest;
@@ -54,6 +55,7 @@ class OrderControllerTest {
         answerer.setRole(UserRole.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
+
     }
 
     @BeforeEach
@@ -72,6 +74,13 @@ class OrderControllerTest {
         request.setAsker(askerId);
         request.setAnswerer(answererId);
         request.setQuestion(question);
+        request.setEndReason(OrderEndReason.ASKER);
+        mockUtils.postUrl("/api/orders", token, request, status().isOk());
+        request.setPrice(10);
+        mockUtils.postUrl("/api/orders", token, request, status().isOk());
+        request.setEndReason(null);
+        mockUtils.postUrl("/api/orders", token, request, status().isOk());
+        request.setPrice(null);
         MvcResult createResult = mockUtils.postUrl("/api/orders", token, request, status().isOk());
         OrderResponse result = mapper.readValue(createResult.getResponse().getContentAsString(), OrderResponse.class);
         assertEquals(result.getAsker().getId(), askerId);
@@ -132,6 +141,13 @@ class OrderControllerTest {
         String newQuestion = "NewQuestion";
         OrderRequest request = new OrderRequest();
         request.setQuestion(newQuestion);
+        request.setEndReason(OrderEndReason.ASKER);
+        edit(id, request);
+        request.setPrice(10);
+        edit(id, request);
+        request.setEndReason(null);
+        edit(id, request);
+        request.setPrice(null);
         edit(id, request);
         assertEquals(query(id).getQuestion(), newQuestion);
     }

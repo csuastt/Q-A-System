@@ -22,11 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AdminControllerTest {
+class AdminControllerTest {
 
-    private final MockMvc mockMvc;
-    private final PasswordEncoder passwordEncoder;
-    private final AdminService adminService;
     private final MockUtils mockUtils;
 
     private String token;
@@ -38,9 +35,6 @@ public class AdminControllerTest {
 
     @Autowired
     public AdminControllerTest(MockMvc mockMvc, PasswordEncoder passwordEncoder, AdminService adminService) {
-        this.mockMvc = mockMvc;
-        this.passwordEncoder = passwordEncoder;
-        this.adminService = adminService;
         mockUtils = new MockUtils(mockMvc, mapper);
     }
 
@@ -82,12 +76,22 @@ public class AdminControllerTest {
 
     @Test
     void listAdmins() throws Exception {
-        mockMvc.perform(get("/api/admins")).andExpect(status().isOk()).andReturn();
+        mockUtils.getUrl("/api/admins", null, null, null, status().isOk());
     }
 
     @Test
     void getAdmin() throws Exception {
-        mockMvc.perform(get("/api/admins/" + 1)).andExpect(status().isOk()).andReturn();
-        mockMvc.perform(get("/api/admins/" + Long.MAX_VALUE)).andExpect(status().isNotFound()).andReturn();
+        mockUtils.getUrl("/api/admins/" + 1, null, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, null, null, null, status().isNotFound());
+    }
+
+    @Test
+    void logOut() throws Exception{
+        mockUtils.postUrl("/api/admin/logout", null, null, status().isOk());
+    }
+
+    @Test
+    void getUser() throws Exception{
+        mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
     }
 }

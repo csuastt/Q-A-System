@@ -130,6 +130,9 @@ class UserControllerTest {
         userRequest.setRole(UserRole.ANSWERER);
         userRequest.setBalance(200);
         mockUtils.putUrl("/api/users/" + id, token, userRequest, status().isOk());
+
+        userRequest.setNickname("");
+        mockUtils.putUrl("/api/users/" + id, token, userRequest, status().isOk());
     }
 
     @Test
@@ -144,6 +147,8 @@ class UserControllerTest {
     void apply() throws Exception {
         ApplyRequest request = new ApplyRequest();
         request.setDescription("MyDescription");
+        request.setPrice(null);
+        mockUtils.postUrl("/api/users/" + id + "/apply", token, request, status().isForbidden());
         request.setPrice(50);
         mockUtils.postUrl("/api/users/" + id + "/apply", token, request, status().isOk());
     }
@@ -155,6 +160,10 @@ class UserControllerTest {
         mockUtils.postUrl("/api/users/" + id + "/recharge", token, request, status().isOk());
     }
 
+    @Test
+    void logOut()throws Exception{
+        mockUtils.postUrl("/api/user/logout", null, null, status().isOk());
+    }
     @Test
     void userValidators() {
         UserController userController = new UserController(userService, passwordEncoder);
