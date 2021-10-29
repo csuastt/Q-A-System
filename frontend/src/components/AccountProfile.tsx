@@ -49,6 +49,8 @@ interface ProfileState {
     error_msg_money: string;
     money: number;
     openRechargeDialog: boolean;
+    personal_description: string;
+    profession_description: string;
 }
 
 // props interface
@@ -95,6 +97,8 @@ export default class AccountProfile extends Component<
             error_msg_email: "",
             money: 1,
             openRechargeDialog: false,
+            personal_description: "",
+            profession_description: ""
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
@@ -281,11 +285,24 @@ export default class AccountProfile extends Component<
                 userReady: true,
             });
             this.now_nickname = currentUser.nickname;
+            // init two kinds of description
+            let arr = currentUser.description.split("EwbkK8TU", 2);
+            this.setState({
+               personal_description: arr[0],
+               profession_description: arr.length > 1 ? arr[1] : ""
+            });
         }
     }
 
     // text change handler
     handleChange = (e: any) => {
+        if (e.target.name === "description")
+        {
+            this.setState({
+               personal_description: e.target.value
+            });
+            return;
+        }
         // avoid null
         if (this.state.user === null) return;
         // set new state
@@ -343,12 +360,18 @@ export default class AccountProfile extends Component<
                         this.context.setUser(response);
                         const currentUser = this.context.user;
 
+                        // init two kinds of description
+                        let arr = currentUser.description.split("EwbkK8TU", 2);
+
                         this.setState({
                             // token: authToken(),
                             user: currentUser,
                             userReady: true,
+                            personal_description: arr[0],
+                            profession_description: arr.length > 1 ? arr[1] : ""
                         });
                         this.now_nickname = currentUser.nickname;
+
                     }
                 },
                 (error) => {
@@ -373,6 +396,9 @@ export default class AccountProfile extends Component<
         if (temp.phone === "+") {
             temp.phone = "";
         }
+        // modify description
+        temp.description = this.state.personal_description + "EwbkK8TU" +
+            this.state.profession_description;
         // request
         if (this.props.isAdmin) {
             // todo make request for admin
@@ -780,6 +806,29 @@ export default class AccountProfile extends Component<
                                     ) : (
                                         <></>
                                     )}
+                                    {
+                                        this.state.user &&
+                                        this.state.user.role === UserRole.ANSWERER ?
+                                            (<Grid item md={12} xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="专业领域"
+                                                    name="profession"
+                                                    value={this.state.profession_description}
+                                                    InputProps={
+                                                        this.props.isAdmin
+                                                            ? {
+                                                                readOnly: false,
+                                                            }
+                                                            : {
+                                                                readOnly: true,
+                                                            }
+                                                    }
+                                                    variant="outlined"
+                                                />
+                                            </Grid>) :
+                                            (<></>)
+                                    }
                                     <Grid item md={12} xs={12}>
                                         <TextField
                                             fullWidth
@@ -788,7 +837,7 @@ export default class AccountProfile extends Component<
                                             multiline
                                             onChange={this.handleChange}
                                             rows={4}
-                                            value={this.state.user?.description || ''}
+                                            value={this.state.personal_description}
                                             InputProps={
                                                 !this.props.isAdmin &&
                                                 this.state.user &&
