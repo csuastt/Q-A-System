@@ -66,16 +66,20 @@ class AdminControllerTest {
     void createAdmin() throws Exception {
         CreateAdminRequest request = new CreateAdminRequest();
         request.setUsername("testAdmin" + adminCounter++);
+//        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isOk());
         request.setUsername("testAdmin" + adminCounter++);
         request.setRole(AdminRole.ADMIN);
+        //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isOk());
         request.setRole(AdminRole.SUPER_ADMIN);
+        //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isForbidden());
     }
 
     @Test
     void listAdmins() throws Exception {
+        mockUtils.getUrl("/api/admins", token, null, null, status().isOk());
         mockUtils.getUrl("/api/admins", null, null, null, status().isOk());
     }
 
@@ -93,5 +97,6 @@ class AdminControllerTest {
     @Test
     void getUser() throws Exception{
         mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
     }
 }
