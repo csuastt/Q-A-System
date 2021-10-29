@@ -113,7 +113,7 @@ GET /api/users
 
 返回值：
 
-- `200` OK `{ pageSize: 20, page: 1, totalPages: 2, totalUsers: 999, users: [...] }`
+- `200` OK `{ pageSize: 20, page: 1, totalPages: 2, totalCount: 999, data: [...] }`
 - `400` 格式错误
 - `403` 权限不足
 
@@ -148,17 +148,7 @@ GET /api/users/{id}
 返回值：
 
 - `200` OK（返回值是单个 User，详细程度见 Model）
-- `401` 未登录
 - `404` 用户不存在（或用户已删除且查询者不是管理员）
-
-【预期结果】
-
-（仅限本用户或者管理员）
-
-- `200` OK（返回值是单个 User，详细程度见 Model）
-- `401` 未登录
-- `403` 查询非本人信息
-- `404` 管理员查询用户不存在（不含已删除）
 
 ### 修改
 
@@ -270,3 +260,34 @@ POST /api/users/{id}/recharge
   | `NO_PERMISSION`    | 非本用户               |
   | `RECHARGE_INVALID` | 充值金额超过范围       |
   | `BALANCE_INVALID`  | （充值后）余额超过范围 |
+
+### 收入
+
+（仅限本人或管理员）
+
+```
+GET /api/users/{id}/earnings
+```
+
+返回值：
+
+- `200` OK
+- `401` 未登录
+- `403` 错误（没权限或者不是回答者）
+
+```json
+{
+    "total": 100,
+    "monthly": [
+        {
+            "month": "2021-02",
+            "earnings": 20
+        },
+        {
+            "month": "2021-07",
+            "earnings": 80
+        }
+    ]
+}
+```
+

@@ -7,7 +7,7 @@
 | 属性          | 类型           | JSON                           | 说明                                    |
 | ------------- | -------------- | ------------------------------ | --------------------------------------- |
 | id            | long           |                                |                                         |
-| deleted       | boolean        |                                | 删除标记                                |
+| deleted       | boolean        |                                | 删除标记（仅管理员）                    |
 | asker         | User           | Get: User, Set: number         |                                         |
 | answerer      | User           | Get: User, Set: number         |                                         |
 | state         | OrderState     | string                         |                                         |
@@ -20,9 +20,9 @@
 
 ### OrderState (enum)
 
-- CREATED - 已创建，等待支付
-- PAYED - 已支付，等待审核
-- PAY_TIMEOUT - 支付超时  **finished**
+- CREATED - 已创建并支付，等待审核
+- ~~PAYED - 已支付，等待审核~~
+- ~~PAY_TIMEOUT - 支付超时  **finished**~~
 - REVIEWED  - 审核通过，等待接单
 - REJECTED_BY_REVIEWER - 审核不通过，已退款  **finished**
 - ACCEPTED - 已接单，等待首次回答
@@ -74,11 +74,12 @@ POST /api/orders
 
 - `403` 错误
 
-  | message 属性       | 说明                                           |
-  | ------------------ | ---------------------------------------------- |
-  | `ASKER_INVALID`    | 未找到提问者（仅管理员）                       |
-  | `ANSWERER_INVALID` | 回答者与提问者相同/未找到回答者/回答者没有权限 |
-  | `QUESTION_INVALID` | 问题字数不符合系统要求（暂设 5≤length≤100）    |
+  | message 属性         | 说明                                           |
+  | -------------------- | ---------------------------------------------- |
+  | `ASKER_INVALID`      | 未找到提问者（仅管理员）                       |
+  | `ANSWERER_INVALID`   | 回答者与提问者相同/未找到回答者/回答者没有权限 |
+  | `QUESTION_INVALID`   | 问题字数不符合系统要求                         |
+  | `BALANCE_NOT_ENOUGH` | 余额不足                                       |
 
 ### 删除订单
 
@@ -153,45 +154,46 @@ GET /api/orders
 | pageSize | int  | 单页最大订单数，可选，默认为 20，最大为 50 |
 | page     | int  | 页数（从 1 开始），可选，默认为 1          |
 
-参数：（用户）
+参数：（用户）（时间降序）
 
-| 名称     | 类型 | 说明                                                     |
-| -------- | ---- | -------------------------------------------------------- |
-| asker    | long | 只能指定 asker / answerer 之一为查询用户                 |
-| answerer | long | 只能指定 asker / answerer 之一为查询用户（未过审不显示） |
+```
+?asker={自己的id}
+```
 
-参数：（管理员）
+获取自己的订单列表。
 
-| 名称  | 类型       | 说明                                        |
-| ----- | ---------- | ------------------------------------------- |
-| state | OrderState | 指定 state=PAYED 获取待审核订单（时间升序） |
+```
+?answerer={自己的id}
+```
+
+获取自己的回答列表。
+
+```
+?{asker;answerer}={id}&finished={true,on,yes,1;false,off,no,0}
+```
+
+获取已完成/进行中的订单。
+
+```
+?{asker;answerer}={id}&question={text}
+```
+
+搜索问题。
+
+参数：（管理员）（时间升序）
+
+```
+(无参数)
+?state={ORDER_STATE}
+?question={text}
+```
 
 返回值：
 
-- `200` OK `{ "pageSize": 20, "page": 1, "totalPages": 2, "totalOrders": 999, "orders": [...] }` （时间降序）
+- `200` OK `{ "pageSize": 20, "page": 1, "totalPages": 2, "totalCount": 999, "data": [...] }` 
 - `400` 格式错误
 - `401` 未登录
 - `403` 错误
-
-### 支付订单
-
-```
-POST /api/orders/{id}/pay
-```
-
-返回值：
-
-- `200` OK
-
-- `401` 未登录
-
-- `403` 错误（余额不足）
-
-  | message 属性         | 说明           |
-  | -------------------- | -------------- |
-  | `BALANCE_NOT_ENOUGH` | 余额不足       |
-  | `NO_PERMISSION`      | 不是提问者     |
-  | `NOT_TO_BE_PAYED`    | 不是待支付状态 |
 
 ### 审核订单
 
