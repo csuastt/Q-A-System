@@ -5,7 +5,7 @@ import App from "./App";
 import axios from "axios";
 //import AppManage from "./AppManage";
 
-axios.defaults.baseURL = process.env.REACT_APP_API_BASE;
+axios.defaults.baseURL = "http://localhost:8080/api";
 
 ReactDOM.render(
     <React.StrictMode>

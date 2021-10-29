@@ -40,9 +40,11 @@ interface AccountBriefProfileState {
     openApplyDialog: boolean;
     openPriceDialog: boolean;
     description: string;
+    profession: string;
     price: number;
-    error_msg: string;
-    error_msg_2: string;
+    error_msg_description: string;
+    error_msg_price: string;
+    error_msg_profession: string;
 }
 
 export default class AccountBriefProfile extends Component<
@@ -56,15 +58,17 @@ export default class AccountBriefProfile extends Component<
             openApplyDialog: false,
             openPriceDialog: false,
             description: "",
+            profession: "",
             price: 50,
-            error_msg: "",
-            error_msg_2: "",
+            error_msg_description: "",
+            error_msg_price: "",
+            error_msg_profession: ""
         };
         this.handleCloseApplyDialog = this.handleCloseApplyDialog.bind(this);
         this.handleOpenApplyDialog = this.handleOpenApplyDialog.bind(this);
         this.handleClosePriceDialog = this.handleClosePriceDialog.bind(this);
         this.handleOpenPriceDialog = this.handleOpenPriceDialog.bind(this);
-        this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handlePriceChange = this.handlePriceChange.bind(this);
         this.handleSubmitApply = this.handleSubmitApply.bind(this);
         this.handleSubmitPrice = this.handleSubmitPrice.bind(this);
@@ -95,13 +99,13 @@ export default class AccountBriefProfile extends Component<
         this.setState({ openPriceDialog: true });
     }
 
-    handleDescriptionChange(e: any) {
+    handleChange(e: any) {
         let error = validate_required(e.target.value);
         const nextState = {};
         // @ts-ignore
         nextState[e.target.name] = e.target.value;
         // @ts-ignore
-        nextState["error_msg"] = error;
+        nextState["error_msg_" + e.target.name] = error;
         this.setState(nextState);
         return error === "";
     }
@@ -111,12 +115,12 @@ export default class AccountBriefProfile extends Component<
         let value = e.target.value;
         if (error) {
             this.setState({
-                error_msg_2: "价格为空或格式错误",
+                error_msg_price: "价格为空或格式错误",
                 price: value,
             });
             return false;
         }
-        this.setState({ error_msg_2: "" });
+        this.setState({ error_msg_price: "" });
         if (value < this.props.minPrice) value = this.props.minPrice;
         else if (value > this.props.maxPrice) value = this.props.maxPrice;
         this.setState({
@@ -127,8 +131,11 @@ export default class AccountBriefProfile extends Component<
 
     handleSubmitApply() {
         if (
-            this.handleDescriptionChange({
-                target: { value: this.state.description },
+            this.handleChange({
+                target: { value: this.state.description, name: "description" },
+            }) &&
+            this.handleChange({
+                target: { value: this.state.profession, name: "profession" },
             }) &&
             this.handlePriceChange({
                 target: { value: this.state.price },
@@ -138,7 +145,7 @@ export default class AccountBriefProfile extends Component<
                 userService
                     .applyAnswerer(
                         this.props.id,
-                        this.state.description,
+                        this.state.description + "EwbkK8TU" + this.state.profession,
                         this.state.price
                     )
                     .then(
@@ -317,13 +324,14 @@ export default class AccountBriefProfile extends Component<
                     <DialogTitle>申请成为问答者</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={3}>
-                            在申请成为问答者前，请重新填写您的个人介绍以及设置定价。
-                            个人介绍是审核的重要根据，并且在提交成功后
+                            在申请成为问答者前，请填写您的专业领域介绍，
+                            重新填写您的个人介绍，以及设置您的问答定价。
+                            个人介绍、专业领域介绍是审核的重要根据，并且在提交成功后
                             <Box component="span" fontWeight="fontWeightBold">
                                 不可修改
                             </Box>
                             。
-                            优秀的、有展示性的个人介绍能帮助您获得更多提问者的青睐。
+                            优秀的、有展示性的个人介绍和精准的专业领域介绍能帮助您获得更多提问者的青睐。
                         </DialogContentText>
                         <TextField
                             fullWidth
@@ -331,13 +339,33 @@ export default class AccountBriefProfile extends Component<
                             label="个人介绍"
                             name="description"
                             multiline
-                            onChange={this.handleDescriptionChange}
+                            onChange={this.handleChange}
                             rows={4}
                             value={this.state.description}
-                            error={this.state.error_msg.length !== 0}
-                            helperText={this.state.error_msg}
+                            error={this.state.error_msg_description.length !== 0}
+                            helperText={this.state.error_msg_description}
                             placeholder="快来介绍一下你自己吧~"
                             variant="outlined"
+                            inputProps={{ maxLength: 200 }}
+                        />
+                        <DialogContentText mt={3} mb={3}>
+                            请用
+                            <Box component="span" fontWeight="fontWeightBold">
+                                逗号
+                            </Box>
+                            分隔您的问答专业领域。如“体育，健康，运动医学”。
+                        </DialogContentText>
+                        <TextField
+                            fullWidth
+                            label="专业领域"
+                            name="profession"
+                            onChange={this.handleChange}
+                            value={this.state.profession}
+                            error={this.state.error_msg_profession.length !== 0}
+                            helperText={this.state.error_msg_profession}
+                            placeholder="请填写您的问答专业领域~"
+                            variant="outlined"
+                            inputProps={{ maxLength: 50 }}
                         />
                         <DialogContentText mt={3} mb={3}>
                             在当前机制下， 回答定价最高不能超过
@@ -368,8 +396,8 @@ export default class AccountBriefProfile extends Component<
                                 ),
                             }}
                             value={this.state.price}
-                            error={this.state.error_msg_2.length !== 0}
-                            helperText={this.state.error_msg_2}
+                            error={this.state.error_msg_price.length !== 0}
+                            helperText={this.state.error_msg_price}
                             variant="outlined"
                         />
                     </DialogContent>
@@ -420,8 +448,8 @@ export default class AccountBriefProfile extends Component<
                                 ),
                             }}
                             value={this.state.price}
-                            error={this.state.error_msg_2.length !== 0}
-                            helperText={this.state.error_msg_2}
+                            error={this.state.error_msg_price.length !== 0}
+                            helperText={this.state.error_msg_price}
                             variant="outlined"
                         />
                     </DialogContent>
