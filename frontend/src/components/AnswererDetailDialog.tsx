@@ -13,6 +13,13 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
     props
 ) => {
     const { info } = props;
+    let description = null;
+    let profession = null;
+    if (info.description) {
+        let arr = info.description.split("EwbkK8TU", 2);
+        description = arr[0];
+        profession = arr.length > 1 ? arr[1] : "";
+    }
     return (
         <Dialog {...props}>
             <DialogTitle>回答者信息</DialogTitle>
@@ -27,14 +34,27 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
                     />
                     <CardContent>
                         <TextField
+                            label="专业领域"
+                            contentEditable={false}
+                            value={
+                                profession !== null
+                                    ? profession
+                                    : "该回答者很懒～还没有填写专业领域哦～"
+                            }
+                            fullWidth
+                        />
+                        <TextField
                             label="个人介绍"
                             contentEditable={false}
                             value={
-                                info.description
-                                    ? info.description
+                                description !== null
+                                    ? description
                                     : "该回答者很懒～还没有填写个人介绍哦～"
                             }
                             fullWidth
+                            multiline
+                            rows={4}
+                            sx={{ marginTop: 4 }}
                         />
                     </CardContent>
                 </Card>

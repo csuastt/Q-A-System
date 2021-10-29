@@ -98,7 +98,7 @@ export default class AccountProfile extends Component<
             money: 1,
             openRechargeDialog: false,
             personal_description: "",
-            profession_description: ""
+            profession_description: "",
         };
         this.handleAlert = this.handleAlert.bind(this);
         this.handleRedirect = this.handleRedirect.bind(this);
@@ -288,18 +288,17 @@ export default class AccountProfile extends Component<
             // init two kinds of description
             let arr = currentUser.description.split("EwbkK8TU", 2);
             this.setState({
-               personal_description: arr[0],
-               profession_description: arr.length > 1 ? arr[1] : ""
+                personal_description: arr[0],
+                profession_description: arr.length > 1 ? arr[1] : "",
             });
         }
     }
 
     // text change handler
     handleChange = (e: any) => {
-        if (e.target.name === "description")
-        {
+        if (e.target.name === "description") {
             this.setState({
-               personal_description: e.target.value
+                personal_description: e.target.value,
             });
             return;
         }
@@ -368,10 +367,10 @@ export default class AccountProfile extends Component<
                             user: currentUser,
                             userReady: true,
                             personal_description: arr[0],
-                            profession_description: arr.length > 1 ? arr[1] : ""
+                            profession_description:
+                                arr.length > 1 ? arr[1] : "",
                         });
                         this.now_nickname = currentUser.nickname;
-
                     }
                 },
                 (error) => {
@@ -397,7 +396,9 @@ export default class AccountProfile extends Component<
             temp.phone = "";
         }
         // modify description
-        temp.description = this.state.personal_description + "EwbkK8TU" +
+        temp.description =
+            this.state.personal_description +
+            "EwbkK8TU" +
             this.state.profession_description;
         // request
         if (this.props.isAdmin) {
@@ -522,7 +523,8 @@ export default class AccountProfile extends Component<
                                                 onChange={this.handleChangeUser}
                                                 required
                                                 value={
-                                                    this.state.user?.username || ''
+                                                    this.state.user?.username ||
+                                                    ""
                                                 }
                                                 // @ts-ignore
                                                 error={
@@ -544,7 +546,8 @@ export default class AccountProfile extends Component<
                                                 name="username"
                                                 InputProps={{ readOnly: true }}
                                                 value={
-                                                    this.state.user?.username || ''
+                                                    this.state.user?.username ||
+                                                    ""
                                                 }
                                                 variant="outlined"
                                             />
@@ -559,7 +562,9 @@ export default class AccountProfile extends Component<
                                                 InputProps={{
                                                     readOnly: false,
                                                 }}
-                                                value={this.state.user?.email || ''}
+                                                value={
+                                                    this.state.user?.email || ""
+                                                }
                                                 onChange={this.handleChangeUser}
                                                 required
                                                 variant="outlined"
@@ -582,7 +587,9 @@ export default class AccountProfile extends Component<
                                                 InputProps={{
                                                     readOnly: true,
                                                 }}
-                                                value={this.state.user?.email || ''}
+                                                value={
+                                                    this.state.user?.email || ""
+                                                }
                                                 variant="outlined"
                                             />
                                         )}
@@ -602,7 +609,7 @@ export default class AccountProfile extends Component<
                                                     required
                                                     value={
                                                         this.state.user
-                                                            ?.password  || ''
+                                                            ?.password || ""
                                                     }
                                                     variant="outlined"
                                                     // @ts-ignore
@@ -632,7 +639,8 @@ export default class AccountProfile extends Component<
                                                         native: true,
                                                     }}
                                                     value={
-                                                        this.state.user?.role  || ''
+                                                        this.state.user?.role ||
+                                                        ""
                                                     }
                                                     variant="outlined"
                                                 >
@@ -662,7 +670,9 @@ export default class AccountProfile extends Component<
                                             label="昵称"
                                             name="nickname"
                                             onChange={this.handleChange}
-                                            value={this.state.user?.nickname  || ''}
+                                            value={
+                                                this.state.user?.nickname || ""
+                                            }
                                             variant="outlined"
                                             placeholder={"请填写昵称~"}
                                             inputProps={{ maxLength: 30 }}
@@ -676,7 +686,9 @@ export default class AccountProfile extends Component<
                                             onChange={this.handleChange}
                                             select
                                             SelectProps={{ native: true }}
-                                            value={this.state.user?.gender || ''}
+                                            value={
+                                                this.state.user?.gender || ""
+                                            }
                                             variant="outlined"
                                         >
                                             {gender_options.map((option) => (
@@ -702,7 +714,7 @@ export default class AccountProfile extends Component<
                                             }}
                                             defaultCountry={"cn"}
                                             onChange={this.handleChange}
-                                            value={this.state.user?.phone || ''}
+                                            value={this.state.user?.phone || ""}
                                             variant="outlined"
                                         />
                                     </Grid>
@@ -745,7 +757,9 @@ export default class AccountProfile extends Component<
                                                           ),
                                                       }
                                             }
-                                            value={this.state.user?.balance || ''}
+                                            value={
+                                                this.state.user?.balance || ""
+                                            }
                                             variant="outlined"
                                         />
                                     </Grid>
@@ -797,7 +811,8 @@ export default class AccountProfile extends Component<
                                                         ),
                                                     }}
                                                     value={
-                                                        this.state.user?.price  || ''
+                                                        this.state.user
+                                                            ?.price || ""
                                                     }
                                                     variant="outlined"
                                                 />
@@ -806,29 +821,33 @@ export default class AccountProfile extends Component<
                                     ) : (
                                         <></>
                                     )}
-                                    {
-                                        this.state.user &&
-                                        this.state.user.role === UserRole.ANSWERER ?
-                                            (<Grid item md={12} xs={12}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="专业领域"
-                                                    name="profession"
-                                                    value={this.state.profession_description}
-                                                    InputProps={
-                                                        this.props.isAdmin
-                                                            ? {
-                                                                readOnly: false,
-                                                            }
-                                                            : {
-                                                                readOnly: true,
-                                                            }
-                                                    }
-                                                    variant="outlined"
-                                                />
-                                            </Grid>) :
-                                            (<></>)
-                                    }
+                                    {this.state.user &&
+                                    this.state.user.role ===
+                                        UserRole.ANSWERER ? (
+                                        <Grid item md={12} xs={12}>
+                                            <TextField
+                                                fullWidth
+                                                label="专业领域"
+                                                name="profession"
+                                                value={
+                                                    this.state
+                                                        .profession_description
+                                                }
+                                                InputProps={
+                                                    this.props.isAdmin
+                                                        ? {
+                                                              readOnly: false,
+                                                          }
+                                                        : {
+                                                              readOnly: true,
+                                                          }
+                                                }
+                                                variant="outlined"
+                                            />
+                                        </Grid>
+                                    ) : (
+                                        <></>
+                                    )}
                                     <Grid item md={12} xs={12}>
                                         <TextField
                                             fullWidth
@@ -837,7 +856,9 @@ export default class AccountProfile extends Component<
                                             multiline
                                             onChange={this.handleChange}
                                             rows={4}
-                                            value={this.state.personal_description}
+                                            value={
+                                                this.state.personal_description
+                                            }
                                             InputProps={
                                                 !this.props.isAdmin &&
                                                 this.state.user &&

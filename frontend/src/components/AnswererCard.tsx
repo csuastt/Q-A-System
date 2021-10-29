@@ -59,6 +59,22 @@ const AnswererCard: React.FC<{
         );
     };
 
+    const trimString = (str: string) => {
+        if (str.length > 8) return str.substr(0, 8) + "...";
+        else return str;
+    };
+
+    let description = "暂无个人介绍";
+    let profession = "暂无专业领域";
+    if (userInfo) {
+        let arr = userInfo.description.split("EwbkK8TU", 2);
+        description =
+            arr[0].replace(/(^\s*)|(\s*$)/g, "").length > 0
+                ? trimString(arr[0])
+                : "暂无个人介绍";
+        profession = arr.length > 1 ? trimString(arr[1]) : "暂无专业领域";
+    }
+
     return userInfo ? (
         <>
             <Card sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
@@ -93,7 +109,13 @@ const AnswererCard: React.FC<{
                                     color="textSecondary"
                                     variant="body1"
                                 >
-                                    {userInfo.description}
+                                    {profession}
+                                </Typography>
+                                <Typography
+                                    color="textSecondary"
+                                    variant="body1"
+                                >
+                                    {description}
                                 </Typography>
                             </Box>
                             {userInfo.role === UserRole.ANSWERER ? (

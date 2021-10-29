@@ -62,7 +62,7 @@ export default class AccountBriefProfile extends Component<
             price: 50,
             error_msg_description: "",
             error_msg_price: "",
-            error_msg_profession: ""
+            error_msg_profession: "",
         };
         this.handleCloseApplyDialog = this.handleCloseApplyDialog.bind(this);
         this.handleOpenApplyDialog = this.handleOpenApplyDialog.bind(this);
@@ -145,7 +145,9 @@ export default class AccountBriefProfile extends Component<
                 userService
                     .applyAnswerer(
                         this.props.id,
-                        this.state.description + "EwbkK8TU" + this.state.profession,
+                        this.state.description +
+                            "EwbkK8TU" +
+                            this.state.profession,
                         this.state.price
                     )
                     .then(
@@ -342,7 +344,9 @@ export default class AccountBriefProfile extends Component<
                             onChange={this.handleChange}
                             rows={4}
                             value={this.state.description}
-                            error={this.state.error_msg_description.length !== 0}
+                            error={
+                                this.state.error_msg_description.length !== 0
+                            }
                             helperText={this.state.error_msg_description}
                             placeholder="快来介绍一下你自己吧~"
                             variant="outlined"
