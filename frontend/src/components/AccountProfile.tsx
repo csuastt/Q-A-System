@@ -496,7 +496,7 @@ export default class AccountProfile extends Component<
                                                 onChange={this.handleChangeUser}
                                                 required
                                                 value={
-                                                    this.state.user?.username
+                                                    this.state.user?.username || ''
                                                 }
                                                 // @ts-ignore
                                                 error={
@@ -518,7 +518,7 @@ export default class AccountProfile extends Component<
                                                 name="username"
                                                 InputProps={{ readOnly: true }}
                                                 value={
-                                                    this.state.user?.username
+                                                    this.state.user?.username || ''
                                                 }
                                                 variant="outlined"
                                             />
@@ -533,7 +533,7 @@ export default class AccountProfile extends Component<
                                                 InputProps={{
                                                     readOnly: false,
                                                 }}
-                                                value={this.state.user?.email}
+                                                value={this.state.user?.email || ''}
                                                 onChange={this.handleChangeUser}
                                                 required
                                                 variant="outlined"
@@ -556,7 +556,7 @@ export default class AccountProfile extends Component<
                                                 InputProps={{
                                                     readOnly: true,
                                                 }}
-                                                value={this.state.user?.email}
+                                                value={this.state.user?.email || ''}
                                                 variant="outlined"
                                             />
                                         )}
@@ -576,7 +576,7 @@ export default class AccountProfile extends Component<
                                                     required
                                                     value={
                                                         this.state.user
-                                                            ?.password
+                                                            ?.password  || ''
                                                     }
                                                     variant="outlined"
                                                     // @ts-ignore
@@ -606,7 +606,7 @@ export default class AccountProfile extends Component<
                                                         native: true,
                                                     }}
                                                     value={
-                                                        this.state.user?.role
+                                                        this.state.user?.role  || ''
                                                     }
                                                     variant="outlined"
                                                 >
@@ -636,7 +636,7 @@ export default class AccountProfile extends Component<
                                             label="昵称"
                                             name="nickname"
                                             onChange={this.handleChange}
-                                            value={this.state.user?.nickname}
+                                            value={this.state.user?.nickname  || ''}
                                             variant="outlined"
                                             placeholder={"请填写昵称~"}
                                             inputProps={{ maxLength: 30 }}
@@ -650,7 +650,7 @@ export default class AccountProfile extends Component<
                                             onChange={this.handleChange}
                                             select
                                             SelectProps={{ native: true }}
-                                            value={this.state.user?.gender}
+                                            value={this.state.user?.gender || ''}
                                             variant="outlined"
                                         >
                                             {gender_options.map((option) => (
@@ -676,7 +676,7 @@ export default class AccountProfile extends Component<
                                             }}
                                             defaultCountry={"cn"}
                                             onChange={this.handleChange}
-                                            value={this.state.user?.phone}
+                                            value={this.state.user?.phone || ''}
                                             variant="outlined"
                                         />
                                     </Grid>
@@ -719,7 +719,7 @@ export default class AccountProfile extends Component<
                                                           ),
                                                       }
                                             }
-                                            value={this.state.user?.balance}
+                                            value={this.state.user?.balance || ''}
                                             variant="outlined"
                                         />
                                     </Grid>
@@ -771,7 +771,7 @@ export default class AccountProfile extends Component<
                                                         ),
                                                     }}
                                                     value={
-                                                        this.state.user?.price
+                                                        this.state.user?.price  || ''
                                                     }
                                                     variant="outlined"
                                                 />
@@ -788,7 +788,7 @@ export default class AccountProfile extends Component<
                                             multiline
                                             onChange={this.handleChange}
                                             rows={4}
-                                            value={this.state.user?.description}
+                                            value={this.state.user?.description || ''}
                                             InputProps={
                                                 !this.props.isAdmin &&
                                                 this.state.user &&
