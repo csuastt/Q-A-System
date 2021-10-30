@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
-import { UserBasicInfo, UserRole } from "../services/definations";
+import { UserBasicInfo } from "../services/definations";
 import userService from "../services/userService";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
@@ -20,6 +20,7 @@ const AnswererCard: React.FC<{
     userId?: number;
     placeholder?: boolean;
     nextUrl?: string;
+    briefMsg?: boolean;
 }> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -39,20 +40,9 @@ const AnswererCard: React.FC<{
     const handleOpenDialog = () => setDialogOpen(true);
     const handleCloseDialog = () => setDialogOpen(false);
 
-    const CardActionWrapper: React.FC<{ nextUrl?: string }> = (
-        wrapperProps
-    ) => {
-        return wrapperProps.nextUrl ? (
-            // If has nextUrl, Card will follow it
-            <CardActionArea
-                component={RouterLink}
-                to={wrapperProps.nextUrl}
-                sx={{ flex: 1 }}
-            >
-                {wrapperProps.children}
-            </CardActionArea>
-        ) : (
-            // Or it will show answerer's detail dialog
+    const CardActionWrapper: React.FC<{}> = (wrapperProps) => {
+        return (
+            // show answerer's detail dialog
             <CardActionArea onClick={handleOpenDialog} sx={{ flex: 1 }}>
                 {wrapperProps.children}
             </CardActionArea>
@@ -78,7 +68,7 @@ const AnswererCard: React.FC<{
     return userInfo ? (
         <>
             <Card sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                <CardActionWrapper nextUrl={props.nextUrl}>
+                <CardActionWrapper>
                     <CardContent sx={{ paddingBottom: 0 }}>
                         <Box
                             sx={{
@@ -105,20 +95,32 @@ const AnswererCard: React.FC<{
                                 </Typography>
                             </Box>
                             <Box mx={2} mt={-1}>
-                                <Typography
-                                    color="textSecondary"
-                                    variant="body1"
-                                >
-                                    {profession}
-                                </Typography>
-                                <Typography
-                                    color="textSecondary"
-                                    variant="body1"
-                                >
-                                    {description}
-                                </Typography>
+                                {typeof props.briefMsg === "undefined" ||
+                                !props.briefMsg ? (
+                                    <>
+                                        <Typography
+                                            color="textSecondary"
+                                            variant="body1"
+                                        >
+                                            {profession}
+                                        </Typography>
+                                        <Typography
+                                            color="textSecondary"
+                                            variant="body1"
+                                        >
+                                            {description}
+                                        </Typography>
+                                    </>
+                                ) : (
+                                    <Typography
+                                        color="textSecondary"
+                                        variant="body1"
+                                    >
+                                        {"快来向我提问吧~"}
+                                    </Typography>
+                                )}
                             </Box>
-                            {userInfo.role === UserRole.ANSWERER ? (
+                            {typeof userInfo.price !== "undefined" ? (
                                 <Grid
                                     container
                                     mt={0.5}
@@ -161,14 +163,17 @@ const AnswererCard: React.FC<{
                     style={{ justifyContent: "center" }}
                     sx={{ paddingBottom: 2 }}
                 >
-                    <Button
-                        color="primary"
-                        size="large"
-                        variant="outlined"
-                        onClick={handleOpenDialog}
-                    >
-                        详细信息
-                    </Button>
+                    {(typeof props.briefMsg === "undefined" ||
+                        !props.briefMsg) && (
+                        <Button
+                            color="primary"
+                            size="large"
+                            variant="outlined"
+                            onClick={handleOpenDialog}
+                        >
+                            详细信息
+                        </Button>
+                    )}
                     {props.nextUrl && (
                         <Button
                             color="primary"

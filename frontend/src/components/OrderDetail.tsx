@@ -222,7 +222,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     }
 
     return (
-        <Stack spacing={2}>
+        <Stack spacing={2} mt={4}>
             <Card>
                 <CardHeader
                     avatar={
