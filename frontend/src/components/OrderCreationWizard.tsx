@@ -249,6 +249,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     fullWidth
                     multiline
                     rows={5}
+                    inputProps={{ maxLength: 100 }}
                 />
                 <Stack
                     spacing={matches ? 4 : 2}

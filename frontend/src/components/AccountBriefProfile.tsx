@@ -289,8 +289,8 @@ export default class AccountBriefProfile extends Component<
                                     variant="body1"
                                 >
                                     {this.props.role === UserRole.USER
-                                        ? "你还不是问答者，快去申请吧~"
-                                        : "你已经是问答者了，快去回答问题吧~"}
+                                        ? "你还不是回答者，快去申请吧~"
+                                        : "你已经是回答者了，快去回答问题吧~"}
                                 </Typography>
                             </Box>
                         </Box>
@@ -304,7 +304,7 @@ export default class AccountBriefProfile extends Component<
                                 variant="text"
                                 onClick={this.handleOpenApplyDialog}
                             >
-                                问答者申请
+                                回答者申请
                             </Button>
                         ) : (
                             <Button
@@ -323,10 +323,10 @@ export default class AccountBriefProfile extends Component<
                     open={this.state.openApplyDialog}
                     onClose={this.handleCloseApplyDialog}
                 >
-                    <DialogTitle>申请成为问答者</DialogTitle>
+                    <DialogTitle>申请成为回答者</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={3}>
-                            在申请成为问答者前，请填写您的专业领域介绍，
+                            在申请成为回答者前，请填写您的专业领域介绍，
                             重新填写您的个人介绍，以及设置您的问答定价。
                             个人介绍、专业领域介绍是审核的重要根据，并且在提交成功后
                             <Box component="span" fontWeight="fontWeightBold">

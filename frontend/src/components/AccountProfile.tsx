@@ -68,7 +68,7 @@ const gender_options = [
 // permission options
 const permission_options = [
     { value: UserRole.USER, label: "提问者" },
-    { value: UserRole.ANSWERER, label: "问答者" },
+    { value: UserRole.ANSWERER, label: "回答者" },
 ];
 
 export default class AccountProfile extends Component<
