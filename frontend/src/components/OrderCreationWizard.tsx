@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import questionService from "../services/orderService";
-import { CreationResult } from "../services/definations";
+import {CreationResult, CreationResultType} from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -74,9 +74,19 @@ const OrderCreationWizard: React.FC = (props) => {
 
     const createQuestion = () => {
         nextStep();
-        questionService
-            .create_question(user!.id, answerer, questionText)
-            .then((res) => setResult(res));
+        if (user && user.id === answerer) {
+            // answering yourself is not allowed
+            setResult({
+                type: 1,
+                state: "NULL",
+                created_id: -1,
+                message: "ASKER_ANSWER_SAME"
+            });
+        } else {
+            questionService
+                .create_question(user!.id, answerer, questionText)
+                .then((res) => setResult(res));
+        }
     };
 
     const renderResult = () => {
@@ -100,8 +110,49 @@ const OrderCreationWizard: React.FC = (props) => {
                             mt={1}
                             mb={matches ? 4 : 2}
                         >
-                            {"余额不足，请充值后再试"}
+                            {"余额不足，请充值后重试"}
                         </Typography>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            component={RouterLink}
+                            to={`/answerers/select`}
+                            size={matches ? "large" : "medium"}
+                        >
+                            重新选择
+                        </Button>
+                    </Box>)
+            }
+            else if (result.message === "ASKER_ANSWER_SAME") {
+                return (
+                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                        <ErrorOutlineIcon
+                            color="error"
+                            sx={
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                        fontSize: 60,
+                                        marginLeft: 7,
+                                    }
+                            }
+                        />
+                        <Typography
+                            variant={matches ? "h5" : "h6"}
+                            mt={1}
+                            mb={matches ? 4 : 2}
+                        >
+                            {"不能向自己提问，请选择其他回答者重试"}
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            component={RouterLink}
+                            to={`/answerers/select`}
+                            size={matches ? "large" : "medium"}
+                        >
+                            重新选择
+                        </Button>
                     </Box>)
             }
             else if (result.state === "CREATED") {
@@ -125,6 +176,15 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             {"您的问题已经创建成功"}
                         </Typography>
+                        <Button
+                            variant="outlined"
+                            color="success"
+                            component={RouterLink}
+                            to={`/answerers/select`}
+                            size={matches ? "large" : "medium"}
+                        >
+                            再问一个
+                        </Button>
                     </Box>
                 );
             } else {
@@ -148,6 +208,15 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             {"您的问题创建出错"}
                         </Typography>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            component={RouterLink}
+                            to={`/answerers/select`}
+                            size={matches ? "large" : "medium"}
+                        >
+                            重新选择
+                        </Button>
                     </Box>
                 );
             }
