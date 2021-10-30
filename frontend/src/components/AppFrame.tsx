@@ -32,7 +32,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GroupIcon from "@mui/icons-material/Group";
-import AddCommentIcon from '@mui/icons-material/AddComment';
+import AddCommentIcon from "@mui/icons-material/AddComment";
 
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
@@ -43,7 +43,7 @@ import AuthContext from "../AuthContext";
 
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import { UserRole } from "../services/definations";
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -198,9 +198,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
 
     const drawerList3: () => Array<[string, string, typeof SvgIcon]> = () => {
         if (user == null) {
-            return [
-                ["回答者列表", "/answerers", SchoolIcon]
-            ];
+            return [["回答者列表", "/answerers", SchoolIcon]];
         }
         if (user.role === UserRole.USER) {
             return [

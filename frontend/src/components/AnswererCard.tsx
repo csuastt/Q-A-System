@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
-import { UserBasicInfo} from "../services/definations";
+import { UserBasicInfo } from "../services/definations";
 import userService from "../services/userService";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
@@ -40,9 +40,7 @@ const AnswererCard: React.FC<{
     const handleOpenDialog = () => setDialogOpen(true);
     const handleCloseDialog = () => setDialogOpen(false);
 
-    const CardActionWrapper: React.FC<{ }> = (
-        wrapperProps
-    ) => {
+    const CardActionWrapper: React.FC<{}> = (wrapperProps) => {
         return (
             // show answerer's detail dialog
             <CardActionArea onClick={handleOpenDialog} sx={{ flex: 1 }}>
@@ -97,8 +95,8 @@ const AnswererCard: React.FC<{
                                 </Typography>
                             </Box>
                             <Box mx={2} mt={-1}>
-                            {
-                                (typeof props.briefMsg === "undefined" || !props.briefMsg) ? (
+                                {typeof props.briefMsg === "undefined" ||
+                                !props.briefMsg ? (
                                     <>
                                         <Typography
                                             color="textSecondary"
@@ -113,14 +111,14 @@ const AnswererCard: React.FC<{
                                             {description}
                                         </Typography>
                                     </>
-                                ) :
-                                <Typography
-                                    color="textSecondary"
-                                    variant="body1"
-                                >
-                                    {"快来向我提问吧~"}
-                                </Typography>
-                            }
+                                ) : (
+                                    <Typography
+                                        color="textSecondary"
+                                        variant="body1"
+                                    >
+                                        {"快来向我提问吧~"}
+                                    </Typography>
+                                )}
                             </Box>
                             {typeof userInfo.price !== "undefined" ? (
                                 <Grid
@@ -165,18 +163,17 @@ const AnswererCard: React.FC<{
                     style={{ justifyContent: "center" }}
                     sx={{ paddingBottom: 2 }}
                 >
-                    {
-                        (typeof props.briefMsg === "undefined" || !props.briefMsg) && (
-                            <Button
-                                color="primary"
-                                size="large"
-                                variant="outlined"
-                                onClick={handleOpenDialog}
-                            >
-                                详细信息
-                            </Button>
-                        )
-                    }
+                    {(typeof props.briefMsg === "undefined" ||
+                        !props.briefMsg) && (
+                        <Button
+                            color="primary"
+                            size="large"
+                            variant="outlined"
+                            onClick={handleOpenDialog}
+                        >
+                            详细信息
+                        </Button>
+                    )}
                     {props.nextUrl && (
                         <Button
                             color="primary"

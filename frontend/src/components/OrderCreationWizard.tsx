@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import questionService from "../services/orderService";
-import {CreationResult, CreationResultType} from "../services/definations";
+import { CreationResult, CreationResultType } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -80,7 +80,7 @@ const OrderCreationWizard: React.FC = (props) => {
                 type: 1,
                 state: "NULL",
                 created_id: -1,
-                message: "ASKER_ANSWER_SAME"
+                message: "ASKER_ANSWER_SAME",
             });
         } else {
             questionService
@@ -100,9 +100,9 @@ const OrderCreationWizard: React.FC = (props) => {
                                 matches
                                     ? { fontSize: 80 }
                                     : {
-                                        fontSize: 60,
-                                        marginLeft: 7,
-                                    }
+                                          fontSize: 60,
+                                          marginLeft: 7,
+                                      }
                             }
                         />
                         <Typography
@@ -121,9 +121,9 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>)
-            }
-            else if (result.message === "ASKER_ANSWER_SAME") {
+                    </Box>
+                );
+            } else if (result.message === "ASKER_ANSWER_SAME") {
                 return (
                     <Box textAlign={matches ? "center" : "start"} mt={1}>
                         <ErrorOutlineIcon
@@ -132,9 +132,9 @@ const OrderCreationWizard: React.FC = (props) => {
                                 matches
                                     ? { fontSize: 80 }
                                     : {
-                                        fontSize: 60,
-                                        marginLeft: 7,
-                                    }
+                                          fontSize: 60,
+                                          marginLeft: 7,
+                                      }
                             }
                         />
                         <Typography
@@ -153,9 +153,9 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>)
-            }
-            else if (result.state === "CREATED") {
+                    </Box>
+                );
+            } else if (result.state === "CREATED") {
                 return (
                     <Box textAlign={matches ? "center" : "start"} mt={1}>
                         <CheckCircleOutlineIcon
@@ -246,17 +246,9 @@ const OrderCreationWizard: React.FC = (props) => {
     const renderFirstStep = () => {
         return answerer >= 0 ? (
             <>
-                <Grid
-                    container
-                    justifyContent={"center"}
-                    spacing={4}
-                >
-                    <Grid
-                        item
-                        md={4}
-                        xs={8}
-                    >
-                        <AnswererCard userId={answerer} briefMsg={true}/>
+                <Grid container justifyContent={"center"} spacing={4}>
+                    <Grid item md={4} xs={8}>
+                        <AnswererCard userId={answerer} briefMsg={true} />
                     </Grid>
                     <Grid item md={8} xs={12}>
                         <AnswererDetailCard userId={answerer} />
