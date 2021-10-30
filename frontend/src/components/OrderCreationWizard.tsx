@@ -19,6 +19,7 @@ import UserContext from "../AuthContext";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Grid from "@mui/material/Grid";
+import AnswererDetailCard from "./AnswerDetailCard";
 
 function processInt(str?: string): number {
     if (str) {
@@ -179,14 +180,17 @@ const OrderCreationWizard: React.FC = (props) => {
                 <Grid
                     container
                     justifyContent={"center"}
+                    spacing={4}
                 >
                     <Grid
                         item
-                        lg={4}
-                        md={6}
-                        xs={12}
+                        md={4}
+                        xs={8}
                     >
-                        <AnswererCard userId={answerer} />
+                        <AnswererCard userId={answerer} briefMsg={true}/>
+                    </Grid>
+                    <Grid item md={8} xs={12}>
+                        <AnswererDetailCard userId={answerer} />
                     </Grid>
                 </Grid>
                 <Stack
