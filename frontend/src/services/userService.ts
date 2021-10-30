@@ -55,7 +55,7 @@ class UserService {
     }
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
         return axios
-            .get(`/users/${id}/basic`)
+            .get(`/users/${id}`)
             .then((response) => response.data);
     }
 

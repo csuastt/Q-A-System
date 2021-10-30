@@ -18,6 +18,7 @@ import Box from "@mui/material/Box";
 import UserContext from "../AuthContext";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import Grid from "@mui/material/Grid";
 
 function processInt(str?: string): number {
     if (str) {
@@ -79,7 +80,30 @@ const OrderCreationWizard: React.FC = (props) => {
 
     const renderResult = () => {
         if (result) {
-            if (result.state === "CREATED") {
+            if (result.message === "BALANCE_NOT_ENOUGH") {
+                return (
+                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                        <ErrorOutlineIcon
+                            color="error"
+                            sx={
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                        fontSize: 60,
+                                        marginLeft: 7,
+                                    }
+                            }
+                        />
+                        <Typography
+                            variant={matches ? "h5" : "h6"}
+                            mt={1}
+                            mb={matches ? 4 : 2}
+                        >
+                            {"余额不足，请充值后再试"}
+                        </Typography>
+                    </Box>)
+            }
+            else if (result.state === "CREATED") {
                 return (
                     <Box textAlign={matches ? "center" : "start"} mt={1}>
                         <CheckCircleOutlineIcon
@@ -152,7 +176,19 @@ const OrderCreationWizard: React.FC = (props) => {
     const renderFirstStep = () => {
         return answerer >= 0 ? (
             <>
-                <AnswererCard userId={answerer} />
+                <Grid
+                    container
+                    justifyContent={"center"}
+                >
+                    <Grid
+                        item
+                        lg={4}
+                        md={6}
+                        xs={12}
+                    >
+                        <AnswererCard userId={answerer} />
+                    </Grid>
+                </Grid>
                 <Stack
                     spacing={matches ? 4 : 2}
                     direction="row"
