@@ -31,10 +31,19 @@ import HomeIcon from "@mui/icons-material/Home";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import GroupIcon from "@mui/icons-material/Group";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import UserContext from "../UserContext";
+import AddCommentIcon from "@mui/icons-material/AddComment";
+
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import SettingsIcon from "@mui/icons-material/Settings";
+import SchoolIcon from "@mui/icons-material/School";
+
+import AuthContext from "../AuthContext";
+
+import RateReviewIcon from "@mui/icons-material/RateReview";
+import { UserRole } from "../services/definations";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -149,9 +158,9 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const AppFrame: React.FC = (props) => {
+const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-    const { user } = useContext(UserContext);
+    const { user, manager } = useContext(AuthContext);
 
     const theme = useTheme();
 
@@ -187,43 +196,96 @@ const AppFrame: React.FC = (props) => {
         </List>
     );
 
+    const drawerList3: () => Array<[string, string, typeof SvgIcon]> = () => {
+        if (user == null) {
+            return [["回答者列表", "/answerers", SchoolIcon]];
+        }
+        if (user.role === UserRole.USER) {
+            return [
+                ["回答者列表", "/answerers", SchoolIcon],
+                ["我的提问", "/orders", QuestionAnswerIcon],
+                ["提出问题", "/order/create", AddCommentIcon],
+            ];
+        }
+        return [
+            ["回答者列表", "/answerers", SchoolIcon],
+            ["我的提问", "/orders", QuestionAnswerIcon],
+            ["我的回答", "/orders?answerer=true", RateReviewIcon],
+            ["提出问题", "/order/create", AddCommentIcon],
+        ];
+    };
+
     return (
         <Box sx={{ display: "flex" }}>
-            <CssBaseline />
-            <AppBar open={drawerOpen}>
-                <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        sx={{ mr: 5, ...(drawerOpen && { display: "none" }) }}
-                        onClick={handleDrawerOpen}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: "none", sm: "block" },
-                        }}
-                    >
-                        付费问答系统
-                    </Typography>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="搜索问题…"
-                            inputProps={{ "aria-label": "search" }}
-                        />
-                    </Search>
-                </Toolbar>
-            </AppBar>
+            <CssBaseline />{" "}
+            {props.isAdmin ? (
+                <AppBar open={drawerOpen} style={{ background: "#714288" }}>
+                    <Toolbar>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            sx={{
+                                mr: 5,
+                                ...(drawerOpen && { display: "none" }),
+                            }}
+                            onClick={handleDrawerOpen}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: "none", sm: "block" },
+                            }}
+                        >
+                            付费问答管理员系统
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+            ) : (
+                <AppBar open={drawerOpen}>
+                    <Toolbar>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            sx={{
+                                mr: 5,
+                                ...(drawerOpen && { display: "none" }),
+                            }}
+                            onClick={handleDrawerOpen}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: "none", sm: "block" },
+                            }}
+                        >
+                            付费问答系统
+                        </Typography>
+                        <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="搜索问题…"
+                                inputProps={{ "aria-label": "search" }}
+                            />
+                        </Search>
+                    </Toolbar>
+                </AppBar>
+            )}
             <Drawer variant="permanent" open={drawerOpen}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
@@ -235,10 +297,28 @@ const AppFrame: React.FC = (props) => {
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                {renderDrawerList([["主页", "/", HomeIcon]])}
+                {renderDrawerList(
+                    props.isAdmin
+                        ? [["管理员主页", "/admins/", HomeIcon]]
+                        : [["主页", "/", HomeIcon]]
+                )}
                 <Divider />
                 {renderDrawerList(
-                    user
+                    props.isAdmin
+                        ? manager
+                            ? [
+                                  [
+                                      "管理员信息",
+                                      "/admins/profile",
+                                      AccountCircleIcon,
+                                  ],
+                                  ["登出", "/admins/logout", LogoutIcon],
+                              ]
+                            : [
+                                  ["登录", "/admins/login", LoginIcon],
+                                  ["创建", "/admins/create", PersonAddIcon],
+                              ]
+                        : user
                         ? [
                               ["个人信息", "/profile", AccountCircleIcon],
                               ["登出", "/logout", LogoutIcon],
@@ -249,11 +329,15 @@ const AppFrame: React.FC = (props) => {
                           ]
                 )}
                 <Divider />
-                {renderDrawerList([
-                    ["回答者列表", "/answerers", GroupIcon],
-                    ["订单列表", "/orders", FormatListBulletedIcon],
-                    ["提出问题", "/order/create", HelpOutlineIcon],
-                ])}
+                {props.isAdmin
+                    ? renderDrawerList([
+                          ["审核列表", "/admins/review", FactCheckIcon],
+                          ["用户列表", "/admins/users", GroupIcon],
+                          ["回答者列表", "/admins/answerers", SchoolIcon],
+                          ["订单列表", "/admins/orders", LibraryBooksIcon],
+                          ["系统参数", "/admins/settings", SettingsIcon],
+                      ])
+                    : renderDrawerList(drawerList3())}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />

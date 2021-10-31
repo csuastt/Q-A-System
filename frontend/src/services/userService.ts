@@ -2,6 +2,7 @@ import axios from "axios";
 import {
     PagedList,
     UserBasicInfo,
+    UserFullyInfo,
     UserInfo,
     UserInfoList,
 } from "./definations";
@@ -49,11 +50,11 @@ class UserService {
     getUserInfo(id: number): Promise<UserInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
-
+    getUserFullyInfo(id: number): Promise<UserFullyInfo> {
+        return axios.get(`/users/${id}`).then((response) => response.data);
+    }
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
-        return axios
-            .get(`/users/${id}/basic`)
-            .then((response) => response.data);
+        return axios.get(`/users/${id}`).then((response) => response.data);
     }
 
     modifyUserInfo(info: UserInfo) {
@@ -62,6 +63,21 @@ class UserService {
             gender: info.gender,
             phone: info.phone,
             description: info.description,
+        });
+    }
+    deleteUser(id: number) {
+        return axios.delete(`/users/${id}`, {});
+    }
+    modifyUserInfoByAdmin(info: UserInfo) {
+        return axios.put(`/users/${info.id}`, {
+            nickname: info.nickname,
+            gender: info.gender,
+            phone: info.phone,
+            description: info.description,
+            price: info.price,
+            email: info.email,
+            role: info.role,
+            balance: info.balance,
         });
     }
 }

@@ -1,58 +1,64 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
-import { Link as RouterLink, Redirect } from "react-router-dom";
-import { OrderInfo, OrderList, UserRole } from "../services/definations";
+import { Link as RouterLink } from "react-router-dom";
+import { OrderInfo, PagedList } from "../services/definations";
 import questionService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
+import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
-import UserContext from "../UserContext";
+
 import CardActionArea from "@mui/material/CardActionArea";
 import Pagination from "./Pagination";
+import _ from "lodash";
 
-const QuestionList: React.FC<{ userId?: number }> = (props) => {
-    const query = useQuery();
-    const [questionList, setQuestionList] = useState<OrderList>();
-    const [shouldRedirect, setShouldRedirect] = useState<string>();
+interface OrderListProps {
+    userId: number;
+    showAnswerer: boolean;
+    filterFinished?: boolean;
+    initCurrentPage?: number;
+    itemPrePage?: number;
+}
+
+const OrderList: React.FC<OrderListProps> = (props) => {
+    const [questionList, setQuestionList] = useState<Array<OrderInfo>>();
     const [currentPage, setCurrentPage] = useState(
-        parseIntWithDefault(query.get("page"), 1)
+        _.defaultTo(props.initCurrentPage, 1)
     );
-    const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), 20)
-    );
-    const [maxPage, setMaxPage] = useState(currentPage);
+    const [itemPrePage] = useState(_.defaultTo(props.itemPrePage, 20));
+    const [maxPage, setMaxPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
 
-    const { user } = useContext(UserContext);
+    const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
+        setQuestionList(list.data);
+        setMaxPage(list.totalPages);
+        setTotalCount(list.totalCount);
+    };
 
     useEffect(() => {
-        if (user == null) {
-            setShouldRedirect("/login");
-            return;
+        if (props.showAnswerer) {
+            questionService
+                .getOrdersOfUser(
+                    undefined,
+                    props.userId,
+                    currentPage,
+                    itemPrePage
+                )
+                .then(acceptOrderList);
+        } else {
+            questionService
+                .getOrdersOfUser(
+                    props.userId,
+                    undefined,
+                    currentPage,
+                    itemPrePage
+                )
+                .then(acceptOrderList);
         }
-        (user.role === UserRole.USER
-            ? questionService.getOrdersOfUser(
-                  user.id,
-                  undefined,
-                  currentPage,
-                  itemPrePage
-              )
-            : questionService.getOrdersOfUser(
-                  undefined,
-                  user.id,
-                  currentPage,
-                  itemPrePage
-              )
-        ).then((response) => {
-            setQuestionList(response.data);
-            setMaxPage(response.totalPages);
-            setTotalCount(response.totalCount);
-        });
-    }, [currentPage, itemPrePage, props.userId, user?.id]);
+    }, [currentPage, itemPrePage, props.showAnswerer, props.userId]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
@@ -156,9 +162,6 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
         </>
     );
 
-    if (shouldRedirect) {
-        return <Redirect to={shouldRedirect} />;
-    }
     if (questionList == null) {
         return (
             <Stack spacing={2} mt={4}>
@@ -173,11 +176,7 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
             </Typography>
         );
     }
-    return (
-        <Stack spacing={2} mt={4}>
-            {renderQuestionList()}
-        </Stack>
-    );
+    return <Stack spacing={2}>{renderQuestionList()}</Stack>;
 };
 
-export default QuestionList;
+export default OrderList;

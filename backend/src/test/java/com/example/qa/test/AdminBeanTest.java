@@ -5,6 +5,8 @@ import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
+
+import com.example.qa.errorhandling.ApiError;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,9 +88,17 @@ class AdminBeanTest {
         admin.setUsername(Username);
         admin.setCreateTime(CreateTime);
         admin.setRole(Role);
-        assertEquals(adminId, admin.getId());
-        assertEquals(adminUsername, admin.getUsername());
-        assertEquals(adminCreateTime, admin.getCreateTime());
-        assertEquals(adminRole, admin.getRole());
+
+        assertEquals(Id, admin.getId());
+        assertEquals(Username, admin.getUsername());
+        assertEquals(CreateTime, admin.getCreateTime());
+        assertEquals(Role, admin.getRole());
+
+
+        //Test for ApiError
+        String message = "new";
+        ApiError error = new ApiError("");
+        error.setMessage(message);
+        assertEquals(message, error.getMessage());
     }
 }
