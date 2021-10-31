@@ -97,7 +97,15 @@ class OrderControllerTest {
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/orders", token, request, status().isOk());
         mockUtils.postUrl("/api/orders", adminToken, request, status().isOk());
+        request.setPrice(-1);
+        mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders", token, request, status().isOk());
+        mockUtils.postUrl("/api/orders", adminToken, request, status().isOk());
         request.setPrice(10);
+        mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders", token, request, status().isOk());
+        mockUtils.postUrl("/api/orders", adminToken, request, status().isOk());
+        request.setPrice(-1);
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/orders", token, request, status().isOk());
         mockUtils.postUrl("/api/orders", adminToken, request, status().isOk());
@@ -180,6 +188,8 @@ class OrderControllerTest {
         request.setEndReason(OrderEndReason.ASKER);
         edit(id, request);
         request.setPrice(10);
+        edit(id, request);
+        request.setPrice(-1);
         edit(id, request);
         request.setEndReason(null);
         edit(id, request);
