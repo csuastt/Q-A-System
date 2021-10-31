@@ -107,6 +107,7 @@ class UserControllerTest {
     @Test
     void getUser() throws Exception {
         mockUtils.getUrl("/api/users/" + id, token, null, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + userCounter + 10, token, null, null, status().isNotFound());
         mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
     }
 
