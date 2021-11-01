@@ -88,11 +88,11 @@ export default class Login extends Component<LoginProps, LoginState> {
     }
 
     // listener on username/password
-    onChangeValue(e: any, type: "username" | "password",isAdmin:boolean) {
+    onChangeValue(e: any, type: "username" | "password", isAdmin: boolean) {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
-        if(isAdmin == false) {
+        if (isAdmin == false) {
             if (error === "") {
                 error = validate_length(value);
             }
@@ -116,7 +116,6 @@ export default class Login extends Component<LoginProps, LoginState> {
                 { target: { value: this.state.username } },
                 "username",
                 this.props.isAdmin
-
             ) &&
             this.onChangeValue(
                 { target: { value: this.state.password } },
@@ -253,7 +252,13 @@ export default class Login extends Component<LoginProps, LoginState> {
                             name="username"
                             autoComplete="username"
                             autoFocus
-                            onChange={(e) => this.onChangeValue(e, "username",this.props.isAdmin )}
+                            onChange={(e) =>
+                                this.onChangeValue(
+                                    e,
+                                    "username",
+                                    this.props.isAdmin
+                                )
+                            }
                             // @ts-ignore
                             error={this.state.error_msg_username.length !== 0}
                             // @ts-ignore
@@ -269,7 +274,13 @@ export default class Login extends Component<LoginProps, LoginState> {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            onChange={(e) => this.onChangeValue(e, "password",this.props.isAdmin )}
+                            onChange={(e) =>
+                                this.onChangeValue(
+                                    e,
+                                    "password",
+                                    this.props.isAdmin
+                                )
+                            }
                             // @ts-ignore
                             error={this.state.error_msg_password.length !== 0}
                             // @ts-ignore

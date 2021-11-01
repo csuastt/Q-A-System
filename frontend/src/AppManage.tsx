@@ -54,7 +54,7 @@ export default function AppManage() {
                 isAdmin={true}
             />,
         ],
-        ["/admins/", <HelloAdmin/>],
+        ["/admins/", <HelloAdmin />],
     ];
 
     return refreshing ? (

@@ -8,12 +8,13 @@ import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
 import React, { useContext } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
-import ContactsIcon from "@mui/icons-material/Contacts";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import { LiveHelp } from "@mui/icons-material";
 import AuthContext from "../AuthContext";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+import GroupIcon from "@mui/icons-material/Group";
+import SchoolIcon from "@mui/icons-material/School";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 export default function HelloAdmin() {
     const theme = useTheme();
@@ -70,27 +71,33 @@ export default function HelloAdmin() {
                 <>
                     <ButtonCardWrapper
                         to="/admins/review"
-                        Icon={ContactsIcon}
+                        Icon={FactCheckIcon}
                         title1="审核列表"
                         title2="查看待审核订单"
                     />
                     <ButtonCardWrapper
-                        to="/order/create"
-                        Icon={LiveHelp}
+                        to="/admins/users"
+                        Icon={GroupIcon}
                         title1="用户列表"
                         title2="查看所有用户"
                     />
                     <ButtonCardWrapper
-                        to="/orders"
-                        Icon={FormatListBulletedIcon}
+                        to="/admins/answerers"
+                        Icon={SchoolIcon}
                         title1="回答者列表"
                         title2="查看所有回答者"
                     />
                     <ButtonCardWrapper
-                        to="/profile"
-                        Icon={AccountCircle}
-                        title1="个人信息"
-                        title2="查看您的信息"
+                        to="/admins/orders"
+                        Icon={LibraryBooksIcon}
+                        title1="订单列表"
+                        title2="查看所有订单"
+                    />
+                    <ButtonCardWrapper
+                        to="/admins/settings"
+                        Icon={SettingsIcon}
+                        title1="系统参数"
+                        title2="只限超级管理员修改"
                     />
                 </>
             ) : (
