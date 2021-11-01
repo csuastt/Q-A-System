@@ -15,9 +15,9 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { LiveHelp } from "@mui/icons-material";
 import AuthContext from "../AuthContext";
 
-export default function Welcome() {
+export default function HelloAdmin() {
     const theme = useTheme();
-    const { user } = useContext(AuthContext);
+    const { manager } = useContext(AuthContext);
 
     const ButtonCardWrapper: React.FC<{
         to: string;
@@ -64,48 +64,48 @@ export default function Welcome() {
                 variant="h5"
                 sx={{ margin: theme.spacing(3, 2, 2, 0) }}
             >
-                欢迎来到付费问答系统
+                欢迎来到管理员系统
             </Typography>
-            <ButtonCardWrapper
-                to="/answerers"
-                Icon={ContactsIcon}
-                title1="回答者列表"
-                title2="寻找合适的回答者"
-            />
-            {user ? (
+            {manager ? (
                 <>
+                    <ButtonCardWrapper
+                        to="/admins/review"
+                        Icon={ContactsIcon}
+                        title1="审核列表"
+                        title2="查看待审核订单"
+                    />
                     <ButtonCardWrapper
                         to="/order/create"
                         Icon={LiveHelp}
-                        title1="提出问题"
-                        title2="获取知识与答案"
+                        title1="用户列表"
+                        title2="查看所有用户"
                     />
                     <ButtonCardWrapper
                         to="/orders"
                         Icon={FormatListBulletedIcon}
-                        title1="问题列表"
-                        title2="查看历史订单与问题状态"
+                        title1="回答者列表"
+                        title2="查看所有回答者"
                     />
                     <ButtonCardWrapper
                         to="/profile"
                         Icon={AccountCircle}
                         title1="个人信息"
-                        title2="查看、修改个人信息"
+                        title2="查看您的信息"
                     />
                 </>
             ) : (
                 <>
                     <ButtonCardWrapper
-                        to="/login"
+                        to="/admins/login"
                         Icon={LoginIcon}
                         title1="登录"
-                        title2="提出问题、回答问题"
+                        title2="快来开始工作吧"
                     />
                     <ButtonCardWrapper
-                        to="/register"
+                        to="/admins/create"
                         Icon={PersonAddIcon}
                         title1="注册"
-                        title2="从现在开始解答您的疑惑"
+                        title2="只限超级管理员"
                     />
                 </>
             )}

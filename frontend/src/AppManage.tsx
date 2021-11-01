@@ -15,6 +15,7 @@ import adminAuthService from "./services/adminAuthService";
 import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
 import ReviewList from "./components/ReviewList";
+import HelloAdmin from "./components/HelloAdmin";
 
 export default function AppManage() {
     const [manager, setManager] = useState<ManagerInfo>();
@@ -53,7 +54,7 @@ export default function AppManage() {
                 isAdmin={true}
             />,
         ],
-        ["/admins/", <Welcome />],
+        ["/admins/", <HelloAdmin/>],
     ];
 
     return refreshing ? (
