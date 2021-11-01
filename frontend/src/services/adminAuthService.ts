@@ -5,7 +5,7 @@ import managerService from "./managerService";
 class AdminAuthService {
     login(manager_name: string, password: string) {
         return axios
-            .post("/admins/login", {
+            .post("/admin/login", {
                 username: manager_name,
                 password: password,
             })
@@ -18,7 +18,7 @@ class AdminAuthService {
     }
 
     logout() {
-        return axios.post("/admins/logout").finally(this.clearToken);
+        return axios.post("/admin/logout").finally(this.clearToken);
     }
 
     create(manager_name: string, role: ManagerRole): Promise<String> {
