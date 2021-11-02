@@ -1,16 +1,15 @@
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
 import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
-import { Container } from "@mui/material";
+import {Container} from "@mui/material";
 import Login from "./components/Login";
 import Create from "./components/Create";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import ChangePassword from "./components/ChangePassword";
-import { ManagerInfo, UserRole } from "./services/definations";
+import {ManagerInfo, OrderState, UserRole} from "./services/definations";
 import adminAuthService from "./services/adminAuthService";
-import PathParamParser from "./PathParamParser";
 import ReviewList from "./components/ReviewList";
 import HelloAdmin from "./components/HelloAdmin";
 import AdminOrderList from "./components/AdminOrderList";
@@ -31,9 +30,10 @@ export default function AppManage() {
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
         ["/admins/users", <AnswererList userRole={UserRole.USER} />],
 
-        ["/admins/orders", <AdminOrderList />],
 
-        ["/admins/review", <ReviewList />],
+        ["/admins/orders", <AdminOrderList  orderState={OrderState.CREATED}/>],
+
+        //["/admins/review", <ReviewList />],
 
         ["/admins/login", <Login redirect={"/admins/"} isAdmin={true} />],
         ["/admins/logout", <Logout redirect={"/admins/"} isAdmin={true} />],

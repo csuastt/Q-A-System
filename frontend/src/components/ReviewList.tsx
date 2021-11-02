@@ -9,11 +9,11 @@ import orderService from "../services/orderService";
 //待审核列表
 const ReviewList: React.FC<{ selectModel?: boolean }> = (props) => {
     const [reviewList, setReviewList] = useState<Array<OrderInfo>>();
-    useEffect(() => {
-        orderService.getOrderListByAdmin(OrderState.PAYED).then((list) => {
-            setReviewList(list);
-        });
-    }, []);
+    // useEffect(() => {
+    //     orderService.getOrderListByAdmin(OrderState.PAYED).then((list) => {
+    //         setReviewList(list);
+    //     });
+    // }, []);
 
     const renderPlaceholder = () => (
         <ListItem alignItems="flex-start">

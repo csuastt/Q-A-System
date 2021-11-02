@@ -28,8 +28,8 @@ class OrderService {
     }
     getOrderListByAdmin(
         state: OrderState,
-        page: number = 1,
-        pageSize: number = 20
+        page: number,
+        pageSize: number ,
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
