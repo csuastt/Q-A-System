@@ -58,10 +58,11 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserResponse getUser(@PathVariable(value = "id") long id) {
-        boolean isAdmin = authLogin() && authIsAdmin();
+        boolean login = authLogin();
+        boolean isAdmin = login && authIsAdmin();
         User user = getUserOrThrow(id, isAdmin);
         int userResponseLevel = 0;
-        if (authIsUser(id)) {
+        if (login && authIsUser(id)) {
             userResponseLevel = 1;
         } else if (isAdmin) {
             userResponseLevel = 2;
