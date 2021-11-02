@@ -1,142 +1,194 @@
+import Button from "@mui/material/Button";
 import React, { useEffect, useState } from "react";
-import { OrderInfo, OrderState, UserRole } from "../services/definations";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import _ from "lodash";
-import { Button, Divider, Grid, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
+import { OrderInfo, OrderState, PagedList } from "../services/definations";
 import orderService from "../services/orderService";
-//待审核列表
-const ReviewList: React.FC<{ selectModel?: boolean }> = (props) => {
-    const [reviewList, setReviewList] = useState<Array<OrderInfo>>();
-    // useEffect(() => {
-    //     orderService.getOrderListByAdmin(OrderState.PAYED).then((list) => {
-    //         setReviewList(list);
-    //     });
-    // }, []);
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
+import Skeleton from "@mui/material/Skeleton";
+import CardActionArea from "@mui/material/CardActionArea";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import Pagination from "./Pagination";
+import Stack from "@mui/material/Stack";
 
-    const renderPlaceholder = () => (
-        <ListItem alignItems="flex-start">
-            <Grid container justifyContent={"flex-end"}>
-                <Grid item xs={8}>
-                    <ListItemText
-                        primary={"2333"}
-                        secondary={"软件工程怎么学？根本学不会怎么办"}
-                    />
-                </Grid>
-                <Grid item xs={4}>
-                    <ListItem alignItems="center">
-                        <Grid item xs={4}>
-                            <Button
-                                size="small"
-                                color="success"
-                                variant="outlined"
-                                component={RouterLink}
-                                to="/manager"
-                            >
-                                通过
-                            </Button>
-                        </Grid>
-
-                        <Grid item xs={4}>
-                            <Button
-                                size="small"
-                                color="error"
-                                variant="outlined"
-                                component={RouterLink}
-                                to="/manager"
-                            >
-                                驳回
-                            </Button>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Button
-                                size="small"
-                                color="info"
-                                variant="outlined"
-                                component={RouterLink}
-                                to="/manager"
-                            >
-                                详情
-                            </Button>
-                        </Grid>
-                    </ListItem>
-                </Grid>
-            </Grid>
-        </ListItem>
+interface ReviewListProps {
+    filterFinished?: boolean;
+    initCurrentPage?: number;
+    itemPrePage?: number;
+}
+const ReviewList: React.FC<ReviewListProps> = (props) => {
+    const query = useQuery();
+    const [orderList, setOrderList] = useState<Array<OrderInfo>>();
+    const [currentPage, setCurrentPage] = useState(
+        parseIntWithDefault(query.get("page"), 1)
     );
+    const [itemPrePage] = useState(
+        parseIntWithDefault(query.get("prepage"), 9)
+    );
+    const [maxPage, setMaxPage] = useState(currentPage);
+    const [totalCount, setTotalCount] = useState(0);
 
-    if (reviewList == null) {
-        return renderPlaceholder();
-    } else if (reviewList.length === 0) {
-        return (
-            <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
-                没有待审核的订单
-            </Typography>
-        );
-    } else {
-        const list = _.flatten(
-            _.zip(reviewList!, _.fill(Array(reviewList!.length - 1), undefined))
-        );
-        return (
-            <>
-                {list.map((order: OrderInfo | undefined, index: number) => {
-                    return order === undefined ? (
-                        <Divider variant="inset" component="li" key={index} />
-                    ) : (
-                        <ListItem alignItems="flex-start">
-                            <Grid container justifyContent={"flex-end"}>
-                                <Grid item xs={8}>
-                                    <ListItemText
-                                        primary={order.id.toString()}
-                                        secondary={order.question.substr(0, 25)}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <ListItem alignItems="center">
-                                        <Grid item xs={4}>
-                                            <Button
-                                                size="small"
-                                                color="success"
-                                                variant="outlined"
-                                                component={RouterLink}
-                                                to="/manager"
-                                            >
-                                                通过
-                                            </Button>
-                                        </Grid>
+    const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
+        setOrderList(list.data);
+        setMaxPage(list.totalPages);
+        setTotalCount(list.totalCount);
+    };
 
-                                        <Grid item xs={4}>
-                                            <Button
-                                                size="small"
-                                                color="error"
-                                                variant="outlined"
-                                                component={RouterLink}
-                                                to="/manager"
-                                            >
-                                                驳回
-                                            </Button>
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <Button
-                                                size="small"
-                                                color="info"
-                                                variant="outlined"
-                                                component={RouterLink}
-                                                to="/manager"
-                                            >
-                                                详情
-                                            </Button>
-                                        </Grid>
-                                    </ListItem>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
-                    );
-                })}
-            </>
+    useEffect(() => {
+        orderService
+            .getOrderListByAdmin(OrderState.CREATED, currentPage, itemPrePage)
+            .then(acceptOrderList);
+    }, [currentPage, itemPrePage]);
+
+    const onPageChanged = (newPage: number) => {
+        setCurrentPage(newPage);
+    };
+
+    const renderCardPlaceholder = () => (
+        <Card>
+            <CardContent>
+                <Box sx={{ display: "flex", flexDirection: "column" }}>
+                    <Skeleton variant="text" height={30} width={120} />
+                    <Skeleton variant="rectangular" height={100} />
+                    <Box sx={{ display: "flex", flexDirection: "row", mt: 1 }}>
+                        <Skeleton variant="circular" height={30} width={30} />
+                        <Skeleton
+                            variant="text"
+                            height={30}
+                            width={60}
+                            sx={{ ml: 1 }}
+                        />
+                    </Box>
+                </Box>
+            </CardContent>
+        </Card>
+    );
+    const renderOrderList = () => (
+        <>
+            {orderList!.map((order: OrderInfo, index: number) => (
+                <Card key={index}>
+                    <CardActionArea
+                        component={RouterLink}
+                        to={`/admins/orders/${order.id}`}
+                    >
+                        <CardContent>
+                            <Box
+                                sx={{
+                                    flexDirection: "row",
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="h6"
+                                            noWrap
+                                            style={{ fontWeight: 600 }}
+                                        >
+                                            {order.question}
+                                        </Typography>
+                                        <Box sx={{ flexGrow: 1 }} />
+                                        {/*<OrderStateChip state={order.state} />*/}
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                        }}
+                                        mt={1}
+                                    >
+                                        <Avatar
+                                            src={order.answerer.avatar}
+                                            alt={order.answerer.username}
+                                            sx={{ width: 30, height: 30 }}
+                                        />
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{ ml: 1 }}
+                                        >
+                                            {order.answerer.username}
+                                        </Typography>
+                                    </Box>
+                                    <Typography
+                                        variant="caption"
+                                        mb={-1}
+                                        mt={1}
+                                    >
+                                        创建时间：
+                                        {formatTimestamp(order.createTime)}
+                                    </Typography>
+                                </Box>
+
+                                <Box
+                                    sx={{
+                                        display: "end-flex",
+                                        flexDirection: "row",
+                                    }}
+                                >
+                                    <Button
+                                        size="small"
+                                        color="error"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            alert("驳回");
+                                        }}
+                                    >
+                                        驳回
+                                    </Button>
+                                    <Button
+                                        size="small"
+                                        color="success"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            alert("通过");
+                                        }}
+                                    >
+                                        通过
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </CardContent>
+                    </CardActionArea>
+                </Card>
+            ))}
+            {maxPage > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    maxPage={maxPage}
+                    totalCount={totalCount}
+                    itemPrePage={itemPrePage}
+                    onPageChanged={onPageChanged}
+                />
+            )}
+        </>
+    );
+    if (orderList == null) {
+        return (
+            <Stack spacing={2} mt={4}>
+                {renderCardPlaceholder()}
+            </Stack>
         );
     }
+    if (totalCount === 0) {
+        return (
+            <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
+                没有订单
+            </Typography>
+        );
+    }
+    return <Stack spacing={2}>{renderOrderList()}</Stack>;
 };
 
 export default ReviewList;

@@ -706,12 +706,12 @@ export default class AccountProfile extends Component<
                                             fullWidth
                                             label="电话"
                                             name="phone"
-                                            sx={{
-                                                "& .MuiPhoneNumber-flagButton":
-                                                    {
-                                                        "min-width": "30px",
-                                                    },
-                                            }}
+                                            // sx={{
+                                            //     "& .MuiPhoneNumber-flagButton":
+                                            //         {
+                                            //             "min-width": "30px",
+                                            //         },
+                                            // }}
                                             defaultCountry={"cn"}
                                             onChange={this.handleChange}
                                             value={this.state.user?.phone || ""}

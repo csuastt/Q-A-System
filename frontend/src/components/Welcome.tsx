@@ -15,7 +15,7 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import SchoolIcon from "@mui/icons-material/School";
-import {UserRole} from "../services/definations";
+import { UserRole } from "../services/definations";
 
 export default function Welcome() {
     const theme = useTheme();

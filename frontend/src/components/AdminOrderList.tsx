@@ -1,13 +1,7 @@
-import React, {useContext, useEffect, useState} from "react";
-import Tab from "@mui/material/Tab";
-import TabPanel from "@mui/lab/TabPanel";
-import OrderList from "./OrderList";
-import AuthContext from "../AuthContext";
-import {Link as RouterLink, Redirect} from "react-router-dom";
-import {formatTimestamp, parseIntWithDefault, useQuery} from "../util";
-import {OrderInfo, OrderState, PagedList, UserBasicInfo, UserRole} from "../services/definations";
-import { TabContext, TabList } from "@mui/lab";
-import userService from "../services/userService";
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
+import { OrderInfo, OrderState, PagedList } from "../services/definations";
 import orderService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -25,7 +19,7 @@ interface AdminOrderListProps {
     initCurrentPage?: number;
     itemPrePage?: number;
 }
-const AdminOrderList: React.FC  <AdminOrderListProps >= (props)=>{
+const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     const query = useQuery();
     const [orderList, setOrderList] = useState<Array<OrderInfo>>();
     const [currentPage, setCurrentPage] = useState(
@@ -45,11 +39,7 @@ const AdminOrderList: React.FC  <AdminOrderListProps >= (props)=>{
 
     useEffect(() => {
         orderService
-            .getOrderListByAdmin(
-                props.orderState,
-                currentPage,
-                itemPrePage
-            )
+            .getOrderListByAdmin(props.orderState, currentPage, itemPrePage)
             .then(acceptOrderList);
     }, [currentPage, itemPrePage]);
 
@@ -81,8 +71,8 @@ const AdminOrderList: React.FC  <AdminOrderListProps >= (props)=>{
             {orderList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
                     <CardActionArea
-                        // component={RouterLink}
-                        // to={`/orders/${order.id}`}
+                        component={RouterLink}
+                        to={`/admins/orders/${order.id}`}
                     >
                         <CardContent>
                             <Box
