@@ -70,103 +70,102 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         <>
             {orderList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
-                    <CardActionArea
-                        component={RouterLink}
-                        to={`/admins/orders/${order.id}`}
-                    >
-                        <CardContent>
+                    <CardContent>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                p: 1,
+                                m: 1,
+                                flexDirection: "row",
+                            }}
+                        >
                             <Box
                                 sx={{
                                     display: "flex",
-                                    justifyContent: "space-between",
-                                    p: 1,
-                                    m: 1,
-                                    flexDirection: "row",
+                                    flexDirection: "column",
                                 }}
                             >
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        flexDirection: "column",
+                                        flexDirection: "row",
                                     }}
                                 >
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                        }}
-                                    >
-                                        <Typography
-                                            variant="h6"
-                                            noWrap
-                                            style={{ fontWeight: 600 }}
-                                        >
-                                            {order.question}
-                                        </Typography>
-                                        <Box sx={{ flexGrow: 1 }} />
-                                        {/*<OrderStateChip state={order.state} />*/}
-                                    </Box>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                        }}
-                                        mt={1}
-                                    >
-                                        <Avatar
-                                            src={order.answerer.avatar}
-                                            alt={order.answerer.username}
-                                            sx={{ width: 30, height: 30 }}
-                                        />
-                                        <Typography
-                                            variant="subtitle1"
-                                            sx={{ ml: 1 }}
-                                        >
-                                            {order.answerer.username}
-                                        </Typography>
-                                    </Box>
                                     <Typography
-                                        variant="caption"
-                                        mb={-1}
-                                        mt={1}
+                                        variant="h6"
+                                        noWrap
+                                        style={{ fontWeight: 600 }}
                                     >
-                                        创建时间：
-                                        {formatTimestamp(order.createTime)}
+                                        {order.question}
                                     </Typography>
+                                    <Box sx={{ flexGrow: 1 }} />
+                                    {/*<OrderStateChip state={order.state} />*/}
                                 </Box>
-
                                 <Box
                                     sx={{
                                         display: "flex",
                                         flexDirection: "row",
-                                        p: 2.5,
-                                        m: 1,
+                                    }}
+                                    mt={1}
+                                >
+                                    <Avatar
+                                        src={order.answerer.avatar}
+                                        alt={order.answerer.username}
+                                        sx={{ width: 30, height: 30 }}
+                                    />
+                                    <Typography
+                                        variant="subtitle1"
+                                        sx={{ ml: 1 }}
+                                    >
+                                        {order.answerer.username}
+                                    </Typography>
+                                </Box>
+                                <Typography variant="caption" mb={-1} mt={1}>
+                                    创建时间：
+                                    {formatTimestamp(order.createTime)}
+                                </Typography>
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    p: 2.5,
+                                    m: 1,
+                                }}
+                            >
+                                <Button
+                                    size="small"
+                                    color="error"
+                                    variant="outlined"
+                                    onClick={() => {
+                                        orderService.reviewOrder(
+                                            order.id,
+                                            false
+                                        );
+                                        window.location.reload();
                                     }}
                                 >
-                                    <Button
-                                        size="small"
-                                        color="error"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            alert("驳回");
-                                        }}
-                                    >
-                                        驳回
-                                    </Button>
-                                    <Button
-                                        size="small"
-                                        color="success"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            alert("通过");
-                                        }}
-                                    >
-                                        通过
-                                    </Button>
-                                </Box>
+                                    驳回
+                                </Button>
+                                <Button
+                                    size="small"
+                                    color="success"
+                                    variant="outlined"
+                                    onClick={() => {
+                                        orderService.reviewOrder(
+                                            order.id,
+                                            true
+                                        );
+                                        window.location.reload();
+                                    }}
+                                >
+                                    通过
+                                </Button>
                             </Box>
-                        </CardContent>
-                    </CardActionArea>
+                        </Box>
+                    </CardContent>
                 </Card>
             ))}
             {maxPage > 1 && (
