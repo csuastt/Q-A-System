@@ -127,14 +127,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                 </Typography>
                             </Box>
 
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    p: 2.5,
-                                    m: 1,
-                                }}
-                            >
+                            <Stack direction="row" p={3} spacing={2}>
                                 <Button
                                     size="small"
                                     color="error"
@@ -163,7 +156,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                 >
                                     通过
                                 </Button>
-                            </Box>
+                            </Stack>
                         </Box>
                     </CardContent>
                 </Card>
