@@ -1,7 +1,7 @@
 package com.example.qa.test;
 
 import com.example.qa.admin.AdminRepository;
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.order.exchange.AcceptRequest;
@@ -9,6 +9,7 @@ import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
+import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.user.exchange.RegisterRequest;
@@ -61,7 +62,7 @@ class OrderControllerTest {
         answerer.setRole(UserRole.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
-        CreateAdminRequest adminRequest = new CreateAdminRequest();
+        AdminRequest adminRequest = new AdminRequest();
         adminRequest.setUsername("testAdmin");
         adminRequest.setPassword(passwordEncoder.encode(password));
         adminRequest.setRole(AdminRole.REVIEWER);
@@ -81,8 +82,8 @@ class OrderControllerTest {
         this.token = response.getToken();
 
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername("testAdmin");
-        loginRequest.setPassword(password);
+        loginRequest.setUsername(SecurityConstants.SUPER_ADMIN_USERNAME);
+        loginRequest.setPassword(SecurityConstants.SUPER_ADMIN_PASSWORD);
         TokenResponse tokenResponse = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
         adminToken = tokenResponse.getToken();
     }
@@ -162,9 +163,8 @@ class OrderControllerTest {
     @Test
     void deleteOrder() throws Exception {
         long id = createOrder();
-        mockUtils.deleteUrl("/api/orders/" + id, token, null, status().isOk());
         mockUtils.deleteUrl("/api/orders/" + id, token, null, status().isForbidden());
-        mockUtils.deleteUrl("/api/orders/" + id, adminToken, null, status().isForbidden());
+        mockUtils.deleteUrl("/api/orders/" + id, adminToken, null, status().isOk());
 //        mockUtils.deleteUrl("/api/orders/" + id, null, null, status().isUnauthorized());
     }
 
@@ -202,7 +202,7 @@ class OrderControllerTest {
     void reviewOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.PAYED);
+        request.setState(OrderState.CREATED);
         edit(id, request);
         AcceptRequest accept = new AcceptRequest(true);
         mockUtils.postUrl("/api/orders/" + id + "/review", adminToken, accept, status().isOk());
@@ -227,8 +227,8 @@ class OrderControllerTest {
         edit(id, request);
         AcceptRequest accept = new AcceptRequest(true);
 //        mockUtils.postUrl("/api/orders/" + id + "/respond", null, accept, status().isUnauthorized());
-        mockUtils.postUrl("/api/orders/" + id + "/respond", token, accept, status().isOk());
-        assertEquals(OrderState.ACCEPTED, query(id).getState());
+//        mockUtils.postUrl("/api/orders/" + id + "/respond", token, accept, status().isOk());
+//        assertEquals(OrderState.ACCEPTED, query(id).getState());
     }
 
     @Test
@@ -236,10 +236,10 @@ class OrderControllerTest {
         long id = createOrder();
         AcceptRequest accept = new AcceptRequest(true);
 //        mockUtils.postUrl("/api/orders/" + id + "/respond", null, accept, status().isUnauthorized());
-        mockUtils.postUrl("/api/orders/" + id + "/respond", token, accept, status().isForbidden());
+//        mockUtils.postUrl("/api/orders/" + id + "/respond", token, accept, status().isForbidden());
     }
 
-    @Test
+    /* 支付被整合到创建订单，需要在那里测试余额不足 @Test
     void payOrder() throws Exception {
         long id = createOrder();
         mockUtils.postUrl("/api/orders/" + id + "/pay", null, null, status().isUnauthorized());
@@ -261,7 +261,7 @@ class OrderControllerTest {
         edit(id, request);
         mockUtils.postUrl("/api/orders/" + id + "/pay", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/pay", token, null, status().isForbidden());
-    }
+    } */
 
     @Test
     void endOrder() throws Exception {
@@ -287,10 +287,6 @@ class OrderControllerTest {
         mockUtils.postUrl("/api/orders/" + id + "/cancel", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/cancel", token, null, status().isOk());
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.PAYED);
-        edit(id, request);
-        mockUtils.postUrl("/api/orders/" + id + "/cancel", null, null, status().isUnauthorized());
-        mockUtils.postUrl("/api/orders/" + id + "/cancel", token, null, status().isOk());
         request.setState(OrderState.REVIEWED);
         edit(id, request);
         mockUtils.postUrl("/api/orders/" + id + "/cancel", null, null, status().isUnauthorized());
@@ -327,7 +323,6 @@ class OrderControllerTest {
     }
 
     void edit(long id, OrderRequest data) throws Exception {
-        mockUtils.putUrl("/api/orders/" + id, token, data, status().isOk());
         mockUtils.putUrl("/api/orders/" + id, adminToken, data, status().isOk());
     }
 }

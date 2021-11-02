@@ -1,7 +1,7 @@
 package com.example.qa.test;
 
 import com.example.qa.admin.AdminService;
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.exchange.LoginRequest;
@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -65,7 +64,7 @@ class AdminControllerTest {
 
     @Test
     void createAdmin() throws Exception {
-        CreateAdminRequest request = new CreateAdminRequest();
+        AdminRequest request = new AdminRequest();
         request.setUsername("testAdmin" + adminCounter++);
 //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isOk());
@@ -81,13 +80,13 @@ class AdminControllerTest {
     @Test
     void listAdmins() throws Exception {
         mockUtils.getUrl("/api/admins", token, null, null, status().isOk());
-        mockUtils.getUrl("/api/admins", null, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins", null, null, null, status().isUnauthorized());
     }
 
     @Test
     void getAdmin() throws Exception {
-        mockUtils.getUrl("/api/admins/" + 1, null, null, null, status().isOk());
-        mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, null, null, null, status().isNotFound());
+        mockUtils.getUrl("/api/admins/" + 1, token, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, token, null, null, status().isNotFound());
     }
 
     @Test

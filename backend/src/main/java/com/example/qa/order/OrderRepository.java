@@ -9,9 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    Page<Order> findAllByAskerAndDeleted(User asker, boolean deleted, Pageable pageable);
+    Page<Order> findAllByDeletedAndState(boolean deleted, OrderState state, Pageable pageable);
 
-    Page<Order> findAllByAnswererAndDeletedAndReviewed(User answerer, boolean deleted, boolean reviewed, Pageable pageable);
+    Page<Order> findAllByDeletedAndAsker(boolean deleted, User asker, Pageable pageable);
 
-    Page<Order> findAllByStateAndDeleted(OrderState state, boolean deleted, Pageable pageable);
+    Page<Order> findAllByDeletedAndAskerAndFinished(boolean deleted, User asker, boolean finished, Pageable pageable);
+
+    Page<Order> findAllByDeletedAndReviewedAndAnswerer(boolean deleted, boolean reviewed, User answerer, Pageable pageable);
+
+    Page<Order> findAllByDeletedAndReviewedAndAnswererAndFinished(boolean deleted, boolean reviewed, User answerer, boolean finished, Pageable pageable);
 }

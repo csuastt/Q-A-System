@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateAdminRequest {
+public class AdminRequest {
     private String username;
     private String password;
     private AdminRole role;

@@ -42,7 +42,7 @@ POST /api/admins
 - `200` OK `{ "password": "password" }`
 - `400` 格式错误
 - `401` 未登录
-- `403` 错误（没权限）
+- `403` 错误（`NO_PERMISSION` 无权限或者不能创建超级管理员，`USERNAME_INVALID` 用户名已被占用）
 
 ### 登录
 
@@ -91,7 +91,7 @@ GET /api/admins
 
 返回值：
 
-- `200` OK `{ pageSize: 20, page: 1, totalPages: 2, admins: [...] }`
+- `200` OK `{ pageSize: 20, page: 1, totalPages: 2, totalCount: 999, data: [...] }`
 - `400` 格式错误
 - `401` 未登录
 - `403` 权限不足
@@ -151,10 +151,9 @@ PUT /api/admins/{id}
 
 - `403` 错误
 
-  | message 属性       | 说明                                                         |
-  | ------------------ | ------------------------------------------------------------ |
-  | `NO_PERMISSION`    | 非超级管理员，或者超级管理员修改自己，或者尝试修改为 SUPER_ADMIN |
-  | `PASSWORD_INVALID` | 密码格式错误                                                 |
+  | message 属性    | 说明                                                         |
+  | --------------- | ------------------------------------------------------------ |
+  | `NO_PERMISSION` | 非超级管理员，或者超级管理员修改自己，或者尝试修改为 SUPER_ADMIN |
   
 - `404` 管理员不存在
 
@@ -177,9 +176,8 @@ PUT /api/admins/{id}/password
 - `401` 未登录
 - `403` 错误
   
-  | message 属性       | 说明                 |
-  | ------------------ | -------------------- |
-  | `NO_PERMISSION`    | 非本用户或超级管理员 |
-  | `WRONG_PASSWORD`   | 原密码错误           |
-  | `PASSWORD_INVALID` | 新密码格式错误       |
+  | message 属性     | 说明                 |
+  | ---------------- | -------------------- |
+  | `NO_PERMISSION`  | 非本用户或超级管理员 |
+  | `WRONG_PASSWORD` | 原密码错误           |
 - `404` 超级管理员修改管理员不存在

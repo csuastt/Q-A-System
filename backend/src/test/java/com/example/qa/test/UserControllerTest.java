@@ -1,13 +1,14 @@
 package com.example.qa.test;
 
-import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
-import com.example.qa.user.UserController;
 import com.example.qa.user.UserService;
-import com.example.qa.user.exchange.*;
+import com.example.qa.user.exchange.ApplyRequest;
+import com.example.qa.user.exchange.RegisterRequest;
+import com.example.qa.user.exchange.UserRequest;
+import com.example.qa.user.exchange.ValueRequest;
 import com.example.qa.user.model.Gender;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
@@ -20,15 +21,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -169,7 +167,7 @@ class UserControllerTest {
     void logOut()throws Exception{
         mockUtils.postUrl("/api/user/logout", null, null, status().isOk());
     }
-    @Test
+    /* 重构到各个数据类里面了 @Test
     void userValidators() {
         UserController userController = new UserController(userService, passwordEncoder);
         userController.validatePassword(password);
@@ -209,5 +207,5 @@ class UserControllerTest {
 
         assertThrows(ApiException.class, () -> userController.checkRecharge(0, -1));
         assertThrows(ApiException.class, () -> userController.checkRecharge(10000000, 1));
-    }
+    } */
 }
