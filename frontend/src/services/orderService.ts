@@ -26,37 +26,20 @@ class OrderService {
             })
             .then((response) => response.data);
     }
-    getOrderListByUser(
-        asker: boolean,
-        answerer: boolean,
-        page: number = 1,
-        limit: number = 20
-    ): Promise<Array<OrderInfo>> {
-        return axios
-            .get("/orders", {
-                params: {
-                    asker: asker,
-                    answerer: answerer,
-                    page: page,
-                    limit: limit,
-                },
-            })
-            .then((response) => response.data["orders"]);
-    }
     getOrderListByAdmin(
         state: OrderState,
         page: number = 1,
-        limit: number = 20
-    ): Promise<Array<OrderInfo>> {
+        pageSize: number = 20
+    ): Promise<PagedList<OrderInfo>> {
         return axios
-            .get("/users", {
+            .get("/orders", {
                 params: {
                     state: state,
                     page: page,
-                    limit: limit,
+                    pageSize: pageSize,
                 },
             })
-            .then((response) => response.data["users"]);
+            .then((response) => response.data);
     }
 
     create_question(

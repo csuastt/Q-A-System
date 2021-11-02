@@ -10,10 +10,10 @@ import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import { ManagerInfo, UserRole } from "./services/definations";
 import adminAuthService from "./services/adminAuthService";
-import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
 import ReviewList from "./components/ReviewList";
 import HelloAdmin from "./components/HelloAdmin";
+import AdminOrderList from "./components/AdminOrderList";
 
 export default function AppManage() {
     const [manager, setManager] = useState<ManagerInfo>();
@@ -30,14 +30,8 @@ export default function AppManage() {
     const routes = [
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
         ["/admins/users", <AnswererList userRole={UserRole.USER} />],
-        [
-            "/admins/orders/:orderId",
-            <PathParamParser
-                params={[["orderId", "number"]]}
-                C={OrderDetail}
-            />,
-        ],
-        //["/admins/orders", <QuestionList />],
+
+        ["/admins/orders", <AdminOrderList />],
 
         ["/admins/review", <ReviewList />],
 
