@@ -1,17 +1,13 @@
 package com.example.qa.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-
 import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.order.exchange.AnswerRequest;
 import com.example.qa.order.exchange.OrderListResponse;
 import com.example.qa.order.exchange.OrderResponse;
-import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderState;
-import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class OrderBeanTest {

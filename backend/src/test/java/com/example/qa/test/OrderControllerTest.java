@@ -9,7 +9,6 @@ import com.example.qa.exchange.TokenResponse;
 import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
-import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.security.SecurityConstants;

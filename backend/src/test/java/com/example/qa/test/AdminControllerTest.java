@@ -2,6 +2,7 @@ package com.example.qa.test;
 
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.AdminRole;
+import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
@@ -93,7 +94,22 @@ class AdminControllerTest {
         request.setRole(role);
         mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isOk());
 
+        ChangePasswordRequest request1 = new ChangePasswordRequest();
+        request1.setPassword("passWW");
+        request1.setOriginal("passW");
+        mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
+        mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
+
     }
+
+    @Test
+    void deleteAdmin() throws Exception {
+        createAdmin();
+        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isOk());
+        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isForbidden());
+        mockUtils.deleteUrl("/api/admins/" + 2, null, null, status().isUnauthorized());
+    }
+
     @Test
     void getAdmin() throws Exception {
         mockUtils.getUrl("/api/admins/" + 1, superAdminToken, null, null, status().isOk());
