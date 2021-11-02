@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findAllByDeletedAndState(boolean deleted, OrderState state, Pageable pageable);
@@ -18,4 +21,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByDeletedAndReviewedAndAnswerer(boolean deleted, boolean reviewed, User answerer, Pageable pageable);
 
     Page<Order> findAllByDeletedAndReviewedAndAnswererAndFinished(boolean deleted, boolean reviewed, User answerer, boolean finished, Pageable pageable);
+
+    List<Order> findAllByExpireTimeBefore(ZonedDateTime time);
 }

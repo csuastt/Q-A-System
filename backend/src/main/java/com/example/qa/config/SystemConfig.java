@@ -34,31 +34,47 @@ public class SystemConfig {
     private static int minPrice = 1;
     @Getter
     private static int maxPrice = 100;
-    private static long respondExpirationMilliseconds = 259200000;  // 3 days
-    private static long answerExpirationMilliseconds = 86400000;    // 1 day
-    private static long fulfillExpirationMilliseconds = 259200000;  // 3 days
-    private static int maxChatMessages = 9999;              // unlimited, ≥ 2
-    private static long maxChatTimeMilliseconds = 604800000;  // 7 days (after answering)
+    @Getter
+    private static int respondExpirationSeconds = 259200;  // 3 days
+    @Getter
+    private static int answerExpirationSeconds = 86400;    // 1 day
+    @Getter
+    private static int fulfillExpirationSeconds = 259200;  // 3 days
+    @Getter
+    private static int maxChatMessages = 9999;       // unlimited, ≥ 2
+    @Getter
+    private static int maxChatTimeSeconds = 604800;  // 7 days (after answering)
+    @Getter
+    private static int feeRate = 30;  // in percentage
+
+    @Getter
+    private static int earnings = 0;
 
     public static Configurable getConfigurable() {
         Configurable result = new Configurable();
         result.setMinPrice(minPrice);
         result.setMaxPrice(maxPrice);
-        result.setRespondExpirationMilliseconds(respondExpirationMilliseconds);
-        result.setAnswerExpirationMilliseconds(answerExpirationMilliseconds);
-        result.setFulfillExpirationMilliseconds(fulfillExpirationMilliseconds);
+        result.setRespondExpirationSeconds(respondExpirationSeconds);
+        result.setAnswerExpirationSeconds(answerExpirationSeconds);
+        result.setFulfillExpirationSeconds(fulfillExpirationSeconds);
         result.setMaxChatMessages(maxChatMessages);
-        result.setMaxChatTimeMilliseconds(maxChatTimeMilliseconds);
+        result.setMaxChatTimeSeconds(maxChatTimeSeconds);
+        result.setFeeRate(feeRate);
         return result;
     }
 
     public static void updateConfig(Configurable configurable) {
         minPrice = Objects.requireNonNullElse(configurable.getMinPrice(), minPrice);
         maxPrice = Objects.requireNonNullElse(configurable.getMaxPrice(), maxPrice);
-        respondExpirationMilliseconds = Objects.requireNonNullElse(configurable.getRespondExpirationMilliseconds(), respondExpirationMilliseconds);
-        answerExpirationMilliseconds = Objects.requireNonNullElse(configurable.getAnswerExpirationMilliseconds(), answerExpirationMilliseconds);
-        fulfillExpirationMilliseconds = Objects.requireNonNullElse(configurable.getFulfillExpirationMilliseconds(), fulfillExpirationMilliseconds);
+        respondExpirationSeconds = Objects.requireNonNullElse(configurable.getRespondExpirationSeconds(), respondExpirationSeconds);
+        answerExpirationSeconds = Objects.requireNonNullElse(configurable.getAnswerExpirationSeconds(), answerExpirationSeconds);
+        fulfillExpirationSeconds = Objects.requireNonNullElse(configurable.getFulfillExpirationSeconds(), fulfillExpirationSeconds);
         maxChatMessages = Objects.requireNonNullElse(configurable.getMaxChatMessages(), maxChatMessages);
-        maxChatTimeMilliseconds = Objects.requireNonNullElse(configurable.getMaxChatTimeMilliseconds(), maxChatTimeMilliseconds);
+        maxChatTimeSeconds = Objects.requireNonNullElse(configurable.getMaxChatTimeSeconds(), maxChatTimeSeconds);
+        feeRate = Objects.requireNonNullElse(configurable.getFeeRate(), feeRate);
+    }
+
+    public static void incEarnings(int value) {
+        earnings += value;
     }
 }

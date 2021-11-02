@@ -18,6 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
@@ -38,20 +40,25 @@ public class OrderController {
     @PostMapping
     public OrderResponse createOrder(@RequestBody OrderRequest data) {
         authLoginOrThrow();
-        if (authIsUser()) {
+        boolean isAdmin = authIsAdmin();
+        if (isAdmin && !authIsSuperAdmin()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+        if (!isAdmin) {
             data.setAsker(authGetId());
         }
         User[] users = checkOrderDataOrThrow(data);
         User asker = users[0];
         User answerer = users[1];
-        if (asker.getBalance() < answerer.getPrice()) {
+        int price = isAdmin ? Objects.requireNonNullElse(data.getPrice(), asker.getPrice()) : asker.getPrice();
+        if (asker.getBalance() < price) {
             throw new ApiException(403, "BALANCE_NOT_ENOUGH");
         }
         asker.setBalance(asker.getBalance() - answerer.getPrice());
         asker = userService.save(asker);
-        Order order = new Order(data, asker, answerer, authIsAdmin());
+        Order order = new Order(data, asker, answerer, isAdmin);
         order = orderService.save(order);
-        return new OrderResponse(order, authIsAdmin() ? 2 : 1);
+        return new OrderResponse(order, isAdmin ? 2 : 1);
     }
 
     @DeleteMapping("/{id}")
@@ -63,6 +70,7 @@ public class OrderController {
             throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
         }
         order.setDeleted(true);
+        order.setExpireTime(null);
         orderService.save(order);
     }
 
@@ -99,10 +107,10 @@ public class OrderController {
         }
         if (data.isAccept()) {
             order.setState(OrderState.REVIEWED);
-            // 接单定时
+            order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getRespondExpirationSeconds()));
         } else {
             order.setState(OrderState.REJECTED_BY_REVIEWER);
-            userService.refund(order.getAsker(), order.getPrice());
+            userService.refund(order);
         }
         orderService.save(order);
     }
@@ -117,10 +125,10 @@ public class OrderController {
         }
         if (data.isAccept()) {
             order.setState(OrderState.ACCEPTED);
-            // 回答定时
+            order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getAnswerExpirationSeconds()));
         } else {
             order.setState(OrderState.REJECTED_BY_ANSWERER);
-            userService.refund(order.getAsker(), order.getPrice());
+            userService.refund(order);
         }
         orderService.save(order);
     }
@@ -142,6 +150,7 @@ public class OrderController {
         }
         order.setState(OrderState.CHAT_ENDED);
         order.setEndReason(reason);
+        order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
         orderService.save(order);
     }
 
@@ -156,7 +165,7 @@ public class OrderController {
                 && order.getState() != OrderState.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_CANCEL");
         }
-        userService.refund(order.getAsker(), order.getPrice());
+        userService.refund(order);
         order.setState(OrderState.CANCELLED);
         orderService.save(order);
     }

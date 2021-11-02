@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -40,6 +41,9 @@ public class User {
 
     private int balance = 100;
 
+    private int earningsTotal = 0;
+    private String earningsMonthly = "[]";
+
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();
         password = registerRequest.getPassword();
@@ -49,15 +53,15 @@ public class User {
     }
 
     public void update(UserRequest data, boolean isAdmin) {
-        nickname = data.getNickname() != null ? data.getNickname() : nickname;
-        phone = data.getPhone() != null ? data.getPhone() : phone;
-        gender = data.getGender() != null ? data.getGender() : gender;
-        price = data.getPrice() != null ? data.getPrice() : price;
-        description = data.getDescription() != null ? data.getDescription() : description;
+        nickname = Objects.requireNonNullElse(data.getNickname(), nickname);
+        phone = Objects.requireNonNullElse(data.getPhone(), phone);
+        gender = Objects.requireNonNullElse(data.getGender(), gender);
+        price = Objects.requireNonNullElse(data.getPrice(), price);
+        description = Objects.requireNonNullElse(data.getDescription(), description);
         if (isAdmin) {
-            email = data.getEmail() != null ? data.getEmail() : email;
-            role = data.getRole() != null ? data.getRole() : role;
-            balance = data.getBalance() != null ? data.getBalance() : balance;
+            email = Objects.requireNonNullElse(data.getEmail(), email);
+            role = Objects.requireNonNullElse(data.getRole(), role);
+            balance = Objects.requireNonNullElse(data.getBalance(), balance);
         }
     }
 
