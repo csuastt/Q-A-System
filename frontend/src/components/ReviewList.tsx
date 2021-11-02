@@ -77,6 +77,10 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                         <CardContent>
                             <Box
                                 sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    p: 1,
+                                    m: 1,
                                     flexDirection: "row",
                                 }}
                             >
@@ -133,8 +137,10 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
 
                                 <Box
                                     sx={{
-                                        display: "end-flex",
+                                        display: "flex",
                                         flexDirection: "row",
+                                        p: 2.5,
+                                        m: 1,
                                     }}
                                 >
                                     <Button
