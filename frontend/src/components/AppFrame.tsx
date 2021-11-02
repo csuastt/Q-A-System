@@ -44,6 +44,7 @@ import AuthContext from "../AuthContext";
 
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import {ManagerRole, UserRole} from "../services/definations";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -311,9 +312,9 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                         ? manager
                             ? [
                                   [
-                                      "管理员信息",
-                                      "/admins/profile",
-                                      AccountCircleIcon,
+                                      "修改密码",
+                                      "/admins/change_password",
+                                      VpnKeyIcon,
                                   ],
                                   ["登出", "/admins/logout", LogoutIcon],
                               ]

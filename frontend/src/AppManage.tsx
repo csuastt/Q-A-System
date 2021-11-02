@@ -1,16 +1,14 @@
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
 import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
-import { Container } from "@mui/material";
-import Welcome from "./components/Welcome";
-import AccountProfile from "./components/AccountProfile";
+import {Container} from "@mui/material";
 import Login from "./components/Login";
 import Create from "./components/Create";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import ChangePassword from "./components/ChangePassword";
-import { ManagerInfo } from "./services/definations";
+import {ManagerInfo, UserRole} from "./services/definations";
 import adminAuthService from "./services/adminAuthService";
 import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
@@ -30,7 +28,8 @@ export default function AppManage() {
     }, []);
 
     const routes = [
-        ["/admins/answerers", <AnswererList />],
+        ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
+        ["/admins/users", <AnswererList userRole={UserRole.USER}/>],
         [
             "/admins/orders/:orderId",
             <PathParamParser
@@ -40,17 +39,17 @@ export default function AppManage() {
         ],
         //["/admins/orders", <QuestionList />],
 
-        ["/admins/profile", <AccountProfile isAdmin={true} />],
-
         ["/admins/review", <ReviewList />],
+
+
         ["/admins/login", <Login redirect={"/admins/"} isAdmin={true} />],
         ["/admins/logout", <Logout redirect={"/admins/"} isAdmin={true} />],
         ["/admins/create", <Create />],
         [
             "/admins/change_password",
             <ChangePassword
-                redirectConfirm={"/logout"}
-                redirectCancel={"/profile"}
+                redirectConfirm={"/admins/logout"}
+                redirectCancel={"/admins"}
                 isAdmin={true}
             />,
         ],

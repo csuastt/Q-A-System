@@ -8,13 +8,12 @@ import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
 import React, { useContext } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import AuthContext from "../AuthContext";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import GroupIcon from "@mui/icons-material/Group";
 import SchoolIcon from "@mui/icons-material/School";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import SettingsIcon from "@mui/icons-material/Settings";
+
 
 export default function HelloAdmin() {
     const theme = useTheme();
