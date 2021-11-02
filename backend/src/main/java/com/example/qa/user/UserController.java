@@ -3,6 +3,7 @@ package com.example.qa.user;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
+import com.example.qa.user.exchange.EarningsResponse;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
@@ -98,7 +99,6 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")
-    @ResponseStatus(HttpStatus.OK)
     public void changePassword(@PathVariable(value = "id") long id,
                                @RequestBody ChangePasswordRequest changePasswordRequest) {
         authLoginOrThrow();
@@ -113,7 +113,6 @@ public class UserController {
     }
 
     @PostMapping("/{id}/apply")
-    @ResponseStatus(HttpStatus.OK)
     public void apply(@PathVariable(value = "id") long id,
                       @RequestBody ApplyRequest applyRequest) {
         authLoginOrThrow();
@@ -129,7 +128,6 @@ public class UserController {
     }
 
     @PostMapping("/{id}/recharge")
-    @ResponseStatus(HttpStatus.OK)
     public void recharge(@PathVariable(value = "id") long id,
                          @RequestBody ValueRequest valueRequest) {
         authLoginOrThrow();
@@ -138,6 +136,14 @@ public class UserController {
         valueRequest.checkRechargeOrThrow(user.getBalance());
         user.setBalance(user.getBalance() + valueRequest.getValue());
         userService.save(user);
+    }
+
+    @GetMapping("/{id}/earnings")
+    public EarningsResponse getEarnings(@PathVariable(value = "id") long id) {
+        authLoginOrThrow();
+        authUserOrAdminOrThrow(id);
+        User user = getUserOrThrow(id, false);
+        return new EarningsResponse(user.getEarningsTotal(), userService.getMonthlyEarningsList(user.getEarningsMonthly()));
     }
 
     private User getUserOrThrow(long id, boolean allowDeleted) {

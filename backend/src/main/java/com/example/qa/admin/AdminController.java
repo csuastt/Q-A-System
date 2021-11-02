@@ -1,8 +1,8 @@
 package com.example.qa.admin;
 
 import com.example.qa.admin.exchange.AdminListResponse;
-import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.AdminRequest;
+import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
@@ -12,6 +12,7 @@ import com.example.qa.exchange.ChangePasswordRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +98,19 @@ public class AdminController {
             throw new ApiException(403, "WRONG_PASSWORD");
         }
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
+        adminService.save(admin);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteAdmin(@PathVariable(value = "id") long id) {
+        authLoginOrThrow();
+        authSuperAdminOrThrow();
+        Admin admin = getAdminOrThrow(id, true);
+        if (admin.isDeleted()) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
+        }
+        admin.setDeleted(true);
+        admin.setUsername(admin.getUsername() + "@" + admin.getId());
         adminService.save(admin);
     }
 

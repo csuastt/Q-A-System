@@ -10,9 +10,10 @@ import lombok.Setter;
 public class Configurable {
     private Integer minPrice;
     private Integer maxPrice;
-    private Long respondExpirationMilliseconds;
-    private Long answerExpirationMilliseconds;
-    private Long fulfillExpirationMilliseconds;
+    private Integer respondExpirationSeconds;
+    private Integer answerExpirationSeconds;
+    private Integer fulfillExpirationSeconds;
     private Integer maxChatMessages;
-    private Long maxChatTimeMilliseconds;
+    private Integer maxChatTimeSeconds;
+    private Integer feeRate;
 }

@@ -18,4 +18,11 @@ public class SystemConfigController {
         authSuperAdminOrThrow();
         SystemConfig.updateConfig(configurable);
     }
+
+    @GetMapping("/earnings")
+    public EarningsResponse earnings() {
+        authLoginOrThrow();
+        authSuperAdminOrThrow();
+        return new EarningsResponse(SystemConfig.getEarnings());
+    }
 }
