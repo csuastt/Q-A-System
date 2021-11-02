@@ -4,6 +4,8 @@ import com.example.qa.user.exchange.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,5 +46,28 @@ class UserBeanTest {
         assertEquals(total, earningsResponse.getTotal());
         assertEquals(monthly, earningsResponse.getMonthly());
         assertEquals(total, earningsResponse1.getTotal());
+
+        //Test for MonthlyEarnings
+        LocalDate date = LocalDate.now();
+        int earnings = 1;
+        MonthlyEarnings earnings1 = new MonthlyEarnings();
+        MonthlyEarnings earnings2 = new MonthlyEarnings(date, earnings);
+        assertEquals(date, earnings2.getDate());
+        assertEquals(earnings, earnings2.getEarnings());
+        assertEquals(0, earnings1.getEarnings());
+        earnings1.setEarnings(earnings);
+        earnings1.setDate(date);
+        assertEquals(earnings, earnings1.getEarnings());
+        assertEquals(date, earnings1.getDate());
+
+
+        //Test for MonthlyEarningsResponse
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+         String month = LocalDate.now().format(monthFormatter);
+         int monthlyEarnings = 100;
+         MonthlyEarnings monthlyEarnings1 = new MonthlyEarnings(LocalDate.now(), monthlyEarnings);
+         MonthlyEarningsResponse response1 = new MonthlyEarningsResponse(monthlyEarnings1);
+         assertEquals(month, response1.getMonth());
+         assertEquals(monthlyEarnings, response1.getEarnings());
     }
 }

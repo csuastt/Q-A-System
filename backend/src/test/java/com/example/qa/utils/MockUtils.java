@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 public class MockUtils {
     private final MockMvc mockMvc;
-    private final JsonMapper mapper;
+    public final JsonMapper mapper;
 
     public MockUtils(MockMvc mockMvc, JsonMapper mapper) {
         this.mockMvc = mockMvc;
