@@ -93,12 +93,6 @@ export default function HelloAdmin() {
                         title1="订单列表"
                         title2="查看所有订单"
                     />
-                    <ButtonCardWrapper
-                        to="/admins/settings"
-                        Icon={SettingsIcon}
-                        title1="系统参数"
-                        title2="只限超级管理员修改"
-                    />
                 </>
             ) : (
                 <>
@@ -107,12 +101,6 @@ export default function HelloAdmin() {
                         Icon={LoginIcon}
                         title1="登录"
                         title2="快来开始工作吧"
-                    />
-                    <ButtonCardWrapper
-                        to="/admins/create"
-                        Icon={PersonAddIcon}
-                        title1="注册"
-                        title2="只限超级管理员"
                     />
                 </>
             )}

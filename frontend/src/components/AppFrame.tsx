@@ -43,7 +43,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import AuthContext from "../AuthContext";
 
 import RateReviewIcon from "@mui/icons-material/RateReview";
-import { UserRole } from "../services/definations";
+import {ManagerRole, UserRole} from "../services/definations";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -319,7 +319,6 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                               ]
                             : [
                                   ["登录", "/admins/login", LoginIcon],
-                                  ["创建", "/admins/create", PersonAddIcon],
                               ]
                         : user
                         ? [
@@ -338,9 +337,15 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["用户列表", "/admins/users", GroupIcon],
                           ["回答者列表", "/admins/answerers", SchoolIcon],
                           ["订单列表", "/admins/orders", LibraryBooksIcon],
-                          ["系统参数", "/admins/settings", SettingsIcon],
                       ])
                     : renderDrawerList(drawerList3())}
+                <Divider />
+                {manager?.role==ManagerRole.SUPER_ADMIN
+                    ? renderDrawerList([
+                        ["系统参数", "/admins/settings", SettingsIcon],
+                        ["创建", "/admins/create", PersonAddIcon],
+                    ])
+                    :null }
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
