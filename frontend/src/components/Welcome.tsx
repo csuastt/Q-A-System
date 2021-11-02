@@ -16,6 +16,7 @@ import AddCommentIcon from "@mui/icons-material/AddComment";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import { UserRole } from "../services/definations";
 import RateReviewIcon from "@mui/icons-material/RateReview";
+import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 export default function Welcome() {
     const theme = useTheme();
@@ -103,6 +104,12 @@ export default function Welcome() {
                         Icon={AccountCircle}
                         title1="个人信息"
                         title2="查看、修改个人信息"
+                    />
+                    <ButtonCardWrapper
+                        to="/income"
+                        Icon={EqualizerIcon}
+                        title1="收支统计"
+                        title2="查看个人月度收入和支出情况"
                     />
                 </>
             ) : (
