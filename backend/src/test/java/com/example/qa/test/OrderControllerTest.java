@@ -1,7 +1,7 @@
 package com.example.qa.test;
 
 import com.example.qa.admin.AdminRepository;
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.order.exchange.AcceptRequest;
@@ -61,7 +61,7 @@ class OrderControllerTest {
         answerer.setRole(UserRole.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
-        CreateAdminRequest adminRequest = new CreateAdminRequest();
+        AdminRequest adminRequest = new AdminRequest();
         adminRequest.setUsername("testAdmin");
         adminRequest.setPassword(passwordEncoder.encode(password));
         adminRequest.setRole(AdminRole.REVIEWER);

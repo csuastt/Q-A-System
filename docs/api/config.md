@@ -8,6 +8,7 @@
     "maxPrice": 100,  // ≥ minPrice
     "respondExpirationMilliseconds": 259200000,  // 3 days 
     "answerExpirationMilliseconds": 86400000,    // 1 day
+    "fulfillExpirationMilliseconds": 259200000,  // 3 days
     "maxChatMessages": 9999,              // unlimited, ≥ 2
     "maxChatTimeMilliseconds": 604800000  // 7 days (after answering)
 }
@@ -22,7 +23,6 @@ GET /api/config
 返回值：
 
 - `200` OK
-- `401` 未登录
 
 ```
 PUT /api/config

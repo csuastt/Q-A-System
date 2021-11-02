@@ -1,6 +1,6 @@
 package com.example.qa.admin;
 
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.security.SecurityConstants;
@@ -21,7 +21,7 @@ public class AdminService {
         this.adminRepository = adminRepository;
         if (adminRepository.count() == 0) {
             Admin admin = new Admin(
-                    new CreateAdminRequest(
+                    new AdminRequest(
                             SecurityConstants.SUPER_ADMIN_USERNAME,
                             passwordEncoder.encode(SecurityConstants.SUPER_ADMIN_PASSWORD),
                             AdminRole.SUPER_ADMIN
@@ -39,6 +39,10 @@ public class AdminService {
         return adminRepository.findAll(pageable);
     }
 
+    public Page<Admin> listByRole(AdminRole role, Pageable pageable) {
+        return adminRepository.findAllByRole(role, pageable);
+    }
+
     public Admin getById(long id, boolean allowDeleted) {
         Optional<Admin> adminOptional = adminRepository.findById(id);
         if (adminOptional.isEmpty()) {
@@ -49,6 +53,10 @@ public class AdminService {
             throw new UsernameNotFoundException(null);
         }
         return admin;
+    }
+
+    public boolean existsByUsername(String username) {
+        return adminRepository.existsByUsername(username);
     }
 
     public Admin getByUsername(String username) {

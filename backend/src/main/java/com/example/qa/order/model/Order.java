@@ -26,6 +26,7 @@ public class Order {
     private boolean finished = false;
     private boolean reviewed = false;
     private ZonedDateTime createTime;
+    private ZonedDateTime expireTime;
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
     private String question;
     private String answerSummary;

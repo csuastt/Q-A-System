@@ -1,6 +1,6 @@
 package com.example.qa.admin.model;
 
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,10 +27,15 @@ public class Admin {
 
     private AdminRole role = AdminRole.ADMIN;
 
-    public Admin(CreateAdminRequest request) {
+    public Admin(AdminRequest request) {
         username = request.getUsername();
         password = request.getPassword();
         createTime = ZonedDateTime.now();
         role = request.getRole();
+    }
+
+    public void update(AdminRequest request) {
+        password = request.getPassword() != null ? request.getPassword() : password;
+        role = request.getRole() != null ? request.getRole() : role;
     }
 }

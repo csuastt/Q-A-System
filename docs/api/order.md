@@ -169,23 +169,16 @@ GET /api/orders
 获取自己的回答列表。
 
 ```
-?{asker;answerer}={id}&finished={true,on,yes,1;false,off,no,0}
+?{asker;answerer}={id}&finished={true,yes,1;false,no,0}
 ```
 
 获取已完成/进行中的订单。
-
-```
-?{asker;answerer}={id}&question={text}
-```
-
-搜索问题。
 
 参数：（管理员）（时间升序）
 
 ```
 (无参数)
 ?state={ORDER_STATE}
-?question={text}
 ```
 
 返回值：

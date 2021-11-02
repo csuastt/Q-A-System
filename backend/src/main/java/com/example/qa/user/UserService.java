@@ -49,11 +49,16 @@ public class UserService {
         return userOptional.get();
     }
 
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
     public Page<User> listByRole(UserRole role, Pageable pageable) {
         return role == null ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
+    }
+
+    public User refund(User user, int value) {
+        user.setBalance(user.getBalance() + value);
+        return save(user);
     }
 }

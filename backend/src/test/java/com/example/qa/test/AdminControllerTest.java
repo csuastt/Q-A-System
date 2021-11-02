@@ -1,7 +1,7 @@
 package com.example.qa.test;
 
 import com.example.qa.admin.AdminService;
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.exchange.LoginRequest;
@@ -64,7 +64,7 @@ class AdminControllerTest {
 
     @Test
     void createAdmin() throws Exception {
-        CreateAdminRequest request = new CreateAdminRequest();
+        AdminRequest request = new AdminRequest();
         request.setUsername("testAdmin" + adminCounter++);
 //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isOk());
