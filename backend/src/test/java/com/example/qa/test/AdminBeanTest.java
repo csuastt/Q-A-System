@@ -6,6 +6,8 @@ import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 
+import com.example.qa.config.Configurable;
+import com.example.qa.config.EarningsResponse;
 import com.example.qa.errorhandling.ApiError;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.model.User;
@@ -106,5 +108,40 @@ class AdminBeanTest {
         ApiError error = new ApiError("");
         error.setMessage(message);
         assertEquals(message, error.getMessage());
+
+        //Test for Configurable
+        Integer minPrice = 1;
+        Integer maxPrice = 10;
+        Integer respondExpirationSeconds = 7;
+        Integer answerExpirationSeconds = 8;
+        Integer fulfillExpirationSeconds = 6;
+        Integer maxChatMessages = 3;
+        Integer maxChatTimeSeconds = 2;
+        Integer feeRate = 100;
+        Configurable configurable = new Configurable();
+        configurable.setMinPrice(minPrice);
+        configurable.setMaxPrice(maxPrice);
+        configurable.setRespondExpirationSeconds(respondExpirationSeconds);
+        configurable.setAnswerExpirationSeconds(answerExpirationSeconds);
+        configurable.setFulfillExpirationSeconds(fulfillExpirationSeconds);
+        configurable.setMaxChatMessages(maxChatMessages);
+        configurable.setMaxChatTimeSeconds(maxChatTimeSeconds);
+        configurable.setFeeRate(feeRate);
+        assertEquals(maxPrice, configurable.getMaxPrice());
+        assertEquals(minPrice, configurable.getMinPrice());
+        assertEquals(respondExpirationSeconds, configurable.getRespondExpirationSeconds());
+        assertEquals(answerExpirationSeconds, configurable.getAnswerExpirationSeconds());
+        assertEquals(fulfillExpirationSeconds, configurable.getFulfillExpirationSeconds());
+        assertEquals(maxChatMessages, configurable.getMaxChatMessages());
+        assertEquals(maxChatTimeSeconds, configurable.getMaxChatTimeSeconds());
+        assertEquals(feeRate, configurable.getFeeRate());
+
+        //Test for EarningsResponse
+        int earn = 1;
+        EarningsResponse response1 = new EarningsResponse(earn);
+        assertEquals(earn, response1.getEarnings());
+        earn = 2;
+        response1.setEarnings(earn);
+        assertEquals(earn, response1.getEarnings());
     }
 }
