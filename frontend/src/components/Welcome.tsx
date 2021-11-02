@@ -8,12 +8,14 @@ import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
 import React, { useContext } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
-import ContactsIcon from "@mui/icons-material/Contacts";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { LiveHelp } from "@mui/icons-material";
 import AuthContext from "../AuthContext";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import AddCommentIcon from "@mui/icons-material/AddComment";
+import RateReviewIcon from "@mui/icons-material/RateReview";
+import SchoolIcon from "@mui/icons-material/School";
+import {UserRole} from "../services/definations";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -68,7 +70,7 @@ export default function Welcome() {
             </Typography>
             <ButtonCardWrapper
                 to="/answerers"
-                Icon={ContactsIcon}
+                Icon={SchoolIcon}
                 title1="回答者列表"
                 title2="寻找合适的回答者"
             />
@@ -76,16 +78,26 @@ export default function Welcome() {
                 <>
                     <ButtonCardWrapper
                         to="/order/create"
-                        Icon={LiveHelp}
+                        Icon={AddCommentIcon}
                         title1="提出问题"
                         title2="获取知识与答案"
                     />
                     <ButtonCardWrapper
                         to="/orders"
-                        Icon={FormatListBulletedIcon}
-                        title1="问题列表"
-                        title2="查看历史订单与问题状态"
+                        Icon={QuestionAnswerIcon}
+                        title1="我的提问"
+                        title2="查看历史提问与订单状态"
                     />
+                    {user.role === UserRole.ANSWERER ? (
+                        <ButtonCardWrapper
+                            to="/orders?answerer=true"
+                            Icon={RateReviewIcon}
+                            title1="我的回答"
+                            title2="查看历史回答与订单状态"
+                        />
+                    ) : (
+                        <></>
+                    )}
                     <ButtonCardWrapper
                         to="/profile"
                         Icon={AccountCircle}

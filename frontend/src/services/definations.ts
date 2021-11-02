@@ -118,7 +118,7 @@ export interface CreationResult {
     type: CreationResultType;
     state: string;
     created_id: number;
-    err_msg?: string;
+    message: string;
 }
 
 export interface PagedList<T> {

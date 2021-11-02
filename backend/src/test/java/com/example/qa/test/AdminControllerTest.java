@@ -1,11 +1,12 @@
 package com.example.qa.test;
 
 import com.example.qa.admin.AdminService;
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.utils.MockUtils;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -17,16 +18,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AdminControllerTest {
+class AdminControllerTest {
 
-    private final MockMvc mockMvc;
-    private final PasswordEncoder passwordEncoder;
-    private final AdminService adminService;
     private final MockUtils mockUtils;
 
     private String token;
@@ -38,9 +35,6 @@ public class AdminControllerTest {
 
     @Autowired
     public AdminControllerTest(MockMvc mockMvc, PasswordEncoder passwordEncoder, AdminService adminService) {
-        this.mockMvc = mockMvc;
-        this.passwordEncoder = passwordEncoder;
-        this.adminService = adminService;
         mockUtils = new MockUtils(mockMvc, mapper);
     }
 
@@ -70,24 +64,66 @@ public class AdminControllerTest {
 
     @Test
     void createAdmin() throws Exception {
-        CreateAdminRequest request = new CreateAdminRequest();
+        AdminRequest request = new AdminRequest();
         request.setUsername("testAdmin" + adminCounter++);
+//        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isOk());
         request.setUsername("testAdmin" + adminCounter++);
         request.setRole(AdminRole.ADMIN);
+        //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isOk());
         request.setRole(AdminRole.SUPER_ADMIN);
+        //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", token, request, status().isForbidden());
     }
 
     @Test
     void listAdmins() throws Exception {
-        mockMvc.perform(get("/api/admins")).andExpect(status().isOk()).andReturn();
+        mockUtils.getUrl("/api/admins", token, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins", null, null, null, status().isUnauthorized());
     }
 
     @Test
     void getAdmin() throws Exception {
-        mockMvc.perform(get("/api/admins/" + 1)).andExpect(status().isOk()).andReturn();
-        mockMvc.perform(get("/api/admins/" + Long.MAX_VALUE)).andExpect(status().isNotFound()).andReturn();
+        mockUtils.getUrl("/api/admins/" + 1, token, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, token, null, null, status().isNotFound());
+    }
+
+    @Test
+    void logOut() throws Exception{
+        mockUtils.postUrl("/api/admin/logout", null, null, status().isOk());
+    }
+
+    @Test
+    void getUser() throws Exception{
+        mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
+    }
+
+    @Test
+    void deleteUser() throws Exception {
+        mockUtils.deleteUrl("/api/users/" + 1, token, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUsername("useruser");
+        registerRequest.setPassword("password");
+        registerRequest.setEmail("177@qq.com");
+        mockUtils.postUrl("/api/users", null, registerRequest, status().isOk());
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername(registerRequest.getUsername());
+        loginRequest.setPassword("password");
+        TokenResponse result = mockUtils.postAndDeserialize("/api/user/login",null, loginRequest, status().isOk(), TokenResponse.class);
+        mockUtils.getUrl("/api/users/" + 1, result.getToken(), null, null, status().isNotFound());
+    }
+
+    @Test
+    void getOrderList() throws Exception {
+        mockUtils.getUrl("/api/orders?asker=" + 1, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?asker=" + Long.MAX_VALUE, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?answerer=" + 1, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?answerer=" + Long.MAX_VALUE, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders", token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders", null, null, null, status().isUnauthorized());
     }
 }

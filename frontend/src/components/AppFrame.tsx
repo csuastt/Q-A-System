@@ -31,9 +31,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import GroupIcon from "@mui/icons-material/Group";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import AddCommentIcon from "@mui/icons-material/AddComment";
 
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
@@ -45,6 +44,7 @@ import AuthContext from "../AuthContext";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import { ManagerRole, UserRole } from "../services/definations";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -199,23 +199,20 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
 
     const drawerList3: () => Array<[string, string, typeof SvgIcon]> = () => {
         if (user == null) {
-            return [
-                ["回答者列表", "/answerers", GroupIcon],
-                ["提出问题", "/order/create", HelpOutlineIcon],
-            ];
+            return [["回答者列表", "/answerers", SchoolIcon]];
         }
         if (user.role === UserRole.USER) {
             return [
-                ["回答者列表", "/answerers", GroupIcon],
-                ["我的问题", "/orders", FormatListBulletedIcon],
-                ["提出问题", "/order/create", HelpOutlineIcon],
+                ["回答者列表", "/answerers", SchoolIcon],
+                ["我的提问", "/orders", QuestionAnswerIcon],
+                ["提出问题", "/order/create", AddCommentIcon],
             ];
         }
         return [
-            ["回答者列表", "/answerers", GroupIcon],
-            ["我提出的问题", "/orders", FormatListBulletedIcon],
-            ["我回答的问题", "/orders?answerer=true", RateReviewIcon],
-            ["提出问题", "/order/create", HelpOutlineIcon],
+            ["回答者列表", "/answerers", SchoolIcon],
+            ["我的提问", "/orders", QuestionAnswerIcon],
+            ["我的回答", "/orders?answerer=true", RateReviewIcon],
+            ["提出问题", "/order/create", AddCommentIcon],
         ];
     };
 
