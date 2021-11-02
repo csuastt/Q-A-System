@@ -35,7 +35,7 @@ public class AdminController {
         authLoginOrThrow();
         authSuperAdminOrThrow();
         if (request.getRole() == AdminRole.SUPER_ADMIN) {
-            throw new ApiException(403, "NO_PERMISSION");
+            throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         if (request.getUsername().contains("@") || adminService.existsByUsername(request.getUsername())) {
             throw new ApiException(403, "USERNAME_INVALID");
@@ -78,7 +78,7 @@ public class AdminController {
         authLoginOrThrow();
         authSuperAdminOrThrow();
         if (id == 1 || request.getRole() == AdminRole.SUPER_ADMIN) {
-            throw new ApiException(403, "NO_PERMISSION");
+            throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         Admin admin = getAdminOrThrow(id, false);
         if (request.getPassword() != null) {

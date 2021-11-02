@@ -29,7 +29,7 @@ public class UserRequest {
         if (!FieldValidator.lengthIfNotNull(description, SystemConfig.DESCRIPTION_MIN_LENGTH, SystemConfig.DESCRIPTION_MAX_LENGTH)) {
             throw new ApiException(403, "DESCRIPTION_INVALID");
         }
-        if (!FieldValidator.valueIfNotNull(price, SystemConfig.minPrice, SystemConfig.maxPrice)) {
+        if (!FieldValidator.valueIfNotNull(price, SystemConfig.getMinPrice(), SystemConfig.getMaxPrice())) {
             throw new ApiException(403, "PRICE_INVALID");
         }
     }

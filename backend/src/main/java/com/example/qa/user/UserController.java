@@ -45,7 +45,7 @@ public class UserController {
     ) {
         boolean isAdmin = authLogin() && authIsAdmin();
         if (role != UserRole.ANSWERER && !isAdmin) {
-            throw new ApiException(403, "NO_PERMISSION");
+            throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);

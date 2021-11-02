@@ -73,7 +73,7 @@ public class OrderController {
         long userId = authGetId();
         Order order = getByIdOrThrow(id, isAdmin);
         if (!isAdmin && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
-            throw new ApiException(403, "NO_PERMISSION");
+            throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         return new OrderResponse(getByIdOrThrow(id, isAdmin), isAdmin ? 2 : 1);
     }
@@ -91,7 +91,7 @@ public class OrderController {
     public void reviewOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         authLoginOrThrow();
         if (!authIsAdmin() || adminService.getById(authGetId(), false).getRole() == AdminRole.ADMIN) {
-            throw new ApiException(403, "NO_PERMISSION");
+            throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         Order order = getByIdOrThrow(id, false);
         if (order.getState() != OrderState.CREATED) {
@@ -135,7 +135,7 @@ public class OrderController {
         } else if (authIsUser(order.getAnswerer().getId())) {
             reason = OrderEndReason.ANSWERER;
         } else {
-            throw new ApiException(403, "NO_PERMISSION");
+            throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         if (order.getState() != OrderState.ANSWERED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_ENDED");
@@ -202,7 +202,7 @@ public class OrderController {
                 // finished == null 时列出所有该用户的订单
                 result = orderService.listByAnswerer(userService.getById(answerer), finished);
             } else {
-                throw new ApiException(403, "NO_PERMISSION");
+                throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
         return new OrderListResponse(result, authIsAdmin() ? 2 : 0);

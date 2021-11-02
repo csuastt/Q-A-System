@@ -18,7 +18,7 @@ public class ApplyRequest {
         if (!FieldValidator.length(description, SystemConfig.DESCRIPTION_MIN_LENGTH, SystemConfig.DESCRIPTION_MAX_LENGTH)) {
             throw new ApiException(403, "DESCRIPTION_INVALID");
         }
-        if (!FieldValidator.value(price, SystemConfig.minPrice, SystemConfig.maxPrice)) {
+        if (!FieldValidator.value(price, SystemConfig.getMinPrice(), SystemConfig.getMaxPrice())) {
             throw new ApiException(403, "PRICE_INVALID");
         }
     }
