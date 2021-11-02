@@ -6,6 +6,7 @@ import com.example.qa.admin.model.AdminRole;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.utils.MockUtils;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -98,5 +99,32 @@ class AdminControllerTest {
     void getUser() throws Exception{
         mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
         mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
+    }
+
+    @Test
+    void deleteUser() throws Exception {
+        mockUtils.deleteUrl("/api/users/" + 1, token, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUsername("useruser");
+        registerRequest.setPassword("password");
+        registerRequest.setEmail("177@qq.com");
+        mockUtils.postUrl("/api/users", null, registerRequest, status().isOk());
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername(registerRequest.getUsername());
+        loginRequest.setPassword("password");
+        TokenResponse result = mockUtils.postAndDeserialize("/api/user/login",null, loginRequest, status().isOk(), TokenResponse.class);
+        mockUtils.getUrl("/api/users/" + 1, result.getToken(), null, null, status().isNotFound());
+    }
+
+    @Test
+    void getOrderList() throws Exception {
+        mockUtils.getUrl("/api/orders?asker=" + 1, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?asker=" + Long.MAX_VALUE, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?answerer=" + 1, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?answerer=" + Long.MAX_VALUE, token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders", token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders", null, null, null, status().isUnauthorized());
     }
 }

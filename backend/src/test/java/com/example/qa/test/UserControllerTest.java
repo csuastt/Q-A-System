@@ -107,6 +107,7 @@ class UserControllerTest {
     @Test
     void getUser() throws Exception {
         mockUtils.getUrl("/api/users/" + id, token, null, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + userCounter + 10, token, null, null, status().isNotFound());
         mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
     }
 
@@ -148,6 +149,10 @@ class UserControllerTest {
         ApplyRequest request = new ApplyRequest();
         request.setDescription("MyDescription");
         request.setPrice(null);
+        mockUtils.postUrl("/api/users/" + id + "/apply", token, request, status().isForbidden());
+        request.setPrice(101);
+        mockUtils.postUrl("/api/users/" + id + "/apply", token, request, status().isForbidden());
+        request.setPrice(-1);
         mockUtils.postUrl("/api/users/" + id + "/apply", token, request, status().isForbidden());
         request.setPrice(50);
         mockUtils.postUrl("/api/users/" + id + "/apply", token, request, status().isOk());
@@ -192,6 +197,9 @@ class UserControllerTest {
         userController.checkUserData(userRequest);
         userRequest.setDescription("myDescription");
         userRequest.setPrice(-1);
+        assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
+        userRequest.setPrice(1);
+        userRequest.setNickname("12345678910111213115161718192021222323242527282930");
         assertThrows(ApiException.class, () -> userController.checkUserData(userRequest));
 
         ApplyRequest applyRequest = new ApplyRequest();

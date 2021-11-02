@@ -5,17 +5,18 @@ import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
+
 import com.example.qa.errorhandling.ApiError;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.model.User;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.ZonedDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AdminBeanTest {
@@ -26,6 +27,12 @@ class AdminBeanTest {
         //Test for UserAuthentication
         UserAuthentication user1 = new UserAuthentication(1L, User.class);
         UserAuthentication user2 = new UserAuthentication(1L, User.class);
+        UserAuthentication user4 = new UserAuthentication(1L, Admin.class);
+        UserAuthentication user5 = new UserAuthentication(2L, User.class);
+        UserAuthentication user3 = null;
+        User user = new User();
+        assertFalse(user1.equals(user3) || user1.equals(user));
+        assertFalse(user1.equals(user4) || user1.equals(user5));
         assertTrue(user1.equals(user2) && user2.equals(user1));
         assertEquals(user1.hashCode(), user2.hashCode());
     }
@@ -87,6 +94,7 @@ class AdminBeanTest {
         admin.setUsername(Username);
         admin.setCreateTime(CreateTime);
         admin.setRole(Role);
+
         assertEquals(Id, admin.getId());
         assertEquals(Username, admin.getUsername());
         assertEquals(CreateTime, admin.getCreateTime());
