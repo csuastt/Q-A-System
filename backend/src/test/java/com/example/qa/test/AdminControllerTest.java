@@ -27,7 +27,7 @@ class AdminControllerTest {
     private String username;
     private String password;
     private long id;
-    private static int adminCounter = 0;
+    private static int adminCounter = 10;
 
     @BeforeAll
     // @Test
@@ -66,6 +66,8 @@ class AdminControllerTest {
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
         request.setRole(AdminRole.SUPER_ADMIN);
         mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
+        request.setUsername("@testUser" + adminCounter++);
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
     }
 

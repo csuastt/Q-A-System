@@ -63,7 +63,7 @@ class SystemConfigControllerTest {
     @Test
     void updateConfig() throws Exception {
         Integer minPrice = 1;
-        Integer maxPrice = 10;
+        Integer maxPrice = 100;
         Integer respondExpirationSeconds = 7;
         Integer answerExpirationSeconds = 8;
         Integer fulfillExpirationSeconds = 6;
