@@ -67,6 +67,8 @@ class UserBeanTest {
          int monthlyEarnings = 100;
          MonthlyEarnings monthlyEarnings1 = new MonthlyEarnings(LocalDate.now(), monthlyEarnings);
          MonthlyEarningsResponse response1 = new MonthlyEarningsResponse(monthlyEarnings1);
+         response1.setEarnings(monthlyEarnings);
+         response1.setMonth(month);
          assertEquals(month, response1.getMonth());
          assertEquals(monthlyEarnings, response1.getEarnings());
     }

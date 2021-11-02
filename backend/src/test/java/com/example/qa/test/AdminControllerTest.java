@@ -6,6 +6,9 @@ import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.exchange.RegisterRequest;
+import com.example.qa.user.exchange.UserRequest;
+import com.example.qa.user.model.Gender;
+import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -78,6 +81,20 @@ class AdminControllerTest {
     }
 
     @Test
+    void editAdmin()throws Exception{
+        createAdmin();
+        long id = 2;
+        String username = "testAdminUser";
+        String password = "passW";
+        AdminRole role = AdminRole.REVIEWER;
+        AdminRequest request = new AdminRequest();
+        request.setUsername(username);
+        request.setPassword(password);
+        request.setRole(role);
+        mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isOk());
+
+    }
+    @Test
     void getAdmin() throws Exception {
         mockUtils.getUrl("/api/admins/" + 1, superAdminToken, null, null, status().isOk());
         mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, superAdminToken, null, null, status().isNotFound());
@@ -92,6 +109,22 @@ class AdminControllerTest {
     void getUser() throws Exception {
         mockUtils.getUrl("/api/users/" + 1, superAdminToken, null, null, status().isOk());
         mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
+        UserRequest userRequest = new UserRequest();
+        userRequest.setNickname("myNickname");
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
+
+        userRequest.setNickname(null);
+        userRequest.setPhone("example");
+        userRequest.setGender(Gender.MALE);
+        userRequest.setPrice(50);
+        userRequest.setDescription("MyDescription");
+        userRequest.setEmail("177@qq.com");
+        userRequest.setRole(UserRole.ANSWERER);
+        userRequest.setBalance(200);
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
+
+        userRequest.setNickname("");
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
     }
 
     @Test
