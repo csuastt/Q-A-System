@@ -1,7 +1,7 @@
-import {BrowserRouter, Route, Switch} from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
-import {Container} from "@mui/material";
+import { Container } from "@mui/material";
 import Welcome from "./components/Welcome";
 import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
@@ -9,9 +9,9 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
-import {UserInfo, UserRole} from "./services/definations";
+import { UserInfo, UserRole } from "./services/definations";
 import authService from "./services/authService";
 import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
@@ -30,8 +30,11 @@ export default function App() {
     }, []);
 
     const routes = [
-        ["/answerers/select", <AnswererList selectModel userRole={UserRole.ANSWERER} />],
-        ["/answerers", <AnswererList userRole={UserRole.ANSWERER}/>],
+        [
+            "/answerers/select",
+            <AnswererList selectModel userRole={UserRole.ANSWERER} />,
+        ],
+        ["/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
         [
             "/orders/:orderId",
             <PathParamParser

@@ -1,14 +1,16 @@
-import React, {useEffect, useState} from "react";
-import {UserBasicInfo, UserRole} from "../services/definations";
+import React, { useEffect, useState } from "react";
+import { UserBasicInfo, UserRole } from "../services/definations";
 import userService from "../services/userService";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import AnswererCard from "./AnswererCard";
 import Typography from "@mui/material/Typography";
-import {parseIntWithDefault, useQuery} from "../util";
+import { parseIntWithDefault, useQuery } from "../util";
 import Pagination from "./Pagination";
 
-const AnswererList: React.FC<{ selectModel?: boolean,userRole: UserRole}> = (props) => {
+const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
+    props
+) => {
     const query = useQuery();
     const [answerList, setAnswerList] = useState<Array<UserBasicInfo>>();
     const [currentPage, setCurrentPage] = useState(
@@ -21,12 +23,18 @@ const AnswererList: React.FC<{ selectModel?: boolean,userRole: UserRole}> = (pro
     const [totalCount, setTotalCount] = useState(0);
 
     useEffect(() => {
-        userService.getUserList(props.userRole==UserRole.ANSWERER, currentPage, itemPrePage).then((list) => {
-            // list.data.forEach((user) => (user.role = props.userRole));
-            setAnswerList(list.data);
-            setMaxPage(list.totalPages);
-            setTotalCount(list.totalCount);
-        });
+        userService
+            .getUserList(
+                props.userRole == UserRole.ANSWERER,
+                currentPage,
+                itemPrePage
+            )
+            .then((list) => {
+                // list.data.forEach((user) => (user.role = props.userRole));
+                setAnswerList(list.data);
+                setMaxPage(list.totalPages);
+                setTotalCount(list.totalCount);
+            });
     }, [currentPage, itemPrePage]);
 
     const onPageChanged = (newPage: number) => {

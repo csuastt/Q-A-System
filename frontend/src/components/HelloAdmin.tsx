@@ -14,7 +14,6 @@ import GroupIcon from "@mui/icons-material/Group";
 import SchoolIcon from "@mui/icons-material/School";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 
-
 export default function HelloAdmin() {
     const theme = useTheme();
     const { manager } = useContext(AuthContext);
