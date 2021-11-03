@@ -336,7 +336,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                       ])
                     : renderDrawerList(drawerList3())}
                 <Divider />
-                {manager?.role == ManagerRole.SUPER_ADMIN
+                {manager?.role === ManagerRole.SUPER_ADMIN
                     ? renderDrawerList([
                           ["系统参数", "/admins/settings", SettingsIcon],
                           ["创建", "/admins/create", PersonAddIcon],

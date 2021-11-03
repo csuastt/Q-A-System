@@ -13,8 +13,6 @@ import adminAuthService from "./services/adminAuthService";
 import ReviewList from "./components/ReviewList";
 import HelloAdmin from "./components/HelloAdmin";
 import AdminOrderList from "./components/AdminOrderList";
-import PathParamParser from "./PathParamParser";
-import OrderDetail from "./components/OrderDetail";
 
 export default function AppManage() {
     const [manager, setManager] = useState<ManagerInfo>();

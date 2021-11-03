@@ -25,7 +25,7 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
     useEffect(() => {
         userService
             .getUserList(
-                props.userRole == UserRole.ANSWERER,
+                props.userRole === UserRole.ANSWERER,
                 currentPage,
                 itemPrePage
             )
@@ -35,7 +35,7 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
                 setMaxPage(list.totalPages);
                 setTotalCount(list.totalCount);
             });
-    }, [currentPage, itemPrePage]);
+    }, [currentPage, itemPrePage, props.userRole]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);

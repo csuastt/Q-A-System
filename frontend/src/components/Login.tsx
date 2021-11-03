@@ -92,7 +92,7 @@ export default class Login extends Component<LoginProps, LoginState> {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
-        if (isAdmin == false) {
+        if (!isAdmin) {
             if (error === "") {
                 error = validate_length(value);
             }

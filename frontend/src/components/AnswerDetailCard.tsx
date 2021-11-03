@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import { UserBasicInfo } from "../services/definations";
 import userService from "../services/userService";
-import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 
 const AnswererDetailCard: React.FC<{

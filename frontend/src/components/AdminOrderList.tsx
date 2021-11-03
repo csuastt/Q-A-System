@@ -41,7 +41,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
         orderService
             .getOrderListByAdmin(props.orderState, currentPage, itemPrePage)
             .then(acceptOrderList);
-    }, [currentPage, itemPrePage]);
+    }, [currentPage, itemPrePage, props.orderState]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
