@@ -1,7 +1,7 @@
 package com.example.qa.user;
 
-import com.example.qa.user.exchange.MonthlyEarnings;
 import com.example.qa.order.model.Order;
+import com.example.qa.user.exchange.MonthlyEarnings;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.fasterxml.jackson.core.JsonProcessingException;

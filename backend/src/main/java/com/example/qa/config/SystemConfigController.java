@@ -2,7 +2,8 @@ package com.example.qa.config;
 
 import org.springframework.web.bind.annotation.*;
 
-import static com.example.qa.security.RestControllerAuthUtils.*;
+import static com.example.qa.security.RestControllerAuthUtils.authLoginOrThrow;
+import static com.example.qa.security.RestControllerAuthUtils.authSuperAdminOrThrow;
 
 @RestController
 @RequestMapping("/api/config")

@@ -2,10 +2,14 @@ package com.example.qa.test;
 
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.AdminRole;
+import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.exchange.RegisterRequest;
+import com.example.qa.user.exchange.UserRequest;
+import com.example.qa.user.model.Gender;
+import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,7 +31,7 @@ class AdminControllerTest {
     private String username;
     private String password;
     private long id;
-    private static int adminCounter = 0;
+    private static int adminCounter = 10;
 
     @BeforeAll
     // @Test
@@ -67,12 +71,43 @@ class AdminControllerTest {
         request.setRole(AdminRole.SUPER_ADMIN);
         mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
+        request.setUsername("@testUser" + adminCounter++);
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
     }
 
     @Test
     void listAdmins() throws Exception {
         mockUtils.getUrl("/api/admins", superAdminToken, null, null, status().isOk());
         mockUtils.getUrl("/api/admins", null, null, null, status().isUnauthorized());
+    }
+
+    @Test
+    void editAdmin()throws Exception{
+        createAdmin();
+        long id = 2;
+        String username = "testAdminUser";
+        String password = "passW";
+        AdminRole role = AdminRole.REVIEWER;
+        AdminRequest request = new AdminRequest();
+        request.setUsername(username);
+        request.setPassword(password);
+        request.setRole(role);
+        mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isOk());
+
+        ChangePasswordRequest request1 = new ChangePasswordRequest();
+        request1.setPassword("passWW");
+        request1.setOriginal("passW");
+        mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
+        mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
+
+    }
+
+    @Test
+    void deleteAdmin() throws Exception {
+        createAdmin();
+        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isOk());
+        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isForbidden());
+        mockUtils.deleteUrl("/api/admins/" + 2, null, null, status().isUnauthorized());
     }
 
     @Test
@@ -90,6 +125,22 @@ class AdminControllerTest {
     void getUser() throws Exception {
         mockUtils.getUrl("/api/users/" + 1, superAdminToken, null, null, status().isOk());
         mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
+        UserRequest userRequest = new UserRequest();
+        userRequest.setNickname("myNickname");
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
+
+        userRequest.setNickname(null);
+        userRequest.setPhone("example");
+        userRequest.setGender(Gender.MALE);
+        userRequest.setPrice(50);
+        userRequest.setDescription("MyDescription");
+        userRequest.setEmail("177@qq.com");
+        userRequest.setRole(UserRole.ANSWERER);
+        userRequest.setBalance(200);
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
+
+        userRequest.setNickname("");
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
     }
 
     @Test
