@@ -55,7 +55,7 @@ export default function App() {
                 isAdmin={false}
             />,
         ],
-        ["/income", <IncomeStatistics/>],
+        ["/income", <IncomeStatistics userId={user?.id}/>],
         ["/", <Welcome />],
     ];
 
