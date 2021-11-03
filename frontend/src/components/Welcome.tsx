@@ -16,7 +16,7 @@ import AddCommentIcon from "@mui/icons-material/AddComment";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import { UserRole } from "../services/definations";
 import RateReviewIcon from "@mui/icons-material/RateReview";
-import EqualizerIcon from '@mui/icons-material/Equalizer';
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 
 export default function Welcome() {
     const theme = useTheme();

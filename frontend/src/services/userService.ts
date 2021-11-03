@@ -82,11 +82,9 @@ class UserService {
         });
     }
 
-    getUserIncome(
-        id: number
-    ): Promise<EarningsInfo> {
+    getUserIncome(id: number): Promise<EarningsInfo> {
         return axios
-            .get(`/users/${id}/earnings`, )
+            .get(`/users/${id}/earnings`)
             .then((response) => response.data);
     }
 }

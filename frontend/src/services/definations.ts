@@ -136,5 +136,5 @@ export interface EarningsMonthly {
 
 export interface EarningsInfo {
     total: number;
-    monthly : Array<EarningsMonthly>
+    monthly: Array<EarningsMonthly>;
 }

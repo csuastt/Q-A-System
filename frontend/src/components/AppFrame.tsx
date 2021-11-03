@@ -33,7 +33,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GroupIcon from "@mui/icons-material/Group";
 import AddCommentIcon from "@mui/icons-material/AddComment";
-import EqualizerIcon from '@mui/icons-material/Equalizer';
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SettingsIcon from "@mui/icons-material/Settings";
