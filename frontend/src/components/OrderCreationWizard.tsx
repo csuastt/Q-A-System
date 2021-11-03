@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import questionService from "../services/orderService";
-import { CreationResult, CreationResultType } from "../services/definations";
+import { CreationResult } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";

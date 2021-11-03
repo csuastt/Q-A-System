@@ -42,7 +42,8 @@ import SchoolIcon from "@mui/icons-material/School";
 import AuthContext from "../AuthContext";
 
 import RateReviewIcon from "@mui/icons-material/RateReview";
-import { UserRole } from "../services/definations";
+import { ManagerRole, UserRole } from "../services/definations";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
 const Search = styled("div")(({ theme }) => ({
@@ -308,16 +309,13 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                         ? manager
                             ? [
                                   [
-                                      "管理员信息",
-                                      "/admins/profile",
-                                      AccountCircleIcon,
+                                      "修改密码",
+                                      "/admins/change_password",
+                                      VpnKeyIcon,
                                   ],
                                   ["登出", "/admins/logout", LogoutIcon],
                               ]
-                            : [
-                                  ["登录", "/admins/login", LoginIcon],
-                                  ["创建", "/admins/create", PersonAddIcon],
-                              ]
+                            : [["登录", "/admins/login", LoginIcon]]
                         : user
                         ? [
                               ["个人信息", "/profile", AccountCircleIcon],
@@ -335,9 +333,15 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["用户列表", "/admins/users", GroupIcon],
                           ["回答者列表", "/admins/answerers", SchoolIcon],
                           ["订单列表", "/admins/orders", LibraryBooksIcon],
-                          ["系统参数", "/admins/settings", SettingsIcon],
                       ])
                     : renderDrawerList(drawerList3())}
+                <Divider />
+                {manager?.role === ManagerRole.SUPER_ADMIN
+                    ? renderDrawerList([
+                          ["系统参数", "/admins/settings", SettingsIcon],
+                          ["创建", "/admins/create", PersonAddIcon],
+                      ])
+                    : null}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />

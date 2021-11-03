@@ -2,19 +2,17 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
 import { Container } from "@mui/material";
-import Welcome from "./components/Welcome";
-import AccountProfile from "./components/AccountProfile";
 import Login from "./components/Login";
 import Create from "./components/Create";
 import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
 import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
-import { ManagerInfo } from "./services/definations";
+import { ManagerInfo, OrderState, UserRole } from "./services/definations";
 import adminAuthService from "./services/adminAuthService";
-import OrderDetail from "./components/OrderDetail";
-import PathParamParser from "./PathParamParser";
 import ReviewList from "./components/ReviewList";
+import HelloAdmin from "./components/HelloAdmin";
+import AdminOrderList from "./components/AdminOrderList";
 
 export default function AppManage() {
     const [manager, setManager] = useState<ManagerInfo>();
@@ -29,31 +27,31 @@ export default function AppManage() {
     }, []);
 
     const routes = [
-        ["/admins/answerers", <AnswererList />],
-        [
-            "/admins/orders/:orderId",
-            <PathParamParser
-                params={[["orderId", "number"]]}
-                C={OrderDetail}
-            />,
-        ],
-        //["/admins/orders", <QuestionList />],
+        ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
+        ["/admins/users", <AnswererList userRole={UserRole.USER} />],
 
-        ["/admins/profile", <AccountProfile isAdmin={true} />],
-
+        ["/admins/orders", <AdminOrderList orderState={OrderState.CREATED} />],
+        // [
+        //     "/admins/orders/:orderId",
+        //     <PathParamParser
+        //         params={[["orderId", "number"]]}
+        //         C={OrderDetailForAdmin}
+        //     />,
+        // ],
         ["/admins/review", <ReviewList />],
-        ["/admins/login", <Login redirect={"/"} isAdmin={true} />],
-        ["/admins/logout", <Logout redirect={"/"} isAdmin={true} />],
+
+        ["/admins/login", <Login redirect={"/admins/"} isAdmin={true} />],
+        ["/admins/logout", <Logout redirect={"/admins/"} isAdmin={true} />],
         ["/admins/create", <Create />],
         [
             "/admins/change_password",
             <ChangePassword
-                redirectConfirm={"/logout"}
-                redirectCancel={"/profile"}
+                redirectConfirm={"/admins/logout"}
+                redirectCancel={"/admins"}
                 isAdmin={true}
             />,
         ],
-        ["/admins/", <Welcome />],
+        ["/admins/", <HelloAdmin />],
     ];
 
     return refreshing ? (
