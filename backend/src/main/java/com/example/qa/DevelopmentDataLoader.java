@@ -68,8 +68,11 @@ public class DevelopmentDataLoader implements ApplicationRunner {
                             rr.setEmail("test@example.com");
                             return rr;
                         })
-                        .map(User::new)
-                        .peek(user -> user.setRole(UserRole.ANSWERER))
+                        .map(rr -> {
+                            var user = new User(rr);
+                            user.setRole(UserRole.ANSWERER);
+                            return user;
+                        })
                         .collect(Collectors.toList());
         userRepo.saveAll(answererList);
 
