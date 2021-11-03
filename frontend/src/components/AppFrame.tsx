@@ -33,7 +33,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GroupIcon from "@mui/icons-material/Group";
 import AddCommentIcon from "@mui/icons-material/AddComment";
-
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -212,6 +212,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
             ["回答者列表", "/answerers", SchoolIcon],
             ["我的提问", "/orders", QuestionAnswerIcon],
             ["我的回答", "/orders?answerer=true", RateReviewIcon],
+            ["收支统计", "/income", EqualizerIcon],
             ["提出问题", "/order/create", AddCommentIcon],
         ];
     };

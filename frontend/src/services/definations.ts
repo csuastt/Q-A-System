@@ -128,3 +128,13 @@ export interface PagedList<T> {
     totalPages: number;
     totalCount: number;
 }
+
+export interface EarningsMonthly {
+    month: string;
+    earnings: number;
+}
+
+export interface EarningsInfo {
+    total: number;
+    monthly: Array<EarningsMonthly>;
+}

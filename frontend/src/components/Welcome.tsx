@@ -14,6 +14,7 @@ import AuthContext from "../AuthContext";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import RateReviewIcon from "@mui/icons-material/RateReview";
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 import SchoolIcon from "@mui/icons-material/School";
 import { UserRole } from "../services/definations";
 
@@ -89,12 +90,20 @@ export default function Welcome() {
                         title2="查看历史提问与订单状态"
                     />
                     {user.role === UserRole.ANSWERER ? (
-                        <ButtonCardWrapper
-                            to="/orders?answerer=true"
-                            Icon={RateReviewIcon}
-                            title1="我的回答"
-                            title2="查看历史回答与订单状态"
-                        />
+                        <>
+                            <ButtonCardWrapper
+                                to="/orders?answerer=true"
+                                Icon={RateReviewIcon}
+                                title1="我的回答"
+                                title2="查看历史回答与订单状态"
+                            />
+                            <ButtonCardWrapper
+                                to="/income"
+                                Icon={EqualizerIcon}
+                                title1="收支统计"
+                                title2="查看个人月度收入和支出情况"
+                            />
+                        </>
                     ) : (
                         <></>
                     )}
