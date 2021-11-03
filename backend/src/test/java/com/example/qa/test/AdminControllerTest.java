@@ -73,6 +73,12 @@ class AdminControllerTest {
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
         request.setUsername("@testUser" + adminCounter++);
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
+        request.setUsername("testUser" + adminCounter);
+        request.setRole(AdminRole.REVIEWER);
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
+        request.setUsername("testUser" + adminCounter);
+        request.setRole(AdminRole.REVIEWER);
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
     }
 
     @Test
@@ -93,12 +99,16 @@ class AdminControllerTest {
         request.setPassword(password);
         request.setRole(role);
         mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isOk());
+        mockUtils.putUrl("/api/admins/" + 1, superAdminToken ,request, status().isForbidden());
+        request.setRole(AdminRole.SUPER_ADMIN);
+        mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isForbidden());
 
         ChangePasswordRequest request1 = new ChangePasswordRequest();
         request1.setPassword("passWW");
         request1.setOriginal("passW");
         mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
         mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
+        mockUtils.putUrl("/api/admins/" + id + "/password", null ,request1, status().isUnauthorized());
 
     }
 
