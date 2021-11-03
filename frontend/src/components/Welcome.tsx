@@ -90,12 +90,20 @@ export default function Welcome() {
                         title2="查看历史提问与订单状态"
                     />
                     {user.role === UserRole.ANSWERER ? (
-                        <ButtonCardWrapper
-                            to="/orders?answerer=true"
-                            Icon={RateReviewIcon}
-                            title1="我的回答"
-                            title2="查看历史回答与订单状态"
-                        />
+                        <>
+                            <ButtonCardWrapper
+                                to="/orders?answerer=true"
+                                Icon={RateReviewIcon}
+                                title1="我的回答"
+                                title2="查看历史回答与订单状态"
+                            />
+                            <ButtonCardWrapper
+                                to="/income"
+                                Icon={EqualizerIcon}
+                                title1="收支统计"
+                                title2="查看个人月度收入和支出情况"
+                            />
+                        </>
                     ) : (
                         <></>
                     )}
@@ -104,12 +112,6 @@ export default function Welcome() {
                         Icon={AccountCircle}
                         title1="个人信息"
                         title2="查看、修改个人信息"
-                    />
-                    <ButtonCardWrapper
-                        to="/income"
-                        Icon={EqualizerIcon}
-                        title1="收支统计"
-                        title2="查看个人月度收入和支出情况"
                     />
                 </>
             ) : (

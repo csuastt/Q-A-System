@@ -20,9 +20,7 @@ export default function BaseOptionChart() {
     return {
         // Colors
         colors: [
-            theme.palette.primary.main,
-            '#be1e02',
-            theme.palette.secondary.main,
+            theme.palette.primary.main
         ],
 
         // Chart
@@ -86,7 +84,7 @@ export default function BaseOptionChart() {
 
         // Markers
         markers: {
-            size: 5,
+            size: 0,
             strokeColors: theme.palette.background.paper
         },
 
@@ -99,7 +97,7 @@ export default function BaseOptionChart() {
 
         // Legend
         legend: {
-            show: true,
+            show: false,
             fontSize: 13,
             position: 'top',
             horizontalAlign: 'right',
