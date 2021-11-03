@@ -1,15 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
-//import App from "./App";
 import axios from "axios";
+import App from "./App";
 import AppManage from "./AppManage";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE;
 
 ReactDOM.render(
     <React.StrictMode>
-        <AppManage />
+        <BrowserRouter>
+            <Switch>
+                <Route path="/admins">
+                    <AppManage />
+                </Route>
+                <Route path="/">
+                    <App />
+                </Route>
+            </Switch>
+        </BrowserRouter>
     </React.StrictMode>,
     document.getElementById("root")
 );
