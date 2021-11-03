@@ -18,7 +18,6 @@ import EqualizerIcon from "@mui/icons-material/Equalizer";
 import SchoolIcon from "@mui/icons-material/School";
 import { UserRole } from "../services/definations";
 
-
 export default function Welcome() {
     const theme = useTheme();
     const { user } = useContext(AuthContext);
