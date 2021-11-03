@@ -2,6 +2,7 @@ package com.example.qa.admin.exchange;
 
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class AdminResponse {
     private Long id;
     private Boolean deleted;
     private String username;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
     private AdminRole role;
 

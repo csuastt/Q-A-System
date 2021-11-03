@@ -1,52 +1,47 @@
 package com.example.qa.test;
 
-import com.example.qa.admin.AdminService;
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.AdminRole;
-import com.example.qa.security.SecurityConstants;
+import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.exchange.RegisterRequest;
+import com.example.qa.user.exchange.UserRequest;
+import com.example.qa.user.model.Gender;
+import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class AdminControllerTest {
 
-    private final MockUtils mockUtils;
+    private static MockUtils mockUtils;
 
-    private String token;
+    private static String superAdminToken;
     private String username;
     private String password;
     private long id;
-    private static int adminCounter = 0;
-    private static final JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
+    private static int adminCounter = 10;
 
-    @Autowired
-    public AdminControllerTest(MockMvc mockMvc, PasswordEncoder passwordEncoder, AdminService adminService) {
+    @BeforeAll
+    // @Test
+    static void loginSuperAdmin(@Autowired MockMvc mockMvc, @Autowired JsonMapper mapper) throws Exception {
         mockUtils = new MockUtils(mockMvc, mapper);
-    }
-
-    @BeforeEach
-    @Test
-    void loginSuperAdmin() throws Exception {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(SecurityConstants.SUPER_ADMIN_USERNAME);
         loginRequest.setPassword(SecurityConstants.SUPER_ADMIN_PASSWORD);
         TokenResponse tokenResponse = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
-        token = tokenResponse.getToken();
+        superAdminToken = tokenResponse.getToken();
     }
 
     @Test
@@ -65,46 +60,103 @@ class AdminControllerTest {
 
     @Test
     void createAdmin() throws Exception {
-        CreateAdminRequest request = new CreateAdminRequest();
+        AdminRequest request = new AdminRequest();
         request.setUsername("testAdmin" + adminCounter++);
-//        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
-        mockUtils.postUrl("/api/admins", token, request, status().isOk());
+        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
         request.setUsername("testAdmin" + adminCounter++);
         request.setRole(AdminRole.ADMIN);
-        //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
-        mockUtils.postUrl("/api/admins", token, request, status().isOk());
+        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
         request.setRole(AdminRole.SUPER_ADMIN);
-        //        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
-        mockUtils.postUrl("/api/admins", token, request, status().isForbidden());
+        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
+        request.setUsername("@testUser" + adminCounter++);
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
+        request.setUsername("testUser" + adminCounter);
+        request.setRole(AdminRole.REVIEWER);
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
+        request.setUsername("testUser" + adminCounter);
+        request.setRole(AdminRole.REVIEWER);
+        mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
     }
 
     @Test
     void listAdmins() throws Exception {
-        mockUtils.getUrl("/api/admins", token, null, null, status().isOk());
-        mockUtils.getUrl("/api/admins", null, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins", superAdminToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins", null, null, null, status().isUnauthorized());
+    }
+
+    @Test
+    void editAdmin()throws Exception{
+        createAdmin();
+        long id = 2;
+        String username = "testAdminUser";
+        String password = "passW";
+        AdminRole role = AdminRole.REVIEWER;
+        AdminRequest request = new AdminRequest();
+        request.setUsername(username);
+        request.setPassword(password);
+        request.setRole(role);
+        mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isOk());
+        mockUtils.putUrl("/api/admins/" + 1, superAdminToken ,request, status().isForbidden());
+        request.setRole(AdminRole.SUPER_ADMIN);
+        mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isForbidden());
+
+        ChangePasswordRequest request1 = new ChangePasswordRequest();
+        request1.setPassword("passWW");
+        request1.setOriginal("passW");
+        mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
+        mockUtils.putUrl("/api/admins/" + id + "/password", superAdminToken ,request1, status().isOk());
+        mockUtils.putUrl("/api/admins/" + id + "/password", null ,request1, status().isUnauthorized());
+
+    }
+
+    @Test
+    void deleteAdmin() throws Exception {
+        createAdmin();
+        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isOk());
+        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isForbidden());
+        mockUtils.deleteUrl("/api/admins/" + 2, null, null, status().isUnauthorized());
     }
 
     @Test
     void getAdmin() throws Exception {
-        mockUtils.getUrl("/api/admins/" + 1, null, null, null, status().isOk());
-        mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, null, null, null, status().isNotFound());
+        mockUtils.getUrl("/api/admins/" + 1, superAdminToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, superAdminToken, null, null, status().isNotFound());
     }
 
     @Test
-    void logOut() throws Exception{
+    void logOut() throws Exception {
         mockUtils.postUrl("/api/admin/logout", null, null, status().isOk());
     }
 
     @Test
-    void getUser() throws Exception{
-        mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
+    void getUser() throws Exception {
+        mockUtils.getUrl("/api/users/" + 1, superAdminToken, null, null, status().isOk());
         mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
+        UserRequest userRequest = new UserRequest();
+        userRequest.setNickname("myNickname");
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
+
+        userRequest.setNickname(null);
+        userRequest.setPhone("example");
+        userRequest.setGender(Gender.MALE);
+        userRequest.setPrice(50);
+        userRequest.setDescription("MyDescription");
+        userRequest.setEmail("177@qq.com");
+        userRequest.setRole(UserRole.ANSWERER);
+        userRequest.setBalance(200);
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
+
+        userRequest.setNickname("");
+        mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
     }
 
     @Test
     void deleteUser() throws Exception {
-        mockUtils.deleteUrl("/api/users/" + 1, token, null, status().isOk());
-        mockUtils.getUrl("/api/users/" + 1, token, null, null, status().isOk());
+        mockUtils.deleteUrl("/api/users/" + 1, superAdminToken, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + 1, superAdminToken, null, null, status().isOk());
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setUsername("useruser");
         registerRequest.setPassword("password");
@@ -114,17 +166,15 @@ class AdminControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(registerRequest.getUsername());
         loginRequest.setPassword("password");
-        TokenResponse result = mockUtils.postAndDeserialize("/api/user/login",null, loginRequest, status().isOk(), TokenResponse.class);
+        TokenResponse result = mockUtils.postAndDeserialize("/api/user/login", null, loginRequest, status().isOk(), TokenResponse.class);
         mockUtils.getUrl("/api/users/" + 1, result.getToken(), null, null, status().isNotFound());
     }
 
     @Test
     void getOrderList() throws Exception {
-        mockUtils.getUrl("/api/orders?asker=" + 1, token, null, null, status().isForbidden());
-        mockUtils.getUrl("/api/orders?asker=" + Long.MAX_VALUE, token, null, null, status().isForbidden());
-        mockUtils.getUrl("/api/orders?answerer=" + 1, token, null, null, status().isForbidden());
-        mockUtils.getUrl("/api/orders?answerer=" + Long.MAX_VALUE, token, null, null, status().isForbidden());
-        mockUtils.getUrl("/api/orders", token, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?state=REVIEWED", superAdminToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders?state=REVIEWED", null, null, null, status().isUnauthorized());
+        mockUtils.getUrl("/api/orders", superAdminToken, null, null, status().isOk());
         mockUtils.getUrl("/api/orders", null, null, null, status().isUnauthorized());
     }
 }

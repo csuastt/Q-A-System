@@ -1,5 +1,5 @@
-import Button from "@mui/material/Button";
 import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
 import { OrderInfo, OrderState, PagedList } from "../services/definations";
 import orderService from "../services/orderService";
@@ -7,18 +7,19 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
+import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 
-interface ReviewListProps {
+interface AdminOrderListProps {
+    orderState: OrderState;
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
 }
-
-const ReviewList: React.FC<ReviewListProps> = (props) => {
+const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     const query = useQuery();
     const [orderList, setOrderList] = useState<Array<OrderInfo>>();
     const [currentPage, setCurrentPage] = useState(
@@ -38,9 +39,9 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
 
     useEffect(() => {
         orderService
-            .getOrderListByAdmin(OrderState.CREATED, currentPage, itemPrePage)
+            .getOrderListByAdmin(props.orderState, currentPage, itemPrePage)
             .then(acceptOrderList);
-    }, [currentPage, itemPrePage]);
+    }, [currentPage, itemPrePage, props.orderState]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
@@ -69,16 +70,11 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         <>
             {orderList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
-                    <CardContent>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                p: 1,
-                                m: 1,
-                                flexDirection: "row",
-                            }}
-                        >
+                    <CardActionArea
+                        component={RouterLink}
+                        to={`/admins/orders/${order.id}`}
+                    >
+                        <CardContent>
                             <Box
                                 sx={{
                                     display: "flex",
@@ -125,39 +121,8 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                     {formatTimestamp(order.createTime)}
                                 </Typography>
                             </Box>
-
-                            <Stack direction="row" p={3} spacing={2}>
-                                <Button
-                                    size="small"
-                                    color="error"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        orderService.reviewOrder(
-                                            order.id,
-                                            false
-                                        );
-                                        window.location.reload();
-                                    }}
-                                >
-                                    驳回
-                                </Button>
-                                <Button
-                                    size="small"
-                                    color="success"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        orderService.reviewOrder(
-                                            order.id,
-                                            true
-                                        );
-                                        window.location.reload();
-                                    }}
-                                >
-                                    通过
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </CardContent>
+                        </CardContent>
+                    </CardActionArea>
                 </Card>
             ))}
             {maxPage > 1 && (
@@ -188,4 +153,4 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
     return <Stack spacing={2}>{renderOrderList()}</Stack>;
 };
 
-export default ReviewList;
+export default AdminOrderList;

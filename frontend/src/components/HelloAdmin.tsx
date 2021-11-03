@@ -8,20 +8,15 @@ import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
 import React, { useContext } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import AuthContext from "../AuthContext";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import AddCommentIcon from "@mui/icons-material/AddComment";
-import RateReviewIcon from "@mui/icons-material/RateReview";
-import EqualizerIcon from "@mui/icons-material/Equalizer";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+import GroupIcon from "@mui/icons-material/Group";
 import SchoolIcon from "@mui/icons-material/School";
-import { UserRole } from "../services/definations";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 
-
-export default function Welcome() {
+export default function HelloAdmin() {
     const theme = useTheme();
-    const { user } = useContext(AuthContext);
+    const { manager } = useContext(AuthContext);
 
     const ButtonCardWrapper: React.FC<{
         to: string;
@@ -68,66 +63,42 @@ export default function Welcome() {
                 variant="h5"
                 sx={{ margin: theme.spacing(3, 2, 2, 0) }}
             >
-                欢迎来到付费问答系统
+                欢迎来到管理员系统
             </Typography>
-            <ButtonCardWrapper
-                to="/answerers"
-                Icon={SchoolIcon}
-                title1="回答者列表"
-                title2="寻找合适的回答者"
-            />
-            {user ? (
+            {manager ? (
                 <>
                     <ButtonCardWrapper
-                        to="/order/create"
-                        Icon={AddCommentIcon}
-                        title1="提出问题"
-                        title2="获取知识与答案"
+                        to="/admins/review"
+                        Icon={FactCheckIcon}
+                        title1="审核列表"
+                        title2="查看待审核订单"
                     />
                     <ButtonCardWrapper
-                        to="/orders"
-                        Icon={QuestionAnswerIcon}
-                        title1="我的提问"
-                        title2="查看历史提问与订单状态"
+                        to="/admins/users"
+                        Icon={GroupIcon}
+                        title1="用户列表"
+                        title2="查看所有用户"
                     />
-                    {user.role === UserRole.ANSWERER ? (
-                        <>
-                            <ButtonCardWrapper
-                                to="/orders?answerer=true"
-                                Icon={RateReviewIcon}
-                                title1="我的回答"
-                                title2="查看历史回答与订单状态"
-                            />
-                            <ButtonCardWrapper
-                                to="/income"
-                                Icon={EqualizerIcon}
-                                title1="收支统计"
-                                title2="查看个人月度收入和支出情况"
-                            />
-                        </>
-                    ) : (
-                        <></>
-                    )}
                     <ButtonCardWrapper
-                        to="/profile"
-                        Icon={AccountCircle}
-                        title1="个人信息"
-                        title2="查看、修改个人信息"
+                        to="/admins/answerers"
+                        Icon={SchoolIcon}
+                        title1="回答者列表"
+                        title2="查看所有回答者"
+                    />
+                    <ButtonCardWrapper
+                        to="/admins/orders"
+                        Icon={LibraryBooksIcon}
+                        title1="订单列表"
+                        title2="查看所有订单"
                     />
                 </>
             ) : (
                 <>
                     <ButtonCardWrapper
-                        to="/login"
+                        to="/admins/login"
                         Icon={LoginIcon}
                         title1="登录"
-                        title2="提出问题、回答问题"
-                    />
-                    <ButtonCardWrapper
-                        to="/register"
-                        Icon={PersonAddIcon}
-                        title1="注册"
-                        title2="从现在开始解答您的疑惑"
+                        title2="快来开始工作吧"
                     />
                 </>
             )}

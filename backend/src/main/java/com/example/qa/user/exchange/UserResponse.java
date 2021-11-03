@@ -3,6 +3,7 @@ package com.example.qa.user.exchange;
 import com.example.qa.user.model.Gender;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class UserResponse {
 	private Gender gender;
 	private Integer price;
 	private String description;
+	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	private ZonedDateTime createTime;
 	private UserRole role;
 	private Integer balance;

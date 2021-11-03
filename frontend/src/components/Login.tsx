@@ -88,12 +88,14 @@ export default class Login extends Component<LoginProps, LoginState> {
     }
 
     // listener on username/password
-    onChangeValue(e: any, type: "username" | "password") {
+    onChangeValue(e: any, type: "username" | "password", isAdmin: boolean) {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
-        if (error === "") {
-            error = validate_length(value);
+        if (!isAdmin) {
+            if (error === "") {
+                error = validate_length(value);
+            }
         }
         // set new state
         const nextState = {};
@@ -112,11 +114,13 @@ export default class Login extends Component<LoginProps, LoginState> {
         if (
             this.onChangeValue(
                 { target: { value: this.state.username } },
-                "username"
+                "username",
+                this.props.isAdmin
             ) &&
             this.onChangeValue(
                 { target: { value: this.state.password } },
-                "password"
+                "password",
+                this.props.isAdmin
             )
         ) {
             let service;
@@ -248,7 +252,13 @@ export default class Login extends Component<LoginProps, LoginState> {
                             name="username"
                             autoComplete="username"
                             autoFocus
-                            onChange={(e) => this.onChangeValue(e, "username")}
+                            onChange={(e) =>
+                                this.onChangeValue(
+                                    e,
+                                    "username",
+                                    this.props.isAdmin
+                                )
+                            }
                             // @ts-ignore
                             error={this.state.error_msg_username.length !== 0}
                             // @ts-ignore
@@ -264,7 +274,13 @@ export default class Login extends Component<LoginProps, LoginState> {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            onChange={(e) => this.onChangeValue(e, "password")}
+                            onChange={(e) =>
+                                this.onChangeValue(
+                                    e,
+                                    "password",
+                                    this.props.isAdmin
+                                )
+                            }
                             // @ts-ignore
                             error={this.state.error_msg_password.length !== 0}
                             // @ts-ignore
