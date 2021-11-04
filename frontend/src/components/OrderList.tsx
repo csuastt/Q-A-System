@@ -45,7 +45,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     undefined,
                     props.userId,
                     currentPage,
-                    itemPrePage
+                    itemPrePage,
+                    props.filterFinished
                 )
                 .then(acceptOrderList);
         } else {
@@ -54,7 +55,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     props.userId,
                     undefined,
                     currentPage,
-                    itemPrePage
+                    itemPrePage,
+                    props.filterFinished
                 )
                 .then(acceptOrderList);
         }
