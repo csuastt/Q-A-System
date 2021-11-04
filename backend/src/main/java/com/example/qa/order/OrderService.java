@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.lang.NullPointerException;
 
 @Service
 public class OrderService {
@@ -65,7 +66,7 @@ public class OrderService {
     }
 
     public Order answerOrder(long id, String answer) {
-        return answerOrder(findById(id).get(), answer);
+        return answerOrder(findById(id).orElseThrow(NullPointerException::new), answer);
     }
 
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds
