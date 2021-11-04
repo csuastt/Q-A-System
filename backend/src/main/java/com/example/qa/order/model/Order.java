@@ -40,6 +40,7 @@ public class Order {
         if (state != null) {
             this.state = state;
             finished = state.isFinished();
+            reviewed = state.isReviewed();
         }
     }
 
