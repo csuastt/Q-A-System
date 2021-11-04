@@ -54,7 +54,7 @@ public class OrderController {
         if (asker.getBalance() < price) {
             throw new ApiException(403, "BALANCE_NOT_ENOUGH");
         }
-        asker.setBalance(asker.getBalance() - answerer.getPrice());
+        asker.setBalance(asker.getBalance() - price);
         asker = userService.save(asker);
         Order order = new Order(data, asker, answerer, isAdmin);
         order = orderService.save(order);
