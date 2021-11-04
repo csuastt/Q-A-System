@@ -243,7 +243,10 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         <>
                             <Divider textAlign="left">问题描述</Divider>
                             <Box>
-                                <Markdown value={orderInfo.questionDescription} viewOnly />
+                                <Markdown
+                                    value={orderInfo.questionDescription}
+                                    viewOnly
+                                />
                             </Box>
                         </>
                     )}

@@ -34,7 +34,7 @@ interface MarkdownProps {
     onChange?: (newValue: string) => void;
     editorMode?: "split" | "tab" | "auto";
     viewOnly?: boolean;
-    height?: StandardCSSProperties['height'];
+    height?: StandardCSSProperties["height"];
 }
 
 const Markdown: React.FC<MarkdownProps> = (props) => {

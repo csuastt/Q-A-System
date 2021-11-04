@@ -67,6 +67,7 @@ public class Order {
     public void update(OrderRequest data) {
         setState(data.getState());
         endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);
+        questionTitle = Objects.requireNonNullElse(data.getTitle(), questionTitle);
         questionDescription = Objects.requireNonNullElse(data.getDescription(), questionDescription);
         price = Objects.requireNonNullElse(data.getPrice(), price);
     }
