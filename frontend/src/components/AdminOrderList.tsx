@@ -92,7 +92,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
-                                        {order.questionSummary}
+                                        {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
                                     {/*<OrderStateChip state={order.state} />*/}

@@ -126,7 +126,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
-                                        {order.questionSummary}
+                                        {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
                                     <OrderStateChip state={order.state} />

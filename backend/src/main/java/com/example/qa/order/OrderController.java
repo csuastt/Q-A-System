@@ -226,7 +226,7 @@ public class OrderController {
     }
 
     private User[] checkOrderDataOrThrow(OrderRequest data) {
-        if (data.getAsker() == null || data.getAnswerer() == null || data.getQuestion() == null) {
+        if (data.getAsker() == null || data.getAnswerer() == null || data.getDescription() == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST);
         }
         long newAsker = data.getAsker();
@@ -240,7 +240,7 @@ public class OrderController {
             throw new ApiException(HttpStatus.FORBIDDEN, "ANSWERER_INVALID");
         }
         if (!FieldValidator.length
-                (data.getQuestion(), SystemConfig.QUESTION_MIN_LENGTH, SystemConfig.QUESTION_MAX_LENGTH)
+                (data.getTitle(), SystemConfig.QUESTION_MIN_LENGTH, SystemConfig.QUESTION_MAX_LENGTH)
         ) {
             throw new ApiException(HttpStatus.FORBIDDEN, "QUESTION_INVALID");
         }

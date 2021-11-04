@@ -32,25 +32,25 @@ public class Order {
     private ZonedDateTime createTime;
     private ZonedDateTime expireTime;
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
-    private String questionSummary;
+    private String questionTitle;
     @Lob
-    private String question;
+    private String questionDescription;
     @Lob
-    private String firstAnswer;
+    private String answer;
     private int price;
 
     // 传 data 前先用 checkOrderData 检查
     public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {
         this.asker = asker;
         this.answerer = answerer;
-        questionSummary = data.getQuestionSummary();
-        question = data.getQuestion();
+        questionTitle = data.getTitle();
+        questionDescription = data.getDescription();
         createTime = ZonedDateTime.now();
         price = answerer.getPrice();
         if (allProperties) {
             setState(data.getState());
             endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);
-            firstAnswer = data.getFirstAnswer();
+            answer = data.getAnswer();
             price = Objects.requireNonNullElse(data.getPrice(), price);
         }
     }
@@ -67,7 +67,7 @@ public class Order {
     public void update(OrderRequest data) {
         setState(data.getState());
         endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);
-        question = Objects.requireNonNullElse(data.getQuestion(), question);
+        questionDescription = Objects.requireNonNullElse(data.getDescription(), questionDescription);
         price = Objects.requireNonNullElse(data.getPrice(), price);
     }
 }

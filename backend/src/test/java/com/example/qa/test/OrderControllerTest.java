@@ -100,7 +100,7 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(answererId);
-        request.setQuestion(question);
+        request.setDescription(question);
         OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
         return result.getId();
     }
@@ -110,7 +110,7 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(answererId);
-        request.setQuestion(question);
+        request.setDescription(question);
         request.setEndReason(OrderEndReason.ASKER);
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/orders", askerToken, request, status().isOk());
@@ -137,7 +137,7 @@ class OrderControllerTest {
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
         assertEquals(result.getAsker().getId(), askerId);
         assertEquals(result.getAnswerer().getId(), answererId);
-        assertEquals(question, result.getQuestion());
+        assertEquals(question, result.getQuestionDescription());
         assertEquals(OrderState.CREATED, result.getState());
 
         request.setPrice(Integer.MAX_VALUE);
@@ -152,7 +152,7 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setAsker(Long.MAX_VALUE);
         request.setAnswerer(answererId);
-        request.setQuestion(question);
+        request.setDescription(question);
         MvcResult createResult = mockUtils.postUrl("/api/orders", askerToken, request, status().isOk());
         mockUtils.postUrl("/api/orders", superAdminToken, request, status().isForbidden());
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
@@ -163,7 +163,7 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(askerId);
-        request.setQuestion(question);
+        request.setDescription(question);
         MvcResult createResult = mockUtils.postUrl("/api/orders", askerToken, request, status().isForbidden());
         mockUtils.postUrl("/api/orders", superAdminToken, request, status().isForbidden());
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
@@ -174,7 +174,7 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(answererId);
-        request.setQuestion("q");
+        request.setDescription("q");
         MvcResult createResult = mockUtils.postUrl("/api/orders", askerToken, request, status().isForbidden());
         mockUtils.postUrl("/api/orders", superAdminToken, request, status().isForbidden());
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
@@ -204,7 +204,7 @@ class OrderControllerTest {
         long id = createOrder();
         String newQuestion = "NewQuestion";
         OrderRequest request = new OrderRequest();
-        request.setQuestion(newQuestion);
+        request.setDescription(newQuestion);
         request.setEndReason(OrderEndReason.ASKER);
         edit(id, request);
         request.setPrice(10);
@@ -215,7 +215,7 @@ class OrderControllerTest {
         edit(id, request);
         request.setPrice(null);
         edit(id, request);
-        assertEquals(query(id).getQuestion(), newQuestion);
+        assertEquals(query(id).getQuestionDescription(), newQuestion);
     }
 
     @Test

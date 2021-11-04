@@ -20,6 +20,8 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Grid from "@mui/material/Grid";
 import AnswererDetailCard from "./AnswererDetailCard";
+import Divider from "@mui/material/Divider";
+import Markdown from "./Markdown";
 
 function processInt(str?: string): number {
     if (str) {
@@ -33,7 +35,8 @@ function processInt(str?: string): number {
 
 const OrderCreationWizard: React.FC = (props) => {
     const [activeStep, setActiveStep] = useState(0);
-    const [questionText, setQuestionText] = useState<string>("");
+    const [questionTitle, setQuestionTitle] = useState<string>("");
+    const [questionDescription, setQuestionDescription] = useState<string>("");
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
 
@@ -49,12 +52,15 @@ const OrderCreationWizard: React.FC = (props) => {
         setActiveStep(activeStep - 1);
     };
 
-    const handleQuestionChange = (
+    const handleQuestionTitleChange = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
-        setQuestionText(event.target.value);
+        setQuestionTitle(event.target.value);
         checkInput(event.target.value);
     };
+
+    const handleQuestionDescriptionChange = (newValue: string) =>
+        setQuestionDescription(newValue);
 
     const checkInput = (input: string) => {
         if (input && input.length >= 10) {
@@ -65,10 +71,10 @@ const OrderCreationWizard: React.FC = (props) => {
     };
 
     const checkInputAndNextStep = () => {
-        if (!questionError && questionText && questionText.length >= 10) {
+        if (!questionError && questionTitle && questionTitle.length >= 10) {
             nextStep();
         } else {
-            checkInput(questionText);
+            checkInput(questionTitle);
         }
     };
 
@@ -84,7 +90,12 @@ const OrderCreationWizard: React.FC = (props) => {
             });
         } else {
             questionService
-                .create_question(user!.id, answerer, questionText)
+                .createQuestion(
+                    user!.id,
+                    answerer,
+                    questionTitle,
+                    questionDescription
+                )
                 .then((res) => setResult(res));
         }
     };
@@ -341,16 +352,20 @@ const OrderCreationWizard: React.FC = (props) => {
         return (
             <>
                 <TextField
-                    label="问题"
+                    label="问题标题"
                     margin="normal"
-                    value={questionText}
-                    onChange={handleQuestionChange}
+                    value={questionTitle}
+                    onChange={handleQuestionTitleChange}
                     error={questionError}
-                    helperText={questionError && "问题长度不应小于10"}
+                    helperText={questionError && "标题长度不应小于10"}
                     fullWidth
-                    multiline
-                    rows={5}
                     inputProps={{ maxLength: 100 }}
+                />
+                <Divider sx={{ mt: 3, mb: 1 }}>问题描述</Divider>
+                <Markdown
+                    value={questionDescription}
+                    onChange={handleQuestionDescriptionChange}
+                    height="500px"
                 />
                 <Stack
                     spacing={matches ? 4 : 2}

@@ -17,6 +17,7 @@ import "bytemd/dist/index.min.css";
 import "github-markdown-css/github-markdown.css";
 import "highlight.js/styles/tomorrow.css";
 import "katex/dist/katex.min.css";
+import { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
 
 const plugins = [
     breaks(),
@@ -33,19 +34,32 @@ interface MarkdownProps {
     onChange?: (newValue: string) => void;
     editorMode?: "split" | "tab" | "auto";
     viewOnly?: boolean;
+    height?: StandardCSSProperties['height'];
 }
 
 const Markdown: React.FC<MarkdownProps> = (props) => {
     return props.viewOnly ? (
         <Viewer value={props.value} plugins={plugins} />
     ) : (
-        <Editor
-            value={props.value}
-            onChange={props.onChange}
-            plugins={plugins}
-            mode={props.editorMode}
-            locale={editor_locales}
-        />
+        <>
+            <Editor
+                value={props.value}
+                onChange={props.onChange}
+                plugins={plugins}
+                mode={props.editorMode}
+                locale={editor_locales}
+            />
+            {props.height && (
+                <style
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                .bytemd {
+                    height: ${props.height};
+                }`,
+                    }}
+                />
+            )}
+        </>
     );
 };
 

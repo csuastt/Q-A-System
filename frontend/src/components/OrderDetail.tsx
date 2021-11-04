@@ -232,18 +232,18 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     subheader="提问者"
                 />
                 <CardContent>
-                    <Divider textAlign="left">问题摘要</Divider>
+                    <Divider textAlign="left">问题标题</Divider>
                     <Typography
                         variant="h6"
-                        sx={{ mb: orderInfo.question && 2 }}
+                        sx={{ mb: orderInfo.questionDescription && 2 }}
                     >
-                        {orderInfo.questionSummary}
+                        {orderInfo.questionTitle}
                     </Typography>
-                    {orderInfo.question && (
+                    {orderInfo.questionDescription && (
                         <>
                             <Divider textAlign="left">问题描述</Divider>
                             <Box>
-                                <Markdown value={orderInfo.question} viewOnly />
+                                <Markdown value={orderInfo.questionDescription} viewOnly />
                             </Box>
                         </>
                     )}
@@ -274,7 +274,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         <Markdown
                             value={
                                 orderInfo.state === OrderState.ANSWERED
-                                    ? orderInfo.firstAnswer
+                                    ? orderInfo.answer
                                     : "该问题还未回答"
                             }
                             viewOnly
