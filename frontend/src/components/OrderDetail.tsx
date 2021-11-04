@@ -7,8 +7,6 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -19,6 +17,10 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import SmsFailedIcon from "@mui/icons-material/SmsFailed";
 import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
+import Markdown from "./Markdown";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(UserContext);
@@ -29,10 +31,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [needLogin, setNeedLogin] = useState(user == null);
     const [noPermission, setNoPermission] = useState(false);
 
-    const [editingQuestion] = useState(false);
     const [answering, setAnswering] = useState(false);
 
-    const [newQuestion, setNewQuestion] = useState<string>("");
     const [answer, setAnswer] = useState<string>("");
 
     useEffect(() => {
@@ -58,16 +58,9 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .finally(() => setNeedReload(false));
     }, [needReload, props.orderId, user?.id]);
 
-    // Edit question helper functions
-    const handleNewQuestionChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setNewQuestion(event.target.value);
-    };
-
     // Answerering helper functions
-    const handleAnswerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAnswer(event.target.value);
+    const handleAnswerChange = (newValue: string) => {
+        setAnswer(newValue);
     };
     const startAnswering = () => {
         setAnswering(true);
@@ -239,23 +232,25 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     subheader="提问者"
                 />
                 <CardContent>
-                    {editingQuestion ? (
-                        <TextField
-                            value={newQuestion}
-                            onChange={handleNewQuestionChange}
-                            multiline
-                            fullWidth
-                        />
-                    ) : (
-                        <Typography variant="body1" color="text.primary">
-                            {orderInfo.question}
-                        </Typography>
+                    <Divider textAlign="left">问题标题</Divider>
+                    <Typography
+                        variant="h6"
+                        sx={{ mb: orderInfo.questionDescription && 2 }}
+                    >
+                        {orderInfo.questionTitle}
+                    </Typography>
+                    {orderInfo.questionDescription && (
+                        <>
+                            <Divider textAlign="left">问题描述</Divider>
+                            <Box>
+                                <Markdown
+                                    value={orderInfo.questionDescription}
+                                    viewOnly
+                                />
+                            </Box>
+                        </>
                     )}
                 </CardContent>
-                {/* TODO: Question editing is currently disabled for normal users */}
-                {/*{orderInfo.asker.id === user?.id && (*/}
-                {/*    <CardActions>{renderQuestionModifyActions()}</CardActions>*/}
-                {/*)}*/}
             </Card>
             <Card>
                 <CardHeader
@@ -274,18 +269,19 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                 />
                 <CardContent>
                     {answering ? (
-                        <TextField
+                        <Markdown
                             value={answer}
                             onChange={handleAnswerChange}
-                            multiline
-                            fullWidth
                         />
                     ) : (
-                        <Typography variant="body1" color="text.primary">
-                            {orderInfo.state === OrderState.ANSWERED
-                                ? orderInfo.answerSummary
-                                : "该问题还未回答"}
-                        </Typography>
+                        <Markdown
+                            value={
+                                orderInfo.state === OrderState.ANSWERED
+                                    ? orderInfo.answer
+                                    : "该问题还未回答"
+                            }
+                            viewOnly
+                        />
                     )}
                 </CardContent>
                 <CardActions>{renderAnswererActions()}</CardActions>

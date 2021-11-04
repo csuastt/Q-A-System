@@ -26,6 +26,7 @@ class OrderService {
             })
             .then((response) => response.data);
     }
+
     getOrderListByAdmin(
         state: OrderState,
         page: number,
@@ -42,16 +43,18 @@ class OrderService {
             .then((response) => response.data);
     }
 
-    create_question(
+    createQuestion(
         asker: number,
         answerer: number,
-        question: string
+        questionTitle: string,
+        questionDescription: string
     ): Promise<CreationResult> {
         return axios
             .post("/orders", {
                 asker: asker,
                 answerer: answerer,
-                question: question,
+                title: questionTitle,
+                description: questionDescription,
             })
             .then((response) => response.data);
     }

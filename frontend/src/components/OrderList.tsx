@@ -14,6 +14,7 @@ import Stack from "@mui/material/Stack";
 import CardActionArea from "@mui/material/CardActionArea";
 import Pagination from "./Pagination";
 import _ from "lodash";
+import OrderStateChip from "./OrderStateChip";
 
 interface OrderListProps {
     userId: number;
@@ -60,7 +61,13 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 )
                 .then(acceptOrderList);
         }
-    }, [currentPage, itemPrePage, props.showAnswerer, props.userId]);
+    }, [
+        currentPage,
+        itemPrePage,
+        props.filterFinished,
+        props.showAnswerer,
+        props.userId,
+    ]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
@@ -119,10 +126,10 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
-                                        {order.question}
+                                        {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
-                                    {/*<OrderStateChip state={order.state} />*/}
+                                    <OrderStateChip state={order.state} />
                                 </Box>
                                 <Box
                                     sx={{

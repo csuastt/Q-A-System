@@ -58,7 +58,7 @@ public class OrderService {
     }
 
     public Order answerOrder(Order order, String answer) {
-        order.setAnswerSummary(answer);
+        order.setAnswer(answer);
         order.setState(OrderState.ANSWERED);
         order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getMaxChatTimeSeconds()));
         return save(order);
