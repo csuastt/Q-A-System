@@ -100,12 +100,13 @@ export interface OrderInfo {
     state: OrderState;
     asker: UserBasicInfo;
     answerer: UserBasicInfo;
+    questionSummary: string;
     question: string;
     createTime: string;
     endReason: OrderEndReason;
     finished: boolean;
     deleted: boolean;
-    answerSummary: string;
+    firstAnswer: string;
     price: number;
 }
 

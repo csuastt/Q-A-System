@@ -28,8 +28,9 @@ public class OrderResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime expireTime;
     private OrderEndReason endReason;
+    private String questionSummary;
     private String question;
-    private String answerSummary;
+    private String firstAnswer;
     private Integer price;
 
     public OrderResponse(Order order) {
@@ -45,10 +46,11 @@ public class OrderResponse {
         this.createTime = order.getCreateTime();
         this.expireTime = order.getExpireTime();
         this.endReason = order.getEndReason();
+        this.questionSummary = order.getQuestionSummary();
         this.question = order.getQuestion();
         this.price = order.getPrice();
         if (level >= 1) {
-            this.answerSummary = order.getAnswerSummary();
+            this.firstAnswer = order.getFirstAnswer();
         }
         if (level >= 2) {
             this.deleted = order.isDeleted();

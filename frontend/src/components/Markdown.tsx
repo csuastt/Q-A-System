@@ -15,8 +15,8 @@ import React from "react";
 // Import css
 import "bytemd/dist/index.min.css";
 import "github-markdown-css/github-markdown.css";
-import "highlight.js/styles/tomorrow.css"
-import "katex/dist/katex.min.css"
+import "highlight.js/styles/tomorrow.css";
+import "katex/dist/katex.min.css";
 
 const plugins = [
     breaks(),

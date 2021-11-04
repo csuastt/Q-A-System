@@ -18,6 +18,9 @@ import SmsFailedIcon from "@mui/icons-material/SmsFailed";
 import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
 import Markdown from "./Markdown";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(UserContext);
@@ -28,10 +31,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [needLogin, setNeedLogin] = useState(user == null);
     const [noPermission, setNoPermission] = useState(false);
 
-    const [editingQuestion] = useState(false);
     const [answering, setAnswering] = useState(false);
 
-    const [newQuestion, setNewQuestion] = useState<string>("");
     const [answer, setAnswer] = useState<string>("");
 
     useEffect(() => {
@@ -56,11 +57,6 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             })
             .finally(() => setNeedReload(false));
     }, [needReload, props.orderId, user?.id]);
-
-    // Edit question helper functions
-    const handleNewQuestionChange = (newValue: string) => {
-        setNewQuestion(newValue);
-    };
 
     // Answerering helper functions
     const handleAnswerChange = (newValue: string) => {
@@ -236,19 +232,22 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     subheader="提问者"
                 />
                 <CardContent>
-                    {editingQuestion ? (
-                        <Markdown
-                            value={newQuestion}
-                            onChange={handleNewQuestionChange}
-                        />
-                    ) : (
-                        <Markdown value={orderInfo.question} viewOnly />
+                    <Divider textAlign="left">问题摘要</Divider>
+                    <Typography
+                        variant="h6"
+                        sx={{ mb: orderInfo.question && 2 }}
+                    >
+                        {orderInfo.questionSummary}
+                    </Typography>
+                    {orderInfo.question && (
+                        <>
+                            <Divider textAlign="left">问题描述</Divider>
+                            <Box>
+                                <Markdown value={orderInfo.question} viewOnly />
+                            </Box>
+                        </>
                     )}
                 </CardContent>
-                {/* TODO: Question editing is currently disabled for normal users */}
-                {/*{orderInfo.asker.id === user?.id && (*/}
-                {/*    <CardActions>{renderQuestionModifyActions()}</CardActions>*/}
-                {/*)}*/}
             </Card>
             <Card>
                 <CardHeader
@@ -275,7 +274,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         <Markdown
                             value={
                                 orderInfo.state === OrderState.ANSWERED
-                                    ? orderInfo.answerSummary
+                                    ? orderInfo.firstAnswer
                                     : "该问题还未回答"
                             }
                             viewOnly

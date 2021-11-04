@@ -96,7 +96,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
-                                        {order.question}
+                                        {order.questionSummary}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
                                     {/*<OrderStateChip state={order.state} />*/}

@@ -14,7 +14,8 @@ public class OrderRequest {
     private Long answerer;
     private OrderState state;
     private OrderEndReason endReason;
+    private String questionSummary;
     private String question;
-    private String answerSummary;
+    private String firstAnswer;
     private Integer price;
 }

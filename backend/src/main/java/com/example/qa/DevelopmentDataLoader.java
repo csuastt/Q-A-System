@@ -36,7 +36,9 @@ public class DevelopmentDataLoader implements ApplicationRunner {
 
     private static OrderRequest genOrderData() {
         var data = new OrderRequest();
-        data.setQuestion("Test Question [" + RandomStringUtils.random(5, true, false) + "]");
+        var question = "Test Question [" + RandomStringUtils.random(5, true, false) + "]";
+        data.setQuestionSummary(question);
+        data.setQuestion("# " + question);
         data.setPrice(100);
         data.setState(OrderState.CREATED);
         return data;

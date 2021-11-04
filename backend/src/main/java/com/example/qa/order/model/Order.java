@@ -32,30 +32,34 @@ public class Order {
     private ZonedDateTime createTime;
     private ZonedDateTime expireTime;
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
+    private String questionSummary;
+    @Lob
     private String question;
-    private String answerSummary;
+    @Lob
+    private String firstAnswer;
     private int price;
-
-    public void setState(OrderState state) {
-        if (state != null) {
-            this.state = state;
-            finished = state.isFinished();
-            reviewed = state.isReviewed();
-        }
-    }
 
     // 传 data 前先用 checkOrderData 检查
     public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {
         this.asker = asker;
         this.answerer = answerer;
+        questionSummary = data.getQuestionSummary();
         question = data.getQuestion();
         createTime = ZonedDateTime.now();
         price = answerer.getPrice();
         if (allProperties) {
             setState(data.getState());
             endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);
-            answerSummary = data.getAnswerSummary();
+            firstAnswer = data.getFirstAnswer();
             price = Objects.requireNonNullElse(data.getPrice(), price);
+        }
+    }
+
+    public void setState(OrderState state) {
+        if (state != null) {
+            this.state = state;
+            finished = state.isFinished();
+            reviewed = state.isReviewed();
         }
     }
 
