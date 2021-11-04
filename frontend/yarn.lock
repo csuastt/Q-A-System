@@ -6635,6 +6635,11 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://repo.huaweicloud.com/repository/npm/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
+github-markdown-css@^5.0.0:
+  version "5.0.0"
+  resolved "https://repo.huaweicloud.com/repository/npm/github-markdown-css/-/github-markdown-css-5.0.0.tgz#829966927643426f0a43aabee9991a3ed532280d"
+  integrity sha512-0iojMu3BisjTYyGuQ6aVwnJZY4HgnyQtKvky25BGItHIcll4AHIWAtQ7Fy+6qQfkvjWdkHnZFRpFBQfMABr/EQ==
+
 glob-parent@^3.1.0:
   version "3.1.0"
   resolved "https://repo.huaweicloud.com/repository/npm/glob-parent/-/glob-parent-3.1.0.tgz#9e6af6299d8d3bd2bd40430832bd113df906c5ae"
