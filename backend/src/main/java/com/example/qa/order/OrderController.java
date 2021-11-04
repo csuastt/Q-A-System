@@ -50,7 +50,7 @@ public class OrderController {
         User[] users = checkOrderDataOrThrow(data);
         User asker = users[0];
         User answerer = users[1];
-        int price = isAdmin ? Objects.requireNonNullElse(data.getPrice(), asker.getPrice()) : asker.getPrice();
+        int price = isAdmin ? Objects.requireNonNullElse(data.getPrice(), answerer.getPrice()) : answerer.getPrice();
         if (asker.getBalance() < price) {
             throw new ApiException(403, "BALANCE_NOT_ENOUGH");
         }
