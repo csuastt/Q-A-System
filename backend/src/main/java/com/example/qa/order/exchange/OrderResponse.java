@@ -4,6 +4,7 @@ import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.exchange.UserResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,10 @@ public class OrderResponse {
     private UserResponse answerer;
     private OrderState state;
     private Boolean finished;
-    // @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private ZonedDateTime expireTime;
     private OrderEndReason endReason;
     private String question;
     private String answerSummary;
@@ -40,6 +43,7 @@ public class OrderResponse {
         this.state = order.getState();
         this.finished = order.isFinished();
         this.createTime = order.getCreateTime();
+        this.expireTime = order.getExpireTime();
         this.endReason = order.getEndReason();
         this.question = order.getQuestion();
         this.price = order.getPrice();

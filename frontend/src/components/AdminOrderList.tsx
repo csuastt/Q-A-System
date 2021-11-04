@@ -1,58 +1,47 @@
-import React, { useContext, useEffect, useState } from "react";
-import Avatar from "@mui/material/Avatar";
-import Skeleton from "@mui/material/Skeleton";
-import { Link as RouterLink, Redirect } from "react-router-dom";
-import { OrderInfo, OrderList, UserRole } from "../services/definations";
-import questionService from "../services/orderService";
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
+import { OrderInfo, OrderState, PagedList } from "../services/definations";
+import orderService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
-import Stack from "@mui/material/Stack";
-import UserContext from "../UserContext";
+import Skeleton from "@mui/material/Skeleton";
 import CardActionArea from "@mui/material/CardActionArea";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
+import Stack from "@mui/material/Stack";
 
-const QuestionList: React.FC<{ userId?: number }> = (props) => {
+interface AdminOrderListProps {
+    orderState: OrderState;
+    filterFinished?: boolean;
+    initCurrentPage?: number;
+    itemPrePage?: number;
+}
+const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     const query = useQuery();
-    const [questionList, setQuestionList] = useState<OrderList>();
-    const [shouldRedirect, setShouldRedirect] = useState<string>();
+    const [orderList, setOrderList] = useState<Array<OrderInfo>>();
     const [currentPage, setCurrentPage] = useState(
         parseIntWithDefault(query.get("page"), 1)
     );
     const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), 20)
+        parseIntWithDefault(query.get("prepage"), 9)
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);
 
-    const { user } = useContext(UserContext);
+    const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
+        setOrderList(list.data);
+        setMaxPage(list.totalPages);
+        setTotalCount(list.totalCount);
+    };
 
     useEffect(() => {
-        if (user == null) {
-            setShouldRedirect("/login");
-            return;
-        }
-        (user.role === UserRole.USER
-            ? questionService.getOrdersOfUser(
-                  user.id,
-                  undefined,
-                  currentPage,
-                  itemPrePage
-              )
-            : questionService.getOrdersOfUser(
-                  undefined,
-                  user.id,
-                  currentPage,
-                  itemPrePage
-              )
-        ).then((response) => {
-            setQuestionList(response.data);
-            setMaxPage(response.totalPages);
-            setTotalCount(response.totalCount);
-        });
-    }, [currentPage, itemPrePage, props.userId, user?.id]);
+        orderService
+            .getOrderListByAdmin(props.orderState, currentPage, itemPrePage)
+            .then(acceptOrderList);
+    }, [currentPage, itemPrePage, props.orderState]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
@@ -77,21 +66,13 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
             </CardContent>
         </Card>
     );
-
-    const renderPlaceholder = () => (
+    const renderOrderList = () => (
         <>
-            {renderCardPlaceholder()}
-            {renderCardPlaceholder()}
-        </>
-    );
-
-    const renderQuestionList = () => (
-        <>
-            {questionList!.map((order: OrderInfo, index: number) => (
+            {orderList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
                     <CardActionArea
                         component={RouterLink}
-                        to={`/orders/${order.id}`}
+                        to={`/admins/orders/${order.id}`}
                     >
                         <CardContent>
                             <Box
@@ -155,14 +136,10 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
             )}
         </>
     );
-
-    if (shouldRedirect) {
-        return <Redirect to={shouldRedirect} />;
-    }
-    if (questionList == null) {
+    if (orderList == null) {
         return (
             <Stack spacing={2} mt={4}>
-                {renderPlaceholder()}
+                {renderCardPlaceholder()}
             </Stack>
         );
     }
@@ -173,11 +150,7 @@ const QuestionList: React.FC<{ userId?: number }> = (props) => {
             </Typography>
         );
     }
-    return (
-        <Stack spacing={2} mt={4}>
-            {renderQuestionList()}
-        </Stack>
-    );
+    return <Stack spacing={2}>{renderOrderList()}</Stack>;
 };
 
-export default QuestionList;
+export default AdminOrderList;

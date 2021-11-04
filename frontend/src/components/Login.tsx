@@ -22,7 +22,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import UserContext from "../UserContext";
+import AuthContext from "../AuthContext";
 
 // some validators
 // not empty
@@ -33,6 +33,7 @@ export const validate_required = (value: any) => {
         return "";
     }
 };
+
 // 6 to 12 in length
 export const validate_length = (value: any) => {
     if (value.toString().trim().length < 6) {
@@ -87,12 +88,14 @@ export default class Login extends Component<LoginProps, LoginState> {
     }
 
     // listener on username/password
-    onChangeValue(e: any, type: "username" | "password") {
+    onChangeValue(e: any, type: "username" | "password", isAdmin: boolean) {
         const value = e.target.value;
         // first validate not empty
         let error = validate_required(value);
-        if (error === "") {
-            error = validate_length(value);
+        if (!isAdmin) {
+            if (error === "") {
+                error = validate_length(value);
+            }
         }
         // set new state
         const nextState = {};
@@ -111,55 +114,91 @@ export default class Login extends Component<LoginProps, LoginState> {
         if (
             this.onChangeValue(
                 { target: { value: this.state.username } },
-                "username"
+                "username",
+                this.props.isAdmin
             ) &&
             this.onChangeValue(
                 { target: { value: this.state.password } },
-                "password"
+                "password",
+                this.props.isAdmin
             )
         ) {
             let service;
             if (this.props.isAdmin) {
-                // todo substitute it with admin service
                 service = AdminAuthService;
+                // login request
+                service.login(this.state.username, this.state.password).then(
+                    (manager) => {
+                        // login success
+                        // alert
+                        this.setState({
+                            alert: true,
+                            alertType: "success",
+                            alertContent: "管理员登录成功",
+                        });
+                        // update state
+                        this.context.setManager(manager);
+
+                        // redirect
+                        this.setState({
+                            redirect: this.props.redirect,
+                        });
+                    },
+                    (error) => {
+                        // show the error message
+                        if (error.response.status === 403) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "管理员名称或密码错误",
+                            });
+                        } else {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "网络错误",
+                            });
+                        }
+                    }
+                );
             } else {
                 service = AuthService;
-            }
+                // login request
+                service.login(this.state.username, this.state.password).then(
+                    (user) => {
+                        // login success
+                        // alert
+                        this.setState({
+                            alert: true,
+                            alertType: "success",
+                            alertContent: "登录成功",
+                        });
+                        // update state
+                        this.context.setUser(user);
 
-            // login request
-            service.login(this.state.username, this.state.password).then(
-                (user) => {
-                    // login success
-                    // alert
-                    this.setState({
-                        alert: true,
-                        alertType: "success",
-                        alertContent: "登录成功",
-                    });
-                    // update state
-                    this.context.setUser(user);
-                    // redirect
-                    this.setState({
-                        redirect: this.props.redirect,
-                    });
-                },
-                (error) => {
-                    // show the error message
-                    if (error.response.status === 403) {
+                        // redirect
                         this.setState({
-                            alert: true,
-                            alertType: "error",
-                            alertContent: "用户名或密码错误",
+                            redirect: this.props.redirect,
                         });
-                    } else {
-                        this.setState({
-                            alert: true,
-                            alertType: "error",
-                            alertContent: "网络错误",
-                        });
+                    },
+                    (error) => {
+                        // show the error message
+                        if (error.response.status === 403) {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "用户名或密码错误",
+                            });
+                        } else {
+                            this.setState({
+                                alert: true,
+                                alertType: "error",
+                                alertContent: "网络错误",
+                            });
+                        }
                     }
-                }
-            );
+                );
+            }
         }
     }
 
@@ -213,7 +252,13 @@ export default class Login extends Component<LoginProps, LoginState> {
                             name="username"
                             autoComplete="username"
                             autoFocus
-                            onChange={(e) => this.onChangeValue(e, "username")}
+                            onChange={(e) =>
+                                this.onChangeValue(
+                                    e,
+                                    "username",
+                                    this.props.isAdmin
+                                )
+                            }
                             // @ts-ignore
                             error={this.state.error_msg_username.length !== 0}
                             // @ts-ignore
@@ -229,7 +274,13 @@ export default class Login extends Component<LoginProps, LoginState> {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            onChange={(e) => this.onChangeValue(e, "password")}
+                            onChange={(e) =>
+                                this.onChangeValue(
+                                    e,
+                                    "password",
+                                    this.props.isAdmin
+                                )
+                            }
                             // @ts-ignore
                             error={this.state.error_msg_password.length !== 0}
                             // @ts-ignore
@@ -312,4 +363,4 @@ export default class Login extends Component<LoginProps, LoginState> {
     }
 }
 
-Login.contextType = UserContext;
+Login.contextType = AuthContext;

@@ -1,12 +1,12 @@
 package com.example.qa.order;
 
+import com.example.qa.admin.AdminService;
+import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
-import com.example.qa.order.exchange.AcceptRequest;
-import com.example.qa.order.exchange.OrderListResponse;
-import com.example.qa.order.exchange.OrderRequest;
-import com.example.qa.order.exchange.OrderResponse;
+import com.example.qa.order.exchange.*;
 import com.example.qa.order.model.Order;
+import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserService;
 import com.example.qa.user.model.User;
@@ -18,6 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
@@ -26,172 +28,204 @@ import static com.example.qa.security.RestControllerAuthUtils.*;
 @RequestMapping("/api/orders")
 public class OrderController {
     private final UserService userService;
-    private final OrderRepository orderRepository;
+    private final OrderService orderService;
+    private final AdminService adminService;
 
-    public OrderController(UserService userService, OrderRepository orderRepository) {
+    public OrderController(UserService userService, OrderService orderService, AdminService adminService) {
         this.userService = userService;
-        this.orderRepository = orderRepository;
+        this.orderService = orderService;
+        this.adminService = adminService;
     }
 
     @PostMapping
     public OrderResponse createOrder(@RequestBody OrderRequest data) {
-        if (!authLogin()) {
-            throw new ApiException(401);
+        authLoginOrThrow();
+        boolean isAdmin = authIsAdmin();
+        if (isAdmin && !authIsSuperAdmin()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
         }
-        if (authIsUser()) {
-            data.setAsker(authGetUserId());
+        if (!isAdmin) {
+            data.setAsker(authGetId());
         }
-        User[] users = checkOrderData(data);
-        Order order = new Order(data, users[0], users[1], authIsAdmin());
-        orderRepository.save(order);
-        return new OrderResponse(order, authIsAdmin() ? 2 : 1);
+        User[] users = checkOrderDataOrThrow(data);
+        User asker = users[0];
+        User answerer = users[1];
+        int price = isAdmin ? Objects.requireNonNullElse(data.getPrice(), asker.getPrice()) : asker.getPrice();
+        if (asker.getBalance() < price) {
+            throw new ApiException(403, "BALANCE_NOT_ENOUGH");
+        }
+        asker.setBalance(asker.getBalance() - answerer.getPrice());
+        asker = userService.save(asker);
+        Order order = new Order(data, asker, answerer, isAdmin);
+        order = orderService.save(order);
+        return new OrderResponse(order, isAdmin ? 2 : 1);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.OK)
     public void deleteOrder(@PathVariable(value = "id") long id) {
-        Order order = getById(id, true);
+        authLoginOrThrow();
+        authSuperAdminOrThrow();
+        Order order = getByIdOrThrow(id, true);
         if (order.isDeleted()) {
-            throw new ApiException(HttpStatus.FORBIDDEN);
+            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
         }
         order.setDeleted(true);
-        orderRepository.save(order);
+        order.setExpireTime(null);
+        orderService.save(order);
     }
 
     @GetMapping("/{id}")
     public OrderResponse queryOrder(@PathVariable(value = "id") long id) {
-        return new OrderResponse(getById(id, authIsAdmin()));
+        authLoginOrThrow();
+        boolean isAdmin = authIsAdmin();
+        long userId = authGetId();
+        Order order = getByIdOrThrow(id, isAdmin);
+        if (!isAdmin && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+        return new OrderResponse(getByIdOrThrow(id, isAdmin), isAdmin ? 2 : 1);
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.OK)
     public void editOrder(@PathVariable(value = "id") long id, @RequestBody OrderRequest data) {
-        Order order = getById(id, false);
+        authLoginOrThrow();
+        authSuperAdminOrThrow();
+        Order order = getByIdOrThrow(id, false);
         order.update(data);
-        orderRepository.save(order);
-    }
-
-    @PostMapping("/{id}/pay")
-    @ResponseStatus(value = HttpStatus.OK)
-    public void payOrder(@PathVariable(value = "id") long id) {
-        if (!authLogin()) {
-            throw new ApiException(401);
-        }
-        Order order = getById(id, false);
-        User asker = order.getAsker();
-        if (!authIsUser(asker.getId())) {
-            throw new ApiException(403, "NO_PERMISSION");
-        }
-        if (order.getState() != OrderState.CREATED) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
-        }
-        if (asker.getBalance() < order.getPrice()) {
-            throw new ApiException(403, "BALANCE_NOT_ENOUGH");
-        }
-        asker.setBalance(asker.getBalance() - order.getPrice());
-        userService.save(asker);
-        order.setState(OrderState.PAYED);
-        orderRepository.save(order);
+        orderService.save(order);
     }
 
     @PostMapping("/{id}/review")
-    @ResponseStatus(value = HttpStatus.OK)
     public void reviewOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
-        Order order = getById(id, false);
-        if (order.getState() != OrderState.PAYED) {
+        authLoginOrThrow();
+        if (!authIsAdmin() || adminService.getById(authGetId(), false).getRole() == AdminRole.ADMIN) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+        Order order = getByIdOrThrow(id, false);
+        if (order.getState() != OrderState.CREATED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
         }
-        order.setState(data.isAccept() ? OrderState.REVIEWED : OrderState.REJECTED_BY_REVIEWER);
-        orderRepository.save(order);
+        if (data.isAccept()) {
+            order.setState(OrderState.REVIEWED);
+            order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getRespondExpirationSeconds()));
+        } else {
+            order.setState(OrderState.REJECTED_BY_REVIEWER);
+            userService.refund(order);
+        }
+        orderService.save(order);
     }
 
     @PostMapping("/{id}/respond")
-    @ResponseStatus(value = HttpStatus.OK)
     public void respondOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
-        Order order = getById(id, false);
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+        authUserOrThrow(order.getAnswerer().getId());
         if (order.getState() != OrderState.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
         }
-        order.setState(data.isAccept() ? OrderState.ACCEPTED : OrderState.REJECTED_BY_ANSWERER);
-        orderRepository.save(order);
+        if (data.isAccept()) {
+            order.setState(OrderState.ACCEPTED);
+            order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getAnswerExpirationSeconds()));
+        } else {
+            order.setState(OrderState.REJECTED_BY_ANSWERER);
+            userService.refund(order);
+        }
+        orderService.save(order);
     }
 
     @PostMapping("/{id}/end")
-    @ResponseStatus(value = HttpStatus.OK)
     public void endChat(@PathVariable(value = "id") long id) {
-        Order order = getById(id, false);
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+        OrderEndReason reason;
+        if (authIsUser(order.getAsker().getId())) {
+            reason = OrderEndReason.ASKER;
+        } else if (authIsUser(order.getAnswerer().getId())) {
+            reason = OrderEndReason.ANSWERER;
+        } else {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
         if (order.getState() != OrderState.ANSWERED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_ENDED");
         }
         order.setState(OrderState.CHAT_ENDED);
-        orderRepository.save(order);
+        order.setEndReason(reason);
+        order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
+        orderService.save(order);
     }
 
     @PostMapping("/{id}/cancel")
     @ResponseStatus(value = HttpStatus.OK)
     public void cancelOrder(@PathVariable(value = "id") long id) {
-        if (!authLogin()) {
-            throw new ApiException(401);
-        }
-        Order order = getById(id, false);
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
         User asker = order.getAsker();
-        if (!authIsUser(asker.getId())) {
-            throw new ApiException(403, "NO_PERMISSION");
-        }
+        authUserOrThrow(asker.getId());
         if (order.getState() != OrderState.CREATED
-                && order.getState() != OrderState.PAYED
                 && order.getState() != OrderState.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_CANCEL");
         }
+        userService.refund(order);
         order.setState(OrderState.CANCELLED);
-        orderRepository.save(order);
+        orderService.save(order);
+    }
+
+    @PostMapping("/{id}/answer")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void answerOrder(@PathVariable(value = "id") long id, @RequestBody AnswerRequest request) {
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+        User answerer = order.getAnswerer();
+        authUserOrThrow(answerer.getId());
+        if (order.getState() != OrderState.ACCEPTED) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_ANSWER");
+        }
+        orderService.answerOrder(order, request.getAnswer());
     }
 
     @GetMapping
-    public OrderListResponse queryList(
+    public OrderListResponse listOrders(
             @RequestParam(required = false) Long asker,
             @RequestParam(required = false) Long answerer,
+            @RequestParam(required = false) Boolean finished,
             @RequestParam(required = false) OrderState state,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page
     ) {
-        if (!authLogin()) {
-            throw new ApiException(401);
-        }
+        authLoginOrThrow();
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ORDER_LIST_MAX_PAGE_SIZE);
         PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1);
         Page<Order> result;
         if (authIsAdmin()) {
-            if (state != OrderState.PAYED) {
-                throw new ApiException(403);
-            }
-            result = orderRepository.findAllByStateAndDeleted(OrderState.PAYED, false, pageRequest);
+            orderService.setPageRequest(pageRequest);
+            // state == null 时列出所有订单，包含已删除
+            result = orderService.listByState(state);
         } else {
-            pageRequest = pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createTime"));
+            orderService.setPageRequest(pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createTime")));
             if (asker != null && authIsUser(asker)) {
-                result = orderRepository.findAllByAskerAndDeleted(userService.getById(asker), false, pageRequest);
+                // finished == null 时列出所有该用户的订单
+                result = orderService.listByAsker(userService.getById(asker), finished);
             } else if (answerer != null && authIsUser(answerer)) {
-                result = orderRepository.findAllByAnswererAndDeletedAndReviewed(
-                        userService.getById(answerer), false, true, pageRequest
-                );
+                // finished == null 时列出所有该用户的订单
+                result = orderService.listByAnswerer(userService.getById(answerer), finished);
             } else {
-                throw new ApiException(403);
+                throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
         return new OrderListResponse(result, authIsAdmin() ? 2 : 0);
     }
 
-    private Order getById(long id, boolean allowDeleted) {
-        Optional<Order> order = orderRepository.findById(id);
+    private Order getByIdOrThrow(long id, boolean allowDeleted) {
+        Optional<Order> order = orderService.findById(id);
         if (order.isEmpty() || (order.get().isDeleted() && !allowDeleted)) {
             throw new ApiException(HttpStatus.NOT_FOUND);
         }
         return order.get();
     }
 
-    private User[] checkOrderData(OrderRequest data) {
+    private User[] checkOrderDataOrThrow(OrderRequest data) {
         if (data.getAsker() == null || data.getAnswerer() == null || data.getQuestion() == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST);
         }

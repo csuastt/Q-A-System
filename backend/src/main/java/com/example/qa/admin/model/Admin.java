@@ -1,12 +1,13 @@
 package com.example.qa.admin.model;
 
-import com.example.qa.admin.exchange.CreateAdminRequest;
+import com.example.qa.admin.exchange.AdminRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -27,10 +28,15 @@ public class Admin {
 
     private AdminRole role = AdminRole.ADMIN;
 
-    public Admin(CreateAdminRequest request) {
+    public Admin(AdminRequest request) {
         username = request.getUsername();
         password = request.getPassword();
         createTime = ZonedDateTime.now();
         role = request.getRole();
+    }
+
+    public void update(AdminRequest request) {
+        password = Objects.requireNonNullElse(request.getPassword(), password);
+        role = Objects.requireNonNullElse(request.getRole(), role);
     }
 }

@@ -1,9 +1,8 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import UserContext from "./UserContext";
+import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
 import { Container } from "@mui/material";
 import Welcome from "./components/Welcome";
-import QuestionList from "./components/QuestionList";
 import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
 import Login from "./components/Login";
@@ -12,10 +11,12 @@ import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
 import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
-import { UserInfo } from "./services/definations";
+import { UserInfo, UserRole } from "./services/definations";
 import authService from "./services/authService";
 import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
+import UserOrderList from "./components/UserOrderList";
+import IncomeStatistics from "./components/IncomeStatistics";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
@@ -30,8 +31,11 @@ export default function App() {
     }, []);
 
     const routes = [
-        ["/answerers/select", <AnswererList selectModel />],
-        ["/answerers", <AnswererList />],
+        [
+            "/answerers/select",
+            <AnswererList selectModel userRole={UserRole.ANSWERER} />,
+        ],
+        ["/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
         [
             "/orders/:orderId",
             <PathParamParser
@@ -39,7 +43,7 @@ export default function App() {
                 C={OrderDetail}
             />,
         ],
-        ["/orders", <QuestionList />],
+        ["/orders", <UserOrderList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile isAdmin={false} />],
@@ -54,21 +58,25 @@ export default function App() {
                 isAdmin={false}
             />,
         ],
+        ["/income", <IncomeStatistics userId={user?.id} />],
         ["/", <Welcome />],
     ];
 
     return refreshing ? (
         <></>
     ) : (
-        <UserContext.Provider
+        <AuthContext.Provider
             value={{
                 user: user,
                 setUser: setUser,
                 clearUser: () => setUser(undefined),
+                manager: undefined,
+                setManager: () => {},
+                clearManager: () => {},
             }}
         >
             <BrowserRouter>
-                <AppFrame>
+                <AppFrame isAdmin={false}>
                     <Container maxWidth="md">
                         <Switch>
                             {routes.map((routeItem) => {
@@ -85,6 +93,6 @@ export default function App() {
                     </Container>
                 </AppFrame>
             </BrowserRouter>
-        </UserContext.Provider>
+        </AuthContext.Provider>
     );
 }

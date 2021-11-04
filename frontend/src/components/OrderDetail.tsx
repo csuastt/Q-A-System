@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { OrderInfo, OrderState } from "../services/definations";
 import orderService from "../services/orderService";
-import UserContext from "../UserContext";
+import UserContext from "../AuthContext";
 import { Redirect } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -222,7 +222,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     }
 
     return (
-        <Stack spacing={2}>
+        <Stack spacing={2} mt={4}>
             <Card>
                 <CardHeader
                     avatar={

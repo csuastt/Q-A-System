@@ -1,4 +1,3 @@
-import { ZonedDateTime } from "js-joda";
 export enum UserRole {
     USER = "USER",
     ANSWERER = "ANSWERER",
@@ -37,7 +36,7 @@ export interface ManagerInfo {
     password: string;
     deleted: boolean;
     role: ManagerRole;
-    createTime: ZonedDateTime;
+    createTime: string;
 }
 
 export type UserInfoList = Array<UserBasicInfo>;
@@ -73,18 +72,18 @@ export interface UserFullyInfo {
 }
 
 export enum OrderState {
-    CREATED,
-    PAYED,
-    PAY_TIMEOUT,
-    REVIEWED,
-    REJECTED_BY_REVIEWER,
-    ACCEPTED,
-    REJECTED_BY_ANSWERER,
-    RESPOND_TIMEOUT,
-    ANSWERED,
-    ANSWER_TIMEOUT,
-    CHAT_ENDED,
-    FULFILLED,
+    CREATED = "CREATED",
+    PAYED = "PAYED",
+    PAY_TIMEOUT = "PAY_TIMEOUT",
+    REVIEWED = "REVIEWED",
+    REJECTED_BY_REVIEWER = "REJECTED_BY_REVIEWER",
+    ACCEPTED = "ACCEPTED",
+    REJECTED_BY_ANSWERER = "REJECTED_BY_ANSWERER",
+    RESPOND_TIMEOUT = "RESPOND_TIMEOUT",
+    ANSWERED = "ANSWERED",
+    ANSWER_TIMEOUT = "ANSWER_TIMEOUT",
+    CHAT_ENDED = "CHAT_ENDED",
+    FULFILLED = "FULFILLED",
 }
 
 export enum OrderEndReason {
@@ -110,8 +109,6 @@ export interface OrderInfo {
     price: number;
 }
 
-export type OrderList = Array<OrderInfo>;
-
 export enum CreationResultType {
     SUCCESS,
     INVALID_INPUT,
@@ -121,7 +118,7 @@ export interface CreationResult {
     type: CreationResultType;
     state: string;
     created_id: number;
-    err_msg?: string;
+    message: string;
 }
 
 export interface PagedList<T> {
@@ -130,4 +127,14 @@ export interface PagedList<T> {
     page: number;
     totalPages: number;
     totalCount: number;
+}
+
+export interface EarningsMonthly {
+    month: string;
+    earnings: number;
+}
+
+export interface EarningsInfo {
+    total: number;
+    monthly: Array<EarningsMonthly>;
 }

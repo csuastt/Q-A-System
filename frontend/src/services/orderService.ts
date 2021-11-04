@@ -1,12 +1,18 @@
 import axios from "axios";
-import { CreationResult, OrderInfo, PagedList } from "./definations";
+import {
+    CreationResult,
+    OrderInfo,
+    OrderState,
+    PagedList,
+} from "./definations";
 
 class OrderService {
     getOrdersOfUser(
         asker?: number,
         answerer?: number,
         page?: number,
-        prePage?: number
+        prePage?: number,
+        finished?: boolean
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
@@ -15,6 +21,22 @@ class OrderService {
                     answerer: answerer,
                     page: page,
                     pageSize: prePage,
+                    finished: finished,
+                },
+            })
+            .then((response) => response.data);
+    }
+    getOrderListByAdmin(
+        state: OrderState,
+        page: number,
+        pageSize: number
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    state: state,
+                    page: page,
+                    pageSize: pageSize,
                 },
             })
             .then((response) => response.data);
