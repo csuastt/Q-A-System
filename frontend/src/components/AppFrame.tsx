@@ -212,7 +212,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
             ["回答者列表", "/answerers", SchoolIcon],
             ["我的提问", "/orders", QuestionAnswerIcon],
             ["我的回答", "/orders?answerer=true", RateReviewIcon],
-            ["收支统计", "/income", EqualizerIcon],
+            ["收入统计", "/income", EqualizerIcon],
             ["提出问题", "/order/create", AddCommentIcon],
         ];
     };

@@ -100,8 +100,8 @@ export default function Welcome() {
                             <ButtonCardWrapper
                                 to="/income"
                                 Icon={EqualizerIcon}
-                                title1="收支统计"
-                                title2="查看个人月度收入和支出情况"
+                                title1="收入统计"
+                                title2="查看个人月度收入情况"
                             />
                         </>
                     ) : (
