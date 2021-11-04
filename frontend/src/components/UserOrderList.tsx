@@ -8,7 +8,7 @@ import { parseIntWithDefault, useQuery } from "../util";
 import { UserRole } from "../services/definations";
 import { TabContext, TabList } from "@mui/lab";
 
-const UserOrderList: React.FC = (props) => {
+const UserOrderList: React.FC = () => {
     const { user } = useContext(AuthContext);
     const query = useQuery();
     const [tabValue, setTabValue] = useState("inProgress");

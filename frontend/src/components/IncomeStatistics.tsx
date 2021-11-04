@@ -1,8 +1,8 @@
-import { Card, CardHeader, Box } from "@mui/material";
+import { Box, Card, CardHeader } from "@mui/material";
 import ReactApexChart from "react-apexcharts";
 import { merge } from "lodash";
-import BaseOptionChart from "./ChartBaseOption";
-import React, { useEffect, useState } from "react";
+import BaseOptionChart from "./BaseOptionChart";
+import React, { useEffect, useMemo, useState } from "react";
 import userService from "../services/userService";
 
 const IncomeStatistics: React.FC<{
@@ -13,14 +13,17 @@ const IncomeStatistics: React.FC<{
     );
 
     // init date list
-    let labelsList = new Array<string>(12);
-    let date: Date = new Date();
-    for (let index = 11; index >= 0; index--) {
-        let m = date.getMonth() + 1;
-        let m_str = m >= 10 ? m.toString() : "0" + m.toString();
-        labelsList[index] = date.getFullYear() + "-" + m_str;
-        date.setMonth(date.getMonth() - 1);
-    }
+    let labelsList = useMemo(() => {
+        let ll = new Array<string>(12);
+        let date: Date = new Date();
+        for (let index = 11; index >= 0; index--) {
+            let m = date.getMonth() + 1;
+            let m_str = m >= 10 ? m.toString() : "0" + m.toString();
+            ll[index] = date.getFullYear() + "-" + m_str;
+            date.setMonth(date.getMonth() - 1);
+        }
+        return ll;
+    }, []);
 
     useEffect(() => {
         if (typeof props.userId !== "undefined") {
@@ -35,7 +38,7 @@ const IncomeStatistics: React.FC<{
                 setEarningsList(new_earningsList);
             });
         }
-    }, [props.userId]);
+    }, [labelsList, props.userId]);
 
     const chartOptions = merge(BaseOptionChart(), {
         stroke: { width: [2, 2, 0] },

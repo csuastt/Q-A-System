@@ -19,7 +19,7 @@ import UserContext from "../AuthContext";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Grid from "@mui/material/Grid";
-import AnswererDetailCard from "./AnswerDetailCard";
+import AnswererDetailCard from "./AnswererDetailCard";
 
 function processInt(str?: string): number {
     if (str) {
