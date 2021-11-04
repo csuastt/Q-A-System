@@ -98,6 +98,7 @@ public class UserService {
             user.setEarningsMonthly("[]");
         }
         user.setEarningsTotal(user.getEarningsTotal() + earnings);
+        user.setBalance(user.getBalance() + earnings);
         return save(user);
     }
 }

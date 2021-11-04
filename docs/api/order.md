@@ -13,6 +13,7 @@
 | state         | OrderState     | string                         |                                         |
 | finished      | boolean        |                                | 订单结束后设为 true                     |
 | createTime    | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`) | 创建时间                                |
+| expireTime    | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`) | 超时时间                                |
 | endReason     | OrderEndReason | string                         |                                         |
 | question      | string         |                                | 问题（最长 100 字符，后续交给系统设置） |
 | answerSummary | string         |                                | 请求详细信息才会返回                    |
@@ -23,14 +24,14 @@
 - CREATED - 已创建并支付，等待审核
 - ~~PAYED - 已支付，等待审核~~
 - ~~PAY_TIMEOUT - 支付超时  **finished**~~
-- REVIEWED  - 审核通过，等待接单
+- REVIEWED  - 审核通过，等待接单【expireTime=接单时间】
 - REJECTED_BY_REVIEWER - 审核不通过，已退款  **finished**
-- ACCEPTED - 已接单，等待首次回答
+- ACCEPTED - 已接单，等待首次回答【expireTime=回答时间】
 - REJECTED_BY_ANSWERER - 回答者拒绝接单，已退款  **finished**
 - RESPOND_TIMEOUT - 回答者接单超时，已退款  **finished**
-- ANSWERED - 回答者已做首次回答，聊天进行中
+- ANSWERED - 回答者已做首次回答，聊天进行中【expireTime=聊天自动结束时间】
 - ANSWER_TIMEOUT - 回答者首次回答超时，已退款  **finished**
-- CHAT_ENDED - 聊天已结束，等待结算（回答者结束服务或者聊天超过时限）  **finished**
+- CHAT_ENDED - 聊天已结束，等待结算（回答者结束服务或者聊天超过时限）  **finished** 【expireTime=结算时间】
 - FULFILLED - 已结单  **finished**
 - CANCELLED - 回答者接单前被提问者取消  **finished**
 
