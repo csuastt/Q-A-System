@@ -105,7 +105,7 @@ export interface OrderInfo {
     endReason: OrderEndReason;
     finished: boolean;
     deleted: boolean;
-    answerSummary: boolean;
+    answerSummary: string;
     price: number;
 }
 

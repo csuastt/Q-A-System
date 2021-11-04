@@ -1,5 +1,3 @@
-import "bytemd/dist/index.min.css";
-import "github-markdown-css/github-markdown.css";
 import breaks from "@bytemd/plugin-breaks";
 import footnotes from "@bytemd/plugin-footnotes";
 import gemoji from "@bytemd/plugin-gemoji";
@@ -13,6 +11,12 @@ import * as mermaid_locales from "@bytemd/plugin-mermaid/lib/locales/zh_Hans.jso
 import * as editor_locales from "bytemd/lib/locales/zh_Hans.json";
 import { Editor, Viewer } from "@bytemd/react";
 import React from "react";
+
+// Import css
+import "bytemd/dist/index.min.css";
+import "github-markdown-css/github-markdown.css";
+import "highlight.js/styles/tomorrow.css"
+import "katex/dist/katex.min.css"
 
 const plugins = [
     breaks(),
