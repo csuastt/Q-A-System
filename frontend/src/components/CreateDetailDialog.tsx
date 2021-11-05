@@ -9,6 +9,9 @@ import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import CardContent from "@mui/material/CardContent";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Button from "@mui/material/Button";
+import { Link as RouterLink } from "react-router-dom";
+import { Stack } from "@mui/material";
 
 const AnswererDetailDialog: React.FC<
     DialogProps & { username: String; password: string }
@@ -19,7 +22,7 @@ const AnswererDetailDialog: React.FC<
 
     return (
         <Dialog {...props}>
-            <DialogTitle>回答者信息</DialogTitle>
+            <DialogTitle>新建管理员信息</DialogTitle>
             <DialogContent>
                 <Card elevation={0}>
                     <CardHeader
@@ -29,6 +32,7 @@ const AnswererDetailDialog: React.FC<
                             </Avatar>
                         }
                         title={username}
+                        subheader={"管理员"}
                     />
                     <CardContent>
                         <TextField
@@ -39,6 +43,24 @@ const AnswererDetailDialog: React.FC<
                         />
                     </CardContent>
                 </Card>
+                <Stack direction="row" p={1} spacing={1}>
+                    <Button
+                        color="primary"
+                        size="medium"
+                        variant="outlined"
+                        sx={{ ml: 2 }}
+                    >
+                        复制
+                    </Button>
+                    <Button
+                        color="primary"
+                        size="medium"
+                        variant="outlined"
+                        sx={{ ml: 2 }}
+                    >
+                        离开
+                    </Button>
+                </Stack>
             </DialogContent>
         </Dialog>
     );

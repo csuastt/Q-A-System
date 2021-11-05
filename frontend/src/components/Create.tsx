@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { ManagerRole } from "../services/definations";
 // mui
@@ -18,7 +18,7 @@ import Alert from "@mui/material/Alert";
 import { validate_required, validate_length } from "./Login";
 //import { Link as RouterLink } from "react-router-dom";
 import AdminAuthService from "../services/adminAuthService";
-import AnswererDetailDialog from "./AnswererDetailDialog";
+import CreateDetailDialog from "./CreateDetailDialog";
 
 // role options
 const manager_role_options = [
@@ -49,6 +49,7 @@ interface CreateState {
     alertContent: string;
     readPolicy: boolean;
     redirect: string | null;
+    dialogOpen: boolean;
 }
 
 export default class ManageCreate extends Component<any, CreateState> {
@@ -68,6 +69,7 @@ export default class ManageCreate extends Component<any, CreateState> {
             alertType: "error",
             readPolicy: false,
             redirect: null,
+            dialogOpen: false,
         };
     }
 
@@ -110,10 +112,14 @@ export default class ManageCreate extends Component<any, CreateState> {
                     if (response) {
                         // alert
                         this.setState({
+                            password: response,
                             alert: true,
                             alertType: "success",
                             alertContent:
                                 "创建成功，请记住您的密码:" + response,
+                        });
+                        this.setState({
+                            dialogOpen: true,
                         });
                     }
                 },
@@ -240,6 +246,13 @@ export default class ManageCreate extends Component<any, CreateState> {
                         {this.state.alertContent}
                     </Alert>
                 </Snackbar>
+                <CreateDetailDialog
+                    open={this.state.dialogOpen}
+                    username={this.state.username}
+                    password={this.state.password}
+                    maxWidth="sm"
+                    fullWidth
+                />
             </Container>
         );
     }
