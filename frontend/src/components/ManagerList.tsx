@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-    ManagerInfo,
-    ManagerRole,
-    UserBasicInfo,
-    UserRole,
-} from "../services/definations";
+import { ManagerInfo, ManagerRole } from "../services/definations";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Stack } from "@mui/material";
 import { parseIntWithDefault, useQuery } from "../util";
-import userService from "../services/userService";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Pagination from "./Pagination";
@@ -17,8 +11,6 @@ import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 import managerService from "../services/managerService";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PersonIcon from "@mui/icons-material/Person";
 
@@ -133,7 +125,12 @@ const ManagerList: React.FC<{ selectModel?: boolean }> = (props) => {
                                             bgcolor: "primary.main",
                                         }}
                                     >
-                                        <PersonIcon />
+                                        {manager.role ===
+                                        ManagerRole.REVIEWER ? (
+                                            <PersonIcon />
+                                        ) : (
+                                            <HowToRegIcon />
+                                        )}
                                     </Avatar>
                                     <Typography
                                         variant="subtitle1"

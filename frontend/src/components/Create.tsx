@@ -61,7 +61,7 @@ export default class ManageCreate extends Component<any, CreateState> {
         this.state = {
             username: "",
             password: "",
-            role: ManagerRole.ADMIN,
+            role: ManagerRole.REVIEWER,
             error_msg_username: "",
             error_msg_role: "",
             alert: false,
@@ -197,7 +197,6 @@ export default class ManageCreate extends Component<any, CreateState> {
                             SelectProps={{
                                 native: true,
                             }}
-                            value={this.state.role}
                             name="role"
                             label="管理员权限"
                             type="role"
@@ -214,7 +213,7 @@ export default class ManageCreate extends Component<any, CreateState> {
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
-                            ))}{" "}
+                            ))}
                         </TextField>
 
                         <Button
@@ -255,6 +254,7 @@ export default class ManageCreate extends Component<any, CreateState> {
                     }
                     username={this.state.username}
                     password={this.state.password}
+                    role={this.state.role}
                     maxWidth="sm"
                     fullWidth
                 />
