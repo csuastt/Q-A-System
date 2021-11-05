@@ -248,6 +248,11 @@ export default class ManageCreate extends Component<any, CreateState> {
                 </Snackbar>
                 <CreateDetailDialog
                     open={this.state.dialogOpen}
+                    onClose={() =>
+                        this.setState({
+                            dialogOpen: false,
+                        })
+                    }
                     username={this.state.username}
                     password={this.state.password}
                     maxWidth="sm"

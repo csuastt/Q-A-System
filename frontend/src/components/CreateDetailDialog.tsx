@@ -1,5 +1,4 @@
 import Dialog, { DialogProps } from "@mui/material/Dialog";
-import { UserBasicInfo } from "../services/definations";
 import React from "react";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -12,13 +11,12 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Button from "@mui/material/Button";
 import { Link as RouterLink } from "react-router-dom";
 import { Stack } from "@mui/material";
+import copy from "copy-to-clipboard";
 
 const AnswererDetailDialog: React.FC<
     DialogProps & { username: String; password: string }
 > = (props) => {
     const { username, password } = props;
-    let description = null;
-    let profession = null;
 
     return (
         <Dialog {...props}>
@@ -43,22 +41,22 @@ const AnswererDetailDialog: React.FC<
                         />
                     </CardContent>
                 </Card>
-                <Stack direction="row" p={1} spacing={1}>
+                <Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    p={1}
+                    spacing={1}
+                >
                     <Button
                         color="primary"
                         size="medium"
                         variant="outlined"
                         sx={{ ml: 2 }}
+                        onClick={() => {
+                            copy(password);
+                        }}
                     >
                         复制
-                    </Button>
-                    <Button
-                        color="primary"
-                        size="medium"
-                        variant="outlined"
-                        sx={{ ml: 2 }}
-                    >
-                        离开
                     </Button>
                 </Stack>
             </DialogContent>
