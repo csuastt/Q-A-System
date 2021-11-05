@@ -18,6 +18,7 @@ import Alert from "@mui/material/Alert";
 import { validate_required, validate_length } from "./Login";
 //import { Link as RouterLink } from "react-router-dom";
 import AdminAuthService from "../services/adminAuthService";
+import AnswererDetailDialog from "./AnswererDetailDialog";
 
 // role options
 const manager_role_options = [
@@ -39,6 +40,7 @@ export const validate_role = (value: any) => {
 // state interface
 interface CreateState {
     username: string;
+    password: string;
     role: ManagerRole;
     error_msg_username: string;
     error_msg_role: string;
@@ -57,6 +59,7 @@ export default class ManageCreate extends Component<any, CreateState> {
         // state
         this.state = {
             username: "",
+            password: "",
             role: ManagerRole.ADMIN,
             error_msg_username: "",
             error_msg_role: "",
