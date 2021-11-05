@@ -15,7 +15,6 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
 import MuiDrawer from "@mui/material/Drawer";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -220,74 +219,34 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     return (
         <Box sx={{ display: "flex" }}>
             <CssBaseline />{" "}
-            {props.isAdmin ? (
-                <AppBar open={drawerOpen} style={{ background: "#714288" }}>
-                    <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            sx={{
-                                mr: 5,
-                                ...(drawerOpen && { display: "none" }),
-                            }}
-                            onClick={handleDrawerOpen}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{
-                                flexGrow: 1,
-                                display: { xs: "none", sm: "block" },
-                            }}
-                        >
-                            付费问答管理员系统
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
-            ) : (
-                <AppBar open={drawerOpen}>
-                    <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            sx={{
-                                mr: 5,
-                                ...(drawerOpen && { display: "none" }),
-                            }}
-                            onClick={handleDrawerOpen}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{
-                                flexGrow: 1,
-                                display: { xs: "none", sm: "block" },
-                            }}
-                        >
-                            付费问答系统
-                        </Typography>
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="搜索问题…"
-                                inputProps={{ "aria-label": "search" }}
-                            />
-                        </Search>
-                    </Toolbar>
-                </AppBar>
-            )}
+            <AppBar open={drawerOpen}>
+                <Toolbar>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="open drawer"
+                        sx={{
+                            mr: 5,
+                            ...(drawerOpen && { display: "none" }),
+                        }}
+                        onClick={handleDrawerOpen}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="div"
+                        sx={{
+                            flexGrow: 1,
+                            display: { xs: "none", sm: "block" },
+                        }}
+                    >
+                        {props.isAdmin ? "付费问答管理员系统" : "付费问答系统"}
+                    </Typography>
+                </Toolbar>
+            </AppBar>
             <Drawer variant="permanent" open={drawerOpen}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
