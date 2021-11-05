@@ -28,6 +28,7 @@
     "@types/validator": "^13.6.3",
     "apexcharts": "^3.29.0",
     "axios": "^0.21.4",
+    "copy-to-clipboard": "^3.3.1",
     "github-markdown-css": "^5.0.0",
     "jest-junit": "^12.3.0",
     "lodash": "^4.17.21",
