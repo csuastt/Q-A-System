@@ -1,21 +1,34 @@
 import axios from "axios";
-import { ManagerInfo, ManagerInfoList } from "./definations";
+import { ManagerInfo, ManagerInfoList, PagedList } from "./definations";
 
 class ManagerService {
     getManagerList(
         reviewer: boolean,
-        page: number = 1,
-        limit: number = 20
-    ): Promise<Array<ManagerInfo>> {
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<ManagerInfo>> {
         return axios
             .get("/admins", {
                 params: {
                     reviewer: reviewer,
                     page: page,
-                    limit: limit,
+                    pageSize: prePage,
                 },
             })
-            .then((response) => response.data["admins"]);
+            .then((response) => response.data);
+    }
+    getAllManagerList(
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<ManagerInfo>> {
+        return axios
+            .get("/admins", {
+                params: {
+                    page: page,
+                    pageSize: prePage,
+                },
+            })
+            .then((response) => response.data);
     }
 
     getManagerByIdList(ids: Array<number>): Promise<ManagerInfoList> {
