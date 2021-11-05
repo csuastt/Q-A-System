@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { UserInfo } from "../services/definations";
+import { UserBasicInfo, UserInfo, UserRole } from "../services/definations";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -8,15 +8,56 @@ import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import _ from "lodash";
 import { Divider } from "@mui/material";
+import { parseIntWithDefault, useQuery } from "../util";
+import userService from "../services/userService";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import AnswererCard from "./AnswererCard";
+import Typography from "@mui/material/Typography";
+import Pagination from "./Pagination";
 
-const UserList: React.FC<{ type?: string }> = (props) => {
-    const [userList] = useState<Array<UserInfo>>();
+const UserList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
+    props
+) => {
+    const query = useQuery();
+    const [userList, setUserList] = useState<Array<UserBasicInfo>>();
+    const [currentPage, setCurrentPage] = useState(
+        parseIntWithDefault(query.get("page"), 1)
+    );
+    const [itemPrePage] = useState(
+        parseIntWithDefault(query.get("prepage"), 9)
+    );
+    const [maxPage, setMaxPage] = useState(currentPage);
+    const [totalCount, setTotalCount] = useState(0);
     useEffect(() => {
-        // TODO: Unsupported api
-        // userService
-        //     .get_users_of_type(props.role)
-        //     .then((list) => setUserList(list));
-    }, []);
+        userService
+            .getUserList(
+                props.userRole === UserRole.ANSWERER,
+                currentPage,
+                itemPrePage
+            )
+            .then((list) => {
+                setUserList(list.data);
+                setMaxPage(list.totalPages);
+                setTotalCount(list.totalCount);
+            });
+    }, [currentPage, itemPrePage, props.userRole]);
+
+    const onPageChanged = (newPage: number) => {
+        setCurrentPage(newPage);
+    };
+    if (userList == null) {
+        return (
+            <ListItem alignItems="flex-start">
+                <ListItemAvatar>
+                    <Skeleton variant="circular">
+                        <Avatar />
+                    </Skeleton>
+                </ListItemAvatar>
+                <ListItemText primary={<Skeleton />} secondary={<Skeleton />} />
+            </ListItem>
+        );
+    }
 
     const renderPlaceholder = () => (
         <ListItem alignItems="flex-start">
@@ -28,34 +69,39 @@ const UserList: React.FC<{ type?: string }> = (props) => {
             <ListItemText primary={<Skeleton />} secondary={<Skeleton />} />
         </ListItem>
     );
-
-    const renderUserList = () => {
-        const list = _.flatten(
-            _.zip(userList!, _.fill(Array(userList!.length - 1), undefined))
-        );
+    if (totalCount === 0) {
         return (
-            <>
-                {list.map((user: UserInfo | undefined, index: number) => {
-                    return user === undefined ? (
-                        <Divider variant="inset" component="li" key={index} />
-                    ) : (
-                        <ListItem alignItems="flex-start" key={index}>
-                            <ListItemAvatar>
-                                <Avatar alt={user.username} src={user.avatar} />
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={user.username}
-                                secondary={user.description}
-                            />
-                        </ListItem>
-                    );
-                })}
-            </>
+            <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
+                用户数量为0
+            </Typography>
         );
-    };
+    }
 
     return (
-        <List>{userList == null ? renderPlaceholder() : renderUserList()}</List>
+        <Box sx={{ pt: 3 }} mt={1}>
+            <Grid>
+                {userList.map((user: UserBasicInfo, index: number) => (
+                    <ListItem alignItems="flex-start" key={index}>
+                        <ListItemAvatar>
+                            <Avatar alt={user.username} src={user.avatar} />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={user.username}
+                            secondary={user.description}
+                        />
+                    </ListItem>
+                ))}
+            </Grid>
+            {maxPage > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    maxPage={maxPage}
+                    totalCount={totalCount}
+                    itemPrePage={itemPrePage}
+                    onPageChanged={onPageChanged}
+                />
+            )}
+        </Box>
     );
 };
 

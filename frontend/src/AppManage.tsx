@@ -14,6 +14,7 @@ import ReviewList from "./components/ReviewList";
 import HelloAdmin from "./components/HelloAdmin";
 import AdminOrderList from "./components/AdminOrderList";
 import { Theme } from "@mui/material/styles";
+import UserList from "./components/UserList";
 
 const managerTheme: Theme = createTheme({
     palette: {
@@ -46,7 +47,7 @@ export default function AppManage() {
 
     const routes = [
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
-        ["/admins/users", <AnswererList userRole={UserRole.USER} />],
+        ["/admins/users", <UserList userRole={UserRole.USER} />],
 
         ["/admins/orders", <AdminOrderList />],
         // [
