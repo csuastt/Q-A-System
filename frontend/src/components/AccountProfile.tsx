@@ -31,6 +31,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@mui/material";
+import systemConfigService from "../services/systemConfigService";
 
 // state interface
 interface ProfileState {
@@ -244,10 +245,17 @@ export default class AccountProfile extends Component<
     // if user not found
     // redirect
     componentDidMount() {
+        // init min price & max price
+        systemConfigService.getSystemConfig().then(
+            (config) => {
+                this.setState({
+                    minPrice: config.minPrice,
+                    maxPrice: config.maxPrice
+                });
+            }
+        )
         if (this.props.isAdmin) {
             // todo use admin api to get fully info of user
-            // you also need to get min price and max price for answerer
-            // init state: minPrice maxPrice
             // remove this mock code
             const currentUser = {
                 id: 123213,
@@ -706,12 +714,12 @@ export default class AccountProfile extends Component<
                                             fullWidth
                                             label="电话"
                                             name="phone"
-                                            // sx={{
-                                            //     "& .MuiPhoneNumber-flagButton":
-                                            //         {
-                                            //             "min-width": "30px",
-                                            //         },
-                                            // }}
+                                            sx={{
+                                                "& .MuiPhoneNumber-flagButton":
+                                                    {
+                                                        "min-width": "30px",
+                                                    },
+                                            }}
                                             defaultCountry={"cn"}
                                             onChange={this.handleChange}
                                             value={this.state.user?.phone || ""}
