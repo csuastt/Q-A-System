@@ -32,6 +32,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [itemPrePage] = useState(_.defaultTo(props.itemPrePage, 20));
     const [maxPage, setMaxPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
+    const [longPending, setLongPending] = useState(false);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setQuestionList(list.data);
@@ -61,6 +62,10 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 )
                 .then(acceptOrderList);
         }
+        setTimeout(() => {
+            if (!questionList)
+                setLongPending(true);
+        }, 500);
     }, [
         currentPage,
         itemPrePage,
@@ -171,21 +176,28 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         </>
     );
 
-    if (questionList == null) {
+    if (longPending && questionList == null) {
         return (
             <Stack spacing={2} mt={4}>
                 {renderPlaceholder()}
             </Stack>
         );
     }
-    if (totalCount === 0) {
+    if (questionList && totalCount === 0) {
         return (
             <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
                 没有订单
             </Typography>
         );
     }
-    return <Stack spacing={2}>{renderQuestionList()}</Stack>;
+    return (
+        <Box>
+            {
+                (questionList) &&
+                <Stack spacing={2}>{renderQuestionList()}</Stack>
+            }
+        </Box>
+    );
 };
 
 export default OrderList;

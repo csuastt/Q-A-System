@@ -21,6 +21,7 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);
+    const [longPending, setLongPending] = useState(false);
 
     useEffect(() => {
         userService
@@ -35,13 +36,18 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
                 setMaxPage(list.totalPages);
                 setTotalCount(list.totalCount);
             });
+
+        setTimeout(() => {
+            if (!answerList)
+                setLongPending(true);
+        }, 500);
     }, [currentPage, itemPrePage, props.userRole]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
     };
 
-    if (answerList == null) {
+    if (longPending && !answerList) {
         return (
             <Box sx={{ pt: 3 }} mt={1}>
                 <Grid container spacing={3}>
@@ -52,7 +58,7 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
             </Box>
         );
     }
-    if (totalCount === 0) {
+    if (answerList && totalCount === 0) {
         return (
             <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
                 没有可用的回答者
@@ -61,6 +67,8 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
     }
     return (
         <Box sx={{ pt: 3 }} mt={1}>
+            {
+                (answerList) &&
             <Grid container spacing={3} marginBottom={3}>
                 {answerList.map((user: UserBasicInfo, index: number) => (
                     <Grid
@@ -86,6 +94,7 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
                     </Grid>
                 ))}
             </Grid>
+            }
             {maxPage > 1 && (
                 <Pagination
                     currentPage={currentPage}
