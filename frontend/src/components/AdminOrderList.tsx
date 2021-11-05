@@ -14,7 +14,7 @@ import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 
 interface AdminOrderListProps {
-    orderState: OrderState;
+    orderState?: OrderState;
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
@@ -38,9 +38,15 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     };
 
     useEffect(() => {
-        orderService
-            .getOrderListByAdmin(props.orderState, currentPage, itemPrePage)
-            .then(acceptOrderList);
+        props.orderState
+            ? orderService.getOrderListByAdmin(
+                  props.orderState,
+                  currentPage,
+                  itemPrePage
+              )
+            : orderService
+                  .getAllOrderListByAdmin(currentPage, itemPrePage)
+                  .then(acceptOrderList);
     }, [currentPage, itemPrePage, props.orderState]);
 
     const onPageChanged = (newPage: number) => {

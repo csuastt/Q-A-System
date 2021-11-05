@@ -48,7 +48,7 @@ export default function AppManage() {
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
         ["/admins/users", <AnswererList userRole={UserRole.USER} />],
 
-        ["/admins/orders", <AdminOrderList orderState={OrderState.CREATED} />],
+        ["/admins/orders", <AdminOrderList />],
         // [
         //     "/admins/orders/:orderId",
         //     <PathParamParser
