@@ -10,12 +10,95 @@ import configService from "../services/configService";
 
 interface SystemSettingsState {
     config: ConfigInfo | null;
+    alert: boolean;
+    alertType: "success" | "info" | "warning" | "error";
+    alertContent: string;
+
+    error_msg_minPrice: string;
+    error_msg_maxPrice: string;
+    error_msg_respondExpirationSeconds: string;
+    error_msg_answerExpirationSeconds: string;
+    error_msg_fulfillExpirationSeconds: string;
+    error_msg_maxChatMessages: string;
+    error_msg_maxChatTimeSeconds: string;
+    error_msg_feeRate: string;
 }
 
 export default class SystemSettings extends Component<
     any,
     SystemSettingsState
 > {
+    constructor(props: any) {
+        super(props);
+        // state
+        this.state = {
+            config: null,
+            alert: false,
+            alertType: "error",
+            alertContent: "",
+            error_msg_minPrice: "",
+            error_msg_maxPrice: "",
+            error_msg_respondExpirationSeconds: "",
+            error_msg_answerExpirationSeconds: "",
+            error_msg_fulfillExpirationSeconds: "",
+            error_msg_maxChatMessages: "",
+            error_msg_maxChatTimeSeconds: "",
+            error_msg_feeRate: "",
+        };
+        this.fetchConfigInfo = this.fetchConfigInfo.bind(this);
+    }
+
+    // alert handler
+    handleAlert(
+        _alertType: "success" | "info" | "warning" | "error",
+        _alertContent: string
+    ) {
+        this.setState({
+            alert: true,
+            alertType: _alertType,
+            alertContent: _alertContent,
+        });
+    }
+    // get info of config
+    fetchConfigInfo() {
+        configService.getSystemConfig().then(
+            (response) => {
+                if (response) {
+                    this.setState({
+                        config: response,
+                    });
+                }
+            },
+            (error) => {
+                this.handleAlert("error", "网络错误");
+            }
+        );
+    }
+
+    handleSubmit() {
+        // avoid null
+        if (this.state.config === null) return;
+        let temp = this.state.config;
+        configService.modifyConfigInfo(temp).then(
+            () => {
+                // alert
+                this.handleAlert("success", "修改成功");
+                // get info again
+                this.fetchConfigInfo();
+            },
+            (error) => {
+                // show the error message
+                if (error.response.status === 403) {
+                    this.handleAlert("error", "权限不足");
+                } else if (error.response.status === 401) {
+                    this.handleAlert("error", "尚未登录");
+                } else {
+                    this.handleAlert("error", "网络错误");
+                }
+            }
+        );
+    }
+
     render() {
         return (
             <Card>
@@ -31,9 +114,7 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                // value={1
-                                //    // this.state.user?.email || ""
-                                // }
+                                value={this.state.config?.maxPrice}
                                 // onChange={
                                 // }
                                 required
@@ -48,10 +129,7 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={
-                                    1
-                                    // this.state.user?.email || ""
-                                }
+                                value={this.state.config?.maxPrice}
                                 //onChange={this.handleChangeUser}
                                 required
                                 variant="outlined"
@@ -66,8 +144,7 @@ export default class SystemSettings extends Component<
                                     readOnly: false,
                                 }}
                                 value={
-                                    1
-                                    // this.state.user?.email || ""
+                                    this.state.config?.respondExpirationSeconds
                                 }
                                 //onChange={this.handleChangeUser}
                                 required
@@ -83,8 +160,7 @@ export default class SystemSettings extends Component<
                                     readOnly: false,
                                 }}
                                 value={
-                                    1
-                                    // this.state.user?.email || ""
+                                    this.state.config?.answerExpirationSeconds
                                 }
                                 //onChange={this.handleChangeUser}
                                 required
@@ -100,8 +176,7 @@ export default class SystemSettings extends Component<
                                     readOnly: false,
                                 }}
                                 value={
-                                    1
-                                    // this.state.user?.email || ""
+                                    this.state.config?.fulfillExpirationSeconds
                                 }
                                 //onChange={this.handleChangeUser}
                                 required
@@ -116,10 +191,7 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={
-                                    1
-                                    // this.state.user?.email || ""
-                                }
+                                value={this.state.config?.maxChatMessages}
                                 //onChange={this.handleChangeUser}
                                 required
                                 variant="outlined"
@@ -133,10 +205,7 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={
-                                    1
-                                    // this.state.user?.email || ""
-                                }
+                                value={this.state.config?.maxChatTimeSeconds}
                                 //onChange={this.handleChangeUser}
                                 required
                                 variant="outlined"
@@ -150,10 +219,7 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={
-                                    1
-                                    // this.state.user?.email || ""
-                                }
+                                value={this.state.config?.feeRate}
                                 //onChange={this.handleChangeUser}
                                 required
                                 variant="outlined"

@@ -5,6 +5,7 @@ class ConfigService {
     getSystemConfig(): Promise<ConfigInfo> {
         return axios.get("/config").then((response) => response.data);
     }
+
     modifyConfigInfo(info: ConfigInfo) {
         return axios.put(`/config`, {
             minPrice: info.minPrice,
