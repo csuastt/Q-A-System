@@ -1,5 +1,7 @@
 package com.example.qa.config;
 
+import com.example.qa.exchange.EarningsResponse;
+import com.example.qa.exchange.MonthlyEarnings;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.qa.security.RestControllerAuthUtils.authLoginOrThrow;
@@ -24,6 +26,6 @@ public class SystemConfigController {
     public EarningsResponse earnings() {
         authLoginOrThrow();
         authSuperAdminOrThrow();
-        return new EarningsResponse(SystemConfig.getEarnings());
+        return new EarningsResponse(SystemConfig.getEarnings(), MonthlyEarnings.toList(SystemConfig.getEarningsMonthly()));
     }
 }

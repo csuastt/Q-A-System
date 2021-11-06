@@ -1,7 +1,6 @@
 package com.example.qa.utils;
 
 import com.example.qa.security.SecurityConstants;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -10,15 +9,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.util.HashMap;
 
+import static com.example.qa.utils.JsonUtils.mapper;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 public class MockUtils {
     private final MockMvc mockMvc;
-    public final JsonMapper mapper;
 
-    public MockUtils(MockMvc mockMvc, JsonMapper mapper) {
+    public MockUtils(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
-        this.mapper = mapper;
     }
 
     public MvcResult postUrl(String url, String token, Object request, ResultMatcher matcher) throws Exception {
@@ -44,8 +42,8 @@ public class MockUtils {
         if (request != null) {
             requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(request));
         }
-        if(params != null){
-            for(var key : params.keySet())
+        if (params != null) {
+            for (var key : params.keySet())
                 requestBuilder = requestBuilder.param(key, params.get(key));
         }
         return mockMvc.perform(requestBuilder).andExpect(matcher).andReturn();

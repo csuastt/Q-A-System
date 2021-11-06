@@ -11,7 +11,6 @@ import com.example.qa.user.exchange.UserRequest;
 import com.example.qa.user.model.Gender;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +34,8 @@ class AdminControllerTest {
 
     @BeforeAll
     // @Test
-    static void loginSuperAdmin(@Autowired MockMvc mockMvc, @Autowired JsonMapper mapper) throws Exception {
-        mockUtils = new MockUtils(mockMvc, mapper);
+    static void loginSuperAdmin(@Autowired MockMvc mockMvc) throws Exception {
+        mockUtils = new MockUtils(mockMvc);
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(SecurityConstants.SUPER_ADMIN_USERNAME);
         loginRequest.setPassword(SecurityConstants.SUPER_ADMIN_PASSWORD);

@@ -3,6 +3,8 @@ package com.example.qa.user;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
+import com.example.qa.exchange.EarningsResponse;
+import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
@@ -146,7 +148,7 @@ public class UserController {
         authLoginOrThrow();
         authUserOrAdminOrThrow(id);
         User user = getUserOrThrow(id, false);
-        return new EarningsResponse(user.getEarningsTotal(), userService.getMonthlyEarningsList(user.getEarningsMonthly()));
+        return new EarningsResponse(user.getEarningsTotal(), MonthlyEarnings.toList(user.getEarningsMonthly()));
     }
 
     private User getUserOrThrow(long id, boolean allowDeleted) {

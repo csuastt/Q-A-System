@@ -1,5 +1,8 @@
 package com.example.qa.test;
 
+import com.example.qa.exchange.EarningsResponse;
+import com.example.qa.exchange.MonthlyEarnings;
+import com.example.qa.exchange.MonthlyEarningsResponse;
 import com.example.qa.user.exchange.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

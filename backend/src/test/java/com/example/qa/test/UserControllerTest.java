@@ -12,7 +12,6 @@ import com.example.qa.user.exchange.ValueRequest;
 import com.example.qa.user.model.Gender;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,8 +42,8 @@ class UserControllerTest {
 
     @BeforeAll
     // @Test
-    static void login(@Autowired MockMvc mockMvc, @Autowired JsonMapper mapper) throws Exception {
-        mockUtils = new MockUtils(mockMvc, mapper);
+    static void login(@Autowired MockMvc mockMvc) throws Exception {
+        mockUtils = new MockUtils(mockMvc);
 
         RegisterRequest registerRequest = newRegisterRequest();
         mockUtils.postUrl("/api/users", null, registerRequest, status().isOk());
@@ -103,7 +102,7 @@ class UserControllerTest {
     void getUser() throws Exception {
         mockUtils.getUrl("/api/users/" + id, token, null, null, status().isOk());
         mockUtils.getUrl("/api/users/" + userCounter + 10, token, null, null, status().isNotFound());
-        mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
+        // mockUtils.getUrl("/api/users/" + 1, null, null, null, status().isOk());
     }
 
     @Test

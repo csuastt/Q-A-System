@@ -1,4 +1,4 @@
-package com.example.qa.user.exchange;
+package com.example.qa.exchange;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +13,8 @@ public class EarningsResponse {
     private int total;
     private MonthlyEarningsResponse[] monthly;
 
-    public EarningsResponse(int total, List<MonthlyEarnings> monthlyEarningsList) {
+    public EarningsResponse(int total, List<MonthlyEarnings> monthlyList) {
         this.total = total;
-        monthly = monthlyEarningsList.stream().map(MonthlyEarningsResponse::new).toArray(MonthlyEarningsResponse[]::new);
+        monthly = monthlyList.stream().map(MonthlyEarningsResponse::new).toArray(MonthlyEarningsResponse[]::new);
     }
 }

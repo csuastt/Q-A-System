@@ -17,7 +17,6 @@ import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,6 @@ class OrderControllerTest {
     private static final String email = "example@example.com";
     private static final String description = "Test Description";
     private static MockUtils mockUtils;
-    private static JsonMapper mapper;
     private static long askerId;
     private static long answererId;
 
@@ -50,12 +48,10 @@ class OrderControllerTest {
 
     @BeforeAll
     static void addUsers(@Autowired MockMvc mockMvc,
-                         @Autowired JsonMapper mapper,
                          @Autowired UserRepository userRepository,
                          @Autowired AdminRepository adminRepository,
                          @Autowired PasswordEncoder passwordEncoder) throws Exception {
-        mockUtils = new MockUtils(mockMvc, mapper);
-        OrderControllerTest.mapper = mapper;
+        mockUtils = new MockUtils(mockMvc);
 
         RegisterRequest registerRequest = new RegisterRequest();
 
