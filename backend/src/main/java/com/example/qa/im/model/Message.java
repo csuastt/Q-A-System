@@ -14,6 +14,7 @@ import java.time.ZonedDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Message {
     @Id

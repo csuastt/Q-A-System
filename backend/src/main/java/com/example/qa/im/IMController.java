@@ -7,6 +7,7 @@ import com.example.qa.order.model.Order;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.model.User;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -21,6 +22,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Controller
 public class IMController {
 
@@ -34,8 +36,9 @@ public class IMController {
         this.imService = imService;
     }
 
-    @MessageMapping("/im/send/{orderId}")
+    @MessageMapping("/{orderId}")
     public void sendMessage(@DestinationVariable long orderId, @Payload MessagePayload payload, Principal user) {
+        log.info("send message {} {}", orderId, payload);
         var res = checkOrderAndUser(orderId, user);
         if (payload.getMsgBody() == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST);
