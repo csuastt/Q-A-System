@@ -245,13 +245,11 @@ export default class AccountProfile extends Component<
     // redirect
     componentDidMount() {
         // init min price & max price
-        systemConfigService.getSystemConfig().then(
-            (config) => {
-                this.setState({
-                    config: config
-                });
-            }
-        )
+        systemConfigService.getSystemConfig().then((config) => {
+            this.setState({
+                config: config,
+            });
+        });
         if (this.props.isAdmin) {
             // todo use admin api to get fully info of user
             // remove this mock code
@@ -318,13 +316,15 @@ export default class AccountProfile extends Component<
         else if (e.target.name === "balance" && e.target.value > 10000)
             new_user_info["balance"] = 10000;
         else if (
-            e.target.name === "price" && this.state.config &&
+            e.target.name === "price" &&
+            this.state.config &&
             e.target.value < this.state.config.minPrice
         ) {
             // @ts-ignore
             new_user_info["price"] = this.state.minPrice;
         } else if (
-            e.target.name === "price" && this.state.config &&
+            e.target.name === "price" &&
+            this.state.config &&
             e.target.value > this.state.config.maxPrice
         ) {
             // @ts-ignore
@@ -484,21 +484,21 @@ export default class AccountProfile extends Component<
                         <></>
                     </Grid>
                 ) : (
-                        this.state.config && (
-                            <Grid item md={4} xs={8} mt={2}>
-                                <AccountBriefProfile
-                                    id={this.state.user?.id}
-                                    avatar={this.state.user?.avatar}
-                                    nickname={this.now_nickname}
-                                    username={this.state.user?.username}
-                                    role={this.state.user?.role}
-                                    alertHandler={this.handleAlert}
-                                    redirectHandler={this.handleRedirect}
-                                    config={this.state.config}
-                                    fetchUserInfo={this.fetchUserInfo}
-                                />
-                            </Grid>
-                        )
+                    this.state.config && (
+                        <Grid item md={4} xs={8} mt={2}>
+                            <AccountBriefProfile
+                                id={this.state.user?.id}
+                                avatar={this.state.user?.avatar}
+                                nickname={this.now_nickname}
+                                username={this.state.user?.username}
+                                role={this.state.user?.role}
+                                alertHandler={this.handleAlert}
+                                redirectHandler={this.handleRedirect}
+                                config={this.state.config}
+                                fetchUserInfo={this.fetchUserInfo}
+                            />
+                        </Grid>
+                    )
                 )}
                 <Grid item md={8} xs={12} mt={2}>
                     <form noValidate>
@@ -773,7 +773,8 @@ export default class AccountProfile extends Component<
                                     {this.props.isAdmin &&
                                     this.state.user &&
                                     this.state.user.role ===
-                                        UserRole.ANSWERER && this.state.config &&
+                                        UserRole.ANSWERER &&
+                                    this.state.config &&
                                     "price" in this.state.user ? (
                                         <>
                                             <Grid item md={6} xs={12}>
@@ -792,7 +793,8 @@ export default class AccountProfile extends Component<
                                                     value={
                                                         this.state.config.minPrice.toString() +
                                                         " - " +
-                                                        this.state.config.maxPrice
+                                                        this.state.config
+                                                            .maxPrice
                                                     }
                                                     variant="outlined"
                                                 />
@@ -806,9 +808,11 @@ export default class AccountProfile extends Component<
                                                     type="number"
                                                     InputProps={{
                                                         inputProps: {
-                                                            min: this.state.config
+                                                            min: this.state
+                                                                .config
                                                                 .minPrice,
-                                                            max: this.state.config
+                                                            max: this.state
+                                                                .config
                                                                 .maxPrice,
                                                         },
                                                         startAdornment: (

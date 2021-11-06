@@ -63,8 +63,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 .then(acceptOrderList);
         }
         setTimeout(() => {
-            if (!questionList)
-                setLongPending(true);
+            if (!questionList) setLongPending(true);
         }, 500);
     }, [
         currentPage,
@@ -192,10 +191,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }
     return (
         <Box>
-            {
-                (questionList) &&
-                <Stack spacing={2}>{renderQuestionList()}</Stack>
-            }
+            {questionList && <Stack spacing={2}>{renderQuestionList()}</Stack>}
         </Box>
     );
 };

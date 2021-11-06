@@ -331,14 +331,16 @@ export default class ChangePassword extends Component<
                             type="submit"
                             fullWidth
                             variant="contained"
-                            color={"error"}
+                            color={this.props.isAdmin ? "primary" : "error"}
                             sx={{ mt: 3, mb: 2 }}
                         >
                             确认修改
                         </Button>
                         <Button
                             fullWidth
-                            variant="contained"
+                            variant={
+                                this.props.isAdmin ? "outlined" : "contained"
+                            }
                             sx={{ mt: 1, mb: 2 }}
                             component={RouterLink}
                             to={this.props.redirectCancel}

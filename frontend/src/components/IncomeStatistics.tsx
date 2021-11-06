@@ -4,7 +4,7 @@ import { merge } from "lodash";
 import BaseOptionChart from "./BaseOptionChart";
 import React, { useEffect, useMemo, useState } from "react";
 import userService from "../services/userService";
-import {ConfigInfo} from "../services/definations";
+import { ConfigInfo } from "../services/definations";
 import systemConfigService from "../services/systemConfigService";
 import Typography from "@mui/material/Typography";
 
@@ -42,11 +42,9 @@ const IncomeStatistics: React.FC<{
                 setEarningsList(new_earningsList);
             });
         }
-        systemConfigService.getSystemConfig().then(
-            (config) => {
-                setConfig(config);
-            }
-        )
+        systemConfigService.getSystemConfig().then((config) => {
+            setConfig(config);
+        });
     }, [labelsList, props.userId]);
 
     const chartOptions = merge(BaseOptionChart(), {
@@ -76,7 +74,7 @@ const IncomeStatistics: React.FC<{
                     title="用户收入统计"
                     subheader="下方显示了您过去你一年的收入情况"
                 />
-                <Box sx={{ m: 2, marginBottom: 1 }}  dir="ltr">
+                <Box sx={{ m: 2, marginBottom: 1 }} dir="ltr">
                     {
                         <ReactApexChart
                             type="line"
@@ -108,9 +106,9 @@ const IncomeStatistics: React.FC<{
                     <Typography variant="body2">
                         PS：当前平台抽成率为
                         <Box component="span" fontWeight="fontWeightBold">
-                            {config?.feeRate ?
-                                config?.feeRate: ""}
-                        </Box>%。
+                            {config?.feeRate ? config?.feeRate : ""}
+                        </Box>
+                        %。
                     </Typography>
                 </Box>
             </Card>

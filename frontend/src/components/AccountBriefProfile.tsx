@@ -18,8 +18,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { validate_required } from "./Login";
 import userService from "../services/userService";
 import UserContext from "../AuthContext";
-import {ConfigInfo, UserRole} from "../services/definations";
-import {renderAnswerHelp} from "./Help";
+import { ConfigInfo, UserRole } from "../services/definations";
+import { renderAnswerHelp } from "./Help";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
@@ -133,8 +133,10 @@ export default class AccountBriefProfile extends Component<
             return false;
         }
         this.setState({ error_msg_price: "" });
-        if (value < this.props.config.minPrice) value = this.props.config.minPrice;
-        else if (value > this.props.config.maxPrice) value = this.props.config.maxPrice;
+        if (value < this.props.config.minPrice)
+            value = this.props.config.minPrice;
+        else if (value > this.props.config.maxPrice)
+            value = this.props.config.maxPrice;
         this.setState({
             price: value,
         });
@@ -342,8 +344,7 @@ export default class AccountBriefProfile extends Component<
                             <Box component="span" fontWeight="fontWeightBold">
                                 回答者须知
                             </Box>
-                            。
-                            您随后可以于侧栏的“平台须知”再次查看该内容
+                            。 您随后可以于侧栏的“平台须知”再次查看该内容
                         </DialogContentText>
                         {renderAnswerHelp(this.props.config)}
                     </DialogContent>
@@ -354,9 +355,14 @@ export default class AccountBriefProfile extends Component<
                         >
                             再考虑一下
                         </Button>
-                        <Button onClick={() => {this.handleCloseTipsDialog();
-                            this.handleOpenApplyDialog();
-                        }}>阅读完了</Button>
+                        <Button
+                            onClick={() => {
+                                this.handleCloseTipsDialog();
+                                this.handleOpenApplyDialog();
+                            }}
+                        >
+                            阅读完了
+                        </Button>
                     </DialogActions>
                 </Dialog>
                 <Dialog

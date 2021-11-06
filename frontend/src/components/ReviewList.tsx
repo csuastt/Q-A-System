@@ -42,8 +42,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
             .getOrderListByAdmin(OrderState.CREATED, currentPage, itemPrePage)
             .then(acceptOrderList);
         setTimeout(() => {
-            if (!orderList)
-                setLongPending(true);
+            if (!orderList) setLongPending(true);
         }, 500);
     }, [currentPage, itemPrePage]);
 
@@ -191,12 +190,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         );
     }
     return (
-        <Box>
-            {
-                (orderList) &&
-                <Stack spacing={2}>{renderOrderList()}</Stack>
-            }
-        </Box>
+        <Box>{orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}</Box>
     );
 };
 

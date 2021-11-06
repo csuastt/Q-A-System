@@ -69,11 +69,14 @@ const AnswererCard: React.FC<{
         <>
             <Card sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
                 <CardActionWrapper>
-                    <CardContent sx={
-                        (typeof props.briefMsg === "undefined" ||
-                            !props.briefMsg) ?
-                        { paddingBottom: 0 } : { paddingBottom: 2 }
-                    }>
+                    <CardContent
+                        sx={
+                            typeof props.briefMsg === "undefined" ||
+                            !props.briefMsg
+                                ? { paddingBottom: 0 }
+                                : { paddingBottom: 2 }
+                        }
+                    >
                         <Box
                             sx={{
                                 alignItems: "center",
@@ -163,20 +166,19 @@ const AnswererCard: React.FC<{
                         </Box>
                     </CardContent>
                 </CardActionWrapper>
-                {(typeof props.briefMsg === "undefined" ||
-                    !props.briefMsg) && (
+                {(typeof props.briefMsg === "undefined" || !props.briefMsg) && (
                     <CardActions
                         style={{ justifyContent: "center" }}
                         sx={{ paddingBottom: 2 }}
                     >
-                            <Button
-                                color="primary"
-                                size="large"
-                                variant="outlined"
-                                onClick={handleOpenDialog}
-                            >
-                                详细信息
-                            </Button>
+                        <Button
+                            color="primary"
+                            size="large"
+                            variant="outlined"
+                            onClick={handleOpenDialog}
+                        >
+                            详细信息
+                        </Button>
                         {props.nextUrl && (
                             <Button
                                 color="primary"
@@ -189,7 +191,8 @@ const AnswererCard: React.FC<{
                                 向TA提问
                             </Button>
                         )}
-                    </CardActions> )}
+                    </CardActions>
+                )}
             </Card>
             <AnswererDetailDialog
                 open={dialogOpen}

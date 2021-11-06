@@ -1,6 +1,6 @@
 import { Box, Card, CardHeader } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {ConfigInfo} from "../services/definations";
+import { ConfigInfo } from "../services/definations";
 import systemConfigService from "../services/systemConfigService";
 import Typography from "@mui/material/Typography";
 import ListItem from "@mui/material/ListItem";
@@ -14,13 +14,11 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                 <Typography variant="body1">
                     1、平台要求：回答定价最高不能超过
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.maxPrice ?
-                            config?.maxPrice: ""}
+                        {config?.maxPrice ? config?.maxPrice : ""}
                     </Box>
                     ￥/次， 最低不能低于
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.minPrice ?
-                            config?.minPrice: ""}
+                        {config?.minPrice ? config?.minPrice : ""}
                     </Box>
                     ￥/次。
                 </Typography>
@@ -29,8 +27,9 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                 <Typography variant="body1">
                     2、在平台给您发送订单后。您需要在
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.respondExpirationSeconds ?
-                            config?.respondExpirationSeconds / 3600 / 24 : ""}
+                        {config?.respondExpirationSeconds
+                            ? config?.respondExpirationSeconds / 3600 / 24
+                            : ""}
                     </Box>
                     天内接单。超时视为放弃订单。消息中心会随时提醒您剩余时长。
                 </Typography>
@@ -39,8 +38,9 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                 <Typography variant="body1">
                     3、在您接单后。您需要在
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.answerExpirationSeconds ?
-                            config?.answerExpirationSeconds / 3600 / 24 : ""}
+                        {config?.answerExpirationSeconds
+                            ? config?.answerExpirationSeconds / 3600 / 24
+                            : ""}
                     </Box>
                     天内进行首次回答。超时视为放弃订单。消息中心会随时提醒您剩余时长。
                 </Typography>
@@ -49,13 +49,15 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                 <Typography variant="body1">
                     4、单次提问交流的最大聊天消息条数为
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.maxChatMessages ?
-                            config?.maxChatMessages: ""}
-                    </Box>条，最长聊天时间为
+                        {config?.maxChatMessages ? config?.maxChatMessages : ""}
+                    </Box>
+                    条，最长聊天时间为
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.maxChatTimeSeconds ?
-                            config?.maxChatTimeSeconds / 3600 : ""}
-                    </Box>小时。
+                        {config?.maxChatTimeSeconds
+                            ? config?.maxChatTimeSeconds / 3600
+                            : ""}
+                    </Box>
+                    小时。
                 </Typography>
             </ListItem>
             <ListItem>
@@ -72,14 +74,15 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                 <Typography variant="body1">
                     7、在结束订单后。平台将在
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.fulfillExpirationSeconds ?
-                            config?.fulfillExpirationSeconds / 3600 / 24 : ""}
+                        {config?.fulfillExpirationSeconds
+                            ? config?.fulfillExpirationSeconds / 3600 / 24
+                            : ""}
                     </Box>
                     天内进行进行分成。当前平台抽成率为
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.feeRate ?
-                            config?.feeRate: ""}
-                    </Box>%。
+                        {config?.feeRate ? config?.feeRate : ""}
+                    </Box>
+                    %。
                 </Typography>
             </ListItem>
             <ListItem>
@@ -89,17 +92,15 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
             </ListItem>
         </List>
     );
-}
+};
 
 const Help: React.FC<{}> = (props) => {
     const [config, setConfig] = useState<ConfigInfo>();
 
     useEffect(() => {
-        systemConfigService.getSystemConfig().then(
-            (config) => {
-                setConfig(config);
-            }
-        )
+        systemConfigService.getSystemConfig().then((config) => {
+            setConfig(config);
+        });
     }, []);
 
     return (
@@ -130,14 +131,24 @@ const Help: React.FC<{}> = (props) => {
                         <ListItem>
                             <Typography variant="body1">
                                 4、单次提问交流的最大聊天消息条数为
-                                <Box component="span" fontWeight="fontWeightBold">
-                                    {config?.maxChatMessages ?
-                                        config?.maxChatMessages: ""}
-                                </Box>条，最长聊天时间为
-                                <Box component="span" fontWeight="fontWeightBold">
-                                    {config?.maxChatTimeSeconds ?
-                                        config?.maxChatTimeSeconds / 3600 : ""}
-                                </Box>小时。
+                                <Box
+                                    component="span"
+                                    fontWeight="fontWeightBold"
+                                >
+                                    {config?.maxChatMessages
+                                        ? config?.maxChatMessages
+                                        : ""}
+                                </Box>
+                                条，最长聊天时间为
+                                <Box
+                                    component="span"
+                                    fontWeight="fontWeightBold"
+                                >
+                                    {config?.maxChatTimeSeconds
+                                        ? config?.maxChatTimeSeconds / 3600
+                                        : ""}
+                                </Box>
+                                小时。
                             </Typography>
                         </ListItem>
                         <ListItem>
@@ -156,7 +167,7 @@ const Help: React.FC<{}> = (props) => {
                             </Typography>
                         </ListItem>
                     </List>
-                        <Divider sx={{ mt: 1,mb: 1 }}>回答者须知</Divider>
+                    <Divider sx={{ mt: 1, mb: 1 }}>回答者须知</Divider>
                     {renderAnswerHelp(config)}
                 </Box>
             </Card>

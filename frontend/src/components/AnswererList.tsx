@@ -38,8 +38,7 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
             });
 
         setTimeout(() => {
-            if (!answerList)
-                setLongPending(true);
+            if (!answerList) setLongPending(true);
         }, 500);
     }, [currentPage, itemPrePage, props.userRole]);
 
@@ -67,34 +66,33 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
     }
     return (
         <Box sx={{ pt: 3 }} mt={1}>
-            {
-                (answerList) &&
-            <Grid container spacing={3} marginBottom={3}>
-                {answerList.map((user: UserBasicInfo, index: number) => (
-                    <Grid
-                        item
-                        key={index}
-                        lg={4}
-                        md={6}
-                        xs={12}
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            flex: 1,
-                        }}
-                    >
-                        <AnswererCard
-                            userInfo={user}
-                            nextUrl={
-                                props.selectModel
-                                    ? `/order/create/${user.id}`
-                                    : undefined
-                            }
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-            }
+            {answerList && (
+                <Grid container spacing={3} marginBottom={3}>
+                    {answerList.map((user: UserBasicInfo, index: number) => (
+                        <Grid
+                            item
+                            key={index}
+                            lg={4}
+                            md={6}
+                            xs={12}
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                flex: 1,
+                            }}
+                        >
+                            <AnswererCard
+                                userInfo={user}
+                                nextUrl={
+                                    props.selectModel
+                                        ? `/order/create/${user.id}`
+                                        : undefined
+                                }
+                            />
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
             {maxPage > 1 && (
                 <Pagination
                     currentPage={currentPage}
