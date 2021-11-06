@@ -44,6 +44,7 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import { ManagerRole, UserRole } from "../services/definations";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -293,6 +294,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["用户列表", "/admins/users", GroupIcon],
                           ["回答者列表", "/admins/answerers", SchoolIcon],
                           ["订单列表", "/admins/orders", LibraryBooksIcon],
+                          ["管理员列表", "/admins/managers", HowToRegIcon],
                       ])
                     : renderDrawerList(drawerList3())}
                 <Divider />

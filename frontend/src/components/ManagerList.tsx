@@ -44,7 +44,6 @@ const ManagerList: React.FC<{ selectModel?: boolean }> = (props) => {
             <CardContent>
                 <Box sx={{ display: "flex", flexDirection: "column" }}>
                     <Skeleton variant="text" height={30} width={120} />
-                    <Skeleton variant="rectangular" height={100} />
                     <Box sx={{ display: "flex", flexDirection: "row", mt: 1 }}>
                         <Skeleton variant="circular" height={30} width={30} />
                         <Skeleton
@@ -76,7 +75,7 @@ const ManagerList: React.FC<{ selectModel?: boolean }> = (props) => {
     if (totalCount === 0) {
         return (
             <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
-                用户数量为0
+                管理员数量为0
             </Typography>
         );
     }
@@ -96,20 +95,6 @@ const ManagerList: React.FC<{ selectModel?: boolean }> = (props) => {
                                     flexDirection: "column",
                                 }}
                             >
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                    }}
-                                >
-                                    <Typography
-                                        variant="h6"
-                                        noWrap
-                                        style={{ fontWeight: 600 }}
-                                    >
-                                        {manager.username}
-                                    </Typography>
-                                </Box>
                                 <Box
                                     sx={{
                                         display: "flex",
