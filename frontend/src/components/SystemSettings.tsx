@@ -46,6 +46,7 @@ export default class SystemSettings extends Component<
             error_msg_feeRate: "",
         };
         this.fetchConfigInfo = this.fetchConfigInfo.bind(this);
+        this.fetchConfigInfo();
     }
 
     // alert handler
@@ -74,7 +75,36 @@ export default class SystemSettings extends Component<
             }
         );
     }
-
+    handleChangeConfig(e: any) {
+        if (this.state.config === null) return;
+        const new_config = { ...this.state.config };
+        if (e.target.name === "minPrice" && e.target.value >= 0)
+            new_config["minPrice"] = e.target.value;
+        else if (e.target.name === "maxPrice" && e.target.value >= 0)
+            new_config["maxPrice"] = e.target.value;
+        else if (
+            e.target.name === "respondExpirationSeconds" &&
+            e.target.value >= 0
+        )
+            new_config["respondExpirationSeconds"] = e.target.value;
+        else if (
+            e.target.name === "answerExpirationSeconds" &&
+            e.target.value >= 0
+        )
+            new_config["answerExpirationSeconds"] = e.target.value;
+        else if (
+            e.target.name === "fulfillExpirationSeconds" &&
+            e.target.value >= 0
+        )
+            new_config["fulfillExpirationSeconds"] = e.target.value;
+        else if (e.target.name === "maxChatMessages" && e.target.value >= 0)
+            new_config["maxChatMessages"] = e.target.value;
+        else if (e.target.name === "maxChatTimeSeconds" && e.target.value >= 0)
+            new_config["maxChatTimeSeconds"] = e.target.value;
+        else if (e.target.name === "feeRate" && e.target.value >= 0)
+            new_config["feeRate"] = e.target.value;
+        this.setState({ config: new_config });
+    }
     handleSubmit() {
         // avoid null
         if (this.state.config === null) return;
@@ -114,9 +144,8 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={this.state.config?.maxPrice}
-                                // onChange={
-                                // }
+                                value={this.state.config?.minPrice || ""}
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
@@ -129,8 +158,8 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={this.state.config?.maxPrice}
-                                //onChange={this.handleChangeUser}
+                                value={this.state.config?.maxPrice || ""}
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
@@ -144,9 +173,10 @@ export default class SystemSettings extends Component<
                                     readOnly: false,
                                 }}
                                 value={
-                                    this.state.config?.respondExpirationSeconds
+                                    this.state.config
+                                        ?.respondExpirationSeconds || ""
                                 }
-                                //onChange={this.handleChangeUser}
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
@@ -160,9 +190,10 @@ export default class SystemSettings extends Component<
                                     readOnly: false,
                                 }}
                                 value={
-                                    this.state.config?.answerExpirationSeconds
+                                    this.state.config
+                                        ?.answerExpirationSeconds || ""
                                 }
-                                //onChange={this.handleChangeUser}
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
@@ -176,9 +207,10 @@ export default class SystemSettings extends Component<
                                     readOnly: false,
                                 }}
                                 value={
-                                    this.state.config?.fulfillExpirationSeconds
+                                    this.state.config
+                                        ?.fulfillExpirationSeconds || ""
                                 }
-                                //onChange={this.handleChangeUser}
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
@@ -191,8 +223,8 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={this.state.config?.maxChatMessages}
-                                //onChange={this.handleChangeUser}
+                                value={this.state.config?.maxChatMessages || ""}
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
@@ -205,8 +237,10 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={this.state.config?.maxChatTimeSeconds}
-                                //onChange={this.handleChangeUser}
+                                value={
+                                    this.state.config?.maxChatTimeSeconds || ""
+                                }
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
@@ -219,8 +253,8 @@ export default class SystemSettings extends Component<
                                 InputProps={{
                                     readOnly: false,
                                 }}
-                                value={this.state.config?.feeRate}
-                                //onChange={this.handleChangeUser}
+                                value={this.state.config?.feeRate || ""}
+                                onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"
                             />
