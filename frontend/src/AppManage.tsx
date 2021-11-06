@@ -18,6 +18,7 @@ import UserList from "./components/UserList";
 import ManagerList from "./components/ManagerList";
 import PathParamParser from "./PathParamParser";
 import OrderDetailForAdmin from "./components/OrderDetailForAdmin";
+import SystemSettings from "./components/SystemSettings";
 
 const managerTheme: Theme = createTheme({
     palette: {
@@ -67,6 +68,7 @@ export default function AppManage() {
         ["/admins/login", <Login redirect={"/admins/"} isAdmin={true} />],
         ["/admins/logout", <Logout redirect={"/admins/"} isAdmin={true} />],
         ["/admins/create", <Create />],
+        ["/admins/settings", <SystemSettings />],
         [
             "/admins/change_password",
             <ChangePassword
