@@ -47,7 +47,6 @@ interface CreateState {
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
-    readPolicy: boolean;
     redirect: string | null;
     dialogOpen: boolean;
 }
@@ -67,7 +66,6 @@ export default class ManageCreate extends Component<any, CreateState> {
             alert: false,
             alertContent: "",
             alertType: "error",
-            readPolicy: false,
             redirect: null,
             dialogOpen: false,
         };
