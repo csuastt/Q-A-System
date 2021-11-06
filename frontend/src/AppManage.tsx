@@ -52,8 +52,6 @@ export default function AppManage() {
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
         ["/admins/users", <UserList userRole={UserRole.USER} />],
         ["/admins/managers", <ManagerList />],
-        ["/admins/orders", <AdminOrderList />],
-
         [
             "/admins/orders/:orderId",
             <PathParamParser
@@ -61,6 +59,9 @@ export default function AppManage() {
                 C={OrderDetailForAdmin}
             />,
         ],
+
+        ["/admins/orders", <AdminOrderList />],
+
         ["/admins/review", <ReviewList />],
 
         ["/admins/login", <Login redirect={"/admins/"} isAdmin={true} />],

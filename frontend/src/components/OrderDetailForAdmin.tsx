@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { OrderInfo, OrderState } from "../services/definations";
 import orderService from "../services/orderService";
-import { Redirect } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
@@ -12,52 +11,63 @@ import Markdown from "./Markdown";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
-import AuthContext from "../AuthContext";
 
 const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
-    const { manager } = useContext(AuthContext);
-
-    const [needReload, setNeedReload] = useState(true);
 
     const [orderInfo, setOrderInfo] = useState<OrderInfo>();
-    const [needLogin, setNeedLogin] = useState(manager == null);
-    const [noPermission, setNoPermission] = useState(false);
-
-    const [answering, setAnswering] = useState(false);
-
-    const [answer, setAnswer] = useState<string>("");
 
     useEffect(() => {
-        if (!needReload) {
-            return;
-        }
         orderService
             .getOrderInfo(props.orderId)
             .then((order) => {
                 setOrderInfo(order);
             })
-            .catch((err) => {
-                if (err.response.status === 401) {
-                    setNeedLogin(true);
-                } else if (err.response.status === 403) {
-                    setNoPermission(true);
-                }
-            })
-            .finally(() => setNeedReload(false));
-    }, [needReload, props.orderId]);
+    }, [ props.orderId]);
 
-    // Answerering helper functions
-    const handleAnswerChange = (newValue: string) => {
-        setAnswer(newValue);
-    };
 
-    const respondOrder = (ok: boolean) => {
-        setOrderInfo(undefined);
-        orderService
-            .respondOrder(orderInfo!.id, ok)
-            .then(() => setNeedReload(true));
-    };
 
+    if (orderInfo == null) {
+        // Loading order info
+        return (
+            <Stack spacing={2}>
+                <Card>
+                    <CardHeader
+                        avatar={
+                            <Skeleton
+                                animation="wave"
+                                variant="circular"
+                                width={40}
+                                height={40}
+                            />
+                        }
+                        title={
+                            <Skeleton
+                                animation="wave"
+                                height={10}
+                                width="80%"
+                                style={{ marginBottom: 6 }}
+                            />
+                        }
+                        subheader={"Loading..."}
+                    />
+                    <CardContent>
+                        <React.Fragment>
+                            <Skeleton
+                                animation="wave"
+                                height={10}
+                                style={{ marginBottom: 6 }}
+                            />
+                            <Skeleton
+                                animation="wave"
+                                height={10}
+                                width="80%"
+                            />
+                        </React.Fragment>
+                    </CardContent>
+                </Card>
+            </Stack>
+        );
+    }
 
     return (
         <Stack spacing={2} mt={4}>
@@ -113,12 +123,6 @@ const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
                     subheader="回答者"
                 />
                 <CardContent>
-                    {answering ? (
-                        <Markdown
-                            value={answer}
-                            onChange={handleAnswerChange}
-                        />
-                    ) : (
                         <Markdown
                             value={
                                 orderInfo.state === OrderState.ANSWERED
@@ -127,7 +131,7 @@ const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
                             }
                             viewOnly
                         />
-                    )}
+
                 </CardContent>
             </Card>
         </Stack>
