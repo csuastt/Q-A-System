@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,8 +63,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Page<User> listByRole(UserRole role, Pageable pageable) {
-        return role == null ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
+    public Page<User> listByRole(Collection<UserRole> role, Pageable pageable) {
+        return role == null ? userRepository.findAll(pageable) : userRepository.findAllByRoleIn(role, pageable);
     }
 
     public User refund(User user, int value) {

@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -112,6 +113,7 @@ public class OrderController {
             order.setState(OrderState.REJECTED_BY_REVIEWER);
             userService.refund(order);
         }
+        order.setReviewed(true);
         orderService.save(order);
     }
 
@@ -188,22 +190,29 @@ public class OrderController {
             @RequestParam(required = false) Long asker,
             @RequestParam(required = false) Long answerer,
             @RequestParam(required = false) Boolean finished,
-            @RequestParam(required = false) OrderState state,
+            @RequestParam(required = false) Boolean reviewed,
+            @RequestParam(required = false) List<OrderState> state,
             @RequestParam(defaultValue = "20") int pageSize,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Sort.Direction sortDirection
     ) {
         authLoginOrThrow();
+        boolean isAdmin = authIsAdmin();
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ORDER_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1);
+        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
+                .withSort(Sort.by(Objects.requireNonNullElse(sortDirection, isAdmin ? Sort.Direction.ASC : Sort.Direction.DESC), "createTime"));
+        orderService.setPageRequest(pageRequest);
         Page<Order> result;
-        if (authIsAdmin()) {
-            orderService.setPageRequest(pageRequest);
-            // state == null 时列出所有订单，包含已删除
-            result = orderService.listByState(state);
+        if (isAdmin) {
+            if (Boolean.TRUE.equals(reviewed)) {
+                result = orderService.listByReviewed();
+            } else {
+                // state == null 时列出所有订单，包含已删除
+                result = orderService.listByState(state);
+            }
         } else {
-            orderService.setPageRequest(pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createTime")));
             if (asker != null && authIsUser(asker)) {
                 // finished == null 时列出所有该用户的订单
                 result = orderService.listByAsker(userService.getById(asker), finished);

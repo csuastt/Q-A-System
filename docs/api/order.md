@@ -150,10 +150,11 @@ GET /api/orders
 
 公共参数：
 
-| 名称     | 类型 | 说明                                       |
-| -------- | ---- | ------------------------------------------ |
-| pageSize | int  | 单页最大订单数，可选，默认为 20，最大为 50 |
-| page     | int  | 页数（从 1 开始），可选，默认为 1          |
+| 名称          | 类型 | 说明                                       |
+| ------------- | ---- | ------------------------------------------ |
+| pageSize      | int  | 单页最大订单数，可选，默认为 20，最大为 50 |
+| page          | int  | 页数（从 1 开始），可选，默认为 1          |
+| sortDirection | enum | { ASC, DESC } 默认用户 DESC，管理员 ASC    |
 
 参数：（用户）（时间降序）
 
@@ -179,7 +180,9 @@ GET /api/orders
 
 ```
 (无参数)
-?state={ORDER_STATE}
+?state=CREATED  => 获取待审核订单
+?state=CREATED&state=CANCELLED  => 筛选多个状态
+?reviewed={true,yes,1}&sortDirection=DESC  => 获取已审核订单（reviewed 不可设为 false）
 ```
 
 返回值：
