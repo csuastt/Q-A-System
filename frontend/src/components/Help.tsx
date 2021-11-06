@@ -1,5 +1,5 @@
 import { Box, Card, CardHeader } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {ConfigInfo} from "../services/definations";
 import systemConfigService from "../services/systemConfigService";
 import Typography from "@mui/material/Typography";
@@ -110,7 +110,7 @@ const Help: React.FC<{}> = (props) => {
                     subheader="下方显示了目前的平台有关规定"
                 />
                 <Box ml={1} mb={3}>
-                    <Divider sx={{ mb: 1 }}>用户须知</Divider>
+                    <Divider sx={{ mb: 1 }}>提问者须知</Divider>
                     <List dense={true}>
                         <ListItem>
                             <Typography variant="body1">

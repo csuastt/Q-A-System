@@ -3,6 +3,7 @@ import { Link as RouterLink, Redirect } from "react-router-dom";
 import userService from "../services/userService";
 import AccountBriefProfile from "./AccountBriefProfile";
 import {
+    ConfigInfo,
     UserFullyInfo,
     UserGender,
     UserInfo,
@@ -42,8 +43,7 @@ interface ProfileState {
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
-    minPrice: number;
-    maxPrice: number;
+    config: ConfigInfo | null;
     error_msg_username: string;
     error_msg_password: string;
     error_msg_email: string;
@@ -90,8 +90,7 @@ export default class AccountProfile extends Component<
             alert: false,
             alertContent: "",
             alertType: "error",
-            minPrice: 0,
-            maxPrice: 100,
+            config: null,
             error_msg_username: "",
             error_msg_password: "",
             error_msg_money: "",
@@ -249,8 +248,7 @@ export default class AccountProfile extends Component<
         systemConfigService.getSystemConfig().then(
             (config) => {
                 this.setState({
-                    minPrice: config.minPrice,
-                    maxPrice: config.maxPrice
+                    config: config
                 });
             }
         )
@@ -320,14 +318,14 @@ export default class AccountProfile extends Component<
         else if (e.target.name === "balance" && e.target.value > 10000)
             new_user_info["balance"] = 10000;
         else if (
-            e.target.name === "price" &&
-            e.target.value < this.state.minPrice
+            e.target.name === "price" && this.state.config &&
+            e.target.value < this.state.config.minPrice
         ) {
             // @ts-ignore
             new_user_info["price"] = this.state.minPrice;
         } else if (
-            e.target.name === "price" &&
-            e.target.value > this.state.maxPrice
+            e.target.name === "price" && this.state.config &&
+            e.target.value > this.state.config.maxPrice
         ) {
             // @ts-ignore
             new_user_info["price"] = this.state.maxPrice;
@@ -486,20 +484,21 @@ export default class AccountProfile extends Component<
                         <></>
                     </Grid>
                 ) : (
-                    <Grid item md={4} xs={8} mt={2}>
-                        <AccountBriefProfile
-                            id={this.state.user?.id}
-                            avatar={this.state.user?.avatar}
-                            nickname={this.now_nickname}
-                            username={this.state.user?.username}
-                            role={this.state.user?.role}
-                            alertHandler={this.handleAlert}
-                            redirectHandler={this.handleRedirect}
-                            minPrice={this.state.minPrice}
-                            maxPrice={this.state.maxPrice}
-                            fetchUserInfo={this.fetchUserInfo}
-                        />
-                    </Grid>
+                        this.state.config && (
+                            <Grid item md={4} xs={8} mt={2}>
+                                <AccountBriefProfile
+                                    id={this.state.user?.id}
+                                    avatar={this.state.user?.avatar}
+                                    nickname={this.now_nickname}
+                                    username={this.state.user?.username}
+                                    role={this.state.user?.role}
+                                    alertHandler={this.handleAlert}
+                                    redirectHandler={this.handleRedirect}
+                                    config={this.state.config}
+                                    fetchUserInfo={this.fetchUserInfo}
+                                />
+                            </Grid>
+                        )
                 )}
                 <Grid item md={8} xs={12} mt={2}>
                     <form noValidate>
@@ -774,7 +773,7 @@ export default class AccountProfile extends Component<
                                     {this.props.isAdmin &&
                                     this.state.user &&
                                     this.state.user.role ===
-                                        UserRole.ANSWERER &&
+                                        UserRole.ANSWERER && this.state.config &&
                                     "price" in this.state.user ? (
                                         <>
                                             <Grid item md={6} xs={12}>
@@ -791,9 +790,9 @@ export default class AccountProfile extends Component<
                                                         ),
                                                     }}
                                                     value={
-                                                        this.state.minPrice.toString() +
+                                                        this.state.config.minPrice.toString() +
                                                         " - " +
-                                                        this.state.maxPrice
+                                                        this.state.config.maxPrice
                                                     }
                                                     variant="outlined"
                                                 />
@@ -807,9 +806,9 @@ export default class AccountProfile extends Component<
                                                     type="number"
                                                     InputProps={{
                                                         inputProps: {
-                                                            min: this.state
+                                                            min: this.state.config
                                                                 .minPrice,
-                                                            max: this.state
+                                                            max: this.state.config
                                                                 .maxPrice,
                                                         },
                                                         startAdornment: (
