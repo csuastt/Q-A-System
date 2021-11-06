@@ -33,6 +33,7 @@ public class User {
     private Gender gender = Gender.UNKNOWN;
 
     private int price = 0;
+    @Lob
     private String description = "";
 
     private ZonedDateTime createTime;
@@ -42,6 +43,7 @@ public class User {
     private int balance = 100;
 
     private int earningsTotal = 0;
+    @Lob
     private String earningsMonthly = "[]";
 
     public User(RegisterRequest registerRequest) {

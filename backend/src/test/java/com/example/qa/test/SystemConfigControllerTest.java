@@ -7,7 +7,6 @@ import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.utils.MockUtils;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,9 @@ class SystemConfigControllerTest {
 
     @BeforeAll
     // @Test
-    static void loginSuperAdmin(@Autowired MockMvc mockMvc, @Autowired JsonMapper mapper) throws Exception {
+    static void loginSuperAdmin(@Autowired MockMvc mockMvc) throws Exception {
         //Test for super Admin
-        mockUtils = new MockUtils(mockMvc, mapper);
+        mockUtils = new MockUtils(mockMvc);
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(SecurityConstants.SUPER_ADMIN_USERNAME);
         loginRequest.setPassword(SecurityConstants.SUPER_ADMIN_PASSWORD);
@@ -44,7 +43,7 @@ class SystemConfigControllerTest {
         // Test for admin
         AdminRequest request = new AdminRequest();
         request.setUsername("testAdmin" + adminCounter);
-        PasswordResponse response = mockUtils.mapper.readValue(mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk()).getResponse().getContentAsString(), PasswordResponse.class);
+        PasswordResponse response = mockUtils.postAndDeserialize("/api/admins", superAdminToken, request, status().isOk(), PasswordResponse.class);
         LoginRequest logRequest = new LoginRequest();
         logRequest.setUsername("testAdmin" + adminCounter);
         logRequest.setPassword(response.getPassword());
@@ -76,9 +75,9 @@ class SystemConfigControllerTest {
         configurable.setMaxChatMessages(maxChatMessages);
         configurable.setMaxChatTimeSeconds(maxChatTimeSeconds);
         configurable.setFeeRate(feeRate);
-        mockUtils.putUrl("/api/config",superAdminToken, configurable,status().isOk());
-        mockUtils.putUrl("/api/config",adminToken, configurable,status().isForbidden());
-        mockUtils.putUrl("/api/config",null, configurable,status().isUnauthorized());
+        mockUtils.putUrl("/api/config", superAdminToken, configurable, status().isOk());
+        mockUtils.putUrl("/api/config", adminToken, configurable, status().isForbidden());
+        mockUtils.putUrl("/api/config", null, configurable, status().isUnauthorized());
     }
 
     @Test

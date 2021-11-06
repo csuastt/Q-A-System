@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -35,12 +36,8 @@ public class AdminService {
         adminRepository.save(admin);
     }
 
-    public Page<Admin> listAll(Pageable pageable) {
-        return adminRepository.findAll(pageable);
-    }
-
-    public Page<Admin> listByRole(AdminRole role, Pageable pageable) {
-        return adminRepository.findAllByRole(role, pageable);
+    public Page<Admin> listByRole(Collection<AdminRole> role, Pageable pageable) {
+        return adminRepository.findAllByRoleIn(role, pageable);
     }
 
     public Admin getById(long id, boolean allowDeleted) {

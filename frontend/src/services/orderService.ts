@@ -42,6 +42,19 @@ class OrderService {
             })
             .then((response) => response.data);
     }
+    getAllOrderListByAdmin(
+        page: number,
+        pageSize: number
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    page: page,
+                    pageSize: pageSize,
+                },
+            })
+            .then((response) => response.data);
+    }
 
     createQuestion(
         asker: number,

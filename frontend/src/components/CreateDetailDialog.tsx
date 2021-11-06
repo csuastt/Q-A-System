@@ -12,9 +12,10 @@ import Button from "@mui/material/Button";
 import { Link as RouterLink } from "react-router-dom";
 import { Stack } from "@mui/material";
 import copy from "copy-to-clipboard";
+import { ManagerRole } from "../services/definations";
 
 const AnswererDetailDialog: React.FC<
-    DialogProps & { username: String; password: string }
+    DialogProps & { username: String; password: string; role: ManagerRole }
 > = (props) => {
     const { username, password } = props;
 
@@ -23,15 +24,28 @@ const AnswererDetailDialog: React.FC<
             <DialogTitle>新建管理员信息</DialogTitle>
             <DialogContent>
                 <Card elevation={0}>
-                    <CardHeader
-                        avatar={
-                            <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-                                <AccountCircleIcon />
-                            </Avatar>
-                        }
-                        title={username}
-                        subheader={"管理员"}
-                    />
+                    {props.role === ManagerRole.ADMIN ? (
+                        <CardHeader
+                            avatar={
+                                <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+                                    <AccountCircleIcon />
+                                </Avatar>
+                            }
+                            title={username}
+                            subheader={"管理员"}
+                        />
+                    ) : (
+                        <CardHeader
+                            avatar={
+                                <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+                                    <AccountCircleIcon />
+                                </Avatar>
+                            }
+                            title={username}
+                            subheader={"审核员"}
+                        />
+                    )}
+
                     <CardContent>
                         <TextField
                             label="初始密码"

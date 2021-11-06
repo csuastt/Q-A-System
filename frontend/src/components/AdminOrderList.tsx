@@ -12,9 +12,10 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
+import OrderStateChip from "./OrderStateChip";
 
 interface AdminOrderListProps {
-    orderState: OrderState;
+    orderState?: OrderState;
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
@@ -39,9 +40,15 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     };
 
     useEffect(() => {
-        orderService
-            .getOrderListByAdmin(props.orderState, currentPage, itemPrePage)
-            .then(acceptOrderList);
+        props.orderState
+            ? orderService.getOrderListByAdmin(
+                  props.orderState,
+                  currentPage,
+                  itemPrePage
+              )
+            : orderService
+                  .getAllOrderListByAdmin(currentPage, itemPrePage)
+                  .then(acceptOrderList);
         setTimeout(() => {
             if (!orderList) setLongPending(true);
         }, 500);
@@ -99,7 +106,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                                         {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
-                                    {/*<OrderStateChip state={order.state} />*/}
+                                    <OrderStateChip state={order.state} />
                                 </Box>
                                 <Box
                                     sx={{

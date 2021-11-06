@@ -6,7 +6,6 @@ import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.Configurable;
-import com.example.qa.config.EarningsResponse;
 import com.example.qa.errorhandling.ApiError;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.model.User;
@@ -132,13 +131,5 @@ class AdminBeanTest {
         assertEquals(maxChatMessages, configurable.getMaxChatMessages());
         assertEquals(maxChatTimeSeconds, configurable.getMaxChatTimeSeconds());
         assertEquals(feeRate, configurable.getFeeRate());
-
-        //Test for EarningsResponse
-        int earn = 1;
-        EarningsResponse response1 = new EarningsResponse(earn);
-        assertEquals(earn, response1.getEarnings());
-        earn = 2;
-        response1.setEarnings(earn);
-        assertEquals(earn, response1.getEarnings());
     }
 }

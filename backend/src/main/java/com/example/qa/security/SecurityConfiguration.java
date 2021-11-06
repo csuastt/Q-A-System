@@ -1,7 +1,5 @@
 package com.example.qa.security;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -52,10 +50,5 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .allowCredentials(true);
             }
         };
-    }
-
-    @Bean
-    public JsonMapper jsonMapper() {
-        return JsonMapper.builder().addModule(new JavaTimeModule()).build();
     }
 }

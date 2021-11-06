@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { OrderInfo, OrderState } from "../services/definations";
 import orderService from "../services/orderService";
-import UserContext from "../AuthContext";
+import AuthContext from "../AuthContext";
 import { Redirect } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -23,7 +23,7 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
-    const { user } = useContext(UserContext);
+    const { user } = useContext(AuthContext);
 
     const [needReload, setNeedReload] = useState(true);
 

@@ -8,12 +8,16 @@ import AnswererList from "./components/AnswererList";
 import Logout from "./components/Logout";
 import React, { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
-import { ManagerInfo, OrderState, UserRole } from "./services/definations";
+import { ManagerInfo, UserRole } from "./services/definations";
 import adminAuthService from "./services/adminAuthService";
 import ReviewList from "./components/ReviewList";
 import HelloAdmin from "./components/HelloAdmin";
 import AdminOrderList from "./components/AdminOrderList";
 import { Theme } from "@mui/material/styles";
+import UserList from "./components/UserList";
+import ManagerList from "./components/ManagerList";
+import PathParamParser from "./PathParamParser";
+import OrderDetailForAdmin from "./components/OrderDetailForAdmin";
 
 const managerTheme: Theme = createTheme({
     palette: {
@@ -46,16 +50,18 @@ export default function AppManage() {
 
     const routes = [
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
-        ["/admins/users", <AnswererList userRole={UserRole.USER} />],
+        ["/admins/users", <UserList userRole={UserRole.USER} />],
+        ["/admins/managers", <ManagerList />],
+        [
+            "/admins/orders/:orderId",
+            <PathParamParser
+                params={[["orderId", "number"]]}
+                C={OrderDetailForAdmin}
+            />,
+        ],
 
-        ["/admins/orders", <AdminOrderList orderState={OrderState.CREATED} />],
-        // [
-        //     "/admins/orders/:orderId",
-        //     <PathParamParser
-        //         params={[["orderId", "number"]]}
-        //         C={OrderDetailForAdmin}
-        //     />,
-        // ],
+        ["/admins/orders", <AdminOrderList />],
+
         ["/admins/review", <ReviewList />],
 
         ["/admins/login", <Login redirect={"/admins/"} isAdmin={true} />],
