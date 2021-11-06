@@ -44,6 +44,7 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import { ManagerRole, UserRole } from "../services/definations";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -299,6 +300,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                 {manager?.role === ManagerRole.SUPER_ADMIN
                     ? renderDrawerList([
                           ["系统参数", "/admins/settings", SettingsIcon],
+                          ["管理员列表", "/admins/managers", HowToRegIcon],
                           ["创建", "/admins/create", PersonAddIcon],
                       ])
                     : null}
