@@ -13,18 +13,13 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 
 const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
-
     const [orderInfo, setOrderInfo] = useState<OrderInfo>();
 
     useEffect(() => {
-        orderService
-            .getOrderInfo(props.orderId)
-            .then((order) => {
-                setOrderInfo(order);
-            })
-    }, [ props.orderId]);
-
-
+        orderService.getOrderInfo(props.orderId).then((order) => {
+            setOrderInfo(order);
+        });
+    }, [props.orderId]);
 
     if (orderInfo == null) {
         // Loading order info
@@ -123,15 +118,14 @@ const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
                     subheader="回答者"
                 />
                 <CardContent>
-                        <Markdown
-                            value={
-                                orderInfo.state === OrderState.ANSWERED
-                                    ? orderInfo.answer
-                                    : "该问题还未回答"
-                            }
-                            viewOnly
-                        />
-
+                    <Markdown
+                        value={
+                            orderInfo.state === OrderState.ANSWERED
+                                ? orderInfo.answer
+                                : "该问题还未回答"
+                        }
+                        viewOnly
+                    />
                 </CardContent>
             </Card>
         </Stack>
