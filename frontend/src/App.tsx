@@ -17,6 +17,7 @@ import OrderDetail from "./components/OrderDetail";
 import PathParamParser from "./PathParamParser";
 import UserOrderList from "./components/UserOrderList";
 import IncomeStatistics from "./components/IncomeStatistics";
+import Help from "./components/Help";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
@@ -59,6 +60,7 @@ export default function App() {
             />,
         ],
         ["/income", <IncomeStatistics userId={user?.id} />],
+        ["/help", <Help />],
         ["/", <Welcome />],
     ];
 

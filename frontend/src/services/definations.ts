@@ -150,3 +150,14 @@ export interface EarningsInfo {
     total: number;
     monthly: Array<EarningsMonthly>;
 }
+
+export interface ConfigInfo {
+    minPrice: number;
+    maxPrice: number;
+    respondExpirationSeconds: number;
+    answerExpirationSeconds: number;
+    fulfillExpirationSeconds: number;
+    maxChatMessages: number;
+    maxChatTimeSeconds: number;
+    feeRate: number;
+}

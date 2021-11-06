@@ -30,6 +30,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
         parseIntWithDefault(query.get("prepage"), 9)
     );
     const [maxPage, setMaxPage] = useState(currentPage);
+    const [longPending, setLongPending] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
@@ -48,6 +49,9 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
             : orderService
                   .getAllOrderListByAdmin(currentPage, itemPrePage)
                   .then(acceptOrderList);
+        setTimeout(() => {
+            if (!orderList) setLongPending(true);
+        }, 500);
     }, [currentPage, itemPrePage, props.orderState]);
 
     const onPageChanged = (newPage: number) => {
@@ -143,21 +147,23 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
             )}
         </>
     );
-    if (orderList == null) {
+    if (longPending && orderList == null) {
         return (
             <Stack spacing={2} mt={4}>
                 {renderCardPlaceholder()}
             </Stack>
         );
     }
-    if (totalCount === 0) {
+    if (orderList && totalCount === 0) {
         return (
             <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
                 没有订单
             </Typography>
         );
     }
-    return <Stack spacing={2}>{renderOrderList()}</Stack>;
+    return (
+        <Box>{orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}</Box>
+    );
 };
 
 export default AdminOrderList;

@@ -69,7 +69,14 @@ const AnswererCard: React.FC<{
         <>
             <Card sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
                 <CardActionWrapper>
-                    <CardContent sx={{ paddingBottom: 0 }}>
+                    <CardContent
+                        sx={
+                            typeof props.briefMsg === "undefined" ||
+                            !props.briefMsg
+                                ? { paddingBottom: 0 }
+                                : { paddingBottom: 2 }
+                        }
+                    >
                         <Box
                             sx={{
                                 alignItems: "center",
@@ -159,12 +166,11 @@ const AnswererCard: React.FC<{
                         </Box>
                     </CardContent>
                 </CardActionWrapper>
-                <CardActions
-                    style={{ justifyContent: "center" }}
-                    sx={{ paddingBottom: 2 }}
-                >
-                    {(typeof props.briefMsg === "undefined" ||
-                        !props.briefMsg) && (
+                {(typeof props.briefMsg === "undefined" || !props.briefMsg) && (
+                    <CardActions
+                        style={{ justifyContent: "center" }}
+                        sx={{ paddingBottom: 2 }}
+                    >
                         <Button
                             color="primary"
                             size="large"
@@ -173,20 +179,20 @@ const AnswererCard: React.FC<{
                         >
                             详细信息
                         </Button>
-                    )}
-                    {props.nextUrl && (
-                        <Button
-                            color="primary"
-                            size="large"
-                            variant="contained"
-                            component={RouterLink}
-                            to={props.nextUrl}
-                            sx={{ ml: 2 }}
-                        >
-                            向TA提问
-                        </Button>
-                    )}
-                </CardActions>
+                        {props.nextUrl && (
+                            <Button
+                                color="primary"
+                                size="large"
+                                variant="contained"
+                                component={RouterLink}
+                                to={props.nextUrl}
+                                sx={{ ml: 2 }}
+                            >
+                                向TA提问
+                            </Button>
+                        )}
+                    </CardActions>
+                )}
             </Card>
             <AnswererDetailDialog
                 open={dialogOpen}

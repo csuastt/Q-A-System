@@ -44,6 +44,7 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import { ManagerRole, UserRole } from "../services/definations";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import HelpIcon from "@mui/icons-material/Help";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 
 const Search = styled("div")(({ theme }) => ({
@@ -303,7 +304,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["管理员列表", "/admins/managers", HowToRegIcon],
                           ["创建", "/admins/create", PersonAddIcon],
                       ])
-                    : null}
+                    : renderDrawerList([["平台须知", "/help", HelpIcon]])}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Step from "@mui/material/Step";
 import Stepper from "@mui/material/Stepper";
@@ -10,8 +10,10 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
-import { CreationResult } from "../services/definations";
+import { ConfigInfo, CreationResult } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -22,6 +24,7 @@ import Grid from "@mui/material/Grid";
 import AnswererDetailCard from "./AnswererDetailCard";
 import Divider from "@mui/material/Divider";
 import Markdown from "./Markdown";
+import systemConfigService from "../services/systemConfigService";
 
 function processInt(str?: string): number {
     if (str) {
@@ -39,10 +42,17 @@ const OrderCreationWizard: React.FC = (props) => {
     const [questionDescription, setQuestionDescription] = useState<string>("");
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
+    const [config, setConfig] = useState<ConfigInfo>();
 
     const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
     const answerer = processInt(routerParam.answerer);
+
+    useEffect(() => {
+        systemConfigService.getSystemConfig().then((config) => {
+            setConfig(config);
+        });
+    }, []);
 
     const nextStep = () => {
         setActiveStep(activeStep + 1);
@@ -419,12 +429,59 @@ const OrderCreationWizard: React.FC = (props) => {
     const renderThirdStep = () => {
         return (
             <>
-                <Typography variant="body1">
-                    您现在需要预先付款以完成提问。在您确认得到了满意的回答之后，回答者才可能收到这份酬劳。
-                </Typography>
-                <Typography variant="body1">
-                    您的问题首先需要经过审核才能发送到回答者。若审核失败，您可以修改问题或取消提问。如果在回答者接单之前取消提问，我们将全额退款。
-                </Typography>
+                <Divider sx={{ mt: 3, mb: 1 }}>提问须知</Divider>
+                <List dense={true}>
+                    <ListItem>
+                        <Typography variant="body1">
+                            1、您现在需要预先付款以完成提问。在您确认得到了满意的回答之后，回答者才可能收到这份酬劳。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            2、您的问题首先需要经过审核才能发送到回答者。若审核失败，我们将全额退款。您可以修改后重新提问。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            3、完成提问后，系统会及时通知回答者。回答者将在
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {config?.respondExpirationSeconds
+                                    ? config?.respondExpirationSeconds /
+                                      3600 /
+                                      24
+                                    : ""}
+                            </Box>
+                            天内接单。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            4、您的问题不会被公开，只有您和回答者可以知晓其中的内容。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            5、单次提问交流的最大聊天消息条数为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {config?.maxChatMessages
+                                    ? config?.maxChatMessages
+                                    : ""}
+                            </Box>
+                            条，最长聊天时间为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {config?.maxChatTimeSeconds
+                                    ? config?.maxChatTimeSeconds / 3600
+                                    : ""}
+                            </Box>
+                            小时。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            6、若聊天消息条数超出限制或聊天超时，系统会自动结束订单，并在之后正常进行结算。
+                        </Typography>
+                    </ListItem>
+                </List>
                 <Stack
                     spacing={matches ? 4 : 2}
                     direction="row"
