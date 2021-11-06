@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
+import OrderStateChip from "./OrderStateChip";
 
 interface AdminOrderListProps {
     orderState?: OrderState;
@@ -101,7 +102,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                                         {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
-                                    {/*<OrderStateChip state={order.state} />*/}
+                                    <OrderStateChip state={order.state} />
                                 </Box>
                                 <Box
                                     sx={{
