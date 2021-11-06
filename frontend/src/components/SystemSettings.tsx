@@ -46,6 +46,9 @@ export default class SystemSettings extends Component<
             error_msg_feeRate: "",
         };
         this.fetchConfigInfo = this.fetchConfigInfo.bind(this);
+        this.handleChangeConfig = this.handleChangeConfig.bind(this);
+        this.handleAlert = this.handleAlert.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.fetchConfigInfo();
     }
 
@@ -269,7 +272,8 @@ export default class SystemSettings extends Component<
                         p: 2,
                     }}
                 >
-                    <Button color="primary" variant="contained">
+                    <Button color="primary" variant="contained"
+                            onClick={this.handleSubmit}>
                         保存信息
                     </Button>
                 </Box>
