@@ -19,6 +19,17 @@ export enum ManagerRole {
     SUPER_ADMIN = "SUPER_ADMIN",
 }
 
+export interface ConfigInfo {
+    minPrice: number;
+    maxPrice: number;
+    respondExpirationSeconds: number;
+    answerExpirationSeconds: number;
+    fulfillExpirationSeconds: number;
+    maxChatMessages: number;
+    maxChatTimeSeconds: number;
+    feeRate: number;
+}
+
 export interface UserBasicInfo {
     id: number;
     username: string;
