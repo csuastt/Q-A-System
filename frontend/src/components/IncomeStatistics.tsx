@@ -4,6 +4,9 @@ import { merge } from "lodash";
 import BaseOptionChart from "./BaseOptionChart";
 import React, { useEffect, useMemo, useState } from "react";
 import userService from "../services/userService";
+import {ConfigInfo} from "../services/definations";
+import systemConfigService from "../services/systemConfigService";
+import Typography from "@mui/material/Typography";
 
 const IncomeStatistics: React.FC<{
     userId: number | undefined;
@@ -11,6 +14,7 @@ const IncomeStatistics: React.FC<{
     const [earningsList, setEarningsList] = useState<Array<number>>(
         new Array(12).fill(0)
     );
+    const [config, setConfig] = useState<ConfigInfo>();
 
     // init date list
     let labelsList = useMemo(() => {
@@ -38,6 +42,11 @@ const IncomeStatistics: React.FC<{
                 setEarningsList(new_earningsList);
             });
         }
+        systemConfigService.getSystemConfig().then(
+            (config) => {
+                setConfig(config);
+            }
+        )
     }, [labelsList, props.userId]);
 
     const chartOptions = merge(BaseOptionChart(), {
@@ -67,7 +76,7 @@ const IncomeStatistics: React.FC<{
                     title="用户收入统计"
                     subheader="下方显示了您过去你一年的收入情况"
                 />
-                <Box sx={{ m: 2 }} dir="ltr">
+                <Box sx={{ m: 2, marginBottom: 1 }}  dir="ltr">
                     {
                         <ReactApexChart
                             type="line"
@@ -94,6 +103,15 @@ const IncomeStatistics: React.FC<{
                             width="95%"
                         />
                     }
+                </Box>
+                <Box ml={3} mb={3}>
+                    <Typography variant="body2">
+                        PS：当前平台抽成率为
+                        <Box component="span" fontWeight="fontWeightBold">
+                            {config?.feeRate ?
+                                config?.feeRate: ""}
+                        </Box>%。
+                    </Typography>
                 </Box>
             </Card>
         </Box>

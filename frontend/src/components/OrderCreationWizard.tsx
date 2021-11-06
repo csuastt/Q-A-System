@@ -12,7 +12,6 @@ import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import questionService from "../services/orderService";
 import {ConfigInfo, CreationResult} from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -449,7 +448,7 @@ const OrderCreationWizard: React.FC = (props) => {
                             3、完成提问后，系统会及时通知回答者。回答者将在
                             <Box component="span" fontWeight="fontWeightBold">
                                 {config?.respondExpirationSeconds ?
-                                    config?.respondExpirationSeconds / 3600 / 24 : 1}
+                                    config?.respondExpirationSeconds / 3600 / 24 : ""}
                             </Box>
                             天内接单。
                         </Typography>
@@ -464,11 +463,11 @@ const OrderCreationWizard: React.FC = (props) => {
                             5、单次提问交流的最大聊天消息条数为
                             <Box component="span" fontWeight="fontWeightBold">
                                 {config?.maxChatMessages ?
-                                    config?.maxChatMessages: 10000}
+                                    config?.maxChatMessages: ""}
                             </Box>条，最长聊天时间为
                             <Box component="span" fontWeight="fontWeightBold">
                                 {config?.maxChatTimeSeconds ?
-                                    config?.maxChatTimeSeconds / 3600 : 600}
+                                    config?.maxChatTimeSeconds / 3600 : ""}
                             </Box>小时。
                         </Typography>
                     </ListItem>
