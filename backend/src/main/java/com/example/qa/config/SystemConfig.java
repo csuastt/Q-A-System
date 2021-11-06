@@ -1,5 +1,6 @@
 package com.example.qa.config;
 
+import com.example.qa.exchange.MonthlyEarnings;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -49,6 +50,8 @@ public class SystemConfig {
 
     @Getter
     private static int earnings = 0;
+    @Getter
+    private static String earningsMonthly = "[]";
 
     public static Configurable getConfigurable() {
         Configurable result = new Configurable();
@@ -76,5 +79,6 @@ public class SystemConfig {
 
     public static void incEarnings(int value) {
         earnings += value;
+        earningsMonthly = MonthlyEarnings.addEarnings(earningsMonthly, value);
     }
 }
