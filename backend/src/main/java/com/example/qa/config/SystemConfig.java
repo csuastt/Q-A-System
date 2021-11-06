@@ -16,13 +16,13 @@ public class SystemConfig {
     public static final int PASSWORD_MIN_LENGTH = 6;
     public static final int PASSWORD_MAX_LENGTH = 12;
     public static final int DESCRIPTION_MIN_LENGTH = 0;
-    public static final int DESCRIPTION_MAX_LENGTH = 200;
+    public static final int DESCRIPTION_MAX_LENGTH = 1000;
     // RECHARGE_MIN = 1
-    public static final int RECHARGE_MAX = 1000;
-    public static final int BALANCE_MAX = 10000;
+    public static final int RECHARGE_MAX = 100000;
+    public static final int BALANCE_MAX = 1000000;
 
     public static final int QUESTION_MIN_LENGTH = 5;
-    public static final int QUESTION_MAX_LENGTH = 100;
+    public static final int QUESTION_MAX_LENGTH = 200;
 
     public static final int USER_LIST_MAX_PAGE_SIZE = 50;
     public static final int ORDER_LIST_MAX_PAGE_SIZE = 50;
@@ -49,7 +49,7 @@ public class SystemConfig {
     private static int feeRate = 30;  // in percentage
 
     @Getter
-    private static int earnings = 0;
+    private static int earningsTotal = 0;
     @Getter
     private static String earningsMonthly = "[]";
 
@@ -78,7 +78,7 @@ public class SystemConfig {
     }
 
     public static void incEarnings(int value) {
-        earnings += value;
+        earningsTotal += value;
         earningsMonthly = MonthlyEarnings.addEarnings(earningsMonthly, value);
     }
 }

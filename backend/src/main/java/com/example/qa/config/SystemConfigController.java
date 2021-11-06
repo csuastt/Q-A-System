@@ -26,6 +26,6 @@ public class SystemConfigController {
     public EarningsResponse earnings() {
         authLoginOrThrow();
         authSuperAdminOrThrow();
-        return new EarningsResponse(SystemConfig.getEarnings(), MonthlyEarnings.toList(SystemConfig.getEarningsMonthly()));
+        return new EarningsResponse(SystemConfig.getEarningsTotal(), MonthlyEarnings.toList(SystemConfig.getEarningsMonthly()));
     }
 }
