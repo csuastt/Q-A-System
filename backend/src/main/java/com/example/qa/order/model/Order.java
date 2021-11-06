@@ -28,6 +28,8 @@ public class Order {
     private OrderState state = OrderState.CREATED;
     @Setter(AccessLevel.NONE)
     private boolean finished = false;
+    @Setter(AccessLevel.NONE)
+    private boolean visibleToAnswerer = false;
     private boolean reviewed = false;
     private ZonedDateTime createTime;
     private ZonedDateTime expireTime;
@@ -59,7 +61,7 @@ public class Order {
         if (state != null) {
             this.state = state;
             finished = state.isFinished();
-            reviewed = state.isReviewed();
+            visibleToAnswerer = state.isVisibleToAnswerer();
         }
     }
 

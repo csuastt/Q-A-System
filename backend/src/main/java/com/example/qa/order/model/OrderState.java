@@ -23,5 +23,5 @@ public enum OrderState {
     @Getter
     private final boolean finished;
     @Getter
-    private final boolean reviewed;
+    private final boolean visibleToAnswerer;
 }
