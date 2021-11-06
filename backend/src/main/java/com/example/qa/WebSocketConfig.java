@@ -18,7 +18,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * IM: SEND to /im/send/{orderId}
  * SUBSCRIBE at /im/receive/{orderId}
  * <p>
- * Notification: SUBSCRIBE at /notification/{userId}
+ * Notification: SUBSCRIBE at /notif/{userId}
  */
 @Configuration
 @EnableWebSocketMessageBroker
@@ -33,6 +33,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // IM send message
         registry.setApplicationDestinationPrefixes("/im/send");
         // IM & Notification push message
-        registry.enableSimpleBroker("/im/receive", "/notification");
+        registry.enableSimpleBroker("/im/receive", "/notif");
     }
 }
