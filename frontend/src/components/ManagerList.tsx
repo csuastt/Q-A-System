@@ -13,6 +13,7 @@ import CardContent from "@mui/material/CardContent";
 import managerService from "../services/managerService";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PersonIcon from "@mui/icons-material/Person";
+import Button from "@mui/material/Button";
 
 const ManagerList: React.FC<{ selectModel?: boolean }> = (props) => {
     const query = useQuery();
@@ -98,31 +99,74 @@ const ManagerList: React.FC<{ selectModel?: boolean }> = (props) => {
                                 <Box
                                     sx={{
                                         display: "flex",
+                                        justifyContent: "space-between",
+                                        p: 1,
+                                        m: 1,
                                         flexDirection: "row",
                                     }}
-                                    mt={1}
                                 >
-                                    <Avatar
+                                    <Box
                                         sx={{
-                                            width: 30,
-                                            height: 30,
-                                            m: 1,
-                                            bgcolor: "primary.main",
+                                            display: "flex",
+                                            flexDirection: "row",
                                         }}
+                                        mt={1}
                                     >
-                                        {manager.role ===
-                                        ManagerRole.REVIEWER ? (
-                                            <PersonIcon />
-                                        ) : (
-                                            <HowToRegIcon />
-                                        )}
-                                    </Avatar>
-                                    <Typography
-                                        variant="subtitle1"
-                                        sx={{ ml: 1 }}
-                                    >
-                                        {manager.username}
-                                    </Typography>
+                                        <Avatar
+                                            sx={{
+                                                width: 30,
+                                                height: 30,
+                                                m: 1,
+                                                bgcolor: "primary.main",
+                                            }}
+                                        >
+                                            {manager.role ===
+                                            ManagerRole.REVIEWER ? (
+                                                <HowToRegIcon />
+                                            ) : (
+                                                <PersonIcon />
+                                            )}
+                                        </Avatar>
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{ ml: 1 }}
+                                        >
+                                            {manager.username}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box sx={{}} mt={1}>
+                                        <Button
+                                            size="small"
+                                            color={
+                                                manager.role ===
+                                                ManagerRole.REVIEWER
+                                                    ? "error"
+                                                    : "primary"
+                                            }
+                                            variant="outlined"
+                                            onClick={() => {
+                                                {
+                                                    manager.role ===
+                                                    ManagerRole.REVIEWER
+                                                        ? managerService.modifyManagerRole(
+                                                              manager.id,
+                                                              ManagerRole.ADMIN
+                                                          )
+                                                        : managerService.modifyManagerRole(
+                                                              manager.id,
+                                                              ManagerRole.REVIEWER
+                                                          );
+                                                }
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            {manager.role ===
+                                            ManagerRole.REVIEWER
+                                                ? "取消审核权限"
+                                                : "增加审核权限"}
+                                        </Button>
+                                    </Box>
                                 </Box>
                                 <Typography variant="caption" mb={-1} mt={1}>
                                     管理员id：

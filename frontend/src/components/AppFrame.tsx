@@ -294,13 +294,13 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["用户列表", "/admins/users", GroupIcon],
                           ["回答者列表", "/admins/answerers", SchoolIcon],
                           ["订单列表", "/admins/orders", LibraryBooksIcon],
-                          ["管理员列表", "/admins/managers", HowToRegIcon],
                       ])
                     : renderDrawerList(drawerList3())}
                 <Divider />
                 {manager?.role === ManagerRole.SUPER_ADMIN
                     ? renderDrawerList([
                           ["系统参数", "/admins/settings", SettingsIcon],
+                          ["管理员列表", "/admins/managers", HowToRegIcon],
                           ["创建", "/admins/create", PersonAddIcon],
                       ])
                     : null}

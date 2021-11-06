@@ -1,5 +1,11 @@
 import axios from "axios";
-import { ManagerInfo, ManagerInfoList, PagedList } from "./definations";
+import {
+    ManagerInfo,
+    ManagerInfoList,
+    ManagerRole,
+    PagedList,
+    UserInfo,
+} from "./definations";
 
 class ManagerService {
     getManagerList(
@@ -30,20 +36,17 @@ class ManagerService {
             })
             .then((response) => response.data);
     }
-
+    modifyManagerRole(id: number, role: ManagerRole) {
+        return axios.put(`/admins/${id}`, {
+            role: role,
+        });
+    }
     getManagerByIdList(ids: Array<number>): Promise<ManagerInfoList> {
         return Promise.all(ids.map((id) => this.getManagerInfo(id)));
     }
 
     getManagerInfo(id: number): Promise<ManagerInfo> {
         return axios.get(`/admins/${id}`).then((response) => response.data);
-    }
-
-    modifyManagerInfo(info: ManagerInfo) {
-        return axios.put(`/admins/${info.id}`, {
-            password: info.password,
-            role: info.role,
-        });
     }
 
     deleteManager(id: number) {
