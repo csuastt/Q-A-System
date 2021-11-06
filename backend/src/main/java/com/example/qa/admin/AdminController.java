@@ -12,10 +12,15 @@ import com.example.qa.exchange.ChangePasswordRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
 
@@ -52,7 +57,7 @@ public class AdminController {
 
     @GetMapping
     public AdminListResponse listAdmins(
-            @RequestParam(required = false) AdminRole role,
+            @RequestParam(required = false) List<AdminRole> role,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page
     ) {
@@ -61,8 +66,10 @@ public class AdminController {
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ADMIN_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1);
-        Page<Admin> result = role != null ? adminService.listByRole(role, pageRequest) : adminService.listAll(pageRequest);
+        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
+                .withSort(Sort.by(Sort.Direction.ASC, "id"));
+        role = Objects.requireNonNullElse(role, Arrays.asList(AdminRole.REVIEWER, AdminRole.ADMIN));
+        Page<Admin> result = adminService.listByRole(role, pageRequest);
         return new AdminListResponse(result);
     }
 

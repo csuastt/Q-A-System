@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public interface AdminRepository extends JpaRepository<Admin, Long> {
@@ -14,5 +15,5 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     Optional<Admin> findByUsername(String username);
 
-    Page<Admin> findAllByRole(AdminRole role, Pageable pageable);
+    Page<Admin> findAllByRoleIn(Collection<AdminRole> role, Pageable pageable);
 }
