@@ -272,8 +272,11 @@ export default class SystemSettings extends Component<
                         p: 2,
                     }}
                 >
-                    <Button color="primary" variant="contained"
-                            onClick={this.handleSubmit}>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={this.handleSubmit}
+                    >
                         保存信息
                     </Button>
                 </Box>
