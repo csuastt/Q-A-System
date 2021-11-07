@@ -5,7 +5,7 @@
 ### 上传文件
 
 ```
-POST /api/upload/file
+POST /api/orders/{id}/attachment
 ```
 
 参数：
@@ -19,7 +19,7 @@ POST /api/upload/file
 ### 上传头像
 
 ```
-POST /api/upload/avatar
+POST /api/users/{id}/avatar
 ```
 
 参数：
