@@ -17,6 +17,8 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import SchoolIcon from "@mui/icons-material/School";
 import { UserRole } from "../services/definations";
+import HomeIcon from '@mui/icons-material/Home';
+import {Grid} from "@mui/material";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -63,73 +65,87 @@ export default function Welcome() {
     return (
         <>
             <Typography
-                align="center"
-                variant="h5"
-                sx={{ margin: theme.spacing(3, 2, 2, 0) }}
+                align="left"
+                variant="h6"
+                sx={{
+                    margin: theme.spacing(2, 2, 1, 0),
+                    fontWeight: 600
+                }}
             >
-                欢迎来到付费问答系统
+                Hi，是求知让我们相聚于此
             </Typography>
-            <ButtonCardWrapper
-                to="/answerers"
-                Icon={SchoolIcon}
-                title1="回答者列表"
-                title2="寻找合适的回答者"
-            />
-            {user ? (
-                <>
-                    <ButtonCardWrapper
-                        to="/order/create"
-                        Icon={AddCommentIcon}
-                        title1="提出问题"
-                        title2="获取知识与答案"
-                    />
-                    <ButtonCardWrapper
-                        to="/orders"
-                        Icon={QuestionAnswerIcon}
-                        title1="我的提问"
-                        title2="查看历史提问与订单状态"
-                    />
-                    {user.role === UserRole.ANSWERER ? (
-                        <>
-                            <ButtonCardWrapper
-                                to="/orders?answerer=true"
-                                Icon={RateReviewIcon}
-                                title1="我的回答"
-                                title2="查看历史回答与订单状态"
-                            />
-                            <ButtonCardWrapper
-                                to="/income"
-                                Icon={EqualizerIcon}
-                                title1="收入统计"
-                                title2="查看个人月度收入情况"
-                            />
-                        </>
-                    ) : (
-                        <></>
-                    )}
-                    <ButtonCardWrapper
-                        to="/profile"
-                        Icon={AccountCircle}
-                        title1="个人信息"
-                        title2="查看、修改个人信息"
-                    />
-                </>
-            ) : (
-                <>
-                    <ButtonCardWrapper
-                        to="/login"
-                        Icon={LoginIcon}
-                        title1="登录"
-                        title2="提出问题、回答问题"
-                    />
-                    <ButtonCardWrapper
-                        to="/register"
-                        Icon={PersonAddIcon}
-                        title1="注册"
-                        title2="从现在开始解答您的疑惑"
-                    />
-                </>
-            )}
+            <Box>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                }}>
+                    <HomeIcon color={"primary"}/>
+                    <span style={{marginLeft: 5}}>/ 主页</span>
+                </div>
+            </Box>
+
+            {/*<ButtonCardWrapper*/}
+            {/*    to="/answerers"*/}
+            {/*    Icon={SchoolIcon}*/}
+            {/*    title1="回答者列表"*/}
+            {/*    title2="寻找合适的回答者"*/}
+            {/*/>*/}
+            {/*{user ? (*/}
+            {/*    <>*/}
+            {/*        <ButtonCardWrapper*/}
+            {/*            to="/order/create"*/}
+            {/*            Icon={AddCommentIcon}*/}
+            {/*            title1="提出问题"*/}
+            {/*            title2="获取知识与答案"*/}
+            {/*        />*/}
+            {/*        <ButtonCardWrapper*/}
+            {/*            to="/orders"*/}
+            {/*            Icon={QuestionAnswerIcon}*/}
+            {/*            title1="我的提问"*/}
+            {/*            title2="查看历史提问与订单状态"*/}
+            {/*        />*/}
+            {/*        {user.role === UserRole.ANSWERER ? (*/}
+            {/*            <>*/}
+            {/*                <ButtonCardWrapper*/}
+            {/*                    to="/orders?answerer=true"*/}
+            {/*                    Icon={RateReviewIcon}*/}
+            {/*                    title1="我的回答"*/}
+            {/*                    title2="查看历史回答与订单状态"*/}
+            {/*                />*/}
+            {/*                <ButtonCardWrapper*/}
+            {/*                    to="/income"*/}
+            {/*                    Icon={EqualizerIcon}*/}
+            {/*                    title1="收入统计"*/}
+            {/*                    title2="查看个人月度收入情况"*/}
+            {/*                />*/}
+            {/*            </>*/}
+            {/*        ) : (*/}
+            {/*            <></>*/}
+            {/*        )}*/}
+            {/*        <ButtonCardWrapper*/}
+            {/*            to="/profile"*/}
+            {/*            Icon={AccountCircle}*/}
+            {/*            title1="个人信息"*/}
+            {/*            title2="查看、修改个人信息"*/}
+            {/*        />*/}
+            {/*    </>*/}
+            {/*) : (*/}
+            {/*    <>*/}
+            {/*        <ButtonCardWrapper*/}
+            {/*            to="/login"*/}
+            {/*            Icon={LoginIcon}*/}
+            {/*            title1="登录"*/}
+            {/*            title2="提出问题、回答问题"*/}
+            {/*        />*/}
+            {/*        <ButtonCardWrapper*/}
+            {/*            to="/register"*/}
+            {/*            Icon={PersonAddIcon}*/}
+            {/*            title1="注册"*/}
+            {/*            title2="从现在开始解答您的疑惑"*/}
+            {/*        />*/}
+            {/*    </>*/}
+            {/*)}*/}
         </>
     );
 }
