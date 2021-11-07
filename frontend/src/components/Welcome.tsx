@@ -19,6 +19,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import { UserRole } from "../services/definations";
 import HomeIcon from '@mui/icons-material/Home';
 import {Grid} from "@mui/material";
+import IncomeStatistics from "./IncomeStatistics";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -62,13 +63,15 @@ export default function Welcome() {
         </Card>
     );
 
+
+
     return (
         <>
             <Typography
                 align="left"
                 variant="h6"
                 sx={{
-                    margin: theme.spacing(2, 2, 1, 0),
+                    margin: theme.spacing(1, 2, 1, 0),
                     fontWeight: 600
                 }}
             >
@@ -84,7 +87,15 @@ export default function Welcome() {
                     <span style={{marginLeft: 5}}>/ 主页</span>
                 </div>
             </Box>
+            <Grid
+                container
+                spacing={4}
 
+            >
+                <Grid item md={8} xs={12} mt={2}>
+                    <IncomeStatistics briefMsg={true} user={user}/>
+                </Grid>
+            </Grid>
             {/*<ButtonCardWrapper*/}
             {/*    to="/answerers"*/}
             {/*    Icon={SchoolIcon}*/}
