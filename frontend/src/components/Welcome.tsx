@@ -14,6 +14,9 @@ import {CardHeader, Grid, List, ListItem, ListItemIcon, ListItemText} from "@mui
 import IncomeStatistics from "./IncomeStatistics";
 import Avatar from "@mui/material/Avatar";
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 export default function Welcome() {
     const theme = useTheme();
@@ -111,8 +114,8 @@ export default function Welcome() {
                       </Box>
                   </Box>
                   <Box>
-                      <List dense={true}>
-                          <ListItem>
+                      <List dense={true}  sx={{paddingBottom: 0}}>
+                          <ListItem sx={{paddingBottom: 0}}>
                               <ListItemIcon
                                   sx={{minWidth: 30}}
                               >
@@ -140,6 +143,84 @@ export default function Welcome() {
                                   }
                               />
                           </ListItem>
+                          <ListItem sx={{paddingTop: 0, paddingBottom: 0}}>
+                              <ListItemIcon
+                                  sx={{minWidth: 30}}
+                              >
+                                  <AssignmentIcon/>
+                              </ListItemIcon>
+                              <ListItemText
+                                  primary={
+                                      <Typography
+                                          color="textPrimary"
+                                          variant="body1"
+                                          gutterBottom
+                                      >
+                                          您提问了：
+                                          <Box component="span"
+                                               fontWeight="fontWeightBold"
+                                               fontSize={22}
+                                          >
+                                              {user ? (0) :
+                                                  ("NA")
+                                              }
+                                          </Box> 单
+                                      </Typography>
+                                  }
+                              />
+                          </ListItem>
+                          <ListItem sx={{paddingTop: 0, paddingBottom: 0}}>
+                              <ListItemIcon
+                                  sx={{minWidth: 30}}
+                              >
+                                  <AssignmentTurnedInIcon/>
+                              </ListItemIcon>
+                              <ListItemText
+                                  primary={
+                                      <Typography
+                                          color="textPrimary"
+                                          variant="body1"
+                                          gutterBottom
+                                      >
+                                          您回答了：
+                                          <Box component="span"
+                                               fontWeight="fontWeightBold"
+                                               fontSize={22}
+                                          >
+                                              {user ? (0) :
+                                                  ("NA")
+                                              }
+                                          </Box> 单
+                                      </Typography>
+                                  }
+                              />
+                          </ListItem>
+                          <ListItem sx={{paddingTop: 0, paddingBottom: 0}}>
+                              <ListItemIcon
+                                  sx={{minWidth: 30}}
+                              >
+                                  <CreditCardIcon/>
+                              </ListItemIcon>
+                              <ListItemText
+                                  primary={
+                                      <Typography
+                                          color="textPrimary"
+                                          variant="body1"
+                                          gutterBottom
+                                      >
+                                          您的余额为：
+                                          <Box component="span"
+                                               fontWeight="fontWeightBold"
+                                               fontSize={22}
+                                          >
+                                              {user ? user.balance :
+                                                  ("NA")
+                                              }
+                                          </Box> ￥
+                                      </Typography>
+                                  }
+                              />
+                          </ListItem>
                       </List>
                   </Box>
               </CardContent>
@@ -147,7 +228,12 @@ export default function Welcome() {
       );
     }
 
-
+    const drawMsgList = () => {
+        return (
+            <Card>
+            </Card>
+        );
+    }
 
     return (
         <>
