@@ -1,29 +1,19 @@
-import { useTheme } from "@mui/material/styles";
+import {useTheme} from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import LoginIcon from "@mui/icons-material/Login";
 import CardActionArea from "@mui/material/CardActionArea";
-import { Link as RouterLink } from "react-router-dom";
-import React, { useContext } from "react";
+import {Link as RouterLink} from "react-router-dom";
+import React, {useContext} from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import AuthContext from "../AuthContext";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import AddCommentIcon from "@mui/icons-material/AddComment";
-import RateReviewIcon from "@mui/icons-material/RateReview";
-import EqualizerIcon from "@mui/icons-material/Equalizer";
-import SchoolIcon from "@mui/icons-material/School";
-import { UserRole } from "../services/definations";
+import {UserRole} from "../services/definations";
 import HomeIcon from '@mui/icons-material/Home';
-import {Grid} from "@mui/material";
+import {CardHeader, Grid, List, ListItem, ListItemIcon, ListItemText} from "@mui/material";
 import IncomeStatistics from "./IncomeStatistics";
 import Avatar from "@mui/material/Avatar";
-import Divider from "@mui/material/Divider";
-import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 export default function Welcome() {
     const theme = useTheme();
@@ -70,6 +60,28 @@ export default function Welcome() {
     const drawAboutMe = () => {
       return (
           <Card>
+              <CardHeader
+                  title ={
+                      <>
+                          <Typography
+                              align="left"
+                              variant="h6"
+                          >
+                              关于我
+                          </Typography>
+                      </>
+                  }
+                  subheader={
+                      <>
+                          <Typography
+                              align="left"
+                              variant="body2"
+                          >
+                              下方显示了您的基本情况
+                          </Typography>
+                      </>
+                  }
+              />
               <CardContent>
                   <Box
                       sx={{
@@ -81,15 +93,14 @@ export default function Welcome() {
                       <Avatar
                           src={user ? user.avatar : ""}
                           sx={{
-                              height: 100,
-                              width: 100,
+                              height: 80,
+                              width: 80,
                           }}
                       />
                       <Box mt={2}>
                           <Typography
                               color="textPrimary"
-                              gutterBottom
-                              variant="h4"
+                              variant="h5"
                           >
                               {user ? (user.nickname === ""
                                   ? "匿名用户"
@@ -98,14 +109,38 @@ export default function Welcome() {
                               }
                           </Typography>
                       </Box>
-                      <Box mx={2}>
-                          <Typography
-                              color="textSecondary"
-                              variant="body1"
-                          >
-                              {"你还不是回答者，快去申请吧~"}
-                          </Typography>
-                      </Box>
+                  </Box>
+                  <Box>
+                      <List dense={true}>
+                          <ListItem>
+                              <ListItemIcon
+                                  sx={{minWidth: 30}}
+                              >
+                                  <AssignmentIndIcon/>
+                              </ListItemIcon>
+                              <ListItemText
+                                  primary={
+                                      <Typography
+                                          color="textPrimary"
+                                          variant="body1"
+                                          gutterBottom
+                                      >
+                                          您的身份：
+                                          <Box component="span"
+                                               fontWeight="fontWeightBold"
+                                               fontSize={22}
+                                          >
+                                              {user ? (user.role === UserRole.ANSWERER
+                                                      ? "回答者"
+                                                      : "提问者") :
+                                                  ("尚未登录")
+                                              }
+                                          </Box>
+                                      </Typography>
+                                  }
+                              />
+                          </ListItem>
+                      </List>
                   </Box>
               </CardContent>
           </Card>

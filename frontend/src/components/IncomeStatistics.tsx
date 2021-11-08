@@ -85,7 +85,14 @@ const IncomeStatistics: React.FC<{
             <Box>
                 <Card>
                     <CardHeader
-                        title="我的收入"
+                        title={
+                            <Typography
+                                align="left"
+                                variant="h6"
+                            >
+                                我的收入
+                            </Typography>
+                        }
                         subheader={
                             props.user ?
                                 (props.user.role === UserRole.ANSWERER ?
