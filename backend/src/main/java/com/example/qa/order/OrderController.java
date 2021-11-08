@@ -182,7 +182,15 @@ public class OrderController {
         if (order.getState() != OrderState.ACCEPTED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_ANSWER");
         }
-        orderService.answerOrder(order, request.getAnswer());
+        order.setAnswer(request.getAnswer());
+        order.setState(OrderState.ANSWERED);
+        order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getMaxChatTimeSeconds()));
+        order = orderService.save(order);
+        answerer.setAnswerCount(answerer.getAnswerCount() + 1);
+        userService.save(answerer);
+        User asker = order.getAsker();
+        asker.setAskCount(asker.getAskCount() + 1);
+        userService.save(asker);
     }
 
     @GetMapping

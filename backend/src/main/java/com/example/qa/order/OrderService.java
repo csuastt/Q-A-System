@@ -62,17 +62,6 @@ public class OrderService {
         return orderRepository.findAllByDeletedAndReviewed(false, true, pageRequest);
     }
 
-    public Order answerOrder(Order order, String answer) {
-        order.setAnswer(answer);
-        order.setState(OrderState.ANSWERED);
-        order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getMaxChatTimeSeconds()));
-        return save(order);
-    }
-
-    public Order answerOrder(long id, String answer) {
-        return answerOrder(findById(id).orElseThrow(NullPointerException::new), answer);
-    }
-
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds
     public void clearExpirations() {
         List<Order> orderList = orderRepository.findAllByExpireTimeBefore(ZonedDateTime.now());

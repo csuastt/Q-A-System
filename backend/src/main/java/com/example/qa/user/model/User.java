@@ -46,6 +46,9 @@ public class User {
     @Lob
     private String earningsMonthly = "[]";
 
+    private int askCount = 0;
+    private int answerCount = 0;
+
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();
         password = registerRequest.getPassword();
