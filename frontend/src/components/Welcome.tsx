@@ -17,6 +17,7 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import Link from "@mui/material/Link";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -231,6 +232,93 @@ export default function Welcome() {
     const drawMsgList = () => {
         return (
             <Card>
+                <CardHeader
+                    title ={
+                        <>
+                            <Typography
+                                align="left"
+                                variant="h6"
+                            >
+                                我的消息
+                            </Typography>
+                        </>
+                    }
+                    subheader={
+                        <>
+                            <Typography
+                                align="left"
+                                variant="body2"
+                            >
+                                下方显示了您的消息列表
+                            </Typography>
+                        </>
+                    }
+                />
+            </Card>
+        );
+    }
+
+    const drawFastJump = () => {
+        return (
+            <Card>
+                <CardHeader
+                    title ={
+                        <>
+                            <Typography
+                                align="left"
+                                variant="h6"
+                            >
+                                快速跳转
+                            </Typography>
+                        </>
+                    }
+                    subheader={
+                        <>
+                            <Typography
+                                align="left"
+                                variant="body2"
+                            >
+                                您可以随意探索平台~
+                            </Typography>
+                        </>
+                    }
+                />
+            </Card>
+        );
+    }
+
+    const drawAnswererList = () => {
+        return (
+            <Card>
+                <CardHeader
+                    title ={
+                        <>
+                            <Typography
+                                align="left"
+                                variant="h6"
+                            >
+                                回答者列表
+                            </Typography>
+                        </>
+                    }
+                    subheader={
+                        <>
+                            <Typography
+                                align="left"
+                                variant="body2"
+                            >
+                                您可以随意提问，
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/answerers"
+                                >
+                                    点此查看完整列表
+                                </Link>
+                            </Typography>
+                        </>
+                    }
+                />
             </Card>
         );
     }
@@ -260,13 +348,37 @@ export default function Welcome() {
             <Grid
                 container
                 spacing={4}
-
             >
                 <Grid item md={8} xs={12} mt={2}>
-                    <IncomeStatistics briefMsg={true} user={user}/>
+                    <Grid
+                        container
+                        spacing={4}
+                        direction={"column"}
+                    >
+                        <Grid item>
+                            <IncomeStatistics briefMsg={true} user={user}/>
+                        </Grid>
+                        <Grid item>
+                            {drawAnswererList()}
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid item md={4} xs={12} mt={2}>
-                    {drawAboutMe()}
+                    <Grid
+                        container
+                        spacing={4}
+                        direction={"column"}
+                    >
+                        <Grid item>
+                            {drawAboutMe()}
+                        </Grid>
+                        <Grid item>
+                            {drawFastJump()}
+                        </Grid>
+                        <Grid item>
+                            {drawMsgList()}
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
             {/*<ButtonCardWrapper*/}

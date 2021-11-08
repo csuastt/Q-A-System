@@ -8,7 +8,10 @@ import Typography from "@mui/material/Typography";
 import { parseIntWithDefault, useQuery } from "../util";
 import Pagination from "./Pagination";
 
-const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
+const AnswererList: React.FC<{
+    selectModel?: boolean;
+    briefMsg?: boolean;
+    userRole: UserRole }> = (
     props
 ) => {
     const query = useQuery();
@@ -65,6 +68,45 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
         );
     }
     return (
+        props.briefMsg ?
+            <Box sx={{ pt: 3 }} mt={1}>
+                {answerList && (
+                    <Grid container spacing={3} marginBottom={3}>
+                        {answerList.map((user: UserBasicInfo, index: number) => (
+                            <Grid
+                                item
+                                key={index}
+                                lg={4}
+                                md={6}
+                                xs={12}
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    flex: 1,
+                                }}
+                            >
+                                <AnswererCard
+                                    userInfo={user}
+                                    nextUrl={
+                                        props.selectModel
+                                            ? `/order/create/${user.id}`
+                                            : undefined
+                                    }
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+                )}
+                {maxPage > 1 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        maxPage={maxPage}
+                        totalCount={totalCount}
+                        itemPrePage={itemPrePage}
+                        onPageChanged={onPageChanged}
+                    />
+                )}
+            </Box> :
         <Box sx={{ pt: 3 }} mt={1}>
             {answerList && (
                 <Grid container spacing={3} marginBottom={3}>
