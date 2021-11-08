@@ -25,7 +25,7 @@ import {AccountCircle} from "@mui/icons-material";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import userService from "../services/userService";
-import systemConfigService from "../services/systemConfigService";
+import AnswererList from "./AnswererList";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -389,7 +389,15 @@ export default function Welcome() {
                             </Typography>
                         </>
                     }
+                    sx={{paddingBottom: 0}}
                 />
+                <CardContent  sx={{paddingTop: 1}}>
+                    <AnswererList
+                        userRole={UserRole.ANSWERER}
+                        briefMsg={true}
+                        selectModel={true}
+                    />
+                </CardContent>
             </Card>
         );
     }

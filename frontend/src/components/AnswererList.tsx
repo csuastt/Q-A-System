@@ -5,8 +5,10 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import AnswererCard from "./AnswererCard";
 import Typography from "@mui/material/Typography";
+import UserList from "./UserList";
 import { parseIntWithDefault, useQuery } from "../util";
 import Pagination from "./Pagination";
+import {List} from "@mui/material";
 
 const AnswererList: React.FC<{
     selectModel?: boolean;
@@ -41,7 +43,7 @@ const AnswererList: React.FC<{
             });
 
         setTimeout(() => {
-            if (!answerList) setLongPending(true);
+            setLongPending(true);
         }, 500);
     }, [currentPage, itemPrePage, props.userRole]);
 
@@ -51,13 +53,15 @@ const AnswererList: React.FC<{
 
     if (longPending && !answerList) {
         return (
-            <Box sx={{ pt: 3 }} mt={1}>
-                <Grid container spacing={3}>
-                    <Grid item lg={4} md={6} xs={12}>
-                        <AnswererCard placeholder={true} />
+            props.briefMsg ?
+                <UserList userRole={UserRole.ANSWERER} renderPlaceHolder={true}/> :
+                <Box sx={{ pt: 3 }} mt={1}>
+                    <Grid container spacing={3}>
+                        <Grid item lg={4} md={6} xs={12}>
+                            <AnswererCard placeholder={true} />
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Box>
+                </Box>
         );
     }
     if (answerList && totalCount === 0) {
@@ -69,6 +73,32 @@ const AnswererList: React.FC<{
     }
     return (
         props.briefMsg ?
+            <Box>
+                {answerList && (
+                    <List sx={{ width: '100%', bgcolor: 'background.paper', paddingTop: 0}}>
+                        {answerList.map((user: UserBasicInfo, index: number) => (
+                                <AnswererCard
+                                    userInfo={user}
+                                    nextUrl={
+                                        props.selectModel
+                                            ? `/order/create/${user.id}`
+                                            : undefined
+                                    }
+                                    listMode={true}
+                                />
+                        ))}
+                    </List>
+                )}
+                {maxPage > 1 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        maxPage={maxPage}
+                        totalCount={totalCount}
+                        itemPrePage={itemPrePage}
+                        onPageChanged={onPageChanged}
+                    />
+                )}
+            </Box> :
             <Box sx={{ pt: 3 }} mt={1}>
                 {answerList && (
                     <Grid container spacing={3} marginBottom={3}>
@@ -106,45 +136,7 @@ const AnswererList: React.FC<{
                         onPageChanged={onPageChanged}
                     />
                 )}
-            </Box> :
-        <Box sx={{ pt: 3 }} mt={1}>
-            {answerList && (
-                <Grid container spacing={3} marginBottom={3}>
-                    {answerList.map((user: UserBasicInfo, index: number) => (
-                        <Grid
-                            item
-                            key={index}
-                            lg={4}
-                            md={6}
-                            xs={12}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                flex: 1,
-                            }}
-                        >
-                            <AnswererCard
-                                userInfo={user}
-                                nextUrl={
-                                    props.selectModel
-                                        ? `/order/create/${user.id}`
-                                        : undefined
-                                }
-                            />
-                        </Grid>
-                    ))}
-                </Grid>
-            )}
-            {maxPage > 1 && (
-                <Pagination
-                    currentPage={currentPage}
-                    maxPage={maxPage}
-                    totalCount={totalCount}
-                    itemPrePage={itemPrePage}
-                    onPageChanged={onPageChanged}
-                />
-            )}
-        </Box>
+            </Box>
     );
 };
 

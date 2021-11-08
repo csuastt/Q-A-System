@@ -6,7 +6,7 @@ import App from "./App";
 import AppManage from "./AppManage";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-axios.defaults.baseURL = "http://localhost:8080/api";
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE;
 
 ReactDOM.render(
     <React.StrictMode>

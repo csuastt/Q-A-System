@@ -12,8 +12,10 @@ import { Link as RouterLink } from "react-router-dom";
 import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
-import { Grid } from "@mui/material";
+import {Grid, IconButton, ListItem, ListItemAvatar, ListItemText, Stack} from "@mui/material";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import AnswererDetailDialog from "./AnswererDetailDialog";
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 
 const AnswererCard: React.FC<{
     userInfo?: UserBasicInfo;
@@ -21,6 +23,7 @@ const AnswererCard: React.FC<{
     placeholder?: boolean;
     nextUrl?: string;
     briefMsg?: boolean;
+    listMode?: boolean;
 }> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -66,6 +69,59 @@ const AnswererCard: React.FC<{
     }
 
     return userInfo ? (
+        props.listMode ?
+            <>
+                    <ListItem alignItems="flex-start">
+                        <ListItemAvatar>
+                            <Avatar src={userInfo.avatar} />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={
+                                userInfo.nickname
+                            }
+                            secondary={
+                                <React.Fragment>
+                                    <Typography
+                                        sx={{ display: 'inline' }}
+                                        component="span"
+                                        variant="body2"
+                                        color="text.primary"
+                                    >
+                                        {"@" + userInfo.username}
+                                    </Typography>
+                                    {" — " + profession + "；" + description}
+                                    <Typography
+                                        variant="body2"
+                                        color="primary"
+                                    >
+                                        {userInfo.price + "￥/次"}
+                                    </Typography>
+                                </React.Fragment>
+                            }
+                        />
+                        <Stack direction="row" pt={1} spacing={1}>
+                            <IconButton aria-label="detail" onClick={handleOpenDialog} color="secondary">
+                                <MoreHorizIcon/>
+                            </IconButton>
+                            {props.nextUrl && (
+                                <IconButton aria-label="check"
+                                            component={RouterLink}
+                                            to={props.nextUrl}
+                                            color="primary"
+                                >
+                                    <ChatBubbleIcon/>
+                                </IconButton>
+                            )}
+                        </Stack>
+                    </ListItem>
+                <AnswererDetailDialog
+                    open={dialogOpen}
+                    onClose={handleCloseDialog}
+                    info={userInfo}
+                    maxWidth="sm"
+                    fullWidth
+                />
+            </> :
         <>
             <Card sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
                 <CardActionWrapper>

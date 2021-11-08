@@ -36,7 +36,7 @@ export default function App() {
             "/answerers/select",
             <AnswererList selectModel userRole={UserRole.ANSWERER} />,
         ],
-        ["/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
+        ["/answerers", <AnswererList userRole={UserRole.ANSWERER} selectModel={true}/>],
         [
             "/orders/:orderId",
             <PathParamParser
