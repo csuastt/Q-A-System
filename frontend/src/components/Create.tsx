@@ -22,8 +22,8 @@ import CreateDetailDialog from "./CreateDetailDialog";
 
 // role options
 const manager_role_options = [
-    { value: ManagerRole.ADMIN, label: "管理员" },
     { value: ManagerRole.REVIEWER, label: "审核员" },
+    { value: ManagerRole.ADMIN, label: "管理员" },
 ];
 
 export const validate_role = (value: any) => {
