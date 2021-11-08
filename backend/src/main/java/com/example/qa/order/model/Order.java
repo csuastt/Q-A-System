@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -36,8 +37,10 @@ public class Order {
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
     private String questionTitle;
     @Lob
+    @Type(type="text")
     private String questionDescription;
     @Lob
+    @Type(type="text")
     private String answer;
     private int price;
 

@@ -6,6 +6,7 @@ import com.example.qa.user.exchange.UserRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -34,6 +35,7 @@ public class User {
 
     private int price = 0;
     @Lob
+    @Type(type="text")
     private String description = "";
 
     private ZonedDateTime createTime;
@@ -44,6 +46,7 @@ public class User {
 
     private int earningsTotal = 0;
     @Lob
+    @Type(type="text")
     private String earningsMonthly = "[]";
 
     private int askCount = 0;
