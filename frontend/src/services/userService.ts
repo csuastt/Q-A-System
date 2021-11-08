@@ -1,7 +1,8 @@
 import axios from "axios";
 import {
     EarningsInfo,
-    PagedList, StatsInfo,
+    PagedList,
+    StatsInfo,
     UserBasicInfo,
     UserFullyInfo,
     UserInfo,

@@ -1,27 +1,34 @@
-import {useTheme} from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActionArea from "@mui/material/CardActionArea";
-import {Link as RouterLink} from "react-router-dom";
-import React, {useContext, useEffect, useState} from "react";
+import { Link as RouterLink } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
 import AuthContext from "../AuthContext";
-import {UserRole} from "../services/definations";
-import HomeIcon from '@mui/icons-material/Home';
-import {CardHeader, Grid, List, ListItem, ListItemIcon, ListItemText} from "@mui/material";
+import { UserRole } from "../services/definations";
+import HomeIcon from "@mui/icons-material/Home";
+import {
+    CardHeader,
+    Grid,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+} from "@mui/material";
 import IncomeStatistics from "./IncomeStatistics";
 import Avatar from "@mui/material/Avatar";
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Link from "@mui/material/Link";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import RateReviewIcon from "@mui/icons-material/RateReview";
-import {AccountCircle} from "@mui/icons-material";
+import { AccountCircle } from "@mui/icons-material";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import userService from "../services/userService";
@@ -55,7 +62,7 @@ export default function Welcome() {
             style={{ border: "none", boxShadow: "none" }}
         >
             <CardActionArea component={RouterLink} to={props.to}>
-                <CardContent  sx={{padding: 1}}>
+                <CardContent sx={{ padding: 1 }}>
                     <Box sx={{ display: "flex", flexDirection: "row" }}>
                         <props.Icon
                             sx={{
@@ -63,7 +70,11 @@ export default function Welcome() {
                             }}
                         />
                         <Box sx={{ flexDirection: "column" }}>
-                            <Typography component="div" variant="body1" fontWeight={600}>
+                            <Typography
+                                component="div"
+                                variant="body1"
+                                fontWeight={600}
+                            >
                                 {props.title1}
                             </Typography>
                             <Typography
@@ -81,193 +92,172 @@ export default function Welcome() {
     );
 
     const drawAboutMe = () => {
-      return (
-          <Card>
-              <CardHeader
-                  title ={
-                      <>
-                          <Typography
-                              align="left"
-                              variant="h6"
-                          >
-                              关于我
-                          </Typography>
-                      </>
-                  }
-                  subheader={
-                      <>
-                          <Typography
-                              align="left"
-                              variant="body2"
-                          >
-                              下方显示了您的基本情况
-                          </Typography>
-                      </>
-                  }
-              />
-              <CardContent>
-                  <Box
-                      sx={{
-                          alignItems: "center",
-                          display: "flex",
-                          flexDirection: "column",
-                      }}
-                  >
-                      <Avatar
-                          src={user ? user.avatar : ""}
-                          sx={{
-                              height: 80,
-                              width: 80,
-                          }}
-                      />
-                      <Box mt={2}>
-                          <Typography
-                              color="textPrimary"
-                              variant="h5"
-                          >
-                              {user ? (user.nickname === ""
-                                  ? "匿名用户"
-                                  : user.nickname) :
-                                  ("尚未登录")
-                              }
-                          </Typography>
-                      </Box>
-                  </Box>
-                  <Box>
-                      <List dense={true}  sx={{paddingBottom: 0}}>
-                          <ListItem sx={{paddingBottom: 0}}>
-                              <ListItemIcon
-                                  sx={{minWidth: 30}}
-                              >
-                                  <AssignmentIndIcon/>
-                              </ListItemIcon>
-                              <ListItemText
-                                  primary={
-                                      <Typography
-                                          color="textPrimary"
-                                          variant="body1"
-                                          gutterBottom
-                                      >
-                                          您的身份：
-                                          <Box component="span"
-                                               fontWeight="fontWeightBold"
-                                               fontSize={22}
-                                          >
-                                              {user ? (user.role === UserRole.ANSWERER
-                                                      ? "回答者"
-                                                      : "提问者") :
-                                                  ("游客")
-                                              }
-                                          </Box>
-                                      </Typography>
-                                  }
-                              />
-                          </ListItem>
-                          <ListItem sx={{paddingTop: 0, paddingBottom: 0}}>
-                              <ListItemIcon
-                                  sx={{minWidth: 30}}
-                              >
-                                  <AssignmentIcon/>
-                              </ListItemIcon>
-                              <ListItemText
-                                  primary={
-                                      <Typography
-                                          color="textPrimary"
-                                          variant="body1"
-                                          gutterBottom
-                                      >
-                                          您提问了：
-                                          <Box component="span"
-                                               fontWeight="fontWeightBold"
-                                               fontSize={22}
-                                          >
-                                              {user ? (askCount) :
-                                                  ("NA")
-                                              }
-                                          </Box> 单
-                                      </Typography>
-                                  }
-                              />
-                          </ListItem>
-                          <ListItem sx={{paddingTop: 0, paddingBottom: 0}}>
-                              <ListItemIcon
-                                  sx={{minWidth: 30}}
-                              >
-                                  <AssignmentTurnedInIcon/>
-                              </ListItemIcon>
-                              <ListItemText
-                                  primary={
-                                      <Typography
-                                          color="textPrimary"
-                                          variant="body1"
-                                          gutterBottom
-                                      >
-                                          您回答了：
-                                          <Box component="span"
-                                               fontWeight="fontWeightBold"
-                                               fontSize={22}
-                                          >
-                                              {user ? (answerCount) :
-                                                  ("NA")
-                                              }
-                                          </Box> 单
-                                      </Typography>
-                                  }
-                              />
-                          </ListItem>
-                          <ListItem sx={{paddingTop: 0, paddingBottom: 0}}>
-                              <ListItemIcon
-                                  sx={{minWidth: 30}}
-                              >
-                                  <CreditCardIcon/>
-                              </ListItemIcon>
-                              <ListItemText
-                                  primary={
-                                      <Typography
-                                          color="textPrimary"
-                                          variant="body1"
-                                          gutterBottom
-                                      >
-                                          您的余额为：
-                                          <Box component="span"
-                                               fontWeight="fontWeightBold"
-                                               fontSize={22}
-                                          >
-                                              {user ? user.balance :
-                                                  ("NA")
-                                              }
-                                          </Box> ￥
-                                      </Typography>
-                                  }
-                              />
-                          </ListItem>
-                      </List>
-                  </Box>
-              </CardContent>
-          </Card>
-      );
-    }
+        return (
+            <Card>
+                <CardHeader
+                    title={
+                        <>
+                            <Typography align="left" variant="h6">
+                                关于我
+                            </Typography>
+                        </>
+                    }
+                    subheader={
+                        <>
+                            <Typography align="left" variant="body2">
+                                下方显示了您的基本情况
+                            </Typography>
+                        </>
+                    }
+                />
+                <CardContent>
+                    <Box
+                        sx={{
+                            alignItems: "center",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
+                        <Avatar
+                            src={user ? user.avatar : ""}
+                            sx={{
+                                height: 80,
+                                width: 80,
+                            }}
+                        />
+                        <Box mt={2}>
+                            <Typography color="textPrimary" variant="h5">
+                                {user
+                                    ? user.nickname === ""
+                                        ? "匿名用户"
+                                        : user.nickname
+                                    : "尚未登录"}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Box>
+                        <List dense={true} sx={{ paddingBottom: 0 }}>
+                            <ListItem sx={{ paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <AssignmentIndIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            您的身份：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                {user
+                                                    ? user.role ===
+                                                      UserRole.ANSWERER
+                                                        ? "回答者"
+                                                        : "提问者"
+                                                    : "游客"}
+                                            </Box>
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <AssignmentIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            您提问了：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                {user ? askCount : "NA"}
+                                            </Box>{" "}
+                                            单
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <AssignmentTurnedInIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            您回答了：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                {user ? answerCount : "NA"}
+                                            </Box>{" "}
+                                            单
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <CreditCardIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            您的余额为：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                {user ? user.balance : "NA"}
+                                            </Box>{" "}
+                                            ￥
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                        </List>
+                    </Box>
+                </CardContent>
+            </Card>
+        );
+    };
 
     const drawMsgList = () => {
         return (
             <Card>
                 <CardHeader
-                    title ={
+                    title={
                         <>
-                            <Typography
-                                align="left"
-                                variant="h6"
-                            >
+                            <Typography align="left" variant="h6">
                                 我的消息
                             </Typography>
                         </>
                     }
                     subheader={
                         <>
-                            <Typography
-                                align="left"
-                                variant="body2"
-                            >
+                            <Typography align="left" variant="body2">
                                 下方显示了您的消息列表
                             </Typography>
                         </>
@@ -275,35 +265,29 @@ export default function Welcome() {
                 />
             </Card>
         );
-    }
+    };
 
     const drawFastJump = () => {
         return (
             <Card>
                 <CardHeader
-                    title ={
+                    title={
                         <>
-                            <Typography
-                                align="left"
-                                variant="h6"
-                            >
+                            <Typography align="left" variant="h6">
                                 快速跳转
                             </Typography>
                         </>
                     }
                     subheader={
                         <>
-                            <Typography
-                                align="left"
-                                variant="body2"
-                            >
+                            <Typography align="left" variant="body2">
                                 您可以随意探索平台~
                             </Typography>
                         </>
                     }
-                    sx = {{paddingBottom: 0}}
+                    sx={{ paddingBottom: 0 }}
                 />
-                <CardContent sx={{paddingTop: 1}}>
+                <CardContent sx={{ paddingTop: 1 }}>
                     {user ? (
                         <>
                             <ButtonCardWrapper
@@ -356,28 +340,22 @@ export default function Welcome() {
                 </CardContent>
             </Card>
         );
-    }
+    };
 
     const drawAnswererList = () => {
         return (
             <Card>
                 <CardHeader
-                    title ={
+                    title={
                         <>
-                            <Typography
-                                align="left"
-                                variant="h6"
-                            >
+                            <Typography align="left" variant="h6">
                                 回答者列表
                             </Typography>
                         </>
                     }
                     subheader={
                         <>
-                            <Typography
-                                align="left"
-                                variant="body2"
-                            >
+                            <Typography align="left" variant="body2">
                                 您可以随意提问，
                                 <Link
                                     variant="body2"
@@ -389,9 +367,9 @@ export default function Welcome() {
                             </Typography>
                         </>
                     }
-                    sx={{paddingBottom: 0}}
+                    sx={{ paddingBottom: 0 }}
                 />
-                <CardContent  sx={{paddingTop: 1}}>
+                <CardContent sx={{ paddingTop: 1 }}>
                     <AnswererList
                         userRole={UserRole.ANSWERER}
                         briefMsg={true}
@@ -400,7 +378,7 @@ export default function Welcome() {
                 </CardContent>
             </Card>
         );
-    }
+    };
 
     return (
         <>
@@ -409,54 +387,37 @@ export default function Welcome() {
                 variant="h6"
                 sx={{
                     margin: theme.spacing(1, 2, 1, 0),
-                    fontWeight: 600
+                    fontWeight: 600,
                 }}
             >
                 Hi，是求知让我们相聚于此
             </Typography>
             <Box>
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                }}>
-                    <HomeIcon color={"primary"}/>
-                    <span style={{marginLeft: 5}}>/ 主页</span>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                    }}
+                >
+                    <HomeIcon color={"primary"} />
+                    <span style={{ marginLeft: 5 }}>/ 主页</span>
                 </div>
             </Box>
-            <Grid
-                container
-                spacing={4}
-            >
+            <Grid container spacing={4}>
                 <Grid item md={8} xs={12} mt={2}>
-                    <Grid
-                        container
-                        spacing={4}
-                        direction={"column"}
-                    >
+                    <Grid container spacing={4} direction={"column"}>
                         <Grid item>
-                            <IncomeStatistics briefMsg={true} user={user}/>
+                            <IncomeStatistics briefMsg={true} user={user} />
                         </Grid>
-                        <Grid item>
-                            {drawAnswererList()}
-                        </Grid>
+                        <Grid item>{drawAnswererList()}</Grid>
                     </Grid>
                 </Grid>
                 <Grid item md={4} xs={12} mt={2}>
-                    <Grid
-                        container
-                        spacing={4}
-                        direction={"column"}
-                    >
-                        <Grid item>
-                            {drawAboutMe()}
-                        </Grid>
-                        <Grid item>
-                            {drawFastJump()}
-                        </Grid>
-                        <Grid item>
-                            {drawMsgList()}
-                        </Grid>
+                    <Grid container spacing={4} direction={"column"}>
+                        <Grid item>{drawAboutMe()}</Grid>
+                        <Grid item>{drawFastJump()}</Grid>
+                        <Grid item>{drawMsgList()}</Grid>
                     </Grid>
                 </Grid>
             </Grid>

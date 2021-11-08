@@ -36,7 +36,10 @@ export default function App() {
             "/answerers/select",
             <AnswererList selectModel userRole={UserRole.ANSWERER} />,
         ],
-        ["/answerers", <AnswererList userRole={UserRole.ANSWERER} selectModel={true}/>],
+        [
+            "/answerers",
+            <AnswererList userRole={UserRole.ANSWERER} selectModel={true} />,
+        ],
         [
             "/orders/:orderId",
             <PathParamParser
@@ -59,7 +62,7 @@ export default function App() {
                 isAdmin={false}
             />,
         ],
-        ["/income", <IncomeStatistics userId={user?.id} briefMsg={false}/>],
+        ["/income", <IncomeStatistics userId={user?.id} briefMsg={false} />],
         ["/help", <Help />],
         ["/", <Welcome />],
     ];

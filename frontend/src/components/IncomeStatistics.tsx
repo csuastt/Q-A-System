@@ -4,10 +4,10 @@ import { merge } from "lodash";
 import BaseOptionChart from "./BaseOptionChart";
 import React, { useEffect, useMemo, useState } from "react";
 import userService from "../services/userService";
-import {ConfigInfo, UserInfo, UserRole} from "../services/definations";
+import { ConfigInfo, UserInfo, UserRole } from "../services/definations";
 import systemConfigService from "../services/systemConfigService";
 import Typography from "@mui/material/Typography";
-import {Link as RouterLink} from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 
 const IncomeStatistics: React.FC<{
@@ -15,7 +15,7 @@ const IncomeStatistics: React.FC<{
     user?: UserInfo;
     briefMsg: boolean;
 }> = (props) => {
-    const monthCount: number = (props.briefMsg? 6 : 12);
+    const monthCount: number = props.briefMsg ? 6 : 12;
     const [earningsList, setEarningsList] = useState<Array<number>>(
         new Array(monthCount).fill(0)
     );
@@ -36,10 +36,8 @@ const IncomeStatistics: React.FC<{
 
     useEffect(() => {
         let userId = null;
-        if (props.userId)
-            userId = props.userId;
-        else if (props.user)
-            userId = props.user.id;
+        if (props.userId) userId = props.userId;
+        else if (props.user) userId = props.user.id;
         if (userId) {
             userService.getUserIncome(userId).then((info) => {
                 let new_earningsList = new Array(12).fill(0);
@@ -58,7 +56,7 @@ const IncomeStatistics: React.FC<{
             });
     }, [labelsList, props.briefMsg, props.user, props.userId]);
 
-    const fillType = (props.briefMsg ? "solid" : "gradient")
+    const fillType = props.briefMsg ? "solid" : "gradient";
     const chartOptions = merge(BaseOptionChart(), {
         stroke: { width: [2, 2, 0] },
         plotOptions: { bar: { columnWidth: "11%", borderRadius: 4 } },
@@ -79,44 +77,33 @@ const IncomeStatistics: React.FC<{
         },
     });
 
-    return (
-        props.briefMsg ?
-        (
-            <Box>
-                <Card>
-                    <CardHeader
-                        title={
-                            <Typography
-                                align="left"
-                                variant="h6"
-                            >
-                                我的收入
-                            </Typography>
-                        }
-                        subheader={
-                            props.user ?
-                                (props.user.role === UserRole.ANSWERER ?
+    return props.briefMsg ? (
+        <Box>
+            <Card>
+                <CardHeader
+                    title={
+                        <Typography align="left" variant="h6">
+                            我的收入
+                        </Typography>
+                    }
+                    subheader={
+                        props.user ? (
+                            props.user.role === UserRole.ANSWERER ? (
                                 <>
-                                    <Typography
-                                        align="left"
-                                        variant="body2"
-                                    >
+                                    <Typography align="left" variant="body2">
                                         下方显示了您近半年的收入情况，
                                         <Link
                                             variant="body2"
                                             component={RouterLink}
                                             to="/income"
                                         >
-                                        点此查看更多
+                                            点此查看更多
                                         </Link>
                                     </Typography>
-
-                                </> :
+                                </>
+                            ) : (
                                 <>
-                                    <Typography
-                                        align="left"
-                                        variant="body2"
-                                    >
+                                    <Typography align="left" variant="body2">
                                         您还不是回答者，
                                         <Link
                                             variant="body2"
@@ -126,48 +113,44 @@ const IncomeStatistics: React.FC<{
                                             点此申请
                                         </Link>
                                     </Typography>
-                                </>) :
-                                (
-                                    <>
-                                        <Typography
-                                            align="left"
-                                            variant="body2"
-                                        >
-                                            您尚未登录，
-                                            <Link
-                                                variant="body2"
-                                                component={RouterLink}
-                                                to="/login"
-                                            >
-                                                点此登录
-                                            </Link>
-                                        </Typography>
-
-                                    </>
-                                )
-                        }
-                        sx = {{paddingBottom: 0}}
+                                </>
+                            )
+                        ) : (
+                            <>
+                                <Typography align="left" variant="body2">
+                                    您尚未登录，
+                                    <Link
+                                        variant="body2"
+                                        component={RouterLink}
+                                        to="/login"
+                                    >
+                                        点此登录
+                                    </Link>
+                                </Typography>
+                            </>
+                        )
+                    }
+                    sx={{ paddingBottom: 0 }}
+                />
+                <Box sx={{ m: 1 }} dir="ltr">
+                    <ReactApexChart
+                        type="bar"
+                        series={[
+                            {
+                                name: "收入",
+                                type: "column",
+                                data: earningsList,
+                            },
+                        ]}
+                        // @ts-ignore
+                        options={chartOptions}
+                        height="170%"
                     />
-                    <Box sx={{ m: 1 }} dir="ltr">
-                            <ReactApexChart
-                                type="bar"
-                                series={[
-                                    {
-                                        name: "收入",
-                                        type: "column",
-                                        data: earningsList,
-                                    }
-                                ]}
-                                // @ts-ignore
-                                options={chartOptions}
-                                height= "170%"
-                            />
-                    </Box>
-                </Card>
-            </Box>
-        ) :
-        (
-            <Box mt={2} sx={{ width: "95%" }}>
+                </Box>
+            </Card>
+        </Box>
+    ) : (
+        <Box mt={2} sx={{ width: "95%" }}>
             <Card>
                 <CardHeader
                     title="用户收入统计"
@@ -211,7 +194,7 @@ const IncomeStatistics: React.FC<{
                     </Typography>
                 </Box>
             </Card>
-        </Box>)
+        </Box>
     );
 };
 

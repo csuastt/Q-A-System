@@ -16,9 +16,7 @@ const UserList: React.FC<{
     selectModel?: boolean;
     userRole: UserRole;
     renderPlaceHolder?: boolean;
-}> = (
-    props
-) => {
+}> = (props) => {
     const query = useQuery();
     const [userList, setUserList] = useState<Array<UserBasicInfo>>();
     const [currentPage, setCurrentPage] = useState(
