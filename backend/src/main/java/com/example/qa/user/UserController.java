@@ -151,6 +151,14 @@ public class UserController {
         return new EarningsResponse(user.getEarningsTotal(), MonthlyEarnings.toList(user.getEarningsMonthly()));
     }
 
+    @GetMapping("/{id}/stats")
+    public UserStatsResponse getStats(@PathVariable(value = "id") long id) {
+        authLoginOrThrow();
+        authUserOrAdminOrThrow(id);
+        User user = getUserOrThrow(id, false);
+        return new UserStatsResponse(user);
+    }
+
     private User getUserOrThrow(long id, boolean allowDeleted) {
         try {
             return userService.getById(id, allowDeleted);
