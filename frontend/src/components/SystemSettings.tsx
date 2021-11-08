@@ -142,7 +142,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="最低价格限制"
+                                label="回答者最低价格"
                                 name="minPrice"
                                 InputProps={{
                                     readOnly: false,
@@ -156,7 +156,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="最高价格限制"
+                                label="回答者最高价格"
                                 name="maxPrice"
                                 InputProps={{
                                     readOnly: false,
@@ -170,7 +170,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="响应过期秒数"
+                                label="接单限时 (秒)"
                                 name="respondExpirationSeconds"
                                 InputProps={{
                                     readOnly: false,
@@ -187,7 +187,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="回答过期秒数"
+                                label="回答限时 (秒)"
                                 name="answerExpirationSeconds"
                                 InputProps={{
                                     readOnly: false,
@@ -204,7 +204,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="履行到期秒数"
+                                label="结算延迟 (秒)"
                                 name="fulfillExpirationSeconds"
                                 InputProps={{
                                     readOnly: false,
@@ -221,7 +221,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="最多聊天消息数"
+                                label="聊天消息数限制"
                                 name="maxChatMessages"
                                 InputProps={{
                                     readOnly: false,
@@ -235,7 +235,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="最长聊天时间秒数"
+                                label="聊天限时 (秒)"
                                 name="maxChatTimeSeconds"
                                 InputProps={{
                                     readOnly: false,
@@ -251,7 +251,7 @@ export default class SystemSettings extends Component<
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
-                                label="费率"
+                                label="抽成比例 (%)"
                                 name="feeRate"
                                 InputProps={{
                                     readOnly: false,
