@@ -151,6 +151,11 @@ export interface EarningsInfo {
     monthly: Array<EarningsMonthly>;
 }
 
+export interface StatsInfo {
+    askCount: number;
+    answerCount: number;
+}
+
 export interface ConfigInfo {
     minPrice: number;
     maxPrice: number;

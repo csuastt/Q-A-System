@@ -2,6 +2,7 @@ import axios from "axios";
 import {
     EarningsInfo,
     PagedList,
+    StatsInfo,
     UserBasicInfo,
     UserFullyInfo,
     UserInfo,
@@ -85,6 +86,12 @@ class UserService {
     getUserIncome(id: number): Promise<EarningsInfo> {
         return axios
             .get(`/users/${id}/earnings`)
+            .then((response) => response.data);
+    }
+
+    getUserStats(id: number): Promise<StatsInfo> {
+        return axios
+            .get(`/users/${id}/stats`)
             .then((response) => response.data);
     }
 }

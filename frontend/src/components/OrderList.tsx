@@ -63,7 +63,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 .then(acceptOrderList);
         }
         setTimeout(() => {
-            if (!questionList) setLongPending(true);
+            setLongPending(true);
         }, 500);
     }, [
         currentPage,

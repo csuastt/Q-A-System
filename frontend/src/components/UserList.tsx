@@ -12,9 +12,11 @@ import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 
-const UserList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
-    props
-) => {
+const UserList: React.FC<{
+    selectModel?: boolean;
+    userRole: UserRole;
+    renderPlaceHolder?: boolean;
+}> = (props) => {
     const query = useQuery();
     const [userList, setUserList] = useState<Array<UserBasicInfo>>();
     const [currentPage, setCurrentPage] = useState(
@@ -70,7 +72,7 @@ const UserList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
         </>
     );
 
-    if (userList == null) {
+    if (userList == null || props.renderPlaceHolder) {
         return (
             <Stack spacing={2} mt={4}>
                 {renderPlaceholder()}

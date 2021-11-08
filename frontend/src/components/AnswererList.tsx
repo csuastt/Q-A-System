@@ -5,12 +5,16 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import AnswererCard from "./AnswererCard";
 import Typography from "@mui/material/Typography";
+import UserList from "./UserList";
 import { parseIntWithDefault, useQuery } from "../util";
 import Pagination from "./Pagination";
+import { List } from "@mui/material";
 
-const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
-    props
-) => {
+const AnswererList: React.FC<{
+    selectModel?: boolean;
+    briefMsg?: boolean;
+    userRole: UserRole;
+}> = (props) => {
     const query = useQuery();
     const [answerList, setAnswerList] = useState<Array<UserBasicInfo>>();
     const [currentPage, setCurrentPage] = useState(
@@ -38,7 +42,7 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
             });
 
         setTimeout(() => {
-            if (!answerList) setLongPending(true);
+            setLongPending(true);
         }, 500);
     }, [currentPage, itemPrePage, props.userRole]);
 
@@ -47,7 +51,9 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
     };
 
     if (longPending && !answerList) {
-        return (
+        return props.briefMsg ? (
+            <UserList userRole={UserRole.ANSWERER} renderPlaceHolder={true} />
+        ) : (
             <Box sx={{ pt: 3 }} mt={1}>
                 <Grid container spacing={3}>
                     <Grid item lg={4} md={6} xs={12}>
@@ -64,7 +70,40 @@ const AnswererList: React.FC<{ selectModel?: boolean; userRole: UserRole }> = (
             </Typography>
         );
     }
-    return (
+    return props.briefMsg ? (
+        <Box>
+            {answerList && (
+                <List
+                    sx={{
+                        width: "100%",
+                        bgcolor: "background.paper",
+                        paddingTop: 0,
+                    }}
+                >
+                    {answerList.map((user: UserBasicInfo, index: number) => (
+                        <AnswererCard
+                            userInfo={user}
+                            nextUrl={
+                                props.selectModel
+                                    ? `/order/create/${user.id}`
+                                    : undefined
+                            }
+                            listMode={true}
+                        />
+                    ))}
+                </List>
+            )}
+            {maxPage > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    maxPage={maxPage}
+                    totalCount={totalCount}
+                    itemPrePage={itemPrePage}
+                    onPageChanged={onPageChanged}
+                />
+            )}
+        </Box>
+    ) : (
         <Box sx={{ pt: 3 }} mt={1}>
             {answerList && (
                 <Grid container spacing={3} marginBottom={3}>
