@@ -20,6 +20,10 @@ import { UserRole } from "../services/definations";
 import HomeIcon from '@mui/icons-material/Home';
 import {Grid} from "@mui/material";
 import IncomeStatistics from "./IncomeStatistics";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
+import CardActions from "@mui/material/CardActions";
+import Button from "@mui/material/Button";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -63,6 +67,51 @@ export default function Welcome() {
         </Card>
     );
 
+    const drawAboutMe = () => {
+      return (
+          <Card>
+              <CardContent>
+                  <Box
+                      sx={{
+                          alignItems: "center",
+                          display: "flex",
+                          flexDirection: "column",
+                      }}
+                  >
+                      <Avatar
+                          src={user ? user.avatar : ""}
+                          sx={{
+                              height: 100,
+                              width: 100,
+                          }}
+                      />
+                      <Box mt={2}>
+                          <Typography
+                              color="textPrimary"
+                              gutterBottom
+                              variant="h4"
+                          >
+                              {user ? (user.nickname === ""
+                                  ? "匿名用户"
+                                  : user.nickname) :
+                                  ("尚未登录")
+                              }
+                          </Typography>
+                      </Box>
+                      <Box mx={2}>
+                          <Typography
+                              color="textSecondary"
+                              variant="body1"
+                          >
+                              {"你还不是回答者，快去申请吧~"}
+                          </Typography>
+                      </Box>
+                  </Box>
+              </CardContent>
+          </Card>
+      );
+    }
+
 
 
     return (
@@ -94,6 +143,9 @@ export default function Welcome() {
             >
                 <Grid item md={8} xs={12} mt={2}>
                     <IncomeStatistics briefMsg={true} user={user}/>
+                </Grid>
+                <Grid item md={4} xs={12} mt={2}>
+                    {drawAboutMe()}
                 </Grid>
             </Grid>
             {/*<ButtonCardWrapper*/}

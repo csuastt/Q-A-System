@@ -7,6 +7,8 @@ import userService from "../services/userService";
 import {ConfigInfo, UserInfo, UserRole} from "../services/definations";
 import systemConfigService from "../services/systemConfigService";
 import Typography from "@mui/material/Typography";
+import {Link as RouterLink} from "react-router-dom";
+import Link from "@mui/material/Link";
 
 const IncomeStatistics: React.FC<{
     userId?: number;
@@ -83,14 +85,63 @@ const IncomeStatistics: React.FC<{
             <Box>
                 <Card>
                     <CardHeader
-                        title="近半年收入情况"
+                        title="我的收入"
                         subheader={
-                            props.user && props.user.role === UserRole.ANSWERER ?
-                            "" :
-                            "您还不是回答者，快去申请吧~"
+                            props.user ?
+                                (props.user.role === UserRole.ANSWERER ?
+                                <>
+                                    <Typography
+                                        align="left"
+                                        variant="body2"
+                                    >
+                                        下方显示了您近半年的收入情况，
+                                        <Link
+                                            variant="body2"
+                                            component={RouterLink}
+                                            to="/income"
+                                        >
+                                        点此查看更多
+                                        </Link>
+                                    </Typography>
+
+                                </> :
+                                <>
+                                    <Typography
+                                        align="left"
+                                        variant="body2"
+                                    >
+                                        您还不是回答者，
+                                        <Link
+                                            variant="body2"
+                                            component={RouterLink}
+                                            to="/profile"
+                                        >
+                                            点此申请
+                                        </Link>
+                                    </Typography>
+                                </>) :
+                                (
+                                    <>
+                                        <Typography
+                                            align="left"
+                                            variant="body2"
+                                        >
+                                            您尚未登录，
+                                            <Link
+                                                variant="body2"
+                                                component={RouterLink}
+                                                to="/login"
+                                            >
+                                                点此登录
+                                            </Link>
+                                        </Typography>
+
+                                    </>
+                                )
                         }
+                        sx = {{paddingBottom: 0}}
                     />
-                    <Box sx={{ m: 2, marginBottom: 1 }} dir="ltr">
+                    <Box sx={{ m: 1 }} dir="ltr">
                             <ReactApexChart
                                 type="bar"
                                 series={[
@@ -102,6 +153,7 @@ const IncomeStatistics: React.FC<{
                                 ]}
                                 // @ts-ignore
                                 options={chartOptions}
+                                height= "170%"
                             />
                     </Box>
                 </Card>
