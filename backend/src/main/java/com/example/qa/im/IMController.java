@@ -33,10 +33,10 @@ public class IMController {
     public void sendMessage(@DestinationVariable long orderId, @Payload MessagePayload payload, Principal auth) {
         log.info("send message {} {}", orderId, payload);
         var res = validator.check(orderId, auth);
-        if (payload.getMsgBody() == null) {
+        if (payload.msgBody() == null) {
             throw new MessageException(HttpStatus.BAD_REQUEST, "No message body");
         }
-        imService.sendFromUser(res.order(), res.sender(), payload.getMsgBody());
+        imService.sendFromUser(res.order(), res.sender(), payload.msgBody());
     }
 
     @ResponseBody
