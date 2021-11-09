@@ -2,6 +2,7 @@ package com.example.qa.test;
 
 import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
+import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
@@ -44,6 +45,9 @@ class OrderControllerTest {
     private static String askerToken;
     private static String answererToken;
     private static String superAdminToken;
+    private static String adminToken;
+    private static String askerToken2;
+    private static String answererToken2;
 
 
     @BeforeAll
@@ -68,6 +72,19 @@ class OrderControllerTest {
         userRepository.save(answerer);
         answererId = answerer.getId();
 
+        registerRequest.setUsername("testAsker2");
+        registerRequest.setPassword(passwordEncoder.encode(password));
+        registerRequest.setEmail(email);
+        User asker2 = new User(registerRequest);
+        userRepository.save(asker2);
+//        askerId = asker2.getId();
+
+        registerRequest.setUsername("testAnswerer2");
+        User answerer2 = new User(registerRequest);
+        answerer2.setRole(UserRole.ANSWERER);
+        userRepository.save(answerer2);
+//        answererId = answerer2.getId();
+
         AdminRequest adminRequest = new AdminRequest();
         adminRequest.setUsername("testAdmin");
         adminRequest.setPassword(passwordEncoder.encode(password));
@@ -84,11 +101,32 @@ class OrderControllerTest {
         userRequest.setPassword(password);
         answererToken = mockUtils.postAndDeserialize("/api/user/login", askerToken, userRequest, status().isOk(), TokenResponse.class).getToken();
 
+        LoginRequest user2Request = new LoginRequest();
+        user2Request.setUsername("testAsker2");
+        user2Request.setPassword(password);
+        askerToken2 = mockUtils.postAndDeserialize("/api/user/login", askerToken, user2Request, status().isOk(), TokenResponse.class).getToken();
+
+        user2Request.setUsername("testAnswerer2");
+        user2Request.setPassword(password);
+        answererToken2 = mockUtils.postAndDeserialize("/api/user/login", askerToken, user2Request, status().isOk(), TokenResponse.class).getToken();
+
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(SecurityConstants.SUPER_ADMIN_USERNAME);
         loginRequest.setPassword(SecurityConstants.SUPER_ADMIN_PASSWORD);
         TokenResponse tokenResponse = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
         superAdminToken = tokenResponse.getToken();
+
+        AdminRequest request = new AdminRequest();
+        request.setUsername("testAdmin" + 1);
+        request.setRole(AdminRole.ADMIN);
+        request.setPassword("password");
+        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
+        PasswordResponse passwordResponse = mockUtils.postAndDeserialize("/api/admins", superAdminToken, request, status().isOk(),PasswordResponse.class);
+        loginRequest.setUsername("testAdmin" + 1);
+        loginRequest.setPassword(passwordResponse.getPassword());
+        TokenResponse tokenResponse2 = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
+        adminToken = tokenResponse2.getToken();
+
     }
 
     @Test
@@ -99,6 +137,17 @@ class OrderControllerTest {
         request.setTitle(question);
         request.setDescription(description);
         OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
+        return result.getId();
+    }
+
+    @Test
+    long createOrderAdmin() throws Exception {
+        OrderRequest request = new OrderRequest();
+        request.setAsker(askerId);
+        request.setAnswerer(answererId);
+        request.setTitle(question);
+        request.setDescription(description);
+        OrderResponse result = mockUtils.postAndDeserialize("/api/orders", adminToken, request, status().isForbidden(), OrderResponse.class);
         return result.getId();
     }
 
@@ -255,6 +304,19 @@ class OrderControllerTest {
     }
 
     @Test
+    void noRespondOrder() throws Exception {
+        long id = createOrder();
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.REVIEWED);
+        edit(id, request);
+        AcceptRequest accept = new AcceptRequest(false);
+        mockUtils.postUrl("/api/orders/" + id + "/respond", null, accept, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/respond", answererToken, accept, status().isOk());
+        assertEquals(OrderState.REJECTED_BY_ANSWERER, query(id).getState());
+    }
+
+
+    @Test
     void respondInvalidOrder() throws Exception {
         long id = createOrder();
         AcceptRequest accept = new AcceptRequest(true);
@@ -268,8 +330,22 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setState(OrderState.ANSWERED);
         edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/end", answererToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/end", askerToken2, null, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/end", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/end", askerToken, null, status().isOk());
+        assertEquals(OrderState.CHAT_ENDED, query(id).getState());
+    }
+
+    @Test
+    void endOrderAnswer() throws Exception {
+        long id = createOrder();
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.ANSWERED);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/end", null, null, status().isUnauthorized());
+//        mockUtils.postUrl("/api/orders/" + id + "/end", askerToken, null, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/end", answererToken, null, status().isOk());
         assertEquals(OrderState.CHAT_ENDED, query(id).getState());
     }
 
@@ -323,4 +399,5 @@ class OrderControllerTest {
     void edit(long id, OrderRequest data) throws Exception {
         mockUtils.putUrl("/api/orders/" + id, superAdminToken, data, status().isOk());
     }
+
 }
