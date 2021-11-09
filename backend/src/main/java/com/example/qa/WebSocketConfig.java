@@ -14,7 +14,7 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 /**
  * WebSocket support configuration
  * <p>
- * Connection: WebSocket at "/api/websocket", with SockJS fallback at "/api/sockjs"
+ * Connection: WebSocket at "/api/ws", with SockJS fallback
  * <p>
  * Protocol: STOMP
  * <p>
@@ -30,8 +30,7 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 public class WebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/websocket");
-        registry.addEndpoint("/api/sockjs").withSockJS();
+        registry.addEndpoint("/api/ws").withSockJS();
         registry.setErrorHandler(new StompSubProtocolErrorHandler() {
             @Nullable
             @Override
