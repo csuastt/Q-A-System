@@ -8,6 +8,7 @@ import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.order.exchange.AcceptRequest;
+import com.example.qa.order.exchange.AnswerRequest;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.OrderEndReason;
@@ -137,6 +138,12 @@ class OrderControllerTest {
         request.setTitle(question);
         request.setDescription(description);
         OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
+        mockUtils.postUrl("/api/orders",answererToken, request, status().isForbidden());
+//        mockUtils.postUrl("/api/orders",answererToken2, request, status().isForbidden());
+//        mockUtils.postUrl("/api/orders",askerToken2, request, status().isForbidden());
+//        mockUtils.postUrl("/api/orders",superAdminToken, request, status().isOk());
+//        mockUtils.postUrl("/api/orders",adminToken, request, status().isOk());
+
         return result.getId();
     }
 
@@ -236,6 +243,7 @@ class OrderControllerTest {
         long id = createOrder();
         mockUtils.deleteUrl("/api/orders/" + id, askerToken, null, status().isForbidden());
         mockUtils.deleteUrl("/api/orders/" + id, superAdminToken, null, status().isOk());
+        mockUtils.deleteUrl("/api/orders/" + id, superAdminToken, null, status().isForbidden());
         mockUtils.deleteUrl("/api/orders/" + id, null, null, status().isUnauthorized());
     }
 
@@ -277,10 +285,39 @@ class OrderControllerTest {
         edit(id, request);
         AcceptRequest accept = new AcceptRequest(true);
         mockUtils.postUrl("/api/orders/" + id + "/review", superAdminToken, accept, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/review", superAdminToken, accept, status().isForbidden());
         // 普通管理员失败测例
+        mockUtils.postUrl("/api/orders/" + id + "/review", adminToken, accept, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/review", askerToken, accept, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/review", null, accept, status().isUnauthorized());
         assertEquals(OrderState.REVIEWED, query(id).getState());
+    }
+    @Test
+    void reviewNotOrder() throws Exception {
+        long id = createOrder();
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.CREATED);
+        edit(id, request);
+        AcceptRequest accept = new AcceptRequest(false);
+        mockUtils.postUrl("/api/orders/" + id + "/review", superAdminToken, accept, status().isOk());
+        // 普通管理员失败测例
+        mockUtils.postUrl("/api/orders/" + id + "/review", adminToken, accept, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/review", askerToken, accept, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/review", null, accept, status().isUnauthorized());
+    }
+    @Test
+    void answerOrder() throws Exception {
+        long id = createOrder();
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.CREATED);
+        edit(id, request);
+        AnswerRequest answer = new AnswerRequest();
+        answer.setAnswer("This is an answer");
+        mockUtils.postUrl("/api/orders/" + id + "/answer", answererToken, answer, status().isForbidden());
+        request.setState(OrderState.ACCEPTED);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/answer", answererToken, answer, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/answer", answererToken2, answer, status().isForbidden());
     }
 
     @Test
@@ -392,6 +429,11 @@ class OrderControllerTest {
 
     OrderResponse query(long id) throws Exception {
         OrderResponse result = mockUtils.getAndDeserialize("/api/orders/" + id, askerToken, null, null, status().isOk(), OrderResponse.class);
+        mockUtils.getUrl("/api/orders/" + id, answererToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id, answererToken2, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders/" + id, askerToken2, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders/" + id, adminToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id, superAdminToken, null, null, status().isOk());
         assertEquals(result.getId(), id);
         return result;
     }
