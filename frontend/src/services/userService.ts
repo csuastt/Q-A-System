@@ -72,7 +72,7 @@ class UserService {
 
     modifyUserAvatar(id: number, file: File) {
         return axios.post(`/users/${id}/avatar`, {
-            file: file
+            file: file,
         });
     }
 

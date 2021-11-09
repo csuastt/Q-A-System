@@ -20,8 +20,8 @@ import userService from "../services/userService";
 import UserContext from "../AuthContext";
 import { ConfigInfo, UserRole } from "../services/definations";
 import { renderAnswerHelp } from "./Help";
-import {styled} from "@mui/material/styles";
-import {IconButton} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { IconButton } from "@mui/material";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
@@ -51,8 +51,8 @@ interface AccountBriefProfileState {
 }
 
 // an Input without display
-const Input = styled('input')({
-    display: 'none',
+const Input = styled("input")({
+    display: "none",
 });
 
 export default class AccountBriefProfile extends Component<
@@ -311,7 +311,8 @@ export default class AccountBriefProfile extends Component<
                                     type="file"
                                     name="image"
                                     multiple={false}
-                                    onChange={this.handleSubmitAvatar}/>
+                                    onChange={this.handleSubmitAvatar}
+                                />
                                 <IconButton
                                     aria-label="upload avatar"
                                     component="span"
