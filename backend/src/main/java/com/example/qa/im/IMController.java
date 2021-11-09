@@ -1,6 +1,6 @@
 package com.example.qa.im;
 
-import com.example.qa.errorhandling.ApiException;
+import com.example.qa.errorhandling.MessageException;
 import com.example.qa.im.exchange.MessagePayload;
 import com.example.qa.order.OrderRepository;
 import com.example.qa.order.model.Order;
@@ -30,7 +30,10 @@ public class IMController {
     private final UserRepository userRepo;
     private final IMService imService;
 
-    public IMController(@Autowired OrderRepository orderRepo, @Autowired UserRepository userRepo, @Autowired IMService imService) {
+    public IMController(
+            @Autowired OrderRepository orderRepo,
+            @Autowired UserRepository userRepo,
+            @Autowired IMService imService) {
         this.orderRepo = orderRepo;
         this.userRepo = userRepo;
         this.imService = imService;
@@ -41,7 +44,7 @@ public class IMController {
         log.info("send message {} {}", orderId, payload);
         var res = checkOrderAndUser(orderId, user);
         if (payload.getMsgBody() == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST);
+            throw new MessageException(HttpStatus.BAD_REQUEST, "No message body");
         }
         imService.sendFromUser(res.order, res.sender, payload.getMsgBody());
     }
@@ -57,16 +60,16 @@ public class IMController {
     }
 
     private CheckResult checkOrderAndUser(long orderId, Principal user) {
-        var order = orderRepo.findById(orderId).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND));
+        var order = orderRepo.findById(orderId).orElseThrow(() -> new MessageException(HttpStatus.NOT_FOUND, "Order"));
         if (user instanceof UserAuthentication authUser) {
             long userId = (long) authUser.getPrincipal();
-            var optionalUser = userRepo.findById(userId).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND));
+            var optionalUser = userRepo.findById(userId).orElseThrow(() -> new MessageException(HttpStatus.NOT_FOUND, "User"));
             if (userId != order.getAsker().getId() && userId != order.getAnswerer().getId()) {
-                throw new ApiException(HttpStatus.FORBIDDEN);
+                throw new MessageException(HttpStatus.FORBIDDEN, "Current user is not related to requested order");
             }
             return new CheckResult(order, optionalUser);
         } else {
-            throw new ApiException(HttpStatus.UNAUTHORIZED);
+            throw new MessageException(HttpStatus.UNAUTHORIZED);
         }
     }
 
