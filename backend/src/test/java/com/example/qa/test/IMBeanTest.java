@@ -188,6 +188,33 @@ class IMBeanTest {
     }
 
     @Test
+    void testForMessage(){
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("aa");
+        user.setPassword("aaaa");
+        user.setRole(UserRole.ANSWERER);
+        long id = 1L;
+        ZonedDateTime sendTime = ZonedDateTime.now();
+        User sender = user;
+        OrderRequest request = new OrderRequest();
+        request.setAsker(askerId);
+        request.setAnswerer(answererId);
+        request.setTitle(question);
+        request.setDescription(description);
+        Order order = new Order(request, asker, answerer, true);
+        String body = "sss";
+        Message message = new Message();
+        message.setId(id);
+        message.setOrder(order);
+        message.setSendTime(sendTime);
+        message.setSender(sender);
+        message.setBody(body);
+        message.toString();
+        Message.builder();
+    }
+
+    @Test
     long createOrder() throws Exception {
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
