@@ -1,11 +1,5 @@
 package com.example.qa.security;
 
-import com.example.qa.admin.model.Admin;
-import com.example.qa.user.model.User;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SignatureException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -16,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+import static com.example.qa.security.JwtUtils.getAuthentication;
 
-    private final Logger classLogger = LoggerFactory.getLogger(getClass());
+public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
@@ -27,41 +21,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
-        UserAuthentication authentication = getAuthentication(request);
+        UserAuthentication authentication = getAuthentication(request.getHeader(SecurityConstants.TOKEN_HEADER));
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
-    }
-
-    private UserAuthentication getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(SecurityConstants.TOKEN_HEADER);
-        if (token != null && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
-            try {
-                Jws<Claims> parsedToken = Jwts.parser()
-                        .setSigningKey(SecurityConstants.JWT_SECRET.getBytes())
-                        .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
-
-                long id = Long.parseLong(parsedToken.getBody().getSubject());
-                String role = parsedToken.getBody().get(SecurityConstants.ROLE_CLAIM, String.class);
-
-                if (role.equals(SecurityConstants.ROLE_USER)) {
-                    return new UserAuthentication(id, User.class);
-                } else if (role.equals(SecurityConstants.ROLE_ADMIN)) {
-                    return new UserAuthentication(id, Admin.class);
-                }
-            } catch (ExpiredJwtException exception) {
-                classLogger.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
-            } catch (UnsupportedJwtException exception) {
-                classLogger.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
-            } catch (MalformedJwtException exception) {
-                classLogger.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
-            } catch (SignatureException exception) {
-                classLogger.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
-            } catch (IllegalArgumentException exception) {
-                classLogger.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
-            }
-        }
-        return null;
     }
 }
