@@ -52,9 +52,11 @@ class UserService {
     getUserInfo(id: number): Promise<UserInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
+
     getUserFullyInfo(id: number): Promise<UserFullyInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
+
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
@@ -67,9 +69,17 @@ class UserService {
             description: info.description,
         });
     }
+
+    modifyUserAvatar(id: number, file: File) {
+        return axios.post(`/users/${id}/avatar`, {
+            file: file,
+        });
+    }
+
     deleteUser(id: number) {
         return axios.delete(`/users/${id}`, {});
     }
+
     modifyUserInfoByAdmin(info: UserInfo) {
         return axios.put(`/users/${info.id}`, {
             nickname: info.nickname,
