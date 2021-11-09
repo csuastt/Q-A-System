@@ -13,6 +13,7 @@ export enum UserType {
     Normal,
     Answerer,
 }
+
 export enum ManagerRole {
     ADMIN = "ADMIN",
     REVIEWER = "REVIEWER",
@@ -39,6 +40,7 @@ export interface UserBasicInfo {
     price: number;
     role: UserRole;
 }
+
 export type ManagerInfoList = Array<ManagerInfo>;
 
 export interface ManagerInfo {
@@ -165,4 +167,33 @@ export interface ConfigInfo {
     maxChatMessages: number;
     maxChatTimeSeconds: number;
     feeRate: number;
+}
+
+export enum NotificationType {
+    PLAIN,
+    NEW_MESSAGE,
+    ORDER_STATE_CHANGED,
+    ACCEPT_DEADLINE,
+    ACCEPT_TIMEOUT,
+    ANSWER_DEADLINE,
+    ANSWER_TIMEOUT,
+}
+
+export interface Notification {
+    notifId: number;
+    createTime: string;
+    type: NotificationType;
+    receiverId: number;
+    targetId: number;
+    haveRead: boolean;
+    msgSummary?: string;
+    newState?: OrderState;
+    deadline?: string;
+}
+
+export interface IMMessage {
+    messageId: number;
+    senderId: number;
+    sendTime: string;
+    msgBody: string;
 }
