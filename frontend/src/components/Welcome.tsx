@@ -32,6 +32,7 @@ import { AccountCircle } from "@mui/icons-material";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import userService from "../services/userService";
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AnswererList from "./AnswererList";
 
 export default function Welcome() {
@@ -165,78 +166,106 @@ export default function Welcome() {
                                     }
                                 />
                             </ListItem>
-                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                                <ListItemIcon sx={{ minWidth: 30 }}>
-                                    <AssignmentIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={
-                                        <Typography
-                                            color="textPrimary"
-                                            variant="body1"
-                                            gutterBottom
-                                        >
-                                            您提问了：
-                                            <Box
-                                                component="span"
-                                                fontWeight="fontWeightBold"
-                                                fontSize={22}
-                                            >
-                                                {user ? askCount : "NA"}
-                                            </Box>{" "}
-                                            单
-                                        </Typography>
-                                    }
-                                />
-                            </ListItem>
-                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                                <ListItemIcon sx={{ minWidth: 30 }}>
-                                    <AssignmentTurnedInIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={
-                                        <Typography
-                                            color="textPrimary"
-                                            variant="body1"
-                                            gutterBottom
-                                        >
-                                            您回答了：
-                                            <Box
-                                                component="span"
-                                                fontWeight="fontWeightBold"
-                                                fontSize={22}
-                                            >
-                                                {user ? answerCount : "NA"}
-                                            </Box>{" "}
-                                            单
-                                        </Typography>
-                                    }
-                                />
-                            </ListItem>
-                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                                <ListItemIcon sx={{ minWidth: 30 }}>
-                                    <CreditCardIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={
-                                        <Typography
-                                            color="textPrimary"
-                                            variant="body1"
-                                            gutterBottom
-                                        >
-                                            您的余额为：
-                                            <Box
-                                                component="span"
-                                                fontWeight="fontWeightBold"
-                                                fontSize={22}
-                                            >
-                                                {user ? user.balance : "NA"}
-                                            </Box>{" "}
-                                            ￥
-                                        </Typography>
-                                    }
-                                />
-                            </ListItem>
+                            {
+                                user ?
+                                    <>
+                                        <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                            <ListItemIcon sx={{ minWidth: 30 }}>
+                                                <AssignmentIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <Typography
+                                                        color="textPrimary"
+                                                        variant="body1"
+                                                        gutterBottom
+                                                    >
+                                                        您提问了：
+                                                        <Box
+                                                            component="span"
+                                                            fontWeight="fontWeightBold"
+                                                            fontSize={22}
+                                                        >
+                                                            {askCount}
+                                                        </Box>{" "}
+                                                        单
+                                                    </Typography>
+                                                }
+                                            />
+                                        </ListItem>
+                                        <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                            <ListItemIcon sx={{ minWidth: 30 }}>
+                                                <AssignmentTurnedInIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <Typography
+                                                        color="textPrimary"
+                                                        variant="body1"
+                                                        gutterBottom
+                                                    >
+                                                        您回答了：
+                                                        <Box
+                                                            component="span"
+                                                            fontWeight="fontWeightBold"
+                                                            fontSize={22}
+                                                        >
+                                                            {answerCount}
+                                                        </Box>{" "}
+                                                        单
+                                                    </Typography>
+                                                }
+                                            />
+                                        </ListItem>
+                                        <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                            <ListItemIcon sx={{ minWidth: 30 }}>
+                                                <CreditCardIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <Typography
+                                                        color="textPrimary"
+                                                        variant="body1"
+                                                        gutterBottom
+                                                    >
+                                                        您的余额为：
+                                                        <Box
+                                                            component="span"
+                                                            fontWeight="fontWeightBold"
+                                                            fontSize={22}
+                                                        >
+                                                            {user.balance}
+                                                        </Box>{" "}
+                                                        ￥
+                                                    </Typography>
+                                                }
+                                            />
+                                        </ListItem>
+                                    </> :
+                                    <ListItem sx={{ paddingTop: 0, paddingBottom: 1.1 }}>
+                                        <ListItemIcon sx={{ minWidth: 30 }}>
+                                            <LockOpenIcon />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <Typography
+                                                    color="textPrimary"
+                                                    variant="body1"
+                                                >
+                                                    请
+                                                    <Link
+                                                        variant="body1"
+                                                        component={RouterLink}
+                                                        to="/login"
+                                                    >
+                                                        登录
+                                                    </Link>
+                                                    后解锁更多信息
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                            }
                         </List>
                     </Box>
                 </CardContent>
@@ -364,6 +393,22 @@ export default function Welcome() {
                                 >
                                     点此查看完整列表
                                 </Link>
+                                {
+                                    !user &&
+                                    (
+                                        <>
+                                            {"（"}
+                                            <Link
+                                                variant="body2"
+                                                component={RouterLink}
+                                                to="/login"
+                                            >
+                                                登录
+                                            </Link>
+                                            {"后才可提问哦~）"}
+                                        </>
+                                    )
+                                }
                             </Typography>
                         </>
                     }
@@ -373,7 +418,7 @@ export default function Welcome() {
                     <AnswererList
                         userRole={UserRole.ANSWERER}
                         briefMsg={true}
-                        selectModel={true}
+                        selectModel={typeof user !== "undefined"}
                     />
                 </CardContent>
             </Card>
