@@ -83,6 +83,7 @@ export default class AccountBriefProfile extends Component<
         this.handlePriceChange = this.handlePriceChange.bind(this);
         this.handleSubmitApply = this.handleSubmitApply.bind(this);
         this.handleSubmitPrice = this.handleSubmitPrice.bind(this);
+        this.handleSubmitAvatar = this.handleSubmitAvatar.bind(this);
     }
 
     componentDidMount() {
@@ -274,8 +275,21 @@ export default class AccountBriefProfile extends Component<
         }
     }
 
-    handleSubmitAvatar() {
-
+    handleSubmitAvatar(e: any) {
+        if (typeof this.props.id !== "undefined") {
+            userService.modifyUserAvatar(this.props.id, e.target.files[0]).then(
+                () => {
+                    // upload success
+                    this.props.alertHandler("success", "上传成功");
+                    // update info
+                    this.props.fetchUserInfo();
+                },
+                (error) => {
+                    // show the error message
+                    this.props.alertHandler("error", "网络错误");
+                }
+            );
+        }
     }
 
     render() {
