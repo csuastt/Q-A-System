@@ -34,7 +34,7 @@ public class MessageAuthenticationConfiguration implements WebSocketMessageBroke
                     Authentication user = Objects.requireNonNull(JwtUtils.getAuthentication(token), "No auth token");
                     user.setAuthenticated(true);
                     accessor.setUser(user);
-                    log.info("User [id={}] has established a new WebSocket connection", user.getPrincipal());
+                    log.info("User[id={}] has established a new WebSocket connection", user.getPrincipal());
                 }
                 return message;
             }

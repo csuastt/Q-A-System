@@ -2,11 +2,6 @@ package com.example.qa.im;
 
 import com.example.qa.errorhandling.MessageException;
 import com.example.qa.im.exchange.MessagePayload;
-import com.example.qa.order.OrderRepository;
-import com.example.qa.order.model.Order;
-import com.example.qa.security.UserAuthentication;
-import com.example.qa.user.UserRepository;
-import com.example.qa.user.model.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,53 +21,33 @@ import java.util.stream.Collectors;
 @Controller
 public class IMController {
 
-    private final OrderRepository orderRepo;
-    private final UserRepository userRepo;
+    private final IMOrderUserValidator validator;
     private final IMService imService;
 
-    public IMController(
-            @Autowired OrderRepository orderRepo,
-            @Autowired UserRepository userRepo,
-            @Autowired IMService imService) {
-        this.orderRepo = orderRepo;
-        this.userRepo = userRepo;
+    public IMController(@Autowired IMOrderUserValidator validator, @Autowired IMService imService) {
+        this.validator = validator;
         this.imService = imService;
     }
 
     @MessageMapping("/{orderId}")
-    public void sendMessage(@DestinationVariable long orderId, @Payload MessagePayload payload, Principal user) {
+    public void sendMessage(@DestinationVariable long orderId, @Payload MessagePayload payload, Principal auth) {
         log.info("send message {} {}", orderId, payload);
-        var res = checkOrderAndUser(orderId, user);
+        var res = validator.check(orderId, auth);
         if (payload.getMsgBody() == null) {
             throw new MessageException(HttpStatus.BAD_REQUEST, "No message body");
         }
-        imService.sendFromUser(res.order, res.sender, payload.getMsgBody());
+        imService.sendFromUser(res.order(), res.sender(), payload.getMsgBody());
     }
 
     @ResponseBody
     @GetMapping("/im/history/{orderId}")
-    public List<MessagePayload> getHistory(@PathVariable long orderId, Principal user) {
-        checkOrderAndUser(orderId, user);
+    public List<MessagePayload> getHistory(@PathVariable long orderId, Principal auth) {
+        validator.check(orderId, auth);
         return imService.getOrderHistoryMessages(orderId)
                 .stream()
                 .map(MessagePayload::new)
                 .collect(Collectors.toList());
     }
 
-    private CheckResult checkOrderAndUser(long orderId, Principal user) {
-        var order = orderRepo.findById(orderId).orElseThrow(() -> new MessageException(HttpStatus.NOT_FOUND, "Order"));
-        if (user instanceof UserAuthentication authUser) {
-            long userId = (long) authUser.getPrincipal();
-            var optionalUser = userRepo.findById(userId).orElseThrow(() -> new MessageException(HttpStatus.NOT_FOUND, "User"));
-            if (userId != order.getAsker().getId() && userId != order.getAnswerer().getId()) {
-                throw new MessageException(HttpStatus.FORBIDDEN, "Current user is not related to requested order");
-            }
-            return new CheckResult(order, optionalUser);
-        } else {
-            throw new MessageException(HttpStatus.UNAUTHORIZED);
-        }
-    }
 
-    public record CheckResult(Order order, User sender) {
-    }
 }
