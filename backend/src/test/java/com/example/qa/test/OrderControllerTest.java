@@ -420,9 +420,10 @@ class OrderControllerTest {
     void queryOrderList() throws Exception {
         createOrder();
         mockUtils.getUrl("/api/orders?asker=" + askerId, askerToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders?asker=" + askerId + " &reviewed=true", askerToken, null, null, status().isOk());
         mockUtils.getUrl("/api/orders?asker=" + Long.MAX_VALUE, askerToken, null, null, status().isForbidden());
         mockUtils.getUrl("/api/orders?answerer=" + askerId, askerToken, null, null, status().isOk());
-        mockUtils.getUrl("/api/orders?answerer=" + Long.MAX_VALUE, askerToken, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/orders?answerer=" + Long.MAX_VALUE + " &reviewed=true", askerToken, null, null, status().isForbidden());
         mockUtils.getUrl("/api/orders", askerToken, null, null, status().isForbidden());
         mockUtils.getUrl("/api/orders", null, null, null, status().isUnauthorized());
     }
