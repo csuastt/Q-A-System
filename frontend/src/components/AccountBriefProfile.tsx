@@ -20,6 +20,8 @@ import userService from "../services/userService";
 import UserContext from "../AuthContext";
 import { ConfigInfo, UserRole } from "../services/definations";
 import { renderAnswerHelp } from "./Help";
+import {styled} from "@mui/material/styles";
+import {IconButton} from "@mui/material";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
@@ -47,6 +49,11 @@ interface AccountBriefProfileState {
     error_msg_price: string;
     error_msg_profession: string;
 }
+
+// an Input without display
+const Input = styled('input')({
+    display: 'none',
+});
 
 export default class AccountBriefProfile extends Component<
     AccountBriefProfileProps,
@@ -267,6 +274,10 @@ export default class AccountBriefProfile extends Component<
         }
     }
 
+    handleSubmitAvatar() {
+
+    }
+
     render() {
         return (
             <>
@@ -279,13 +290,27 @@ export default class AccountBriefProfile extends Component<
                                 flexDirection: "column",
                             }}
                         >
-                            <Avatar
-                                src={this.props.avatar}
-                                sx={{
-                                    height: 100,
-                                    width: 100,
-                                }}
-                            />
+                            <label htmlFor="avatar-button-file">
+                                <Input
+                                    accept="image/*"
+                                    id="avatar-button-file"
+                                    type="file"
+                                    name="image"
+                                    multiple={false}
+                                    onChange={this.handleSubmitAvatar}/>
+                                <IconButton
+                                    aria-label="upload avatar"
+                                    component="span"
+                                >
+                                    <Avatar
+                                        src={this.props.avatar}
+                                        sx={{
+                                            height: 100,
+                                            width: 100,
+                                        }}
+                                    />
+                                </IconButton>
+                            </label>
                             <Box mt={2}>
                                 <Typography
                                     color="textPrimary"
