@@ -231,17 +231,18 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     title={orderInfo.asker.username}
                     subheader="提问者"
                 />
-                <CardContent>
-                    <Divider textAlign="left">问题标题</Divider>
+                <CardContent sx={{paddingTop: 1}}>
                     <Typography
-                        variant="h6"
-                        sx={{ mb: orderInfo.questionDescription && 2 }}
+                        variant="h5"
+                        sx={{
+                            mb: orderInfo.questionDescription && 2,
+                            fontWeight: 600
+                        }}
                     >
                         {orderInfo.questionTitle}
                     </Typography>
                     {orderInfo.questionDescription && (
                         <>
-                            <Divider textAlign="left">问题描述</Divider>
                             <Box>
                                 <Markdown
                                     value={orderInfo.questionDescription}
@@ -267,7 +268,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     title={orderInfo.answerer.username}
                     subheader="回答者"
                 />
-                <CardContent>
+                <CardContent sx={{paddingTop: 0}}>
                     {answering ? (
                         <Markdown
                             value={answer}

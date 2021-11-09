@@ -15,6 +15,8 @@ import CardActionArea from "@mui/material/CardActionArea";
 import Pagination from "./Pagination";
 import _ from "lodash";
 import OrderStateChip from "./OrderStateChip";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import Button from "@mui/material/Button";
 
 interface OrderListProps {
     userId: number;
@@ -184,9 +186,21 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }
     if (questionList && totalCount === 0) {
         return (
-            <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
-                没有订单
-            </Typography>
+            <Box textAlign={"center"} mt={6}>
+                <ErrorOutlineIcon
+                    color="warning"
+                    sx={
+                        { fontSize: 80 }
+                    }
+                />
+                <Typography
+                    variant={"h5"}
+                    mt={1}
+                    mb={4}
+                >
+                    {"您还没有订单"}
+                </Typography>
+            </Box>
         );
     }
     return (
