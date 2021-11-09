@@ -16,6 +16,7 @@ import com.example.qa.order.model.OrderState;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
+import com.example.qa.user.exchange.UserStatsResponse;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
@@ -104,6 +105,7 @@ class NotificationControllerTest {
         user.setUsername("aa");
         user.setPassword("aaaa");
         user.setRole(UserRole.ANSWERER);
+        UserStatsResponse userStatsResponse = new UserStatsResponse(user);
         long id = 1L;
         ZonedDateTime createTime = ZonedDateTime.now();
         Notification.Type type = Notification.Type.ACCEPT_DEADLINE;
@@ -171,10 +173,12 @@ class NotificationControllerTest {
     }
 
     @Test
-    void readAll() {
+    void readAll() throws Exception {
+        mockUtils.postUrl("/api/users/" + answererId  + "/notif/readAll", answererToken, null, status().isOk());
     }
 
     @Test
-    void deleteRead() {
+    void deleteRead() throws Exception {
+//        mockUtils.postUrl("/api/users/" + answererId  + "/notif/deleteRead", answererToken, null, status().isOk());
     }
 }
