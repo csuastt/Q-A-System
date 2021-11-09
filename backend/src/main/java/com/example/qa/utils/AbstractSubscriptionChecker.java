@@ -11,7 +11,6 @@ import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
@@ -35,23 +34,15 @@ public abstract class AbstractSubscriptionChecker implements ChannelInterceptor,
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-//            try {
-                var auth = accessor.getUser();
-                if (auth instanceof UserAuthentication authUser) {
-                    var dest = Objects.requireNonNullElse(accessor.getDestination(), "");
-                    if (dest.startsWith(subscriptionHeader)) {
-                        internalCheck(authUser, dest.substring(subscriptionHeader.length()), message);
-                    }
-                } else {
-                    throw new MessageException(HttpStatus.UNAUTHORIZED);
+            var auth = accessor.getUser();
+            if (auth instanceof UserAuthentication authUser) {
+                var dest = Objects.requireNonNullElse(accessor.getDestination(), "");
+                if (dest.startsWith(subscriptionHeader)) {
+                    internalCheck(authUser, dest.substring(subscriptionHeader.length()), message);
                 }
-//            } catch (MessageException e) {
-//                log.warn(e);
-//                var msgHeader = StompHeaderAccessor.create(StompCommand.ERROR);
-//                msgHeader.setMessage(e.getMessage());
-//                msgHeader.setSessionId(accessor.getSessionId());
-//                channel.send(MessageBuilder.createMessage(new byte[0], msgHeader.getMessageHeaders()));
-//            }
+            } else {
+                throw new MessageException(HttpStatus.UNAUTHORIZED);
+            }
         }
         return message;
     }
