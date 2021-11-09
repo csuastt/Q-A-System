@@ -2,6 +2,7 @@ package com.example.qa.test;
 
 import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
+import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
@@ -44,6 +45,7 @@ class OrderControllerTest {
     private static String askerToken;
     private static String answererToken;
     private static String superAdminToken;
+    private static String adminToken;
     private static String askerToken2;
     private static String answererToken2;
 
@@ -113,6 +115,18 @@ class OrderControllerTest {
         loginRequest.setPassword(SecurityConstants.SUPER_ADMIN_PASSWORD);
         TokenResponse tokenResponse = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
         superAdminToken = tokenResponse.getToken();
+
+        AdminRequest request = new AdminRequest();
+        request.setUsername("testAdmin" + 1);
+        request.setRole(AdminRole.ADMIN);
+        request.setPassword("password");
+        mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
+        PasswordResponse passwordResponse = mockUtils.postAndDeserialize("/api/admins", superAdminToken, request, status().isOk(),PasswordResponse.class);
+        loginRequest.setUsername("testAdmin" + 1);
+        loginRequest.setPassword(passwordResponse.getPassword());
+        TokenResponse tokenResponse2 = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
+        adminToken = tokenResponse2.getToken();
+
     }
 
     @Test
@@ -123,6 +137,17 @@ class OrderControllerTest {
         request.setTitle(question);
         request.setDescription(description);
         OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
+        return result.getId();
+    }
+
+    @Test
+    long createOrderAdmin() throws Exception {
+        OrderRequest request = new OrderRequest();
+        request.setAsker(askerId);
+        request.setAnswerer(answererId);
+        request.setTitle(question);
+        request.setDescription(description);
+        OrderResponse result = mockUtils.postAndDeserialize("/api/orders", adminToken, request, status().isForbidden(), OrderResponse.class);
         return result.getId();
     }
 
@@ -277,6 +302,19 @@ class OrderControllerTest {
         mockUtils.postUrl("/api/orders/" + id + "/respond", answererToken, accept, status().isOk());
         assertEquals(OrderState.ACCEPTED, query(id).getState());
     }
+
+    @Test
+    void noRespondOrder() throws Exception {
+        long id = createOrder();
+        OrderRequest request = new OrderRequest();
+        request.setState(OrderState.REVIEWED);
+        edit(id, request);
+        AcceptRequest accept = new AcceptRequest(false);
+        mockUtils.postUrl("/api/orders/" + id + "/respond", null, accept, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/respond", answererToken, accept, status().isOk());
+        assertEquals(OrderState.REJECTED_BY_ANSWERER, query(id).getState());
+    }
+
 
     @Test
     void respondInvalidOrder() throws Exception {
