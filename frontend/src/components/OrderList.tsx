@@ -187,17 +187,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     if (questionList && totalCount === 0) {
         return (
             <Box textAlign={"center"} mt={6}>
-                <ErrorOutlineIcon
-                    color="warning"
-                    sx={
-                        { fontSize: 80 }
-                    }
-                />
-                <Typography
-                    variant={"h5"}
-                    mt={1}
-                    mb={4}
-                >
+                <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
+                <Typography variant={"h5"} mt={1} mb={4}>
                     {"您还没有订单"}
                 </Typography>
             </Box>

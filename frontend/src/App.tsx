@@ -38,8 +38,10 @@ export default function App() {
         ],
         [
             "/answerers",
-            <AnswererList userRole={UserRole.ANSWERER}
-                          selectModel={typeof user !== "undefined"} />,
+            <AnswererList
+                userRole={UserRole.ANSWERER}
+                selectModel={typeof user !== "undefined"}
+            />,
         ],
         [
             "/orders/:orderId",
