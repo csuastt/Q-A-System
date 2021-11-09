@@ -9,6 +9,9 @@ import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.im.exchange.MessagePayload;
 import com.example.qa.im.model.Message;
+import com.example.qa.notification.NotificationRepository;
+import com.example.qa.notification.exchange.NotifPayload;
+import com.example.qa.notification.exchange.PagedList;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
@@ -25,11 +28,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,7 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class IMBeanTest {
-
+    @Autowired
+    private final NotificationRepository repo;
     private static long askerId;
     private static long answererId;
 
@@ -51,6 +58,10 @@ class IMBeanTest {
     private static final String description = "Test Description";
     private static User asker;
     private static User answerer;
+
+    IMBeanTest(@Autowired NotificationRepository repo) {
+        this.repo = repo;
+    }
 
     @Test
     void testForMessageException(){
@@ -69,32 +80,32 @@ class IMBeanTest {
 
         RegisterRequest registerRequest = new RegisterRequest();
 
-        registerRequest.setUsername("testAsker");
+        registerRequest.setUsername("testAsker3");
         registerRequest.setPassword(passwordEncoder.encode(password));
         registerRequest.setEmail(email);
         asker = new User(registerRequest);
         userRepository.save(asker);
         askerId = asker.getId();
 
-        registerRequest.setUsername("testAnswerer");
+        registerRequest.setUsername("testAnswerer3");
         answerer = new User(registerRequest);
         answerer.setRole(UserRole.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
 
         AdminRequest adminRequest = new AdminRequest();
-        adminRequest.setUsername("testAdmin");
+        adminRequest.setUsername("testAdmin3");
         adminRequest.setPassword(passwordEncoder.encode(password));
         adminRequest.setRole(AdminRole.ADMIN);
         Admin admin = new Admin(adminRequest);
         adminRepository.save(admin);
 
         LoginRequest userRequest = new LoginRequest();
-        userRequest.setUsername("testAsker");
+        userRequest.setUsername("testAsker3");
         userRequest.setPassword(password);
         askerToken = mockUtils.postAndDeserialize("/api/user/login", askerToken, userRequest, status().isOk(), TokenResponse.class).getToken();
 
-        userRequest.setUsername("testAnswerer");
+        userRequest.setUsername("testAnswerer3");
         userRequest.setPassword(password);
         answererToken = mockUtils.postAndDeserialize("/api/user/login", askerToken, userRequest, status().isOk(), TokenResponse.class).getToken();
 
@@ -128,7 +139,7 @@ class IMBeanTest {
         user.setRole(UserRole.ANSWERER);
         long id = 1L;
         ZonedDateTime createTime = ZonedDateTime.now();
-        Notification.Type type = Notification.Type.NEW_MESSAGE;
+        Notification.Type type = Notification.Type.ACCEPT_DEADLINE;
         User receiver = user;
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
@@ -151,8 +162,30 @@ class IMBeanTest {
         notification.setTarget(target);
         notification.setType(type);
 
+        Notification.ofPlain(answerer, "111");
+        Notification.ofNewMessage(answerer, target, "111");
+        Notification.ofOrderStateChanged(answerer, target);
+        Notification.ofDeadlineOrTimeout(answerer, target, type, deadline);
+        notification.toString();
+
+        NotifPayload payload = new NotifPayload(notification);
     }
 
+    @Test
+    void testForPageList(){
+        Optional<Boolean> hasRead = Optional.of(true);
+        var pageable = PageRequest.of(2, 2);
+        PagedList<Notification> list = new PagedList<Notification>(hasRead
+                .map(hasReadValue -> repo.findByReceiverAndHaveReadOrderByCreateTimeDesc(asker, hasReadValue, pageable))
+                .orElseGet(() -> repo.findByReceiverOrderByCreateTimeDesc(asker, pageable)));
+
+        list.map(new Function<Notification, String>() {
+            @Override
+            public String apply(Notification s) {
+                return"11111";
+            }
+        });
+    }
 
     @Test
     long createOrder() throws Exception {
