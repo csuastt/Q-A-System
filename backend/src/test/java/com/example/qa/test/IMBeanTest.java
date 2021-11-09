@@ -166,9 +166,14 @@ class IMBeanTest {
         Notification.ofNewMessage(answerer, target, "111");
         Notification.ofOrderStateChanged(answerer, target);
         Notification.ofDeadlineOrTimeout(answerer, target, type, deadline);
+        type = Notification.Type.NEW_MESSAGE;
+        try {
+            Notification.ofDeadlineOrTimeout(answerer, target, type, deadline);
+        } catch (IllegalArgumentException exception){}
         notification.toString();
 
         NotifPayload payload = new NotifPayload(notification);
+
     }
 
     @Test
@@ -189,6 +194,7 @@ class IMBeanTest {
 
     @Test
     void testForMessage(){
+
         User user = new User();
         user.setId(1L);
         user.setUsername("aa");
@@ -205,6 +211,7 @@ class IMBeanTest {
         Order order = new Order(request, asker, answerer, true);
         String body = "sss";
         Message message = new Message();
+        Message message2 = new Message(id, sendTime, order, sender, body);
         message.setId(id);
         message.setOrder(order);
         message.setSendTime(sendTime);

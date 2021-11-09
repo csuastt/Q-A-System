@@ -7,6 +7,12 @@ import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.notification.NotificationRepository;
+import com.example.qa.notification.model.Notification;
+import com.example.qa.order.OrderRepository;
+import com.example.qa.order.exchange.OrderRequest;
+import com.example.qa.order.model.Order;
+import com.example.qa.order.model.OrderState;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
@@ -21,6 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -38,6 +45,7 @@ class NotificationControllerTest {
     private static MockUtils mockUtils;
     private static long askerId;
     private static long answererId;
+    private static long notiId;
 
     private static String askerToken;
     private static String answererToken;
@@ -48,6 +56,8 @@ class NotificationControllerTest {
     static void addUsers(@Autowired MockMvc mockMvc,
                          @Autowired UserRepository userRepository,
                          @Autowired AdminRepository adminRepository,
+                         @Autowired NotificationRepository notificationRepository,
+                         @Autowired OrderRepository orderRepository,
                          @Autowired PasswordEncoder passwordEncoder) throws Exception {
         mockUtils = new MockUtils(mockMvc);
 
@@ -89,6 +99,37 @@ class NotificationControllerTest {
         TokenResponse tokenResponse = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
         superAdminToken = tokenResponse.getToken();
 
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("aa");
+        user.setPassword("aaaa");
+        user.setRole(UserRole.ANSWERER);
+        long id = 1L;
+        ZonedDateTime createTime = ZonedDateTime.now();
+        Notification.Type type = Notification.Type.ACCEPT_DEADLINE;
+        User receiver = user;
+        OrderRequest request = new OrderRequest();
+        request.setAsker(askerId);
+        request.setAnswerer(answererId);
+        request.setTitle(question);
+        request.setDescription(description);
+        Order target = new Order(request, asker, answerer, true);
+        orderRepository.save(target);
+        boolean haveRead = true;
+        String msgSummary = "sss";
+        OrderState state = OrderState.ACCEPTED;
+        ZonedDateTime deadline = ZonedDateTime.now();
+        Notification notification = new Notification();
+        notification.setHaveRead(haveRead);
+        notification.setCreateTime(createTime);
+        notification.setMsgSummary(msgSummary);
+        notification.setDeadline(deadline);
+        notification.setNewState(state);
+        notification.setReceiver(answerer);
+        notification.setTarget(target);
+        notification.setType(type);
+        notificationRepository.save(notification);
+        notiId = notification.getId();
 
     }
 
@@ -105,10 +146,28 @@ class NotificationControllerTest {
                 put("pageSize", String.valueOf(pageSize));
             }
         }, null, status().isOk());
+        mockUtils.getUrl("/api/users/" + 1 + "/notif", askerToken, new HashMap<>() {
+            {
+                put("hasRead", String.valueOf(hasRead));
+                put("page", String.valueOf(page));
+                put("pageSize", String.valueOf(pageSize));
+            }
+        }, null, status().isForbidden());
+
+        mockUtils.getUrl("/api/users/" + askerId + "/notif", null, new HashMap<>() {
+            {
+                put("hasRead", String.valueOf(hasRead));
+                put("page", String.valueOf(page));
+                put("pageSize", String.valueOf(pageSize));
+            }
+        }, null, status().isUnauthorized());
     }
 
     @Test
-    void setRead() {
+    void setRead() throws Exception {
+        mockUtils.postUrl("/api/users/" + answererId  + "/notif/" +  notiId  + "/read", answererToken, null, status().isOk());
+        mockUtils.postUrl("/api/users/" + askerId  + "/notif/" +  notiId  + "/read", askerToken, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/users/" + answererId  + "/notif/" +  askerId  + "/read", answererToken, null, status().isNotFound());
     }
 
     @Test
