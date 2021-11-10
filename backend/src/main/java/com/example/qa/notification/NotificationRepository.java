@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     void deleteByReceiverAndHaveReadIsTrue(User receiver);
 
+    long countByReceiver(User receiver);
+
     Page<Notification> findByReceiverOrderByCreateTimeDesc(User receiver, Pageable pageable);
 
     Page<Notification> findByReceiverAndHaveReadOrderByCreateTimeDesc(User receiver, boolean haveRead, Pageable pageable);

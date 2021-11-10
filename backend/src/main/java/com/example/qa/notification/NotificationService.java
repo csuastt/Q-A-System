@@ -28,6 +28,10 @@ public class NotificationService {
                 .orElseGet(() -> repo.findByReceiverOrderByCreateTimeDesc(user, pageable)));
     }
 
+    public long getUnreadCount(User user) {
+        return repo.countByReceiver(user);
+    }
+
     public void send(Notification notif) {
         repo.saveAndFlush(notif);
         template.convertAndSend("/notif/" + notif.getReceiver().getId(), new NotifPayload(notif));

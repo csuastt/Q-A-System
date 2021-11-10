@@ -1,5 +1,6 @@
 package com.example.qa.im;
 
+import com.example.qa.errorhandling.ApiException;
 import com.example.qa.errorhandling.MessageException;
 import com.example.qa.im.exchange.MessagePayload;
 import lombok.extern.log4j.Log4j2;
@@ -33,16 +34,16 @@ public class IMController {
     public void sendMessage(@DestinationVariable long orderId, @Payload MessagePayload payload, Principal auth) {
         log.info("send message {} {}", orderId, payload);
         var res = validator.check(orderId, auth);
-        if (payload.getMsgBody() == null) {
+        if (payload.msgBody() == null) {
             throw new MessageException(HttpStatus.BAD_REQUEST, "No message body");
         }
-        imService.sendFromUser(res.order(), res.sender(), payload.getMsgBody());
+        imService.sendFromUser(res.order(), res.sender(), payload.msgBody());
     }
 
     @ResponseBody
     @GetMapping("/im/history/{orderId}")
     public List<MessagePayload> getHistory(@PathVariable long orderId, Principal auth) {
-        validator.check(orderId, auth);
+        validator.check(orderId, auth, ApiException::new);
         return imService.getOrderHistoryMessages(orderId)
                 .stream()
                 .map(MessagePayload::new)

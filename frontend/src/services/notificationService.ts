@@ -19,6 +19,12 @@ class NotificationService {
             .then((response) => response.data);
     }
 
+    getUnreadCount(userId: number): Promise<{ unreadCount: number }> {
+        return axios
+            .get(`/users/${userId}/notif/unreadCount`)
+            .then((response) => response.data);
+    }
+
     readOne(userId: number, notifId: number): Promise<any> {
         return axios.post(`/users/${userId}/notif/${notifId}/read`);
     }

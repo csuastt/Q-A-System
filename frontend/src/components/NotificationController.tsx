@@ -9,6 +9,8 @@ import {
 import websocketService from "../services/websocketService";
 import Button from "@mui/material/Button";
 import { useHistory } from "react-router-dom";
+import notificationService from "../services/notificationService";
+import AuthContext from "../AuthContext";
 
 export enum NotifHandlerResult {
     PASS,
@@ -38,6 +40,7 @@ export function useNotification(): NotificationControllerContextType {
 const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const routerHistory = useHistory();
+    const { user } = useContext(AuthContext);
     const [unreadCount, setUnreadCount] = useState(0);
     const [notifHandler, setNotifHandler] = useState<NotifHandler>(
         () => () => NotifHandlerResult.PASS
@@ -184,19 +187,29 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
     );
 
     useEffect(() => {
+        if (user) {
+            notificationService
+                .getUnreadCount(user.id)
+                .then((res) => setUnreadCount(res.unreadCount));
+        }
+    }, [user]);
+
+    useEffect(() => {
         websocketService.onNewNotification = (notif) => {
             const res = notifHandler(notif);
             switch (res) {
                 case NotifHandlerResult.PASS:
                     enqueueNotification(notif);
+                    setUnreadCount(unreadCount + 1);
                     return false;
                 case NotifHandlerResult.MUTE:
+                    setUnreadCount(unreadCount + 1);
                     return false;
                 case NotifHandlerResult.AUTO_READ:
                     return true;
             }
         };
-    }, [enqueueNotification, notifHandler, props.wsAvailable]);
+    }, [enqueueNotification, notifHandler, props.wsAvailable, unreadCount]);
 
     return (
         <NotificationControllerContext.Provider

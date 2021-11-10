@@ -3,6 +3,7 @@ package com.example.qa.notification;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.notification.exchange.NotifPayload;
 import com.example.qa.notification.exchange.PagedList;
+import com.example.qa.notification.exchange.UnreadCount;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.UserRepository;
@@ -41,6 +42,12 @@ public class NotificationController {
         var user = checkUser(userId, auth);
         var pageable = PageRequest.of(page - 1, pageSize);
         return notifService.getNotifications(user, hasRead, pageable).map(NotifPayload::new);
+    }
+
+    @GetMapping("/api/users/{userId}/notif/unreadCount")
+    public UnreadCount getUnreadCount(@PathVariable long userId, Principal auth) {
+        var user = checkUser(userId, auth);
+        return new UnreadCount(notifService.getUnreadCount(user));
     }
 
     @PostMapping("/api/users/{userId}/notif/{notifId}/read")
