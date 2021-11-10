@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
+import java.util.function.BiFunction;
 
 @Component
 public class IMOrderUserValidator {
@@ -24,16 +25,20 @@ public class IMOrderUserValidator {
     }
 
     public Result check(long orderId, Principal auth) {
-        var order = orderRepo.findById(orderId).orElseThrow(() -> new MessageException(HttpStatus.NOT_FOUND, "Order"));
+        return check(orderId, auth, MessageException::new);
+    }
+
+    public Result check(long orderId, Principal auth, final BiFunction<HttpStatus, String, ? extends RuntimeException> exceptionConstructor) {
+        var order = orderRepo.findById(orderId).orElseThrow(() -> exceptionConstructor.apply(HttpStatus.NOT_FOUND, "Order"));
         if (auth instanceof UserAuthentication authUser) {
             long userId = (long) authUser.getPrincipal();
-            var user = userRepo.findById(userId).orElseThrow(() -> new MessageException(HttpStatus.NOT_FOUND, "User"));
+            var user = userRepo.findById(userId).orElseThrow(() -> exceptionConstructor.apply(HttpStatus.NOT_FOUND, "User"));
             if (userId != order.getAsker().getId() && userId != order.getAnswerer().getId()) {
-                throw new MessageException(HttpStatus.FORBIDDEN, "Current user is not related to requested order");
+                throw exceptionConstructor.apply(HttpStatus.FORBIDDEN, "Current user is not related to requested order");
             }
             return new Result(order, user);
         } else {
-            throw new MessageException(HttpStatus.UNAUTHORIZED);
+            throw exceptionConstructor.apply(HttpStatus.UNAUTHORIZED, null);
         }
     }
 
