@@ -29,14 +29,21 @@ public class IMService {
         this.template = template;
     }
 
-    public final void sendFromUser(Order order, User sender, String body) {
-        var msg = Message.builder().order(order).sender(sender).body(body).build();
-        processNewMessage(msg);
+    public final void sendFromUser(Order order, User sender, ZonedDateTime sendTime, String body) {
+        processNewMessage(Message.builder()
+                .order(order)
+                .sender(sender)
+                .sendTime(sendTime)
+                .body(body)
+                .build());
     }
 
     public final void sendFromSystem(Order order, String body) {
-        var msg = Message.builder().order(order).body(body).build();
-        processNewMessage(msg);
+        processNewMessage(Message.builder()
+                .order(order)
+                .sendTime(ZonedDateTime.now())
+                .body(body)
+                .build());
     }
 
     public final List<Message> getOrderHistoryMessages(long orderId) {

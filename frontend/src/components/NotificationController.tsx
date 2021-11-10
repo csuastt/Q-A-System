@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import { SnackbarKey, useSnackbar, VariantType } from "notistack";
 import {
     Notification,
@@ -21,14 +27,16 @@ export enum NotifHandlerResult {
 export type NotifHandler = (notif: Notification) => NotifHandlerResult;
 
 interface NotificationControllerContextType {
-    setNotifFilter: (filter: NotifHandler) => void;
+    setNotifHandler: Dispatch<SetStateAction<NotifHandler>>;
+    resetNotifHandler: () => void;
     unreadCount: number;
     setUnreadCount: (count: number) => void;
 }
 
 export const NotificationControllerContext =
     React.createContext<NotificationControllerContextType>({
-        setNotifFilter: () => null,
+        setNotifHandler: () => null,
+        resetNotifHandler: () => null,
         unreadCount: -1,
         setUnreadCount: () => null,
     });
@@ -44,6 +52,11 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [notifHandler, setNotifHandler] = useState<NotifHandler>(
         () => () => NotifHandlerResult.PASS
+    );
+
+    const resetNotifHandler = React.useCallback(
+        () => setNotifHandler(() => () => NotifHandlerResult.PASS),
+        []
     );
 
     const redirect = React.useCallback(
@@ -199,7 +212,8 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
     return (
         <NotificationControllerContext.Provider
             value={{
-                setNotifFilter: setNotifHandler,
+                setNotifHandler: setNotifHandler,
+                resetNotifHandler: resetNotifHandler,
                 unreadCount: unreadCount,
                 setUnreadCount: setUnreadCount,
             }}

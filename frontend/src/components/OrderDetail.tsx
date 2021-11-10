@@ -19,7 +19,7 @@ import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
 import Markdown from "./Markdown";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import IMMessageList from "./IMMessageList";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -243,14 +243,10 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         {orderInfo.questionTitle}
                     </Typography>
                     {orderInfo.questionDescription && (
-                        <>
-                            <Box>
-                                <Markdown
-                                    value={orderInfo.questionDescription}
-                                    viewOnly
-                                />
-                            </Box>
-                        </>
+                        <Markdown
+                            value={orderInfo.questionDescription}
+                            viewOnly
+                        />
                     )}
                 </CardContent>
             </Card>
@@ -288,6 +284,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                 </CardContent>
                 <CardActions>{renderAnswererActions()}</CardActions>
             </Card>
+            <IMMessageList orderInfo={orderInfo} />
         </Stack>
     );
 };

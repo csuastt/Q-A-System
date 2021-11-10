@@ -14,6 +14,7 @@ class WebsocketService {
     onConnected: () => void = () => null;
     onDisconnected: () => void = () => null;
     onNewNotification: (notif: Notification) => boolean = () => false;
+    onNewMessage: (newMsg: IMMessage) => void = () => null;
 
     constructor() {
         this.stompClient = new Client();
@@ -105,10 +106,7 @@ class WebsocketService {
         this.notifSubscription = null;
     }
 
-    subscribeIM(
-        orderId: number,
-        imCallback: (msg: IMMessage) => void
-    ): boolean {
+    subscribeIM(orderId: number): boolean {
         if (!this.stompClient.connected) {
             return false;
         }
@@ -117,7 +115,7 @@ class WebsocketService {
             `/im/receive/${orderId}`,
             (frame) => {
                 const msg: IMMessage = JSON.parse(frame.body);
-                imCallback(msg);
+                this.onNewMessage(msg);
             }
         );
         return true;
