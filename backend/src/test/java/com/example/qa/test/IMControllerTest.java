@@ -4,15 +4,16 @@ import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
-import com.example.qa.errorhandling.MessageException;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.im.IMService;
 import com.example.qa.notification.NotificationRepository;
 import com.example.qa.order.OrderRepository;
+import com.example.qa.order.OrderService;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.Order;
+import com.example.qa.order.model.OrderState;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
@@ -44,6 +45,7 @@ class IMControllerTest {
     private static long askerId;
     private static long answererId;
     private final IMService imService;
+    private final OrderService orderService;
     private final NotificationRepository noRepo;
     private final OrderRepository orderRepo;
     private final UserRepository userRepo;
@@ -61,11 +63,12 @@ class IMControllerTest {
     private static String answererToken2;
 
 
-    IMControllerTest(@Autowired IMService imService, @Autowired NotificationRepository notificationRepository,
+    IMControllerTest(@Autowired IMService imService, @Autowired OrderService orderService, @Autowired NotificationRepository notificationRepository,
                      @Autowired OrderRepository orderRepository,
                      @Autowired UserRepository userRepository,
                      @Autowired AdminRepository adminRepository) {
         this.imService = imService;
+        this.orderService = orderService;
         noRepo = notificationRepository;
         orderRepo = orderRepository;
         userRepo = userRepository;
@@ -179,11 +182,40 @@ class IMControllerTest {
         imService.getOrderHistoryMessages(order);
         imService.getOrderHistoryMessages(order.getId());
 
+
+        orderService.listByAnswerer(answerer, true);
+        orderService.listByAnswerer(answerer, false);
+
+        orderService.listByAsker(asker, true);
+        orderService.listByAsker(asker, false);
+        orderService.listByReviewed();
+        orderService.clearExpirations();
+
+        order.setState(OrderState.ACCEPTED);
+        orderRepo.save(order);
+        orderService.handleExpiration(order);
+
+        order.setState(OrderState.REVIEWED);
+        orderRepo.save(order);
+        orderService.handleExpiration(order);
+
+        order.setState(OrderState.ANSWERED);
+        orderRepo.save(order);
+        orderService.handleExpiration(order);
+
+        order.setState(OrderState.CHAT_ENDED);
+        orderRepo.save(order);
+        orderService.handleExpiration(order);
+
+        order.setState(OrderState.CANCELLED);
+        orderRepo.save(order);
+        orderService.handleExpiration(order);
+
         mockUtils.getUrl("/im/history/" + order.getId(), askerToken, null,null,  status().isOk());
         mockUtils.getUrl("/im/history/" + order.getId(), answererToken, null,null,  status().isOk());
 
-//        mockUtils.getUrl("/im/history/" + order.getId(), askerToken2, null, null, status().isForbidden());
-//        mockUtils.getUrl("/im/history/" + order.getId(), null, null,null,  status().isUnauthorized());
-//        mockUtils.getUrl("/im/history/" + 1000, askerToken, null,null,  status().isNotFound());
+        mockUtils.getUrl("/im/history/" + order.getId(), askerToken2, null, null, status().isForbidden());
+        mockUtils.getUrl("/im/history/" + order.getId(), null, null,null,  status().isUnauthorized());
+        mockUtils.getUrl("/im/history/" + 1000, askerToken, null,null,  status().isNotFound());
     }
 }
