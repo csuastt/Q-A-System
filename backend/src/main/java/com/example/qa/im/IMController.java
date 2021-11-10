@@ -1,5 +1,6 @@
 package com.example.qa.im;
 
+import com.example.qa.errorhandling.ApiException;
 import com.example.qa.errorhandling.MessageException;
 import com.example.qa.im.exchange.MessagePayload;
 import lombok.extern.log4j.Log4j2;
@@ -42,7 +43,7 @@ public class IMController {
     @ResponseBody
     @GetMapping("/im/history/{orderId}")
     public List<MessagePayload> getHistory(@PathVariable long orderId, Principal auth) {
-        validator.check(orderId, auth);
+        validator.check(orderId, auth, ApiException::new);
         return imService.getOrderHistoryMessages(orderId)
                 .stream()
                 .map(MessagePayload::new)
