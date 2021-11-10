@@ -12,15 +12,15 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
         <List dense={true}>
             <ListItem>
                 <Typography variant="body1">
-                    1、平台要求：回答定价最高不能超过
+                    1、平台要求：回答定价最高不能超过￥
                     <Box component="span" fontWeight="fontWeightBold">
                         {config?.maxPrice ? config?.maxPrice : ""}
                     </Box>
-                    ￥/次， 最低不能低于
+                    /次， 最低不能低于￥
                     <Box component="span" fontWeight="fontWeightBold">
                         {config?.minPrice ? config?.minPrice : ""}
                     </Box>
-                    ￥/次。
+                    /次。
                 </Typography>
             </ListItem>
             <ListItem>

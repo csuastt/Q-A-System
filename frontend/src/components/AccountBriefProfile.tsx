@@ -459,15 +459,15 @@ export default class AccountBriefProfile extends Component<
                             inputProps={{ maxLength: 50 }}
                         />
                         <DialogContentText mt={3} mb={3}>
-                            在当前机制下， 回答定价最高不能超过
+                            在当前机制下， 回答定价最高不能超过￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {this.props.config.maxPrice}
                             </Box>
-                            ￥/次， 最低不能低于
+                            /次， 最低不能低于￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {this.props.config.minPrice}
                             </Box>
-                            ￥/次。
+                            /次。
                         </DialogContentText>
                         <TextField
                             fullWidth
@@ -511,15 +511,15 @@ export default class AccountBriefProfile extends Component<
                     <DialogContent>
                         <DialogContentText mb={3}>
                             您可以在任何时候修改您的回答定价。 在当前机制下，
-                            回答定价最高不能超过
+                            回答定价最高不能超过￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {this.props.config.maxPrice}
                             </Box>
-                            ￥/次， 最低不能低于
+                            /次， 最低不能低于￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {this.props.config.minPrice}
                             </Box>
-                            ￥/次。
+                            /次。
                         </DialogContentText>
                         <TextField
                             fullWidth

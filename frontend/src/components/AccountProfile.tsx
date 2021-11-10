@@ -155,19 +155,6 @@ export default class AccountProfile extends Component<
                             this.handleAlert("success", "充值成功");
                             // fetch new info
                             this.fetchUserInfo();
-                            // modify balance
-                            if (
-                                this.state.user !== null &&
-                                typeof this.state.user.balance !== "undefined"
-                            )
-                                this.handleChange({
-                                    target: {
-                                        name: "balance",
-                                        value:
-                                            Number(this.state.user?.balance) +
-                                            Number(this.state.money),
-                                    },
-                                });
                         },
                         (error) => {
                             // show the error message
@@ -959,15 +946,15 @@ export default class AccountProfile extends Component<
                     <DialogTitle>充值钱包</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={3}>
-                            您当前的钱包余额为
+                            您当前的钱包余额为￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {this.state.user?.balance}
                             </Box>
-                            ￥。单笔最高充值金额为
+                            。单笔最高充值金额为￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {1000}
                             </Box>
-                            ￥。
+                            。
                             <br />
                             请输入您的充值金额：
                         </DialogContentText>

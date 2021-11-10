@@ -96,7 +96,7 @@ const AnswererCard: React.FC<{
                                 </Typography>
                                 {" — " + profession + "；" + description}
                                 <Typography variant="body2" color="primary">
-                                    {userInfo.price + "￥/次"}
+                                    {"￥" + userInfo.price + "/次"}
                                 </Typography>
                             </React.Fragment>
                         }
@@ -105,7 +105,7 @@ const AnswererCard: React.FC<{
                         <IconButton
                             aria-label="detail"
                             onClick={handleOpenDialog}
-                            color="secondary"
+                            color="primary"
                         >
                             <MoreHorizIcon />
                         </IconButton>

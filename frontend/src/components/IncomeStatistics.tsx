@@ -69,7 +69,7 @@ const IncomeStatistics: React.FC<{
             y: {
                 formatter: (y: undefined | number) => {
                     if (typeof y !== "undefined") {
-                        return `${y.toFixed(0)} ￥`;
+                        return `￥ ${y.toFixed(0)}`;
                     }
                     return y;
                 },
@@ -87,48 +87,18 @@ const IncomeStatistics: React.FC<{
                         </Typography>
                     }
                     subheader={
-                        props.user ? (
-                            props.user.role === UserRole.ANSWERER ? (
-                                <>
-                                    <Typography align="left" variant="body2">
-                                        下方显示了您近半年的收入情况，
-                                        <Link
-                                            variant="body2"
-                                            component={RouterLink}
-                                            to="/income"
-                                        >
-                                            点此查看更多
-                                        </Link>
-                                    </Typography>
-                                </>
-                            ) : (
-                                <>
-                                    <Typography align="left" variant="body2">
-                                        您还不是回答者，
-                                        <Link
-                                            variant="body2"
-                                            component={RouterLink}
-                                            to="/profile"
-                                        >
-                                            点此申请
-                                        </Link>
-                                    </Typography>
-                                </>
-                            )
-                        ) : (
                             <>
                                 <Typography align="left" variant="body2">
-                                    您尚未登录，
+                                    下方显示了您近半年的收入情况，
                                     <Link
                                         variant="body2"
                                         component={RouterLink}
-                                        to="/login"
+                                        to="/income"
                                     >
-                                        点此登录
+                                        点此查看更多
                                     </Link>
                                 </Typography>
                             </>
-                        )
                     }
                     sx={{ paddingBottom: 0 }}
                 />
