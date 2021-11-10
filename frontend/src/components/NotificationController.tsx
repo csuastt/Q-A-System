@@ -4,13 +4,13 @@ import {
     Notification,
     NotificationType,
     OrderState,
-    OrderStateMsg,
 } from "../services/definations";
 import websocketService from "../services/websocketService";
 import Button from "@mui/material/Button";
 import { useHistory } from "react-router-dom";
 import notificationService from "../services/notificationService";
 import AuthContext from "../AuthContext";
+import { describeNotification } from "../util";
 
 export enum NotifHandlerResult {
     PASS,
@@ -88,6 +88,7 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                     ? "warning"
                     : "info";
 
+            const notifStr = describeNotification(notif);
             switch (notif.type) {
                 case NotificationType.PLAIN:
                     enqueueSnackbar(notif.msgSummary, {
@@ -100,53 +101,40 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                     break;
                 case NotificationType.NEW_MESSAGE:
                     console.log("new message");
-                    enqueueSnackbar(
-                        `您编号为${notif.targetId}的订单有新的未读消息`,
-                        {
-                            variant: "info",
-                            action: (key) => (
-                                <ToOrderAction
-                                    orderId={notif.targetId}
-                                    snackbarKey={key}
-                                />
-                            ),
-                        }
-                    );
+                    enqueueSnackbar(notifStr, {
+                        variant: "info",
+                        action: (key) => (
+                            <ToOrderAction
+                                orderId={notif.targetId}
+                                snackbarKey={key}
+                            />
+                        ),
+                    });
                     break;
                 case NotificationType.ORDER_STATE_CHANGED:
-                    enqueueSnackbar(
-                        `您编号为${
-                            notif.targetId
-                        }的订单的状态变为：${OrderStateMsg.get(
-                            notif.newState!
-                        )}`,
-                        {
-                            variant: getSnackbarVariant(notif.newState!),
-                            action: (key) => (
-                                <ToOrderAction
-                                    orderId={notif.targetId}
-                                    snackbarKey={key}
-                                />
-                            ),
-                        }
-                    );
+                    enqueueSnackbar(notifStr, {
+                        variant: getSnackbarVariant(notif.newState!),
+                        action: (key) => (
+                            <ToOrderAction
+                                orderId={notif.targetId}
+                                snackbarKey={key}
+                            />
+                        ),
+                    });
                     break;
                 case NotificationType.ACCEPT_DEADLINE:
-                    enqueueSnackbar(
-                        `编号为${notif.targetId}的订单即将超时，请尽快接单`,
-                        {
-                            variant: "warning",
-                            action: (key) => (
-                                <ToOrderAction
-                                    orderId={notif.targetId}
-                                    snackbarKey={key}
-                                />
-                            ),
-                        }
-                    );
+                    enqueueSnackbar(notifStr, {
+                        variant: "warning",
+                        action: (key) => (
+                            <ToOrderAction
+                                orderId={notif.targetId}
+                                snackbarKey={key}
+                            />
+                        ),
+                    });
                     break;
                 case NotificationType.ACCEPT_TIMEOUT:
-                    enqueueSnackbar(`编号为${notif.targetId}的订单超时未接单`, {
+                    enqueueSnackbar(notifStr, {
                         variant: "error",
                         action: (key) => (
                             <ToOrderAction
@@ -157,21 +145,18 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                     });
                     break;
                 case NotificationType.ANSWER_DEADLINE:
-                    enqueueSnackbar(
-                        `编号为${notif.targetId}的订单即将超时，请尽快回答`,
-                        {
-                            variant: "warning",
-                            action: (key) => (
-                                <ToOrderAction
-                                    orderId={notif.targetId}
-                                    snackbarKey={key}
-                                />
-                            ),
-                        }
-                    );
+                    enqueueSnackbar(notifStr, {
+                        variant: "warning",
+                        action: (key) => (
+                            <ToOrderAction
+                                orderId={notif.targetId}
+                                snackbarKey={key}
+                            />
+                        ),
+                    });
                     break;
                 case NotificationType.ANSWER_TIMEOUT:
-                    enqueueSnackbar(`编号为${notif.targetId}的订单超时未回答`, {
+                    enqueueSnackbar(notifStr, {
                         variant: "error",
                         action: (key) => (
                             <ToOrderAction
@@ -190,7 +175,7 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
         if (user) {
             notificationService
                 .getUnreadCount(user.id)
-                .then((res) => setUnreadCount(res.unreadCount));
+                .then((res) => setUnreadCount(res.count));
         }
     }, [user]);
 

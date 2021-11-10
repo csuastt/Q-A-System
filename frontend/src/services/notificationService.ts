@@ -19,7 +19,13 @@ class NotificationService {
             .then((response) => response.data);
     }
 
-    getUnreadCount(userId: number): Promise<{ unreadCount: number }> {
+    getTotalCount(userId: number): Promise<{ count: number }> {
+        return axios
+            .get(`/users/${userId}/notif/count`)
+            .then((response) => response.data);
+    }
+
+    getUnreadCount(userId: number): Promise<{ count: number }> {
         return axios
             .get(`/users/${userId}/notif/unreadCount`)
             .then((response) => response.data);

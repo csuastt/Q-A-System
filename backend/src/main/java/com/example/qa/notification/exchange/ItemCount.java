@@ -1,4 +1,4 @@
 package com.example.qa.notification.exchange;
 
-public record UnreadCount(long unreadCount) {
+public record ItemCount(long count) {
 }

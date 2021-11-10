@@ -1,9 +1,9 @@
 package com.example.qa.notification;
 
 import com.example.qa.errorhandling.ApiException;
+import com.example.qa.notification.exchange.ItemCount;
 import com.example.qa.notification.exchange.NotifPayload;
 import com.example.qa.notification.exchange.PagedList;
-import com.example.qa.notification.exchange.UnreadCount;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.UserRepository;
@@ -45,9 +45,15 @@ public class NotificationController {
     }
 
     @GetMapping("/api/users/{userId}/notif/unreadCount")
-    public UnreadCount getUnreadCount(@PathVariable long userId, Principal auth) {
+    public ItemCount getUnreadCount(@PathVariable long userId, Principal auth) {
         var user = checkUser(userId, auth);
-        return new UnreadCount(notifService.getUnreadCount(user));
+        return new ItemCount(notifService.getUnreadCount(user));
+    }
+
+    @GetMapping("/api/users/{userId}/notif/count")
+    public ItemCount getTotalCount(@PathVariable long userId, Principal auth) {
+        var user = checkUser(userId, auth);
+        return new ItemCount(notifService.getTotalCount(user));
     }
 
     @PostMapping("/api/users/{userId}/notif/{notifId}/read")

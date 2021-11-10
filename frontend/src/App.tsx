@@ -21,6 +21,7 @@ import Help from "./components/Help";
 import { SnackbarProvider } from "notistack";
 import NotificationController from "./components/NotificationController";
 import websocketService from "./services/websocketService";
+import NotificationList from "./components/NotificationList";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
@@ -78,6 +79,7 @@ export default function App() {
                 isAdmin={false}
             />,
         ],
+        ["/notif", <NotificationList />],
         ["/income", <IncomeStatistics userId={user?.id} briefMsg={false} />],
         ["/help", <Help />],
         ["/", <Welcome />],
