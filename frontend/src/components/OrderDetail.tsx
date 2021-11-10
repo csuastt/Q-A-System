@@ -19,7 +19,6 @@ import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
 import Markdown from "./Markdown";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {

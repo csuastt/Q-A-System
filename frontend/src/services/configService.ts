@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ConfigInfo, EarningsInfo, UserInfo } from "./definations";
+import { ConfigInfo, EarningsInfo } from "./definations";
 
 class ConfigService {
     getSystemConfig(): Promise<ConfigInfo> {

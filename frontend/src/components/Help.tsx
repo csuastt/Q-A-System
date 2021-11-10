@@ -98,8 +98,8 @@ const Help: React.FC<{}> = (props) => {
     const [config, setConfig] = useState<ConfigInfo>();
 
     useEffect(() => {
-        systemConfigService.getSystemConfig().then((config) => {
-            setConfig(config);
+        systemConfigService.getSystemConfig().then((configInfo) => {
+            setConfig(configInfo);
         });
     }, []);
 
