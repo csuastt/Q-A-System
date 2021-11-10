@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { ConfigInfo } from "../services/definations";
 
 import { Box, Card, CardContent, Grid } from "@mui/material";
@@ -63,6 +63,7 @@ export default class SystemSettings extends Component<
             alertContent: _alertContent,
         });
     }
+
     // get info of config
     fetchConfigInfo() {
         configService.getSystemConfig().then(
@@ -78,6 +79,7 @@ export default class SystemSettings extends Component<
             }
         );
     }
+
     handleChangeConfig(e: any) {
         if (this.state.config === null) return;
         const new_config = { ...this.state.config };
@@ -108,6 +110,7 @@ export default class SystemSettings extends Component<
             new_config["feeRate"] = e.target.value;
         this.setState({ config: new_config });
     }
+
     handleSubmit() {
         // avoid null
         if (this.state.config === null) return;

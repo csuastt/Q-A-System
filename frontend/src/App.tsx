@@ -92,10 +92,8 @@ export default function App() {
                 setUser: setUser,
                 clearUser: () => setUser(undefined),
                 manager: undefined,
-                setManager: () => {
-                },
-                clearManager: () => {
-                },
+                setManager: () => {},
+                clearManager: () => {},
             }}
         >
             <BrowserRouter>

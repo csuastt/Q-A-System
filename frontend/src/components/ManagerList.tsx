@@ -146,18 +146,16 @@ const ManagerList: React.FC<{ selectModel?: boolean }> = (props) => {
                                             }
                                             variant="outlined"
                                             onClick={() => {
-                                                {
-                                                    manager.role ===
-                                                    ManagerRole.REVIEWER
-                                                        ? managerService.modifyManagerRole(
-                                                              manager.id,
-                                                              ManagerRole.ADMIN
-                                                          )
-                                                        : managerService.modifyManagerRole(
-                                                              manager.id,
-                                                              ManagerRole.REVIEWER
-                                                          );
-                                                }
+                                                manager.role ===
+                                                ManagerRole.REVIEWER
+                                                    ? managerService.modifyManagerRole(
+                                                          manager.id,
+                                                          ManagerRole.ADMIN
+                                                      )
+                                                    : managerService.modifyManagerRole(
+                                                          manager.id,
+                                                          ManagerRole.REVIEWER
+                                                      );
                                                 window.location.reload();
                                             }}
                                         >

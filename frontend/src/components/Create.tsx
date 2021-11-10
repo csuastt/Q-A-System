@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { ManagerRole } from "../services/definations";
 // mui
@@ -15,7 +15,7 @@ import Alert from "@mui/material/Alert";
 // email checker
 // @ts-ignore
 // other validators
-import { validate_required, validate_length } from "./Login";
+import { validate_length, validate_required } from "./Login";
 //import { Link as RouterLink } from "react-router-dom";
 import AdminAuthService from "../services/adminAuthService";
 import CreateDetailDialog from "./CreateDetailDialog";
