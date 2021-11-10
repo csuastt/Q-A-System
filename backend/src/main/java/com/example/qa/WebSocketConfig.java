@@ -30,7 +30,9 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 public class WebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/ws").withSockJS();
+        registry.addEndpoint("/api/ws")
+                .setAllowedOriginPatterns("https://*.app.secoder.net/", "http://localhost:[*]")
+                .withSockJS();
         registry.setErrorHandler(new StompSubProtocolErrorHandler() {
             @Nullable
             @Override
