@@ -19,7 +19,6 @@ import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
 import Markdown from "./Markdown";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
@@ -98,24 +97,26 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             );
         } else if (state === OrderState.REVIEWED) {
             return (
-                <>
-                    <Button
-                        variant="contained"
-                        startIcon={<CheckIcon />}
-                        onClick={() => respondOrder(true)}
-                        color="success"
-                    >
-                        确认接单
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => respondOrder(false)}
-                        color="error"
-                    >
-                        拒绝接单
-                    </Button>
-                </>
+                isAnswerer && (
+                    <>
+                        <Button
+                            variant="contained"
+                            startIcon={<CheckIcon />}
+                            onClick={() => respondOrder(true)}
+                            color="success"
+                        >
+                            确认接单
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            startIcon={<DeleteIcon />}
+                            onClick={() => respondOrder(false)}
+                            color="error"
+                        >
+                            拒绝接单
+                        </Button>
+                    </>
+                )
             );
         } else if (state === OrderState.REJECTED_BY_ANSWERER) {
             return (

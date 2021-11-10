@@ -18,15 +18,28 @@ import PathParamParser from "./PathParamParser";
 import UserOrderList from "./components/UserOrderList";
 import IncomeStatistics from "./components/IncomeStatistics";
 import Help from "./components/Help";
+import { SnackbarProvider } from "notistack";
+import NotificationController from "./components/NotificationController";
+import websocketService from "./services/websocketService";
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
     const [refreshing, setRefreshing] = useState(true);
+    const [wsAvailable, setWsAvailable] = useState(false);
 
     useEffect(() => {
+        websocketService.onConnected = () => {
+            console.log("WebSocket connection established");
+            setWsAvailable(true);
+        };
+        websocketService.onDisconnected = () => {
+            console.log("WebSocket is disconnected");
+            setWsAvailable(false);
+        };
         authService
             .refreshToken()
             .then(setUser)
+            .then(() => websocketService.tryActivate())
             .catch(() => authService.clearToken())
             .finally(() => setRefreshing(false));
     }, []);
@@ -79,27 +92,33 @@ export default function App() {
                 setUser: setUser,
                 clearUser: () => setUser(undefined),
                 manager: undefined,
-                setManager: () => {},
-                clearManager: () => {},
+                setManager: () => {
+                },
+                clearManager: () => {
+                },
             }}
         >
             <BrowserRouter>
-                <AppFrame isAdmin={false}>
-                    <Container maxWidth="md">
-                        <Switch>
-                            {routes.map((routeItem) => {
-                                return (
-                                    <Route
-                                        path={routeItem[0].toString()}
-                                        key={routeItem[0].toString()}
-                                    >
-                                        {routeItem[1]}
-                                    </Route>
-                                );
-                            })}
-                        </Switch>
-                    </Container>
-                </AppFrame>
+                <SnackbarProvider maxSnack={4}>
+                    <NotificationController wsAvailable={wsAvailable}>
+                        <AppFrame isAdmin={false}>
+                            <Container maxWidth="md">
+                                <Switch>
+                                    {routes.map((routeItem) => {
+                                        return (
+                                            <Route
+                                                path={routeItem[0].toString()}
+                                                key={routeItem[0].toString()}
+                                            >
+                                                {routeItem[1]}
+                                            </Route>
+                                        );
+                                    })}
+                                </Switch>
+                            </Container>
+                        </AppFrame>
+                    </NotificationController>
+                </SnackbarProvider>
             </BrowserRouter>
         </AuthContext.Provider>
     );

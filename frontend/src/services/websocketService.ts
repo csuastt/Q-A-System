@@ -11,6 +11,10 @@ class WebsocketService {
     notifSubscription: StompSubscription | null;
     imSubscription: StompSubscription | null;
 
+    onConnected: () => void = () => null;
+    onDisconnected: () => void = () => null;
+    onNewNotification: (notif: Notification) => boolean = () => false;
+
     constructor() {
         this.stompClient = new Client();
         this.sessionUserId = -1;
@@ -21,8 +25,13 @@ class WebsocketService {
         this.stompClient.webSocketFactory = function () {
             return new SockJS(websocketEndpoint);
         };
+        this.stompClient.onConnect = () => {
+            this.onConnected();
+            // Auto subscribe to notification
+            this.subscribeNotification();
+        };
         this.stompClient.onDisconnect = () => {
-            console.log("WebSocket is disconnected.");
+            this.onDisconnected();
         };
         this.stompClient.onStompError = (receipt) => {
             const errBody = receipt.body;
@@ -47,9 +56,6 @@ class WebsocketService {
                 this.stompClient.connectHeaders = {
                     Authorization: authToken,
                 };
-                this.stompClient.onConnect = () => {
-                    console.log("WebSocket connection established.");
-                };
                 this.stompClient.activate();
                 ok = true;
             }
@@ -70,9 +76,7 @@ class WebsocketService {
         this.sessionUserId = -1;
     }
 
-    subscribeNotification(
-        notifCallback: (notif: Notification) => boolean
-    ): boolean {
+    subscribeNotification(): boolean {
         if (!this.stompClient.connected) {
             return false;
         }
@@ -81,7 +85,7 @@ class WebsocketService {
             `/notif/${this.sessionUserId}`,
             (frame) => {
                 const notif: Notification = JSON.parse(frame.body);
-                if (notifCallback(notif)) {
+                if (this.onNewNotification(notif)) {
                     // Auto read
                     notificationService
                         .readOne(this.sessionUserId, notif.notifId)
@@ -94,6 +98,11 @@ class WebsocketService {
             }
         );
         return true;
+    }
+
+    unsubscribeNotification() {
+        this.notifSubscription?.unsubscribe();
+        this.notifSubscription = null;
     }
 
     subscribeIM(
@@ -112,6 +121,11 @@ class WebsocketService {
             }
         );
         return true;
+    }
+
+    unsubscribeIM() {
+        this.imSubscription?.unsubscribe();
+        this.imSubscription = null;
     }
 
     enableStompDebug() {

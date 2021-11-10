@@ -99,6 +99,21 @@ export enum OrderState {
     FULFILLED = "FULFILLED",
 }
 
+export const OrderStateMsg: Map<OrderState, string> = new Map([
+    [OrderState.CREATED, "已创建"],
+    [OrderState.PAYED, "已支付"],
+    [OrderState.PAY_TIMEOUT, "支付超时"],
+    [OrderState.REVIEWED, "审核通过"],
+    [OrderState.REJECTED_BY_REVIEWER, "审核失败"],
+    [OrderState.ACCEPTED, "已接单"],
+    [OrderState.REJECTED_BY_ANSWERER, "拒绝接单"],
+    [OrderState.RESPOND_TIMEOUT, "接单超时"],
+    [OrderState.ANSWERED, "已回答"],
+    [OrderState.ANSWER_TIMEOUT, "回答超时"],
+    [OrderState.CHAT_ENDED, "交流结束"],
+    [OrderState.FULFILLED, "交易完成"],
+]);
+
 export enum OrderEndReason {
     UNKNOWN,
     ASKER,
@@ -170,13 +185,13 @@ export interface ConfigInfo {
 }
 
 export enum NotificationType {
-    PLAIN,
-    NEW_MESSAGE,
-    ORDER_STATE_CHANGED,
-    ACCEPT_DEADLINE,
-    ACCEPT_TIMEOUT,
-    ANSWER_DEADLINE,
-    ANSWER_TIMEOUT,
+    PLAIN = "PLAIN",
+    NEW_MESSAGE = "NEW_MESSAGE",
+    ORDER_STATE_CHANGED = "ORDER_STATE_CHANGED",
+    ACCEPT_DEADLINE = "ACCEPT_DEADLINE",
+    ACCEPT_TIMEOUT = "ACCEPT_TIMEOUT",
+    ANSWER_DEADLINE = "ANSWER_DEADLINE",
+    ANSWER_TIMEOUT = "ANSWER_TIMEOUT",
 }
 
 export interface Notification {

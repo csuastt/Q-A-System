@@ -1,33 +1,33 @@
-import { OrderState as QS } from "../services/definations";
+import { OrderState as QS, OrderStateMsg } from "../services/definations";
 import React from "react";
 import Chip from "@mui/material/Chip";
 import _ from "lodash";
 
-const renderMap: Map<QS, [string, string, string]> = new Map([
-    [QS.CREATED, ["已创建", "default", "outlined"]],
-    [QS.PAYED, ["已支付", "success", "filled"]],
-    [QS.PAY_TIMEOUT, ["支付超时", "warning", "outlined"]],
-    [QS.REVIEWED, ["审核通过", "success", "filled"]],
-    [QS.REJECTED_BY_REVIEWER, ["审核失败", "error", "outlined"]],
-    [QS.ACCEPTED, ["已接单", "success", "filled"]],
-    [QS.REJECTED_BY_ANSWERER, ["拒绝接单", "error", "outlined"]],
-    [QS.RESPOND_TIMEOUT, ["接单超时", "warning", "outlined"]],
-    [QS.ANSWERED, ["已回答", "success", "filled"]],
-    [QS.ANSWER_TIMEOUT, ["回答超时", "warning", "outlined"]],
-    [QS.CHAT_ENDED, ["交流结束", "default", "filled"]],
-    [QS.FULFILLED, ["交易完成", "default", "outlined"]],
+const renderMap: Map<QS, [string, string]> = new Map([
+    [QS.CREATED, ["default", "outlined"]],
+    [QS.PAYED, ["success", "filled"]],
+    [QS.PAY_TIMEOUT, ["warning", "outlined"]],
+    [QS.REVIEWED, ["success", "filled"]],
+    [QS.REJECTED_BY_REVIEWER, ["error", "outlined"]],
+    [QS.ACCEPTED, ["success", "filled"]],
+    [QS.REJECTED_BY_ANSWERER, ["error", "outlined"]],
+    [QS.RESPOND_TIMEOUT, ["warning", "outlined"]],
+    [QS.ANSWERED, ["success", "filled"]],
+    [QS.ANSWER_TIMEOUT, ["warning", "outlined"]],
+    [QS.CHAT_ENDED, ["default", "filled"]],
+    [QS.FULFILLED, ["default", "outlined"]],
 ]);
 
 const OrderStateChip: React.FC<{ state: QS }> = (props) => {
-    const [label, style, variant]: [string, any, any] = _.defaultTo(
+    const [style, variant]: [string, string] = _.defaultTo(
         renderMap.get(props.state),
-        ["未知", "default", "outlined"]
+        ["default", "outlined"]
     );
     return (
         <Chip
-            label={label}
-            color={style}
-            variant={variant}
+            label={_.defaultTo(OrderStateMsg.get(props.state), "未知")}
+            color={style as any}
+            variant={variant as any}
             sx={{ my: "auto" }}
         />
     );
