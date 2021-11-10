@@ -191,7 +191,7 @@ const NotificationList: React.FC = (props) => {
             {loading ? (
                 <List>{renderSkeletonItem()}</List>
             ) : notifList?.totalCount === 0 ? (
-                <Typography variant="h5" sx={{ mx: "auto" }}>
+                <Typography variant="h5" sx={{ textAlign: "center", mt: 2 }}>
                     {filterUnread ? "暂无未读通知" : "暂无通知"}
                 </Typography>
             ) : (
