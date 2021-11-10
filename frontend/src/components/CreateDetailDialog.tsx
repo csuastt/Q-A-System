@@ -9,13 +9,12 @@ import TextField from "@mui/material/TextField";
 import CardContent from "@mui/material/CardContent";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Button from "@mui/material/Button";
-import { Link as RouterLink } from "react-router-dom";
 import { Stack } from "@mui/material";
 import copy from "copy-to-clipboard";
 import { ManagerRole } from "../services/definations";
 
-const AnswererDetailDialog: React.FC<
-    DialogProps & { username: String; password: string; role: ManagerRole }
+const CreateDetailDialog: React.FC<
+    DialogProps & { username: string; password: string; role: ManagerRole }
 > = (props) => {
     const { username, password } = props;
 
@@ -78,4 +77,4 @@ const AnswererDetailDialog: React.FC<
     );
 };
 
-export default AnswererDetailDialog;
+export default CreateDetailDialog;

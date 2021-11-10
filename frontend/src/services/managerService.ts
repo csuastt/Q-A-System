@@ -4,7 +4,6 @@ import {
     ManagerInfoList,
     ManagerRole,
     PagedList,
-    UserInfo,
 } from "./definations";
 
 class ManagerService {

@@ -4,7 +4,7 @@ import { merge } from "lodash";
 import BaseOptionChart from "./BaseOptionChart";
 import React, { useEffect, useMemo, useState } from "react";
 import userService from "../services/userService";
-import { ConfigInfo, UserInfo, UserRole } from "../services/definations";
+import { ConfigInfo, UserInfo } from "../services/definations";
 import systemConfigService from "../services/systemConfigService";
 import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router-dom";
@@ -51,8 +51,8 @@ const IncomeStatistics: React.FC<{
             });
         }
         if (!props.briefMsg)
-            systemConfigService.getSystemConfig().then((config) => {
-                setConfig(config);
+            systemConfigService.getSystemConfig().then((configInfo) => {
+                setConfig(configInfo);
             });
     }, [labelsList, props.briefMsg, props.user, props.userId]);
 
@@ -69,7 +69,7 @@ const IncomeStatistics: React.FC<{
             y: {
                 formatter: (y: undefined | number) => {
                     if (typeof y !== "undefined") {
-                        return `${y.toFixed(0)} ￥`;
+                        return `￥ ${y.toFixed(0)}`;
                     }
                     return y;
                 },
@@ -87,48 +87,18 @@ const IncomeStatistics: React.FC<{
                         </Typography>
                     }
                     subheader={
-                        props.user ? (
-                            props.user.role === UserRole.ANSWERER ? (
-                                <>
-                                    <Typography align="left" variant="body2">
-                                        下方显示了您近半年的收入情况，
-                                        <Link
-                                            variant="body2"
-                                            component={RouterLink}
-                                            to="/income"
-                                        >
-                                            点此查看更多
-                                        </Link>
-                                    </Typography>
-                                </>
-                            ) : (
-                                <>
-                                    <Typography align="left" variant="body2">
-                                        您还不是回答者，
-                                        <Link
-                                            variant="body2"
-                                            component={RouterLink}
-                                            to="/profile"
-                                        >
-                                            点此申请
-                                        </Link>
-                                    </Typography>
-                                </>
-                            )
-                        ) : (
-                            <>
-                                <Typography align="left" variant="body2">
-                                    您尚未登录，
-                                    <Link
-                                        variant="body2"
-                                        component={RouterLink}
-                                        to="/login"
-                                    >
-                                        点此登录
-                                    </Link>
-                                </Typography>
-                            </>
-                        )
+                        <>
+                            <Typography align="left" variant="body2">
+                                下方显示了您近半年的收入情况，
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/income"
+                                >
+                                    点此查看更多
+                                </Link>
+                            </Typography>
+                        </>
                     }
                     sx={{ paddingBottom: 0 }}
                 />

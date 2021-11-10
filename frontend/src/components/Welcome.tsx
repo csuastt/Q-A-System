@@ -33,6 +33,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import userService from "../services/userService";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+import MoneyIcon from "@mui/icons-material/Money";
 import AnswererList from "./AnswererList";
 
 export default function Welcome() {
@@ -233,19 +234,48 @@ export default function Welcome() {
                                                     variant="body1"
                                                     gutterBottom
                                                 >
-                                                    您的余额为：
+                                                    您的余额为：￥
                                                     <Box
                                                         component="span"
                                                         fontWeight="fontWeightBold"
                                                         fontSize={22}
                                                     >
                                                         {user.balance}
-                                                    </Box>{" "}
-                                                    ￥
+                                                    </Box>
                                                 </Typography>
                                             }
                                         />
                                     </ListItem>
+                                    {user.role === UserRole.ANSWERER && (
+                                        <ListItem
+                                            sx={{
+                                                paddingTop: 0,
+                                                paddingBottom: 0,
+                                            }}
+                                        >
+                                            <ListItemIcon sx={{ minWidth: 30 }}>
+                                                <MoneyIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <Typography
+                                                        color="textPrimary"
+                                                        variant="body1"
+                                                        gutterBottom
+                                                    >
+                                                        您的定价为：￥
+                                                        <Box
+                                                            component="span"
+                                                            fontWeight="fontWeightBold"
+                                                            fontSize={22}
+                                                        >
+                                                            {user.price}
+                                                        </Box>
+                                                    </Typography>
+                                                }
+                                            />
+                                        </ListItem>
+                                    )}
                                 </>
                             ) : (
                                 <ListItem
@@ -471,9 +501,11 @@ export default function Welcome() {
             <Grid container spacing={4}>
                 <Grid item md={8} xs={12} mt={2}>
                     <Grid container spacing={4} direction={"column"}>
-                        <Grid item>
-                            <IncomeStatistics briefMsg={true} user={user} />
-                        </Grid>
+                        {user && user.role === UserRole.ANSWERER && (
+                            <Grid item>
+                                <IncomeStatistics briefMsg={true} user={user} />
+                            </Grid>
+                        )}
                         <Grid item>{drawAnswererList()}</Grid>
                     </Grid>
                 </Grid>

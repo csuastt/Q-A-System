@@ -49,8 +49,8 @@ const OrderCreationWizard: React.FC = (props) => {
     const answerer = processInt(routerParam.answerer);
 
     useEffect(() => {
-        systemConfigService.getSystemConfig().then((config) => {
-            setConfig(config);
+        systemConfigService.getSystemConfig().then((configInfo) => {
+            setConfig(configInfo);
         });
     }, []);
 
