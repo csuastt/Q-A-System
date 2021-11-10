@@ -2,11 +2,13 @@ package com.example.qa.test;
 
 import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
-import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.im.IMService;
+import com.example.qa.notification.NotificationRepository;
+import com.example.qa.order.OrderRepository;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
@@ -21,12 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class IMControllerTest {
+
 
     private static final String password = "password";
     private static final String question = "TestQuestion";
@@ -35,20 +37,34 @@ class IMControllerTest {
     private static MockUtils mockUtils;
     private static long askerId;
     private static long answererId;
+    private final IMService imService;
+    private final NotificationRepository noRepo;
+    private final OrderRepository orderRepo;
+    private final UserRepository userRepo;
+    private final AdminRepository adminRepo;
 
     private static String askerToken;
     private static String answererToken;
     private static String superAdminToken;
 
 
-
+    IMControllerTest(@Autowired IMService imService, @Autowired NotificationRepository notificationRepository,
+                     @Autowired OrderRepository orderRepository,
+                     @Autowired UserRepository userRepository,
+                     @Autowired AdminRepository adminRepository) {
+        this.imService = imService;
+        noRepo = notificationRepository;
+        orderRepo = orderRepository;
+        userRepo = userRepository;
+        adminRepo = adminRepository;
+    }
     @BeforeAll
-    static void addUsers(@Autowired MockMvc mockMvc,
+    static void addUsers(
+            @Autowired MockMvc mockMvc,
                          @Autowired UserRepository userRepository,
                          @Autowired AdminRepository adminRepository,
                          @Autowired PasswordEncoder passwordEncoder) throws Exception {
         mockUtils = new MockUtils(mockMvc);
-
         RegisterRequest registerRequest = new RegisterRequest();
 
         registerRequest.setUsername("testAsker5");
@@ -89,6 +105,7 @@ class IMControllerTest {
 
     @Test
     void sendMessage() {
+
     }
 
     @Test
