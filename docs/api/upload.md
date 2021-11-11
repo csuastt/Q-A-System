@@ -27,3 +27,13 @@ POST /api/users/{id}/avatar
 | 名称      | 类型           | 说明     |
 | -------- | ------        | -------  |
 | file     | MultipartFile |          |
+
+返回：
+
+- 403 文件格式错误
+
+### 获得头像
+
+```
+GET  /api/users/{id}/avatar
+```

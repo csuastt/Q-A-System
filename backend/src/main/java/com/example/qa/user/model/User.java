@@ -27,7 +27,8 @@ public class User {
     private String username;  // 删除时手动在之后添加 @{id} 以便允许重新注册
     private String password;
 
-    private String avatar;
+    @Lob
+    private byte[] avatar;
     private String nickname;
     private String email;
     private String phone = "";
