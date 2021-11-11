@@ -38,7 +38,7 @@ public class DevelopmentDataLoader implements ApplicationRunner {
         this.encoder = encoder;
     }
 
-    private static final String answer = "我可以回答你一句“无可奉告”。";
+    private static final String ANSWER = "我可以回答你一句“无可奉告”。";
 
     private Order randomNewOrder(User asker, User answerer) {
         var data = new OrderRequest();
@@ -46,16 +46,15 @@ public class DevelopmentDataLoader implements ApplicationRunner {
         data.setTitle(question);
         data.setDescription("顺便问一下为什么 $ \\int_0^1 x dx = \\frac 1 2 $？");
         data.setState(OrderState.values()[random.nextInt(OrderState.values().length)]);
-        switch (data.getState()) {
-            case ANSWERED -> data.setAnswer(answer);
-            case CHAT_ENDED, FULFILLED -> {
-                data.setAnswer(answer);
-                data.setEndReason(OrderEndReason.values()[random.nextInt(OrderEndReason.values().length)]);
-            }
+        if (data.getState() == OrderState.ANSWERED) {
+            data.setAnswer(ANSWER);
+        } else if (data.getState() == OrderState.CHAT_ENDED || data.getState() == OrderState.FULFILLED) {
+            data.setAnswer(ANSWER);
+            data.setEndReason(OrderEndReason.values()[random.nextInt(OrderEndReason.values().length)]);
         }
         var order = new Order(data, asker, answerer, true);
-        switch (order.getState()) {
-            case REVIEWED, ACCEPTED, ANSWERED, CHAT_ENDED -> order.setExpireTime(ZonedDateTime.now().plusWeeks(1));
+        if (order.getState() == OrderState.REVIEWED || order.getState() == OrderState.ACCEPTED || order.getState() == OrderState.ANSWERED || order.getState() == OrderState.CHAT_ENDED) {
+            order.setExpireTime(ZonedDateTime.now().plusWeeks(1));
         }
         return order;
     }
