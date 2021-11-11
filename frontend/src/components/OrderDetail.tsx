@@ -293,7 +293,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     ) : (
                         <Markdown
                             value={
-                                orderInfo.state === OrderState.ANSWERED
+                                [
+                                    OrderState.ANSWERED,
+                                    OrderState.CHAT_ENDED,
+                                    OrderState.FULFILLED,
+                                ].indexOf(orderInfo.state) >= 0
                                     ? orderInfo.answer
                                     : "该问题还未回答"
                             }
