@@ -164,9 +164,6 @@ class IMControllerTest {
         user.setUsername("aa");
         user.setPassword("aaaa");
         user.setRole(UserRole.ANSWERER);
-        long id = 1L;
-        ZonedDateTime sendTime = ZonedDateTime.now();
-        User sender = user;
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(answererId);
@@ -174,7 +171,6 @@ class IMControllerTest {
         request.setDescription(description);
         Order order = new Order(request, asker, answerer, true);
         orderRepo.save(order);
-        imService.sendFromUser(order, asker, ZonedDateTime.now(), "1234567");
         Order order2 = new Order(request, asker, answerer, true);
         orderRepo.save(order2);
         imService.getOrderHistoryMessages(order);
@@ -191,29 +187,25 @@ class IMControllerTest {
 
         order.setState(OrderState.ACCEPTED);
         orderRepo.save(order);
-        orderService.handleExpiration(order);
 
         order.setState(OrderState.REVIEWED);
         orderRepo.save(order);
-        orderService.handleExpiration(order);
 
         order.setState(OrderState.ANSWERED);
         orderRepo.save(order);
-        orderService.handleExpiration(order);
+        imService.sendFromUser(order, asker, ZonedDateTime.now(), "1234567");
 
         order.setState(OrderState.CHAT_ENDED);
         orderRepo.save(order);
-        orderService.handleExpiration(order);
 
         order.setState(OrderState.CANCELLED);
         orderRepo.save(order);
-        orderService.handleExpiration(order);
 
-        mockUtils.getUrl("/im/history/" + order.getId(), askerToken, null, null, status().isOk());
-        mockUtils.getUrl("/im/history/" + order.getId(), answererToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/im/history/" + order.getId(), askerToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/im/history/" + order.getId(), answererToken, null, null, status().isOk());
 
-        mockUtils.getUrl("/im/history/" + order.getId(), askerToken2, null, null, status().isForbidden());
-        mockUtils.getUrl("/im/history/" + order.getId(), null, null, null, status().isUnauthorized());
-        mockUtils.getUrl("/im/history/" + 1000, askerToken, null, null, status().isNotFound());
+        mockUtils.getUrl("/api/im/history/" + order.getId(), askerToken2, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/im/history/" + order.getId(), null, null, null, status().isUnauthorized());
+        mockUtils.getUrl("/api/im/history/" + 1000, askerToken, null, null, status().isNotFound());
     }
 }
