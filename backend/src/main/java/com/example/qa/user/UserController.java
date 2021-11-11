@@ -114,8 +114,6 @@ public class UserController {
 
     @GetMapping(value = "/{id}/avatar", produces = MediaType.IMAGE_PNG_VALUE)
     public Resource downloadImage(@PathVariable(value = "id") Long id)  {
-        authLoginOrThrow();
-        authUserOrThrow(id);
         byte[] image = userService.getById(id).getAvatar();
         if(image == null)
             throw new ApiException(HttpStatus.FORBIDDEN, "No Avatar Found");
