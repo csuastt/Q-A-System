@@ -28,13 +28,21 @@ public class NotificationService {
                 .orElseGet(() -> repo.findByReceiverOrderByCreateTimeDesc(user, pageable)));
     }
 
+    public long getTotalCount(User user) {
+        return repo.countByReceiver(user);
+    }
+
+    public long getUnreadCount(User user) {
+        return repo.countByReceiverAndHaveReadIsFalse(user);
+    }
+
     public void send(Notification notif) {
         repo.saveAndFlush(notif);
         template.convertAndSend("/notif/" + notif.getReceiver().getId(), new NotifPayload(notif));
     }
 
     public void readAll(User user) {
-        var notifList = repo.findByReceiverAndHaveReadOrderByCreateTimeDesc(user, true, Pageable.unpaged());
+        var notifList = repo.findByReceiverAndHaveReadOrderByCreateTimeDesc(user, false, Pageable.unpaged());
         notifList.forEach(notif -> notif.setHaveRead(true));
         repo.saveAll(notifList);
     }

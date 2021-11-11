@@ -42,18 +42,22 @@ class AuthService {
     }
 
     refreshToken(): Promise<UserInfo> {
-        const storedToken: string | null = localStorage.getItem("token");
-        if (storedToken) {
-            axios.defaults.headers.common["Authorization"] =
-                "Bearer " + storedToken;
-            try {
+        return new Promise<UserInfo>(async (resolve, reject) => {
+            const storedToken: string | null = localStorage.getItem("token");
+            if (storedToken) {
+                axios.defaults.headers.common["Authorization"] =
+                    "Bearer " + storedToken;
                 const user = JSON.parse(atob(storedToken.split(".")[1]));
-                return userService.getUserInfo(user["sub"]);
-            } catch (e) {
-                this.clearToken();
+                const userInfo = await userService.getUserInfo(user["sub"]);
+                if (userInfo["email"]) {
+                    resolve(userInfo);
+                } else {
+                    reject("Invalid token");
+                }
+            } else {
+                reject("No token found");
             }
-        }
-        return Promise.reject(new Error("No token found"));
+        });
     }
 }
 

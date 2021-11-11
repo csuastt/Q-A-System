@@ -37,11 +37,11 @@ public class IMController {
         if (payload.msgBody() == null) {
             throw new MessageException(HttpStatus.BAD_REQUEST, "No message body");
         }
-        imService.sendFromUser(res.order(), res.sender(), payload.msgBody());
+        imService.sendFromUser(res.order(), res.sender(), payload.sendTime(), payload.msgBody());
     }
 
     @ResponseBody
-    @GetMapping("/im/history/{orderId}")
+    @GetMapping("/api/im/history/{orderId}")
     public List<MessagePayload> getHistory(@PathVariable long orderId, Principal auth) {
         validator.check(orderId, auth, ApiException::new);
         return imService.getOrderHistoryMessages(orderId)

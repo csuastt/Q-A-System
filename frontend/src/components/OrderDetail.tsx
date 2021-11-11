@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { OrderInfo, OrderState } from "../services/definations";
+import { IMMessage, OrderInfo, OrderState } from "../services/definations";
 import orderService from "../services/orderService";
 import AuthContext from "../AuthContext";
 import { Redirect } from "react-router-dom";
@@ -12,14 +12,17 @@ import Button from "@mui/material/Button";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import SmsFailedIcon from "@mui/icons-material/SmsFailed";
+import SendIcon from "@mui/icons-material/Send";
 import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
 import Markdown from "./Markdown";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import IMMessageList from "./IMMessageList";
+import imService from "../services/imService";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -29,10 +32,9 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [orderInfo, setOrderInfo] = useState<OrderInfo>();
     const [needLogin, setNeedLogin] = useState(user == null);
     const [noPermission, setNoPermission] = useState(false);
-
     const [answering, setAnswering] = useState(false);
-
     const [answer, setAnswer] = useState<string>("");
+    const [message, setMessage] = useState<string>("");
 
     useEffect(() => {
         if (!needReload) {
@@ -81,6 +83,23 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .then(() => setNeedReload(true));
     };
 
+    // IM helper function
+    const sendMessage = () => {
+        if (message.length === 0) {
+            return;
+        }
+        const msg: Omit<IMMessage, "messageId"> = {
+            senderId: user!.id,
+            sendTime: new Date().toISOString(),
+            msgBody: message,
+        };
+        imService.sendMessage(props.orderId, msg);
+        setMessage("");
+    };
+    const endOrder = () => {
+        orderService.endOrder(props.orderId).then(() => setNeedReload(true));
+    };
+
     // ANSWERER helper functions
     const renderAnswererActions = () => {
         const state = orderInfo!.state;
@@ -97,24 +116,26 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             );
         } else if (state === OrderState.REVIEWED) {
             return (
-                <>
-                    <Button
-                        variant="contained"
-                        startIcon={<CheckIcon />}
-                        onClick={() => respondOrder(true)}
-                        color="success"
-                    >
-                        确认接单
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => respondOrder(false)}
-                        color="error"
-                    >
-                        拒绝接单
-                    </Button>
-                </>
+                isAnswerer && (
+                    <>
+                        <Button
+                            variant="contained"
+                            startIcon={<CheckIcon />}
+                            onClick={() => respondOrder(true)}
+                            color="success"
+                        >
+                            确认接单
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            startIcon={<DeleteIcon />}
+                            onClick={() => respondOrder(false)}
+                            color="error"
+                        >
+                            拒绝接单
+                        </Button>
+                    </>
+                )
             );
         } else if (state === OrderState.REJECTED_BY_ANSWERER) {
             return (
@@ -241,14 +262,10 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         {orderInfo.questionTitle}
                     </Typography>
                     {orderInfo.questionDescription && (
-                        <>
-                            <Box>
-                                <Markdown
-                                    value={orderInfo.questionDescription}
-                                    viewOnly
-                                />
-                            </Box>
-                        </>
+                        <Markdown
+                            value={orderInfo.questionDescription}
+                            viewOnly
+                        />
                     )}
                 </CardContent>
             </Card>
@@ -286,6 +303,24 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                 </CardContent>
                 <CardActions>{renderAnswererActions()}</CardActions>
             </Card>
+            <IMMessageList orderInfo={orderInfo} />
+            {orderInfo.state === OrderState.ANSWERED && (
+                <Card>
+                    <Markdown value={message} onChange={setMessage} />
+                    <CardActions>
+                        <Button onClick={sendMessage} startIcon={<SendIcon />}>
+                            发送消息
+                        </Button>
+                        <Button
+                            onClick={endOrder}
+                            startIcon={<CloseIcon />}
+                            color={"error"}
+                        >
+                            结束订单
+                        </Button>
+                    </CardActions>
+                </Card>
+            )}
         </Stack>
     );
 };

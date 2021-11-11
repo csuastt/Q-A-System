@@ -6,10 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    @Transactional
     void deleteByReceiverAndHaveReadIsTrue(User receiver);
+
+    long countByReceiver(User receiver);
+
+    long countByReceiverAndHaveReadIsFalse(User receiver);
 
     Page<Notification> findByReceiverOrderByCreateTimeDesc(User receiver, Pageable pageable);
 

@@ -5,7 +5,9 @@ import com.example.qa.im.model.Message;
 import com.example.qa.notification.NotificationService;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.order.model.Order;
+import com.example.qa.order.model.OrderState;
 import com.example.qa.user.model.User;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@Log4j2
 @Service
 public class IMService {
 
@@ -29,14 +32,21 @@ public class IMService {
         this.template = template;
     }
 
-    public final void sendFromUser(Order order, User sender, String body) {
-        var msg = Message.builder().order(order).sender(sender).body(body).build();
-        processNewMessage(msg);
+    public final void sendFromUser(Order order, User sender, ZonedDateTime sendTime, String body) {
+        processNewMessage(Message.builder()
+                .order(order)
+                .sender(sender)
+                .sendTime(sendTime)
+                .body(body)
+                .build());
     }
 
     public final void sendFromSystem(Order order, String body) {
-        var msg = Message.builder().order(order).body(body).build();
-        processNewMessage(msg);
+        processNewMessage(Message.builder()
+                .order(order)
+                .sendTime(ZonedDateTime.now())
+                .body(body)
+                .build());
     }
 
     public final List<Message> getOrderHistoryMessages(long orderId) {
@@ -48,6 +58,10 @@ public class IMService {
     }
 
     private void processNewMessage(Message msg) {
+        if (msg.getOrder().getState() != OrderState.ANSWERED) {
+            log.warn("Discard IMMessage: Order State {} is not ANSWERED.", msg.getOrder().getState());
+            return;
+        }
         repo.saveAndFlush(msg);
         var notif =
                 Notification.builder()

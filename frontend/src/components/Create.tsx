@@ -15,7 +15,7 @@ import Alert from "@mui/material/Alert";
 // email checker
 // @ts-ignore
 // other validators
-import { validate_required, validate_length } from "./Login";
+import { validate_length, validate_required } from "./Login";
 //import { Link as RouterLink } from "react-router-dom";
 import AdminAuthService from "../services/adminAuthService";
 import CreateDetailDialog from "./CreateDetailDialog";

@@ -18,6 +18,7 @@ class ConfigService {
             feeRate: info.feeRate,
         });
     }
+
     getSystemEarnings(): Promise<EarningsInfo> {
         return axios.get(`/config/earnings`).then((response) => response.data);
     }
