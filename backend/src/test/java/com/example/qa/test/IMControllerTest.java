@@ -44,23 +44,21 @@ class IMControllerTest {
     private static MockUtils mockUtils;
     private static long askerId;
     private static long answererId;
+    private static String askerToken;
+    private static String answererToken;
+    private static long askerId2;
+    private static long answererId2;
+    private static String superAdminToken;
+    private static User asker;
+    private static User answerer;
+    private static String askerToken2;
+    private static String answererToken2;
     private final IMService imService;
     private final OrderService orderService;
     private final NotificationRepository noRepo;
     private final OrderRepository orderRepo;
     private final UserRepository userRepo;
     private final AdminRepository adminRepo;
-
-    private static String askerToken;
-    private static String answererToken;
-    private static long askerId2;
-    private static long answererId2;
-    private static String superAdminToken;
-
-    private static User asker;
-    private static User answerer;
-    private static String askerToken2;
-    private static String answererToken2;
 
 
     IMControllerTest(@Autowired IMService imService, @Autowired OrderService orderService, @Autowired NotificationRepository notificationRepository,
@@ -75,29 +73,12 @@ class IMControllerTest {
         adminRepo = adminRepository;
     }
 
-    @Test
-    long createOrder() throws Exception {
-        OrderRequest request = new OrderRequest();
-        request.setAsker(askerId);
-        request.setAnswerer(answererId);
-        request.setTitle(question);
-        request.setDescription(description);
-        OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
-        mockUtils.postUrl("/api/orders",answererToken, request, status().isForbidden());
-//        mockUtils.postUrl("/api/orders",answererToken2, request, status().isForbidden());
-//        mockUtils.postUrl("/api/orders",askerToken2, request, status().isForbidden());
-//        mockUtils.postUrl("/api/orders",superAdminToken, request, status().isOk());
-//        mockUtils.postUrl("/api/orders",adminToken, request, status().isOk());
-
-        return result.getId();
-    }
-
     @BeforeAll
     static void addUsers(
             @Autowired MockMvc mockMvc,
-                         @Autowired UserRepository userRepository,
-                         @Autowired AdminRepository adminRepository,
-                         @Autowired PasswordEncoder passwordEncoder) throws Exception {
+            @Autowired UserRepository userRepository,
+            @Autowired AdminRepository adminRepository,
+            @Autowired PasswordEncoder passwordEncoder) throws Exception {
         mockUtils = new MockUtils(mockMvc);
         RegisterRequest registerRequest = new RegisterRequest();
 
@@ -160,6 +141,23 @@ class IMControllerTest {
     }
 
     @Test
+    long createOrder() throws Exception {
+        OrderRequest request = new OrderRequest();
+        request.setAsker(askerId);
+        request.setAnswerer(answererId);
+        request.setTitle(question);
+        request.setDescription(description);
+        OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
+        mockUtils.postUrl("/api/orders", answererToken, request, status().isForbidden());
+//        mockUtils.postUrl("/api/orders",answererToken2, request, status().isForbidden());
+//        mockUtils.postUrl("/api/orders",askerToken2, request, status().isForbidden());
+//        mockUtils.postUrl("/api/orders",superAdminToken, request, status().isOk());
+//        mockUtils.postUrl("/api/orders",adminToken, request, status().isOk());
+
+        return result.getId();
+    }
+
+    @Test
     void sendMessage() throws Exception {
         User user = new User();
         user.setId(1L);
@@ -176,7 +174,7 @@ class IMControllerTest {
         request.setDescription(description);
         Order order = new Order(request, asker, answerer, true);
         orderRepo.save(order);
-        imService.sendFromUser(order, asker, "1234567");
+        imService.sendFromUser(order, asker, ZonedDateTime.now(), "1234567");
         Order order2 = new Order(request, asker, answerer, true);
         orderRepo.save(order2);
         imService.getOrderHistoryMessages(order);
@@ -211,11 +209,11 @@ class IMControllerTest {
         orderRepo.save(order);
         orderService.handleExpiration(order);
 
-        mockUtils.getUrl("/im/history/" + order.getId(), askerToken, null,null,  status().isOk());
-        mockUtils.getUrl("/im/history/" + order.getId(), answererToken, null,null,  status().isOk());
+        mockUtils.getUrl("/im/history/" + order.getId(), askerToken, null, null, status().isOk());
+        mockUtils.getUrl("/im/history/" + order.getId(), answererToken, null, null, status().isOk());
 
         mockUtils.getUrl("/im/history/" + order.getId(), askerToken2, null, null, status().isForbidden());
-        mockUtils.getUrl("/im/history/" + order.getId(), null, null,null,  status().isUnauthorized());
-        mockUtils.getUrl("/im/history/" + 1000, askerToken, null,null,  status().isNotFound());
+        mockUtils.getUrl("/im/history/" + order.getId(), null, null, null, status().isUnauthorized());
+        mockUtils.getUrl("/im/history/" + 1000, askerToken, null, null, status().isNotFound());
     }
 }

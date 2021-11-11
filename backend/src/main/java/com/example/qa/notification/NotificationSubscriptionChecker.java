@@ -33,7 +33,9 @@ public class NotificationSubscriptionChecker extends AbstractSubscriptionChecker
         if (authUserId != userId) {
             throw new MessageException(HttpStatus.FORBIDDEN, "Cannot subscribe to other user's notifications");
         }
-        userRepo.findById(userId).orElseThrow(() -> new MessageException(HttpStatus.NOT_FOUND, "User"));
+        if (userRepo.findById(userId).isEmpty()) {
+            throw new MessageException(HttpStatus.NOT_FOUND, "User");
+        }
 
         log.info("User[id={}] subscribed to his notification list successfully", userId);
     }

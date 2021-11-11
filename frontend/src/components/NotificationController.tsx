@@ -69,11 +69,11 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
             const ToOrderAction: React.FC<{
                 orderId: number;
                 snackbarKey: SnackbarKey;
-            }> = (props) => (
+            }> = (subProps) => (
                 <Button
                     onClick={() => {
-                        closeSnackbar(props.snackbarKey);
-                        redirect(`/orders/${props.orderId}`);
+                        closeSnackbar(subProps.snackbarKey);
+                        redirect(`/orders/${subProps.orderId}`);
                     }}
                 >
                     查看
@@ -136,27 +136,6 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                     });
                     break;
                 case NotificationType.ACCEPT_DEADLINE:
-                    enqueueSnackbar(notifStr, {
-                        variant: "warning",
-                        action: (key) => (
-                            <ToOrderAction
-                                orderId={notif.targetId}
-                                snackbarKey={key}
-                            />
-                        ),
-                    });
-                    break;
-                case NotificationType.ACCEPT_TIMEOUT:
-                    enqueueSnackbar(notifStr, {
-                        variant: "error",
-                        action: (key) => (
-                            <ToOrderAction
-                                orderId={notif.targetId}
-                                snackbarKey={key}
-                            />
-                        ),
-                    });
-                    break;
                 case NotificationType.ANSWER_DEADLINE:
                     enqueueSnackbar(notifStr, {
                         variant: "warning",
@@ -168,6 +147,7 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                         ),
                     });
                     break;
+                case NotificationType.ACCEPT_TIMEOUT:
                 case NotificationType.ANSWER_TIMEOUT:
                     enqueueSnackbar(notifStr, {
                         variant: "error",

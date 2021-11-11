@@ -35,7 +35,7 @@ import Typography from "@mui/material/Typography";
 
 const NotificationList: React.FC = (props) => {
     const { user } = useContext(AuthContext);
-    const { setNotifHandler, setUnreadCount } = useNotification();
+    const { setUnreadCount } = useNotification();
     const routerHistory = useHistory();
 
     const [currentPage, setCurrentPage] = useState(1);
