@@ -68,10 +68,12 @@ public class IMService {
                         .type(Notification.Type.NEW_MESSAGE)
                         .haveRead(false)
                         .createTime(ZonedDateTime.now())
-                        .receiver(msg.getSender())
                         .target(msg.getOrder())
                         .msgSummary(msg.getBody())
                         .build();
+        notif.setReceiver(msg.getOrder().getAnswerer());
+        notifService.send(notif);
+        notif.setReceiver(msg.getOrder().getAsker());
         notifService.send(notif);
         template.convertAndSend("/im/receive/" + msg.getOrder().getId(), new MessagePayload(msg));
     }
