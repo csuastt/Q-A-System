@@ -46,14 +46,13 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
             const newMsgList = [...msgList!];
             // Find insert position for new message.
             // Because message order is not guaranteed.
-            let insertPos = 0;
-            for (; insertPos < newMsgList.length; insertPos++) {
+            let insertPos = newMsgList.length;
+            for (let i = 0; i < newMsgList.length; i++) {
                 if (
-                    newMsg.sendTime.localeCompare(
-                        newMsgList[insertPos].sendTime
-                    ) < 0
+                    new Date(newMsg.sendTime).getTime() <
+                    new Date(newMsgList[i].sendTime).getTime()
                 ) {
-                    break;
+                    insertPos = i;
                 }
             }
             newMsgList.splice(insertPos, 0, newMsg);
