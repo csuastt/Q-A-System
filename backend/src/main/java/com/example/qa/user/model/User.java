@@ -35,7 +35,7 @@ public class User {
 
     private int price = 0;
     @Lob
-    @Type(type="text")
+    @Type(type = "text")
     private String description = "";
 
     private ZonedDateTime createTime;
@@ -46,7 +46,7 @@ public class User {
 
     private int earningsTotal = 0;
     @Lob
-    @Type(type="text")
+    @Type(type = "text")
     private String earningsMonthly = "[]";
 
     private int askCount = 0;

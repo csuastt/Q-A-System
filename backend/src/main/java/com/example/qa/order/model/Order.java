@@ -37,10 +37,10 @@ public class Order {
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
     private String questionTitle;
     @Lob
-    @Type(type="text")
+    @Type(type = "text")
     private String questionDescription;
     @Lob
-    @Type(type="text")
+    @Type(type = "text")
     private String answer;
     private int price;
 
@@ -64,7 +64,11 @@ public class Order {
         if (state != null) {
             this.state = state;
             finished = state.isFinished();
-            visibleToAnswerer = state.isVisibleToAnswerer();
+            if (state == OrderState.CANCELLED && reviewed) {
+                visibleToAnswerer = true;
+            } else {
+                visibleToAnswerer = state.isVisibleToAnswerer();
+            }
         }
     }
 
