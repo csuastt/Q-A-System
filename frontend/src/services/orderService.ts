@@ -42,6 +42,7 @@ class OrderService {
             })
             .then((response) => response.data);
     }
+
     getAllOrderListByAdmin(
         page: number,
         pageSize: number
@@ -96,6 +97,10 @@ class OrderService {
 
     answerOrder(orderId: number, answer: string): Promise<any> {
         return axios.post(`/orders/${orderId}/answer`, { answer: answer });
+    }
+
+    endOrder(orderId: number): Promise<any> {
+        return axios.post(`/orders/${orderId}/end`);
     }
 }
 

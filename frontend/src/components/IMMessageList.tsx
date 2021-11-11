@@ -4,9 +4,10 @@ import {
     Notification,
     NotificationType,
     OrderInfo,
+    OrderState,
     UserBasicInfo,
 } from "../services/definations";
-import imHistoryService from "../services/imHistoryService";
+import imService from "../services/imService";
 import websocketService from "../services/websocketService";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -42,6 +43,12 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
     }, [notifHandler, resetNotifHandler, setNotifHandler]);
 
     useEffect(() => {
+        const chatEnded =
+            props.orderInfo.state === OrderState.CHAT_ENDED ||
+            props.orderInfo.state === OrderState.FULFILLED;
+        if (chatEnded) {
+            return;
+        }
         websocketService.onNewMessage = (newMsg) => {
             const newMsgList = [...msgList!];
             // Find insert position for new message.
@@ -58,17 +65,29 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
             newMsgList.splice(insertPos, 0, newMsg);
             setMsgList(newMsgList);
         };
-    }, [msgList]);
+        return () => {
+            websocketService.onNewMessage = () => null;
+        };
+    }, [msgList, props.orderInfo.state]);
 
     useEffect(() => {
-        imHistoryService
+        const chatEnded =
+            props.orderInfo.state === OrderState.CHAT_ENDED ||
+            props.orderInfo.state === OrderState.FULFILLED;
+        imService
             .getOrderIMHistory(props.orderInfo.id)
             .then(setMsgList)
-            .then(() => websocketService.subscribeIM(props.orderInfo.id));
-        return () => {
-            websocketService.unsubscribeIM();
-        };
-    }, [props.orderInfo.id]);
+            .then(() => {
+                if (!chatEnded) {
+                    websocketService.subscribeIM(props.orderInfo.id);
+                }
+            });
+        return chatEnded
+            ? () => null
+            : () => {
+                  websocketService.unsubscribeIM();
+              };
+    }, [props.orderInfo.id, props.orderInfo.state]);
 
     const SingleMessage: React.FC<{ msg: IMMessage }> = (subProps) => {
         const isAsker: boolean =
