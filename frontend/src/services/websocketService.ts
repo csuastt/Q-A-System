@@ -10,6 +10,7 @@ class WebsocketService {
     sessionUserId: number;
     notifSubscription: StompSubscription | null;
     imSubscription: StompSubscription | null;
+    orderToBeSubscribed: number;
 
     onConnected: () => void = () => null;
     onDisconnected: () => void = () => null;
@@ -21,6 +22,7 @@ class WebsocketService {
         this.sessionUserId = -1;
         this.notifSubscription = null;
         this.imSubscription = null;
+        this.orderToBeSubscribed = -1;
 
         // @ts-ignore
         this.stompClient.webSocketFactory = function () {
@@ -30,6 +32,10 @@ class WebsocketService {
             this.onConnected();
             // Auto subscribe to notification
             this.subscribeNotification();
+            // Auto subscribe to delayed im order
+            if (this.orderToBeSubscribed >= 0) {
+                this.subscribeIM(this.orderToBeSubscribed);
+            }
         };
         this.stompClient.onDisconnect = () => {
             this.onDisconnected();
@@ -106,9 +112,10 @@ class WebsocketService {
         this.notifSubscription = null;
     }
 
-    subscribeIM(orderId: number): boolean {
+    subscribeIM(orderId: number) {
         if (!this.stompClient.connected) {
-            return false;
+            this.orderToBeSubscribed = orderId;
+            return;
         }
         this.imSubscription?.unsubscribe();
         this.imSubscription = this.stompClient.subscribe(
@@ -118,12 +125,12 @@ class WebsocketService {
                 this.onNewMessage(msg);
             }
         );
-        return true;
     }
 
     unsubscribeIM() {
         this.imSubscription?.unsubscribe();
         this.imSubscription = null;
+        this.orderToBeSubscribed = -1;
     }
 
     enableStompDebug() {
