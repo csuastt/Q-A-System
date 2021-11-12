@@ -278,13 +278,13 @@ export default class AccountBriefProfile extends Component<
 
     handleSubmitAvatar(e: any) {
         if (typeof this.props.id !== "undefined") {
-            this.setState({avatarReady: false});
+            this.setState({ avatarReady: false });
             userService.modifyUserAvatar(this.props.id, e.target.files[0]).then(
                 () => {
                     // upload success
                     this.props.alertHandler("success", "上传成功");
                     // ready
-                    this.setState({avatarReady: true});
+                    this.setState({ avatarReady: true });
                 },
                 (error) => {
                     // show the error message
@@ -321,8 +321,12 @@ export default class AccountBriefProfile extends Component<
                                 >
                                     <Avatar
                                         src={
-                                            this.props.id && this.state.avatarReady ?
-                                            userService.getAvatarUrl(this.props.id) : ""
+                                            this.props.id &&
+                                            this.state.avatarReady
+                                                ? userService.getAvatarUrl(
+                                                      this.props.id
+                                                  )
+                                                : ""
                                         }
                                         alt={this.props.username}
                                         sx={{

@@ -117,7 +117,9 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={userService.getAvatarUrl(order.answerer.id)}
+                                        src={userService.getAvatarUrl(
+                                            order.answerer.id
+                                        )}
                                         alt={order.answerer.username}
                                         sx={{ width: 30, height: 30 }}
                                     />

@@ -108,7 +108,9 @@ const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
                     avatar={
                         <Avatar
                             alt={orderInfo.answerer.username}
-                            src={userService.getAvatarUrl(orderInfo.answerer.id)}
+                            src={userService.getAvatarUrl(
+                                orderInfo.answerer.id
+                            )}
                             sx={{
                                 height: 40,
                                 width: 40,

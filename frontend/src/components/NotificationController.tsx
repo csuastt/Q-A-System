@@ -75,6 +75,9 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                         closeSnackbar(subProps.snackbarKey);
                         redirect(`/orders/${subProps.orderId}`);
                     }}
+                    sx={{
+                        color: "white",
+                    }}
                 >
                     查看
                 </Button>

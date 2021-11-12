@@ -106,16 +106,19 @@ const OrderCreationWizard: React.FC = (props) => {
                     questionTitle,
                     questionDescription
                 )
-                .then((res) => {
-                    setResult(res);
-                }, (error) => {
-                    setResult({
-                        type: 1,
-                        state: "NULL",
-                        created_id: -1,
-                        message: error.response.data.message
-                    });
-                });
+                .then(
+                    (res) => {
+                        setResult(res);
+                    },
+                    (error) => {
+                        setResult({
+                            type: 1,
+                            state: "NULL",
+                            created_id: -1,
+                            message: error.response.data.message,
+                        });
+                    }
+                );
         }
     };
 

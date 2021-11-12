@@ -72,11 +72,11 @@ class UserService {
 
     modifyUserAvatar(id: number, file: File) {
         const formData = new FormData();
-        formData.append('multipartFile', file);
+        formData.append("multipartFile", file);
         return axios.post(`/users/${id}/avatar`, formData, {
             headers: {
-                'content-type' : 'multipart/form-data',
-            }
+                "content-type": "multipart/form-data",
+            },
         });
     }
 
@@ -112,7 +112,6 @@ class UserService {
             .get(`/users/${id}/stats`)
             .then((response) => response.data);
     }
-
 }
 
 const userService = new UserService();
