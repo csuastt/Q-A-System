@@ -9,8 +9,11 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.File;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -43,6 +46,9 @@ public class Order {
     @Type(type = "text")
     private String answer;
     private int price;
+
+    @ElementCollection
+    private List<Attachment> attachmentList;
 
     // 传 data 前先用 checkOrderData 检查
     public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {

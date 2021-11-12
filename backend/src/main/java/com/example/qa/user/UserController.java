@@ -8,8 +8,6 @@ import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
-import com.talanlabs.avatargenerator.Avatar;
-import com.talanlabs.avatargenerator.IdenticonAvatar;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -22,8 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
