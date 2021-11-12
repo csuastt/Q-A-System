@@ -167,7 +167,7 @@ const AnswererCard: React.FC<{
                                         gutterBottom
                                         variant="h5"
                                     >
-                                        {userInfo.username}
+                                        {userInfo.nickname}
                                     </Typography>
                                 </Box>
                                 <Box mx={2} mt={-1}>

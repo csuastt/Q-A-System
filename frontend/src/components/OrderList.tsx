@@ -153,7 +153,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         variant="subtitle1"
                                         sx={{ ml: 1 }}
                                     >
-                                        {order.answerer.username}
+                                        {order.answerer.nickname}
                                     </Typography>
                                 </Box>
                                 <Typography variant="caption" mb={-1} mt={1}>

@@ -249,7 +249,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             }}
                         />
                     }
-                    title={orderInfo.asker.username}
+                    title={orderInfo.asker.nickname}
                     subheader="提问者"
                 />
                 <CardContent sx={{ paddingTop: 1 }}>
@@ -282,7 +282,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             }}
                         />
                     }
-                    title={orderInfo.answerer.username}
+                    title={orderInfo.answerer.nickname}
                     subheader="回答者"
                 />
                 <CardContent sx={{ paddingTop: 0 }}>
