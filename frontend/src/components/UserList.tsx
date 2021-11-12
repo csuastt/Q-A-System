@@ -124,7 +124,7 @@ const UserList: React.FC<{
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={user.avatar}
+                                        src={userService.getAvatarUrl(user.id)}
                                         alt={user.username}
                                         sx={{ width: 30, height: 30 }}
                                     />

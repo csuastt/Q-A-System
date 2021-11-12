@@ -35,7 +35,6 @@ export interface UserBasicInfo {
     id: number;
     username: string;
     nickname: string;
-    avatar: string;
     description: string;
     price: number;
     role: UserRole;
@@ -58,7 +57,6 @@ export interface UserInfo {
     id: number;
     username: string;
     nickname: string;
-    avatar: string;
     email: string;
     phone: string;
     price: number;
@@ -73,7 +71,6 @@ export interface UserFullyInfo {
     username: string;
     password: string;
     nickname: string;
-    avatar: string;
     sign_up_timestamp: number;
     email: string;
     phone: string;

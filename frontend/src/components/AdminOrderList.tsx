@@ -13,6 +13,7 @@ import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 import OrderStateChip from "./OrderStateChip";
+import userService from "../services/userService";
 
 interface AdminOrderListProps {
     orderState?: OrderState;
@@ -116,7 +117,9 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={order.answerer.avatar}
+                                        src={userService.getAvatarUrl(
+                                            order.answerer.id
+                                        )}
                                         alt={order.answerer.username}
                                         sx={{ width: 30, height: 30 }}
                                     />

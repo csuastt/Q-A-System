@@ -11,6 +11,7 @@ import Markdown from "./Markdown";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
+import userService from "../services/userService";
 
 const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
     const [orderInfo, setOrderInfo] = useState<OrderInfo>();
@@ -71,7 +72,7 @@ const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
                     avatar={
                         <Avatar
                             alt={orderInfo.asker.username}
-                            src={orderInfo.asker.avatar}
+                            src={userService.getAvatarUrl(orderInfo.asker.id)}
                             sx={{
                                 height: 40,
                                 width: 40,
@@ -107,7 +108,9 @@ const OrderDetailForAdmin: React.FC<{ orderId: number }> = (props) => {
                     avatar={
                         <Avatar
                             alt={orderInfo.answerer.username}
-                            src={orderInfo.answerer.avatar}
+                            src={userService.getAvatarUrl(
+                                orderInfo.answerer.id
+                            )}
                             sx={{
                                 height: 40,
                                 width: 40,

@@ -23,6 +23,7 @@ import Markdown from "./Markdown";
 import Typography from "@mui/material/Typography";
 import IMMessageList from "./IMMessageList";
 import imService from "../services/imService";
+import userService from "../services/userService";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -241,14 +242,14 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     avatar={
                         <Avatar
                             alt={orderInfo.asker.username}
-                            src={orderInfo.asker.avatar}
+                            src={userService.getAvatarUrl(orderInfo.asker.id)}
                             sx={{
                                 height: 40,
                                 width: 40,
                             }}
                         />
                     }
-                    title={orderInfo.asker.username}
+                    title={orderInfo.asker.nickname}
                     subheader="提问者"
                 />
                 <CardContent sx={{ paddingTop: 1 }}>
@@ -274,14 +275,16 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     avatar={
                         <Avatar
                             alt={orderInfo.answerer.username}
-                            src={orderInfo.answerer.avatar}
+                            src={userService.getAvatarUrl(
+                                orderInfo.answerer.id
+                            )}
                             sx={{
                                 height: 40,
                                 width: 40,
                             }}
                         />
                     }
-                    title={orderInfo.answerer.username}
+                    title={orderInfo.answerer.nickname}
                     subheader="回答者"
                 />
                 <CardContent sx={{ paddingTop: 0 }}>
