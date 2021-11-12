@@ -16,6 +16,7 @@ import Pagination from "./Pagination";
 import _ from "lodash";
 import OrderStateChip from "./OrderStateChip";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import userService from "../services/userService";
 
 interface OrderListProps {
     userId: number;
@@ -144,7 +145,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={order.answerer.avatar}
+                                        src={userService.getAvatarUrl(order.answerer.id)}
                                         alt={order.answerer.username}
                                         sx={{ width: 30, height: 30 }}
                                     />

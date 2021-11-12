@@ -8,6 +8,7 @@ import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import CardContent from "@mui/material/CardContent";
+import userService from "../services/userService";
 
 const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
     props
@@ -27,7 +28,7 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
                 <Card elevation={0}>
                     <CardHeader
                         avatar={
-                            <Avatar alt={info.username} src={info.avatar} />
+                            <Avatar alt={info.username} src={userService.getAvatarUrl(info.id)} />
                         }
                         title={info.nickname ? info.nickname : info.username}
                         subheader={info.nickname && "@" + info.username}

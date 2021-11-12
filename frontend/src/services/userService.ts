@@ -71,9 +71,17 @@ class UserService {
     }
 
     modifyUserAvatar(id: number, file: File) {
-        return axios.post(`/users/${id}/avatar`, {
-            file: file,
+        const formData = new FormData();
+        formData.append('multipartFile', file);
+        return axios.post(`/users/${id}/avatar`, formData, {
+            headers: {
+                'content-type' : 'multipart/form-data',
+            }
         });
+    }
+
+    getAvatarUrl(id: number) {
+        return axios.defaults.baseURL + `/users/${id}/avatar`;
     }
 
     deleteUser(id: number) {
@@ -104,6 +112,7 @@ class UserService {
             .get(`/users/${id}/stats`)
             .then((response) => response.data);
     }
+
 }
 
 const userService = new UserService();

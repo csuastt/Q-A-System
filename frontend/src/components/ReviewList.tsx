@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
+import userService from "../services/userService";
 
 interface ReviewListProps {
     filterFinished?: boolean;
@@ -113,7 +114,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={order.answerer.avatar}
+                                        src={userService.getAvatarUrl(order.answerer.id)}
                                         alt={order.answerer.username}
                                         sx={{ width: 30, height: 30 }}
                                     />

@@ -80,7 +80,10 @@ const AnswererCard: React.FC<{
             <>
                 <ListItem alignItems="flex-start">
                     <ListItemAvatar>
-                        <Avatar src={userInfo.avatar} />
+                        <Avatar
+                            src={userService.getAvatarUrl(userInfo.id)}
+                            alt={userInfo.username}
+                        />
                     </ListItemAvatar>
                     <ListItemText
                         primary={userInfo.nickname}
@@ -152,7 +155,7 @@ const AnswererCard: React.FC<{
                             >
                                 <Avatar
                                     alt={userInfo.username}
-                                    src={userInfo.avatar}
+                                    src={userService.getAvatarUrl(userInfo.id)}
                                     sx={{
                                         height: 70,
                                         width: 70,
