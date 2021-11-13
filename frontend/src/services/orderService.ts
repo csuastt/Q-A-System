@@ -102,6 +102,18 @@ class OrderService {
     endOrder(orderId: number): Promise<any> {
         return axios.post(`/orders/${orderId}/end`);
     }
+
+    uploadAttachment(orderId: number, file: File): Promise<any> {
+        const formData = new FormData();
+        formData.append("multipartFile", file);
+        formData.append("name", file.name);
+        return axios.post(`/orders/${orderId}/attachments`, formData, {
+            headers: {
+                "content-type": "multipart/form-data",
+            },
+        });
+    }
+
 }
 
 const orderService = new OrderService();

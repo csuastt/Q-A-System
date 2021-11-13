@@ -141,6 +141,7 @@ export enum CreationResultType {
 }
 
 export interface CreationResult {
+    id: number;
     type: CreationResultType;
     state: string;
     created_id: number;

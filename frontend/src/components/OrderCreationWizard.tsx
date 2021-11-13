@@ -15,7 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
 import { ConfigInfo, CreationResult } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
+import {styled, useTheme} from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import UserContext from "../AuthContext";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -25,6 +25,8 @@ import AnswererDetailCard from "./AnswererDetailCard";
 import Divider from "@mui/material/Divider";
 import Markdown from "./Markdown";
 import systemConfigService from "../services/systemConfigService";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 function processInt(str?: string): number {
     if (str) {
@@ -43,6 +45,7 @@ const OrderCreationWizard: React.FC = (props) => {
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
     const [config, setConfig] = useState<ConfigInfo>();
+    const [files, setFiles] = useState<FileList | null>(null);
 
     const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
@@ -69,6 +72,16 @@ const OrderCreationWizard: React.FC = (props) => {
         checkInput(event.target.value);
     };
 
+    const handleFilesUpload = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setFiles(event.target.files);
+    }
+
+    const handleFilesClear = () => {
+        setFiles(null);
+    }
+
     const handleQuestionDescriptionChange = (newValue: string) =>
         setQuestionDescription(newValue);
 
@@ -93,6 +106,7 @@ const OrderCreationWizard: React.FC = (props) => {
         if (user && user.id === answerer) {
             // answering yourself is not allowed
             setResult({
+                id: -1,
                 type: 1,
                 state: "NULL",
                 created_id: -1,
@@ -109,9 +123,17 @@ const OrderCreationWizard: React.FC = (props) => {
                 .then(
                     (res) => {
                         setResult(res);
+                        // upload attachments
+                        if (files !== null) {
+                            for (let i = 0; i < files.length;i++){
+                                questionService.uploadAttachment(res.id, files[i])
+                                    .then(r => {console.log(r)});
+                            }
+                        }
                     },
                     (error) => {
                         setResult({
+                            id: -1,
                             type: 1,
                             state: "NULL",
                             created_id: -1,
@@ -369,6 +391,11 @@ const OrderCreationWizard: React.FC = (props) => {
         );
     };
 
+    // an Input without display
+    const Input = styled("input")({
+        display: "none",
+    });
+
     // render 2nd step
     const renderSecondStep = () => {
         return (
@@ -383,7 +410,51 @@ const OrderCreationWizard: React.FC = (props) => {
                     fullWidth
                     inputProps={{ maxLength: 100 }}
                 />
-                <Divider sx={{ mt: 3, mb: 1 }}>问题描述</Divider>
+                <Stack
+                    sx={{ mt: 2, mb: 2 }}
+                    spacing={2}
+                    direction="row"
+                    alignItems={"center"}
+                >
+
+                    <Typography>
+                        上传附件:
+                    </Typography>
+                    <label htmlFor="contained-button-file">
+                        <Input
+                            accept="*"
+                            id="contained-button-file"
+                            type="file"
+                            name="attachments"
+                            multiple={true}
+                            onChange={handleFilesUpload}
+                        />
+                        <Button
+                            startIcon={<AttachFileIcon />}
+                            variant="contained"
+                            component="span"
+                        >
+                            添加
+                        </Button>
+                    </label>
+                    <Button
+                        startIcon={<DeleteOutlineIcon />}
+                        variant="contained"
+                        color={"error"}
+                        onClick={handleFilesClear}
+                    >
+                        删除
+                    </Button>
+                    <Typography>
+                        当前文件数：
+                        <Box
+                            component="span"
+                            fontWeight="fontWeightBold"
+                        >
+                            {files === null ? 0 : files.length}
+                        </Box>
+                    </Typography>
+                </Stack>
                 <Markdown
                     value={questionDescription}
                     onChange={handleQuestionDescriptionChange}
