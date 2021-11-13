@@ -24,6 +24,10 @@ import Typography from "@mui/material/Typography";
 import IMMessageList from "./IMMessageList";
 import imService from "../services/imService";
 import userService from "../services/userService";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -112,10 +116,72 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<ThumbDownIcon />}
                     color="error"
                 >
-                    该问题被审核员驳回
+                    该问题被审核员驳回，已全额退款
                 </Button>
             );
-        } else if (state === OrderState.REVIEWED) {
+        } else if (state === OrderState.PAY_TIMEOUT) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<AccessTimeIcon />}
+                    color="error"
+                >
+                    该问题因支付超时而失效
+                </Button>
+            );
+        } else if (state === OrderState.RESPOND_TIMEOUT) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<AccessTimeIcon />}
+                    color="error"
+                >
+                    该问题因接单超时而失效，已全额退款
+                </Button>
+            );
+        } else if (state === OrderState.ANSWER_TIMEOUT) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<AccessTimeIcon />}
+                    color="error"
+                >
+                    该问题因回答超时而失效，已全额退款
+                </Button>
+            );
+        } else if (state === OrderState.CHAT_ENDED) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<HourglassEmptyIcon />}
+                    color="warning"
+                >
+                    交流已完成，等待平台结算
+                </Button>
+            );
+        } else if (state === OrderState.FULFILLED) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<CheckCircleOutlineIcon />}
+                    color="success"
+                >
+                    交易完成
+                </Button>
+            );
+        }
+        else if (state === OrderState.CANCELLED) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<CancelOutlinedIcon />}
+                    color="error"
+                >
+                    提问者主动取消订单
+                </Button>
+            );
+        }
+        else if (state === OrderState.REVIEWED) {
             return (
                 isAnswerer && (
                     <>
@@ -145,7 +211,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<SmsFailedIcon />}
                     color="error"
                 >
-                    {isAnswerer ? "您已拒绝接单此问题" : "回答者拒绝接单此问题"}
+                    {isAnswerer ? "您已拒绝接受此问题" : "回答者拒绝接受此问题，已全额退款"}
                 </Button>
             );
         } else if (state === OrderState.ACCEPTED) {
@@ -304,7 +370,9 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         />
                     )}
                 </CardContent>
-                <CardActions>{renderAnswererActions()}</CardActions>
+                <CardActions sx={{margin: 1}}>
+                    {renderAnswererActions()}
+                </CardActions>
             </Card>
             <IMMessageList orderInfo={orderInfo} />
             {orderInfo.state === OrderState.ANSWERED && (
