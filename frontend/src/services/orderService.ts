@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+    AttachmentInfo,
     CreationResult,
     OrderInfo,
     OrderState,
@@ -112,6 +113,14 @@ class OrderService {
                 "content-type": "multipart/form-data",
             },
         });
+    }
+
+    getAttachments(orderId: number): Promise<Array<AttachmentInfo>> {
+        return axios.get(`/orders/${orderId}/attachments`);
+    }
+
+    getAttachmentUrl(uuid: number) {
+        return axios.defaults.baseURL + `/orders/${uuid}/attachments/${uuid}`;
     }
 
 }

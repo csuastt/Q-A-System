@@ -211,3 +211,9 @@ export interface IMMessage {
     sendTime: string;
     msgBody: string;
 }
+
+export interface AttachmentInfo {
+    uuid: number;
+    filename: string;
+    size: number;
+}
