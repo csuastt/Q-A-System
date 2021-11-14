@@ -94,7 +94,7 @@ export enum OrderState {
     ANSWER_TIMEOUT = "ANSWER_TIMEOUT",
     CHAT_ENDED = "CHAT_ENDED",
     FULFILLED = "FULFILLED",
-    CANCELLED = "CANCELLED"
+    CANCELLED = "CANCELLED",
 }
 
 export const OrderStateMsg: Map<OrderState, string> = new Map([

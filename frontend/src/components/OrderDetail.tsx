@@ -1,5 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import {AttachmentInfo, IMMessage, OrderInfo, OrderState} from "../services/definations";
+import {
+    AttachmentInfo,
+    IMMessage,
+    OrderInfo,
+    OrderState,
+} from "../services/definations";
 import orderService from "../services/orderService";
 import AuthContext from "../AuthContext";
 import { Redirect } from "react-router-dom";
@@ -24,14 +29,23 @@ import Typography from "@mui/material/Typography";
 import IMMessageList from "./IMMessageList";
 import imService from "../services/imService";
 import userService from "../services/userService";
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import {Box, Dialog, DialogTitle, Link, List, ListItem, ListItemAvatar, ListItemText} from "@mui/material";
-import {blue} from "@mui/material/colors";
-import FolderIcon from '@mui/icons-material/Folder';
+import {
+    Box,
+    Dialog,
+    DialogTitle,
+    Link,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+} from "@mui/material";
+import { blue } from "@mui/material/colors";
+import FolderIcon from "@mui/icons-material/Folder";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -45,15 +59,15 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [answer, setAnswer] = useState<string>("");
     const [message, setMessage] = useState<string>("");
     const [open, setOpen] = React.useState(false);
-    const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([])
-    
+    const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
+
     const handleOpen = () => {
-      setOpen(true);
-    }
+        setOpen(true);
+    };
 
     const handleClose = () => {
-      setOpen(false);
-    }
+        setOpen(false);
+    };
 
     useEffect(() => {
         if (!needReload) {
@@ -76,10 +90,9 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                 }
             })
             .finally(() => setNeedReload(false));
-        orderService.getAttachments(props.orderId)
-            .then((attachmentList) => {
-                setAttachments(attachmentList);
-            })
+        orderService.getAttachments(props.orderId).then((attachmentList) => {
+            setAttachments(attachmentList);
+        });
     }, [needReload, props.orderId, user?.id]);
 
     // Answerering helper functions
@@ -187,8 +200,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     交易完成
                 </Button>
             );
-        }
-        else if (state === OrderState.CANCELLED) {
+        } else if (state === OrderState.CANCELLED) {
             return (
                 <Button
                     variant="text"
@@ -198,8 +210,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     提问者主动取消订单
                 </Button>
             );
-        }
-        else if (state === OrderState.REVIEWED) {
+        } else if (state === OrderState.REVIEWED) {
             return (
                 isAnswerer && (
                     <>
@@ -229,7 +240,9 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<SmsFailedIcon />}
                     color="error"
                 >
-                    {isAnswerer ? "您已拒绝接受此问题" : "回答者拒绝接受此问题，已全额退款"}
+                    {isAnswerer
+                        ? "您已拒绝接受此问题"
+                        : "回答者拒绝接受此问题，已全额退款"}
                 </Button>
             );
         } else if (state === OrderState.ACCEPTED) {
@@ -327,7 +340,9 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         avatar={
                             <Avatar
                                 alt={orderInfo.asker.username}
-                                src={userService.getAvatarUrl(orderInfo.asker.id)}
+                                src={userService.getAvatarUrl(
+                                    orderInfo.asker.id
+                                )}
                                 sx={{
                                     height: 40,
                                     width: 40,
@@ -337,7 +352,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         title={orderInfo.asker.nickname}
                         subheader="提问者"
                     />
-                    <CardContent sx={{ paddingTop: 1 }} >
+                    <CardContent sx={{ paddingTop: 1 }}>
                         <Typography
                             variant="h5"
                             sx={{
@@ -353,8 +368,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 viewOnly
                             />
                         )}
-                        {
-                            attachments.length > 0 &&
+                        {attachments.length > 0 && (
                             <Box mt={2} mb={0}>
                                 <Button
                                     variant="text"
@@ -364,7 +378,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                     查看附件
                                 </Button>
                             </Box>
-                        }
+                        )}
                     </CardContent>
                 </Card>
                 <Card>
@@ -401,7 +415,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             />
                         )}
                     </CardContent>
-                    <CardActions sx={{margin: 1, marginTop: 0}}>
+                    <CardActions sx={{ margin: 1, marginTop: 0 }}>
                         {renderAnswererActions()}
                     </CardActions>
                 </Card>
@@ -410,7 +424,10 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     <Card>
                         <Markdown value={message} onChange={setMessage} />
                         <CardActions>
-                            <Button onClick={sendMessage} startIcon={<SendIcon />}>
+                            <Button
+                                onClick={sendMessage}
+                                startIcon={<SendIcon />}
+                            >
                                 发送消息
                             </Button>
                             <Button
@@ -428,12 +445,23 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                 <DialogTitle>附件列表</DialogTitle>
                 <List sx={{ pt: 0 }}>
                     {attachments.map((attachmentInfo) => (
-                        <ListItem button component="a"
-                                  href={orderService.getAttachmentUrl(attachmentInfo.uuid)}
-                                  key={attachmentInfo.uuid}>
+                        <ListItem
+                            button
+                            component="a"
+                            href={orderService.getAttachmentUrl(
+                                props.orderId,
+                                attachmentInfo.uuid
+                            )}
+                            key={attachmentInfo.uuid}
+                        >
                             <ListItemAvatar>
-                                <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                                    <FolderIcon  />
+                                <Avatar
+                                    sx={{
+                                        bgcolor: blue[100],
+                                        color: blue[600],
+                                    }}
+                                >
+                                    <FolderIcon />
                                 </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary={attachmentInfo.filename} />

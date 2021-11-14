@@ -119,10 +119,11 @@ class OrderService {
         return axios.get(`/orders/${orderId}/attachments`);
     }
 
-    getAttachmentUrl(uuid: number) {
-        return axios.defaults.baseURL + `/orders/${uuid}/attachments/${uuid}`;
+    getAttachmentUrl(orderId: number, uuid: number) {
+        return (
+            axios.defaults.baseURL + `/orders/${orderId}/attachments/${uuid}`
+        );
     }
-
 }
 
 const orderService = new OrderService();

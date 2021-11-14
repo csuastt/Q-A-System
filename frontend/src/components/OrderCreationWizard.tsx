@@ -15,7 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
 import { ConfigInfo, CreationResult } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {styled, useTheme} from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import UserContext from "../AuthContext";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -25,8 +25,8 @@ import AnswererDetailCard from "./AnswererDetailCard";
 import Divider from "@mui/material/Divider";
 import Markdown from "./Markdown";
 import systemConfigService from "../services/systemConfigService";
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 function processInt(str?: string): number {
     if (str) {
@@ -72,15 +72,13 @@ const OrderCreationWizard: React.FC = (props) => {
         checkInput(event.target.value);
     };
 
-    const handleFilesUpload = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleFilesUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFiles(event.target.files);
-    }
+    };
 
     const handleFilesClear = () => {
         setFiles(null);
-    }
+    };
 
     const handleQuestionDescriptionChange = (newValue: string) =>
         setQuestionDescription(newValue);
@@ -125,9 +123,12 @@ const OrderCreationWizard: React.FC = (props) => {
                         setResult(res);
                         // upload attachments
                         if (files !== null) {
-                            for (let i = 0; i < files.length;i++){
-                                questionService.uploadAttachment(res.id, files[i])
-                                    .then(r => {console.log(r)});
+                            for (let i = 0; i < files.length; i++) {
+                                questionService
+                                    .uploadAttachment(res.id, files[i])
+                                    .then((r) => {
+                                        console.log(r);
+                                    });
                             }
                         }
                     },
@@ -416,10 +417,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     direction="row"
                     alignItems={"center"}
                 >
-
-                    <Typography>
-                        上传附件:
-                    </Typography>
+                    <Typography>上传附件:</Typography>
                     <label htmlFor="contained-button-file">
                         <Input
                             accept="*"
@@ -447,10 +445,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     </Button>
                     <Typography>
                         当前文件数：
-                        <Box
-                            component="span"
-                            fontWeight="fontWeightBold"
-                        >
+                        <Box component="span" fontWeight="fontWeightBold">
                             {files === null ? 0 : files.length}
                         </Box>
                     </Typography>
