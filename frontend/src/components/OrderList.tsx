@@ -14,6 +14,9 @@ import Stack from "@mui/material/Stack";
 import CardActionArea from "@mui/material/CardActionArea";
 import Pagination from "./Pagination";
 import _ from "lodash";
+import OrderStateChip from "./OrderStateChip";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import userService from "../services/userService";
 
 interface OrderListProps {
     userId: number;
@@ -31,6 +34,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [itemPrePage] = useState(_.defaultTo(props.itemPrePage, 20));
     const [maxPage, setMaxPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
+    const [longPending, setLongPending] = useState(false);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setQuestionList(list.data);
@@ -60,7 +64,16 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 )
                 .then(acceptOrderList);
         }
-    }, [currentPage, itemPrePage, props.showAnswerer, props.userId]);
+        setTimeout(() => {
+            setLongPending(true);
+        }, 500);
+    }, [
+        currentPage,
+        itemPrePage,
+        props.filterFinished,
+        props.showAnswerer,
+        props.userId,
+    ]);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
@@ -119,10 +132,10 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
-                                        {order.question}
+                                        {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
-                                    {/*<OrderStateChip state={order.state} />*/}
+                                    <OrderStateChip state={order.state} />
                                 </Box>
                                 <Box
                                     sx={{
@@ -132,7 +145,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={order.answerer.avatar}
+                                        src={userService.getAvatarUrl(
+                                            order.answerer.id
+                                        )}
                                         alt={order.answerer.username}
                                         sx={{ width: 30, height: 30 }}
                                     />
@@ -140,7 +155,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         variant="subtitle1"
                                         sx={{ ml: 1 }}
                                     >
-                                        {order.answerer.username}
+                                        {order.answerer.nickname}
                                     </Typography>
                                 </Box>
                                 <Typography variant="caption" mb={-1} mt={1}>
@@ -164,21 +179,28 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         </>
     );
 
-    if (questionList == null) {
+    if (longPending && questionList == null) {
         return (
             <Stack spacing={2} mt={4}>
                 {renderPlaceholder()}
             </Stack>
         );
     }
-    if (totalCount === 0) {
+    if (questionList && totalCount === 0) {
         return (
-            <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
-                没有订单
-            </Typography>
+            <Box textAlign={"center"} mt={6}>
+                <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
+                <Typography variant={"h5"} mt={1} mb={4}>
+                    {"您还没有订单"}
+                </Typography>
+            </Box>
         );
     }
-    return <Stack spacing={2}>{renderQuestionList()}</Stack>;
+    return (
+        <Box>
+            {questionList && <Stack spacing={2}>{renderQuestionList()}</Stack>}
+        </Box>
+    );
 };
 
 export default OrderList;

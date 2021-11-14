@@ -1,5 +1,8 @@
 package com.example.qa.test;
 
+import com.example.qa.exchange.EarningsResponse;
+import com.example.qa.exchange.MonthlyEarnings;
+import com.example.qa.exchange.MonthlyEarningsResponse;
 import com.example.qa.user.exchange.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,5 +73,14 @@ class UserBeanTest {
          response1.setMonth(month);
          assertEquals(month, response1.getMonth());
          assertEquals(monthlyEarnings, response1.getEarnings());
+
+         //Test for UserStatusResponse
+        int askCount = 1;
+        int answerCount = 1;
+        UserStatsResponse statsResponse = new UserStatsResponse();
+        statsResponse.setAnswerCount(answerCount);
+        statsResponse.setAskCount(askCount);
+        assertEquals(askCount, statsResponse.getAskCount());
+        assertEquals(answerCount, statsResponse.getAnswerCount());
     }
 }

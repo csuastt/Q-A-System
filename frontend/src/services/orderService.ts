@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+    AttachmentInfo,
     CreationResult,
     OrderInfo,
     OrderState,
@@ -26,6 +27,7 @@ class OrderService {
             })
             .then((response) => response.data);
     }
+
     getOrderListByAdmin(
         state: OrderState,
         page: number,
@@ -42,16 +44,32 @@ class OrderService {
             .then((response) => response.data);
     }
 
-    create_question(
+    getAllOrderListByAdmin(
+        page: number,
+        pageSize: number
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    page: page,
+                    pageSize: pageSize,
+                },
+            })
+            .then((response) => response.data);
+    }
+
+    createQuestion(
         asker: number,
         answerer: number,
-        question: string
+        questionTitle: string,
+        questionDescription: string
     ): Promise<CreationResult> {
         return axios
             .post("/orders", {
                 asker: asker,
                 answerer: answerer,
-                question: question,
+                title: questionTitle,
+                description: questionDescription,
             })
             .then((response) => response.data);
     }
@@ -80,6 +98,31 @@ class OrderService {
 
     answerOrder(orderId: number, answer: string): Promise<any> {
         return axios.post(`/orders/${orderId}/answer`, { answer: answer });
+    }
+
+    endOrder(orderId: number): Promise<any> {
+        return axios.post(`/orders/${orderId}/end`);
+    }
+
+    uploadAttachment(orderId: number, file: File): Promise<any> {
+        const formData = new FormData();
+        formData.append("multipartFile", file);
+        formData.append("name", file.name);
+        return axios.post(`/orders/${orderId}/attachments`, formData, {
+            headers: {
+                "content-type": "multipart/form-data",
+            },
+        });
+    }
+
+    getAttachments(orderId: number): Promise<Array<AttachmentInfo>> {
+        return axios.get(`/orders/${orderId}/attachments`);
+    }
+
+    getAttachmentUrl(orderId: number, uuid: number) {
+        return (
+            axios.defaults.baseURL + `/orders/${orderId}/attachments/${uuid}`
+        );
     }
 }
 

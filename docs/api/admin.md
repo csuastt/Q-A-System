@@ -85,9 +85,14 @@ GET /api/admins
 
 | 属性     | 类型 | 说明                    |
 | -------- | ---- | ----------------------- |
-| role     | enum | 可选                    |
+| role     | enum | 可选（可以重复多个）    |
 | pageSize | int  | 单页管理员数，默认为 20 |
 | page     | int  | 页数，默认为 1          |
+
+```
+GET /api/admins  => 默认获取所有非超级管理员
+GET /api/admins?role=SUPER_ADMIN&role=REVIEWER&role=ADMIN  => 获取多个权限的管理员
+```
 
 返回值：
 

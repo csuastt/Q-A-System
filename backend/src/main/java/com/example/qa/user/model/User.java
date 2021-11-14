@@ -6,6 +6,7 @@ import com.example.qa.user.exchange.UserRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -26,13 +27,16 @@ public class User {
     private String username;  // 删除时手动在之后添加 @{id} 以便允许重新注册
     private String password;
 
-    private String avatar;
+    @Lob
+    private byte[] avatar;
     private String nickname;
     private String email;
     private String phone = "";
     private Gender gender = Gender.UNKNOWN;
 
     private int price = 0;
+    @Lob
+    @Type(type = "text")
     private String description = "";
 
     private ZonedDateTime createTime;
@@ -42,7 +46,12 @@ public class User {
     private int balance = 100;
 
     private int earningsTotal = 0;
+    @Lob
+    @Type(type = "text")
     private String earningsMonthly = "[]";
+
+    private int askCount = 0;
+    private int answerCount = 0;
 
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();

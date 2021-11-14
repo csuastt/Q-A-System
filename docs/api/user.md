@@ -18,14 +18,16 @@
 
 #### 私有属性 (仅限本用户)
 
-| 属性     | 类型   | JSON   | 说明                      |
-| -------- | ------ | ------ | ------------------------- |
-| password | string | 不返回 | 只写不读                  |
-| email    | string |        | 有数据验证                |
-| phone    | string |        | 可随意修改                |
-| gender   | enum   | string | { UNKNOWN, MALE, FEMALE } |
-| role     | enum   | string | { USER, ANSWERER }        |
-| balance  | int    |        | 余额                      |
+| 属性        | 类型   | JSON   | 说明                                              |
+| ----------- | ------ | ------ | ------------------------------------------------- |
+| password    | string | 不返回 | 只写不读                                          |
+| email       | string |        | 有数据验证                                        |
+| phone       | string |        | 可随意修改                                        |
+| gender      | enum   | string | { UNKNOWN, MALE, FEMALE }                         |
+| role        | enum   | string | { USER, ANSWERER }                                |
+| balance     | int    |        | 余额                                              |
+| askCount    | int    |        | 提问单数（仅计算有效单数，回答者第一次回答时 +1） |
+| answerCount | int    |        | 回答单数（仅计算有效单数，每单第一次回答时 +1）   |
 
 #### 私有属性 (仅限管理员)
 
@@ -105,11 +107,11 @@ GET /api/users
 
 参数：
 
-| 属性     | 类型 | 说明                            |
-| -------- | ---- | ------------------------------- |
-| role     | enum | 用户只能填 ANSWERER，管理员任意 |
-| pageSize | int  | 单页用户数，默认为 20           |
-| page     | int  | 页数，默认为 1                  |
+| 属性     | 类型 | 说明                                          |
+| -------- | ---- | --------------------------------------------- |
+| role     | enum | 用户只能填 ANSWERER，管理员任意（可重复多个） |
+| pageSize | int  | 单页用户数，默认为 20                         |
+| page     | int  | 页数，默认为 1                                |
 
 返回值：
 
@@ -288,6 +290,27 @@ GET /api/users/{id}/earnings
             "earnings": 80
         }
     ]
+}
+```
+
+### 统计数据
+
+（仅限本人或管理员）
+
+```
+GET /api/users/{id}/stats
+```
+
+返回值：
+
+- `200` OK
+- `401` 未登录
+- `403` 错误（没权限或者不是回答者）
+
+```json
+{
+	"askCount": 0,
+    "answerCount": 0
 }
 ```
 

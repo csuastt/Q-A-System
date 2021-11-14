@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,25 +48,18 @@ public class OrderService {
 
     public Page<Order> listByAnswerer(User answerer, Boolean finished) {
         return finished == null ?
-                orderRepository.findAllByDeletedAndReviewedAndAnswerer(false, true, answerer, pageRequest) :
-                orderRepository.findAllByDeletedAndReviewedAndAnswererAndFinished(false, true, answerer, finished, pageRequest);
+                orderRepository.findAllByDeletedAndVisibleToAnswererAndAnswerer(false, true, answerer, pageRequest) :
+                orderRepository.findAllByDeletedAndVisibleToAnswererAndAnswererAndFinished(false, true, answerer, finished, pageRequest);
     }
 
-    public Page<Order> listByState(OrderState state) {
+    public Page<Order> listByState(Collection<OrderState> state) {
         return state == null ?
                 orderRepository.findAll(pageRequest) :
-                orderRepository.findAllByDeletedAndState(false, state, pageRequest);
+                orderRepository.findAllByDeletedAndStateIn(false, state, pageRequest);
     }
 
-    public Order answerOrder(Order order, String answer) {
-        order.setAnswerSummary(answer);
-        order.setState(OrderState.ANSWERED);
-        order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getMaxChatTimeSeconds()));
-        return save(order);
-    }
-
-    public Order answerOrder(long id, String answer) {
-        return answerOrder(findById(id).orElseThrow(NullPointerException::new), answer);
+    public Page<Order> listByReviewed() {
+        return orderRepository.findAllByDeletedAndReviewed(false, true, pageRequest);
     }
 
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds

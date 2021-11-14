@@ -1,21 +1,13 @@
 import * as React from "react";
 import { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import {
-    alpha,
-    CSSObject,
-    styled,
-    Theme,
-    useTheme,
-} from "@mui/material/styles";
+import { CSSObject, styled, Theme, useTheme } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
 import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
 import MuiDrawer from "@mui/material/Drawer";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -24,8 +16,7 @@ import List from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
-import { ListItemButton } from "@mui/material";
-import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
+import { Badge, ListItemButton } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -38,6 +29,7 @@ import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 import AuthContext from "../AuthContext";
 
@@ -45,48 +37,9 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import { ManagerRole, UserRole } from "../services/definations";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-
-const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    "&:hover": {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-        marginLeft: theme.spacing(1),
-        width: "auto",
-    },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: "inherit",
-    "& .MuiInputBase-input": {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create("width"),
-        width: "100%",
-        [theme.breakpoints.up("sm")]: {
-            width: "12ch",
-            "&:focus": {
-                width: "20ch",
-            },
-        },
-    },
-}));
+import HelpIcon from "@mui/icons-material/Help";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import { useNotification } from "./NotificationController";
 
 const drawerWidth = 240;
 
@@ -162,6 +115,7 @@ const AppBar = styled(MuiAppBar, {
 const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const { user, manager } = useContext(AuthContext);
+    const { unreadCount } = useNotification();
 
     const theme = useTheme();
 
@@ -177,117 +131,75 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
         key: string,
         text: string,
         to: string,
-        IconType: typeof SvgIcon
+        icon: React.ReactNode
     ) => (
         <ListItemButton key={key} component={RouterLink} to={to}>
-            <ListItemIcon>
-                <IconType />
-            </ListItemIcon>
+            <ListItemIcon>{icon}</ListItemIcon>
             <ListItemText primary={text} />
         </ListItemButton>
     );
 
     const renderDrawerList = (
-        data: Array<[string, string, typeof SvgIcon]>
+        data: Array<[string, string, React.ReactNode]>
     ) => (
         <List>
-            {data.map(([text, to, IconType]) =>
-                renderListItem(text, text, to, IconType)
+            {data.map(([text, to, icon]) =>
+                renderListItem(text, text, to, icon)
             )}
         </List>
     );
 
-    const drawerList3: () => Array<[string, string, typeof SvgIcon]> = () => {
+    const drawerList3: () => Array<[string, string, React.ReactNode]> = () => {
         if (user == null) {
-            return [["回答者列表", "/answerers", SchoolIcon]];
+            return [["回答者列表", "/answerers", <SchoolIcon />]];
         }
         if (user.role === UserRole.USER) {
             return [
-                ["回答者列表", "/answerers", SchoolIcon],
-                ["我的提问", "/orders", QuestionAnswerIcon],
-                ["提出问题", "/order/create", AddCommentIcon],
+                ["回答者列表", "/answerers", <SchoolIcon />],
+                ["我的提问", "/orders", <QuestionAnswerIcon />],
+                ["提出问题", "/order/create", <AddCommentIcon />],
             ];
         }
         return [
-            ["回答者列表", "/answerers", SchoolIcon],
-            ["我的提问", "/orders", QuestionAnswerIcon],
-            ["我的回答", "/orders?answerer=true", RateReviewIcon],
-            ["收入统计", "/income", EqualizerIcon],
-            ["提出问题", "/order/create", AddCommentIcon],
+            ["回答者列表", "/answerers", <SchoolIcon />],
+            ["我的提问", "/orders", <QuestionAnswerIcon />],
+            ["我的回答", "/orders?answerer=true", <RateReviewIcon />],
+            ["收入统计", "/income", <EqualizerIcon />],
+            ["提出问题", "/order/create", <AddCommentIcon />],
         ];
     };
 
     return (
         <Box sx={{ display: "flex" }}>
             <CssBaseline />{" "}
-            {props.isAdmin ? (
-                <AppBar open={drawerOpen} style={{ background: "#714288" }}>
-                    <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            sx={{
-                                mr: 5,
-                                ...(drawerOpen && { display: "none" }),
-                            }}
-                            onClick={handleDrawerOpen}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{
-                                flexGrow: 1,
-                                display: { xs: "none", sm: "block" },
-                            }}
-                        >
-                            付费问答管理员系统
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
-            ) : (
-                <AppBar open={drawerOpen}>
-                    <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            sx={{
-                                mr: 5,
-                                ...(drawerOpen && { display: "none" }),
-                            }}
-                            onClick={handleDrawerOpen}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{
-                                flexGrow: 1,
-                                display: { xs: "none", sm: "block" },
-                            }}
-                        >
-                            付费问答系统
-                        </Typography>
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="搜索问题…"
-                                inputProps={{ "aria-label": "search" }}
-                            />
-                        </Search>
-                    </Toolbar>
-                </AppBar>
-            )}
+            <AppBar open={drawerOpen}>
+                <Toolbar>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="open drawer"
+                        sx={{
+                            mr: 5,
+                            ...(drawerOpen && { display: "none" }),
+                        }}
+                        onClick={handleDrawerOpen}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="div"
+                        sx={{
+                            flexGrow: 1,
+                            display: { xs: "none", sm: "block" },
+                        }}
+                    >
+                        {props.isAdmin ? "问客管理员系统" : "问客"}
+                    </Typography>
+                </Toolbar>
+            </AppBar>
             <Drawer variant="permanent" open={drawerOpen}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
@@ -301,8 +213,8 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                 <Divider />
                 {renderDrawerList(
                     props.isAdmin
-                        ? [["管理员主页", "/admins/", HomeIcon]]
-                        : [["主页", "/", HomeIcon]]
+                        ? [["管理员主页", "/admins/", <HomeIcon />]]
+                        : [["主页", "/", <HomeIcon />]]
                 )}
                 <Divider />
                 {renderDrawerList(
@@ -312,37 +224,48 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                                   [
                                       "修改密码",
                                       "/admins/change_password",
-                                      VpnKeyIcon,
+                                      <VpnKeyIcon />,
                                   ],
-                                  ["登出", "/admins/logout", LogoutIcon],
+                                  ["登出", "/admins/logout", <LogoutIcon />],
                               ]
-                            : [["登录", "/admins/login", LoginIcon]]
+                            : [["登录", "/admins/login", <LoginIcon />]]
                         : user
                         ? [
-                              ["个人信息", "/profile", AccountCircleIcon],
-                              ["登出", "/logout", LogoutIcon],
+                              ["个人信息", "/profile", <AccountCircleIcon />],
+                              [
+                                  "通知中心",
+                                  "/notif",
+                                  <Badge
+                                      badgeContent={unreadCount}
+                                      color="warning"
+                                  >
+                                      <NotificationsIcon />
+                                  </Badge>,
+                              ],
+                              ["登出", "/logout", <LogoutIcon />],
                           ]
                         : [
-                              ["登录", "/login", LoginIcon],
-                              ["注册", "/register", PersonAddIcon],
+                              ["登录", "/login", <LoginIcon />],
+                              ["注册", "/register", <PersonAddIcon />],
                           ]
                 )}
                 <Divider />
                 {props.isAdmin
                     ? renderDrawerList([
-                          ["审核列表", "/admins/review", FactCheckIcon],
-                          ["用户列表", "/admins/users", GroupIcon],
-                          ["回答者列表", "/admins/answerers", SchoolIcon],
-                          ["订单列表", "/admins/orders", LibraryBooksIcon],
+                          ["审核列表", "/admins/review", <FactCheckIcon />],
+                          ["用户列表", "/admins/users", <GroupIcon />],
+                          ["回答者列表", "/admins/answerers", <SchoolIcon />],
+                          ["订单列表", "/admins/orders", <LibraryBooksIcon />],
                       ])
                     : renderDrawerList(drawerList3())}
                 <Divider />
                 {manager?.role === ManagerRole.SUPER_ADMIN
                     ? renderDrawerList([
-                          ["系统参数", "/admins/settings", SettingsIcon],
-                          ["创建", "/admins/create", PersonAddIcon],
+                          ["系统参数", "/admins/settings", <SettingsIcon />],
+                          ["管理员列表", "/admins/managers", <HowToRegIcon />],
+                          ["创建", "/admins/create", <PersonAddIcon />],
                       ])
-                    : null}
+                    : renderDrawerList([["平台须知", "/help", <HelpIcon />]])}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />

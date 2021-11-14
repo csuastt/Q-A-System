@@ -23,6 +23,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AuthContext from "../AuthContext";
+import websocketService from "../services/websocketService";
 
 // some validators
 // not empty
@@ -164,40 +165,43 @@ export default class Login extends Component<LoginProps, LoginState> {
             } else {
                 service = AuthService;
                 // login request
-                service.login(this.state.username, this.state.password).then(
-                    (user) => {
-                        // login success
-                        // alert
-                        this.setState({
-                            alert: true,
-                            alertType: "success",
-                            alertContent: "登录成功",
-                        });
-                        // update state
-                        this.context.setUser(user);
+                service
+                    .login(this.state.username, this.state.password)
+                    .then(
+                        (user) => {
+                            // login success
+                            // alert
+                            this.setState({
+                                alert: true,
+                                alertType: "success",
+                                alertContent: "登录成功",
+                            });
+                            // update state
+                            this.context.setUser(user);
 
-                        // redirect
-                        this.setState({
-                            redirect: this.props.redirect,
-                        });
-                    },
-                    (error) => {
-                        // show the error message
-                        if (error.response.status === 403) {
+                            // redirect
                             this.setState({
-                                alert: true,
-                                alertType: "error",
-                                alertContent: "用户名或密码错误",
+                                redirect: this.props.redirect,
                             });
-                        } else {
-                            this.setState({
-                                alert: true,
-                                alertType: "error",
-                                alertContent: "网络错误",
-                            });
+                        },
+                        (error) => {
+                            // show the error message
+                            if (error.response.status === 403) {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "用户名或密码错误",
+                                });
+                            } else {
+                                this.setState({
+                                    alert: true,
+                                    alertType: "error",
+                                    alertContent: "网络错误",
+                                });
+                            }
                         }
-                    }
-                );
+                    )
+                    .then(() => websocketService.tryActivate());
             }
         }
     }

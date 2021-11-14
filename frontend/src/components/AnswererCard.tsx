@@ -12,8 +12,17 @@ import { Link as RouterLink } from "react-router-dom";
 import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
-import { Grid } from "@mui/material";
+import {
+    Grid,
+    IconButton,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    Stack,
+} from "@mui/material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AnswererDetailDialog from "./AnswererDetailDialog";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 
 const AnswererCard: React.FC<{
     userInfo?: UserBasicInfo;
@@ -21,6 +30,7 @@ const AnswererCard: React.FC<{
     placeholder?: boolean;
     nextUrl?: string;
     briefMsg?: boolean;
+    listMode?: boolean;
 }> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -66,136 +76,203 @@ const AnswererCard: React.FC<{
     }
 
     return userInfo ? (
-        <>
-            <Card sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                <CardActionWrapper>
-                    <CardContent sx={{ paddingBottom: 0 }}>
-                        <Box
-                            sx={{
-                                alignItems: "center",
-                                display: "flex",
-                                flexDirection: "column",
-                            }}
-                        >
-                            <Avatar
-                                alt={userInfo.username}
-                                src={userInfo.avatar}
-                                sx={{
-                                    height: 70,
-                                    width: 70,
-                                }}
-                            />
-                            <Box mt={1}>
+        props.listMode ? (
+            <>
+                <ListItem alignItems="flex-start">
+                    <ListItemAvatar>
+                        <Avatar
+                            src={userService.getAvatarUrl(userInfo.id)}
+                            alt={userInfo.username}
+                        />
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary={userInfo.nickname}
+                        secondary={
+                            <React.Fragment>
                                 <Typography
-                                    color="textPrimary"
-                                    gutterBottom
-                                    variant="h5"
+                                    sx={{ display: "inline" }}
+                                    component="span"
+                                    variant="body2"
+                                    color="text.primary"
                                 >
-                                    {userInfo.username}
+                                    {"@" + userInfo.username}
                                 </Typography>
-                            </Box>
-                            <Box mx={2} mt={-1}>
-                                {typeof props.briefMsg === "undefined" ||
-                                !props.briefMsg ? (
-                                    <>
-                                        <Typography
-                                            color="textSecondary"
-                                            variant="body1"
-                                        >
-                                            {profession}
-                                        </Typography>
-                                        <Typography
-                                            color="textSecondary"
-                                            variant="body1"
-                                        >
-                                            {description}
-                                        </Typography>
-                                    </>
-                                ) : (
+                                {" — " + profession + "；" + description}
+                                <Typography variant="body2" color="primary">
+                                    {"￥" + userInfo.price + "/次"}
+                                </Typography>
+                            </React.Fragment>
+                        }
+                    />
+                    <Stack direction="row" pt={1} spacing={1}>
+                        <IconButton
+                            aria-label="detail"
+                            onClick={handleOpenDialog}
+                            color="primary"
+                        >
+                            <MoreHorizIcon />
+                        </IconButton>
+                        {props.nextUrl && (
+                            <IconButton
+                                aria-label="check"
+                                component={RouterLink}
+                                to={props.nextUrl}
+                                color="primary"
+                            >
+                                <ChatBubbleIcon />
+                            </IconButton>
+                        )}
+                    </Stack>
+                </ListItem>
+                <AnswererDetailDialog
+                    open={dialogOpen}
+                    onClose={handleCloseDialog}
+                    info={userInfo}
+                    maxWidth="sm"
+                    fullWidth
+                />
+            </>
+        ) : (
+            <>
+                <Card
+                    sx={{ display: "flex", flexDirection: "column", flex: 1 }}
+                >
+                    <CardActionWrapper>
+                        <CardContent
+                            sx={
+                                typeof props.briefMsg === "undefined" ||
+                                !props.briefMsg
+                                    ? { paddingBottom: 0 }
+                                    : { paddingBottom: 2 }
+                            }
+                        >
+                            <Box
+                                sx={{
+                                    alignItems: "center",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
+                                <Avatar
+                                    alt={userInfo.username}
+                                    src={userService.getAvatarUrl(userInfo.id)}
+                                    sx={{
+                                        height: 70,
+                                        width: 70,
+                                    }}
+                                />
+                                <Box mt={1}>
                                     <Typography
-                                        color="textSecondary"
-                                        variant="body1"
+                                        color="textPrimary"
+                                        gutterBottom
+                                        variant="h5"
                                     >
-                                        {"快来向我提问吧~"}
+                                        {userInfo.nickname}
                                     </Typography>
+                                </Box>
+                                <Box mx={2} mt={-1}>
+                                    {typeof props.briefMsg === "undefined" ||
+                                    !props.briefMsg ? (
+                                        <>
+                                            <Typography
+                                                color="textSecondary"
+                                                variant="body1"
+                                            >
+                                                {profession}
+                                            </Typography>
+                                            <Typography
+                                                color="textSecondary"
+                                                variant="body1"
+                                            >
+                                                {description}
+                                            </Typography>
+                                        </>
+                                    ) : (
+                                        <Typography
+                                            color="textSecondary"
+                                            variant="body1"
+                                        >
+                                            {"快来向我提问吧~"}
+                                        </Typography>
+                                    )}
+                                </Box>
+                                {typeof userInfo.price !== "undefined" ? (
+                                    <Grid
+                                        container
+                                        mt={0.5}
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="flex-end"
+                                    >
+                                        <Grid item>
+                                            <Typography
+                                                color="primary"
+                                                variant="h6"
+                                            >
+                                                ￥
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography
+                                                color="primary"
+                                                variant="h4"
+                                            >
+                                                {userInfo.price}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography
+                                                color="primary"
+                                                variant="h6"
+                                            >
+                                                /次
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                ) : (
+                                    <></>
                                 )}
                             </Box>
-                            {typeof userInfo.price !== "undefined" ? (
-                                <Grid
-                                    container
-                                    mt={0.5}
-                                    direction="row"
-                                    justifyContent="center"
-                                    alignItems="flex-end"
-                                >
-                                    <Grid item>
-                                        <Typography
-                                            color="primary"
-                                            variant="h6"
-                                        >
-                                            ￥
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography
-                                            color="primary"
-                                            variant="h4"
-                                        >
-                                            {userInfo.price}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography
-                                            color="primary"
-                                            variant="h6"
-                                        >
-                                            /次
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                            ) : (
-                                <></>
-                            )}
-                        </Box>
-                    </CardContent>
-                </CardActionWrapper>
-                <CardActions
-                    style={{ justifyContent: "center" }}
-                    sx={{ paddingBottom: 2 }}
-                >
+                        </CardContent>
+                    </CardActionWrapper>
                     {(typeof props.briefMsg === "undefined" ||
                         !props.briefMsg) && (
-                        <Button
-                            color="primary"
-                            size="large"
-                            variant="outlined"
-                            onClick={handleOpenDialog}
+                        <CardActions
+                            style={{ justifyContent: "center" }}
+                            sx={{ paddingBottom: 2 }}
                         >
-                            详细信息
-                        </Button>
+                            <Button
+                                color="primary"
+                                size="large"
+                                variant="outlined"
+                                onClick={handleOpenDialog}
+                            >
+                                详细信息
+                            </Button>
+                            {props.nextUrl && (
+                                <Button
+                                    color="primary"
+                                    size="large"
+                                    variant="contained"
+                                    component={RouterLink}
+                                    to={props.nextUrl}
+                                    sx={{ ml: 2 }}
+                                >
+                                    向TA提问
+                                </Button>
+                            )}
+                        </CardActions>
                     )}
-                    {props.nextUrl && (
-                        <Button
-                            color="primary"
-                            size="large"
-                            variant="contained"
-                            component={RouterLink}
-                            to={props.nextUrl}
-                            sx={{ ml: 2 }}
-                        >
-                            向TA提问
-                        </Button>
-                    )}
-                </CardActions>
-            </Card>
-            <AnswererDetailDialog
-                open={dialogOpen}
-                onClose={handleCloseDialog}
-                info={userInfo}
-                maxWidth="sm"
-                fullWidth
-            />
-        </>
+                </Card>
+                <AnswererDetailDialog
+                    open={dialogOpen}
+                    onClose={handleCloseDialog}
+                    info={userInfo}
+                    maxWidth="sm"
+                    fullWidth
+                />
+            </>
+        )
     ) : (
         <Card>
             <CardHeader

@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -28,34 +29,46 @@ public class Order {
     private OrderState state = OrderState.CREATED;
     @Setter(AccessLevel.NONE)
     private boolean finished = false;
+    @Setter(AccessLevel.NONE)
+    private boolean visibleToAnswerer = false;
     private boolean reviewed = false;
     private ZonedDateTime createTime;
     private ZonedDateTime expireTime;
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
-    private String question;
-    private String answerSummary;
+    private String questionTitle;
+    @Lob
+    @Type(type = "text")
+    private String questionDescription;
+    @Lob
+    @Type(type = "text")
+    private String answer;
     private int price;
-
-    public void setState(OrderState state) {
-        if (state != null) {
-            this.state = state;
-            finished = state.isFinished();
-            reviewed = state.isReviewed();
-        }
-    }
 
     // 传 data 前先用 checkOrderData 检查
     public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {
         this.asker = asker;
         this.answerer = answerer;
-        question = data.getQuestion();
+        questionTitle = data.getTitle();
+        questionDescription = data.getDescription();
         createTime = ZonedDateTime.now();
         price = answerer.getPrice();
         if (allProperties) {
             setState(data.getState());
             endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);
-            answerSummary = data.getAnswerSummary();
+            answer = data.getAnswer();
             price = Objects.requireNonNullElse(data.getPrice(), price);
+        }
+    }
+
+    public void setState(OrderState state) {
+        if (state != null) {
+            this.state = state;
+            finished = state.isFinished();
+            if (state == OrderState.CANCELLED && reviewed) {
+                visibleToAnswerer = true;
+            } else {
+                visibleToAnswerer = state.isVisibleToAnswerer();
+            }
         }
     }
 
@@ -63,7 +76,8 @@ public class Order {
     public void update(OrderRequest data) {
         setState(data.getState());
         endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);
-        question = Objects.requireNonNullElse(data.getQuestion(), question);
+        questionTitle = Objects.requireNonNullElse(data.getTitle(), questionTitle);
+        questionDescription = Objects.requireNonNullElse(data.getDescription(), questionDescription);
         price = Objects.requireNonNullElse(data.getPrice(), price);
     }
 }

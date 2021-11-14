@@ -2,6 +2,7 @@ import axios from "axios";
 import {
     EarningsInfo,
     PagedList,
+    StatsInfo,
     UserBasicInfo,
     UserFullyInfo,
     UserInfo,
@@ -51,9 +52,11 @@ class UserService {
     getUserInfo(id: number): Promise<UserInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
+
     getUserFullyInfo(id: number): Promise<UserFullyInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
+
     getUserBasicInfo(id: number): Promise<UserBasicInfo> {
         return axios.get(`/users/${id}`).then((response) => response.data);
     }
@@ -66,9 +69,25 @@ class UserService {
             description: info.description,
         });
     }
+
+    modifyUserAvatar(id: number, file: File) {
+        const formData = new FormData();
+        formData.append("multipartFile", file);
+        return axios.post(`/users/${id}/avatar`, formData, {
+            headers: {
+                "content-type": "multipart/form-data",
+            },
+        });
+    }
+
+    getAvatarUrl(id: number) {
+        return axios.defaults.baseURL + `/users/${id}/avatar`;
+    }
+
     deleteUser(id: number) {
         return axios.delete(`/users/${id}`, {});
     }
+
     modifyUserInfoByAdmin(info: UserInfo) {
         return axios.put(`/users/${info.id}`, {
             nickname: info.nickname,
@@ -85,6 +104,12 @@ class UserService {
     getUserIncome(id: number): Promise<EarningsInfo> {
         return axios
             .get(`/users/${id}/earnings`)
+            .then((response) => response.data);
+    }
+
+    getUserStats(id: number): Promise<StatsInfo> {
+        return axios
+            .get(`/users/${id}/stats`)
             .then((response) => response.data);
     }
 }

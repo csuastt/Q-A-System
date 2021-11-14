@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Step from "@mui/material/Step";
 import Stepper from "@mui/material/Stepper";
@@ -10,16 +10,34 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Link as RouterLink, useParams } from "react-router-dom";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
-import { CreationResult } from "../services/definations";
+import { ConfigInfo, CreationResult, FileInfo } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import UserContext from "../AuthContext";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Grid from "@mui/material/Grid";
 import AnswererDetailCard from "./AnswererDetailCard";
+import Divider from "@mui/material/Divider";
+import Markdown from "./Markdown";
+import systemConfigService from "../services/systemConfigService";
+import {
+    Dialog,
+    DialogTitle,
+    IconButton,
+    Link,
+    ListItemAvatar,
+    ListItemButton,
+    ListItemText,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Avatar from "@mui/material/Avatar";
+import FolderIcon from "@mui/icons-material/Folder";
+import { formatSize } from "./OrderDetail";
 
 function processInt(str?: string): number {
     if (str) {
@@ -33,13 +51,23 @@ function processInt(str?: string): number {
 
 const OrderCreationWizard: React.FC = (props) => {
     const [activeStep, setActiveStep] = useState(0);
-    const [questionText, setQuestionText] = useState<string>("");
+    const [questionTitle, setQuestionTitle] = useState<string>("");
+    const [questionDescription, setQuestionDescription] = useState<string>("");
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
+    const [config, setConfig] = useState<ConfigInfo>();
+    const [files, setFiles] = useState<Array<FileInfo>>([]);
+    const [open, setOpen] = React.useState(false);
 
     const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
     const answerer = processInt(routerParam.answerer);
+
+    useEffect(() => {
+        systemConfigService.getSystemConfig().then((configInfo) => {
+            setConfig(configInfo);
+        });
+    }, []);
 
     const nextStep = () => {
         setActiveStep(activeStep + 1);
@@ -49,12 +77,49 @@ const OrderCreationWizard: React.FC = (props) => {
         setActiveStep(activeStep - 1);
     };
 
-    const handleQuestionChange = (
+    const handleQuestionTitleChange = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
-        setQuestionText(event.target.value);
+        setQuestionTitle(event.target.value);
         checkInput(event.target.value);
     };
+
+    const handleFilesUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let fileList = [];
+        if (event.target.files !== null) {
+            for (let i = 0; i < event.target.files.length; i++) {
+                fileList.push({
+                    file: event.target.files[i],
+                    url: URL.createObjectURL(event.target.files[i]),
+                });
+            }
+        }
+        setFiles(fileList);
+    };
+
+    const handleFilesClear = () => {
+        setFiles([]);
+    };
+
+    const handleFileDelete = (name: string) => {
+        let curFiles = files;
+        curFiles = curFiles.filter(function (file) {
+            return file.file.name !== name;
+        });
+        if (!curFiles.length) handleClose();
+        setFiles(curFiles);
+    };
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleQuestionDescriptionChange = (newValue: string) =>
+        setQuestionDescription(newValue);
 
     const checkInput = (input: string) => {
         if (input && input.length >= 10) {
@@ -65,10 +130,10 @@ const OrderCreationWizard: React.FC = (props) => {
     };
 
     const checkInputAndNextStep = () => {
-        if (!questionError && questionText && questionText.length >= 10) {
+        if (!questionError && questionTitle && questionTitle.length >= 10) {
             nextStep();
         } else {
-            checkInput(questionText);
+            checkInput(questionTitle);
         }
     };
 
@@ -77,6 +142,7 @@ const OrderCreationWizard: React.FC = (props) => {
         if (user && user.id === answerer) {
             // answering yourself is not allowed
             setResult({
+                id: -1,
                 type: 1,
                 state: "NULL",
                 created_id: -1,
@@ -84,8 +150,36 @@ const OrderCreationWizard: React.FC = (props) => {
             });
         } else {
             questionService
-                .create_question(user!.id, answerer, questionText)
-                .then((res) => setResult(res));
+                .createQuestion(
+                    user!.id,
+                    answerer,
+                    questionTitle,
+                    questionDescription
+                )
+                .then(
+                    (res) => {
+                        setResult(res);
+                        // upload attachments
+                        if (files !== null) {
+                            for (let i = 0; i < files.length; i++) {
+                                questionService
+                                    .uploadAttachment(res.id, files[i].file)
+                                    .then((r) => {
+                                        console.log(r);
+                                    });
+                            }
+                        }
+                    },
+                    (error) => {
+                        setResult({
+                            id: -1,
+                            type: 1,
+                            state: "NULL",
+                            created_id: -1,
+                            message: error.response.data.message,
+                        });
+                    }
+                );
         }
     };
 
@@ -336,21 +430,65 @@ const OrderCreationWizard: React.FC = (props) => {
         );
     };
 
+    // an Input without display
+    const Input = styled("input")({
+        display: "none",
+    });
+
     // render 2nd step
     const renderSecondStep = () => {
         return (
             <>
                 <TextField
-                    label="问题"
+                    label="问题标题"
                     margin="normal"
-                    value={questionText}
-                    onChange={handleQuestionChange}
+                    value={questionTitle}
+                    onChange={handleQuestionTitleChange}
                     error={questionError}
-                    helperText={questionError && "问题长度不应小于10"}
+                    helperText={questionError && "标题长度不应小于10"}
                     fullWidth
-                    multiline
-                    rows={5}
                     inputProps={{ maxLength: 100 }}
+                />
+                <Stack
+                    sx={{ mt: 2, mb: 2 }}
+                    spacing={2}
+                    direction="row"
+                    alignItems={"center"}
+                >
+                    <Typography>上传附件:</Typography>
+                    <label htmlFor="contained-button-file">
+                        <Input
+                            accept="*"
+                            id="contained-button-file"
+                            type="file"
+                            name="attachments"
+                            multiple={true}
+                            onChange={handleFilesUpload}
+                        />
+                        <Link component="span">添加</Link>
+                    </label>
+                    <Link
+                        component="button"
+                        variant="body1"
+                        color={"error"}
+                        onClick={handleFilesClear}
+                    >
+                        清空
+                    </Link>
+                    {files.length > 0 && (
+                        <Link
+                            component="button"
+                            variant="body1"
+                            onClick={handleOpen}
+                        >
+                            查看
+                        </Link>
+                    )}
+                </Stack>
+                <Markdown
+                    value={questionDescription}
+                    onChange={handleQuestionDescriptionChange}
+                    height="500px"
                 />
                 <Stack
                     spacing={matches ? 4 : 2}
@@ -396,6 +534,49 @@ const OrderCreationWizard: React.FC = (props) => {
                         </>
                     )}
                 </Stack>
+                <Dialog onClose={handleClose} open={open}>
+                    <DialogTitle>附件列表</DialogTitle>
+                    <List sx={{ pt: 0 }}>
+                        {files.map((fileInfo) => (
+                            <ListItem
+                                secondaryAction={
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="delete"
+                                        onClick={() => {
+                                            handleFileDelete(
+                                                fileInfo.file.name
+                                            );
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                }
+                            >
+                                <ListItemButton
+                                    role={undefined}
+                                    dense
+                                    component="a"
+                                    href={fileInfo.url}
+                                    key={fileInfo.url}
+                                >
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <FolderIcon />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={fileInfo.file.name}
+                                        secondary={formatSize(
+                                            fileInfo.file.size,
+                                            2
+                                        )}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Dialog>
             </>
         );
     };
@@ -404,12 +585,59 @@ const OrderCreationWizard: React.FC = (props) => {
     const renderThirdStep = () => {
         return (
             <>
-                <Typography variant="body1">
-                    您现在需要预先付款以完成提问。在您确认得到了满意的回答之后，回答者才可能收到这份酬劳。
-                </Typography>
-                <Typography variant="body1">
-                    您的问题首先需要经过审核才能发送到回答者。若审核失败，您可以修改问题或取消提问。如果在回答者接单之前取消提问，我们将全额退款。
-                </Typography>
+                <Divider sx={{ mt: 3, mb: 1 }}>提问须知</Divider>
+                <List dense={true}>
+                    <ListItem>
+                        <Typography variant="body1">
+                            1、您现在需要预先付款以完成提问。在您确认得到了满意的回答之后，回答者才可能收到这份酬劳。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            2、您的问题首先需要经过审核才能发送到回答者。若审核失败，我们将全额退款。您可以修改后重新提问。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            3、完成提问后，系统会及时通知回答者。回答者将在
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {config?.respondExpirationSeconds
+                                    ? config?.respondExpirationSeconds /
+                                      3600 /
+                                      24
+                                    : ""}
+                            </Box>
+                            天内接单。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            4、您的问题不会被公开，只有您和回答者可以知晓其中的内容。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            5、单次提问交流的最大聊天消息条数为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {config?.maxChatMessages
+                                    ? config?.maxChatMessages
+                                    : ""}
+                            </Box>
+                            条，最长聊天时间为
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {config?.maxChatTimeSeconds
+                                    ? config?.maxChatTimeSeconds / 3600
+                                    : ""}
+                            </Box>
+                            小时。
+                        </Typography>
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="body1">
+                            6、若聊天消息条数超出限制或聊天超时，系统会自动结束订单，并在之后正常进行结算。
+                        </Typography>
+                    </ListItem>
+                </List>
                 <Stack
                     spacing={matches ? 4 : 2}
                     direction="row"

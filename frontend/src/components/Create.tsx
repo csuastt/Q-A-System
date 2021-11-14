@@ -15,14 +15,15 @@ import Alert from "@mui/material/Alert";
 // email checker
 // @ts-ignore
 // other validators
-import { validate_required, validate_length } from "./Login";
+import { validate_length, validate_required } from "./Login";
 //import { Link as RouterLink } from "react-router-dom";
 import AdminAuthService from "../services/adminAuthService";
+import CreateDetailDialog from "./CreateDetailDialog";
 
 // role options
 const manager_role_options = [
-    { value: ManagerRole.ADMIN, label: "管理员" },
     { value: ManagerRole.REVIEWER, label: "审核员" },
+    { value: ManagerRole.ADMIN, label: "管理员" },
 ];
 
 export const validate_role = (value: any) => {
@@ -39,14 +40,15 @@ export const validate_role = (value: any) => {
 // state interface
 interface CreateState {
     username: string;
+    password: string;
     role: ManagerRole;
     error_msg_username: string;
     error_msg_role: string;
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
-    readPolicy: boolean;
     redirect: string | null;
+    dialogOpen: boolean;
 }
 
 export default class ManageCreate extends Component<any, CreateState> {
@@ -57,14 +59,15 @@ export default class ManageCreate extends Component<any, CreateState> {
         // state
         this.state = {
             username: "",
-            role: ManagerRole.ADMIN,
+            password: "",
+            role: ManagerRole.REVIEWER,
             error_msg_username: "",
             error_msg_role: "",
             alert: false,
             alertContent: "",
             alertType: "error",
-            readPolicy: false,
             redirect: null,
+            dialogOpen: false,
         };
     }
 
@@ -107,10 +110,14 @@ export default class ManageCreate extends Component<any, CreateState> {
                     if (response) {
                         // alert
                         this.setState({
+                            password: response,
                             alert: true,
                             alertType: "success",
                             alertContent:
                                 "创建成功，请记住您的密码:" + response,
+                        });
+                        this.setState({
+                            dialogOpen: true,
                         });
                     }
                 },
@@ -188,7 +195,6 @@ export default class ManageCreate extends Component<any, CreateState> {
                             SelectProps={{
                                 native: true,
                             }}
-                            value={this.state.role}
                             name="role"
                             label="管理员权限"
                             type="role"
@@ -205,7 +211,7 @@ export default class ManageCreate extends Component<any, CreateState> {
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
-                            ))}{" "}
+                            ))}
                         </TextField>
 
                         <Button
@@ -237,6 +243,19 @@ export default class ManageCreate extends Component<any, CreateState> {
                         {this.state.alertContent}
                     </Alert>
                 </Snackbar>
+                <CreateDetailDialog
+                    open={this.state.dialogOpen}
+                    onClose={() =>
+                        this.setState({
+                            dialogOpen: false,
+                        })
+                    }
+                    username={this.state.username}
+                    password={this.state.password}
+                    role={this.state.role}
+                    maxWidth="sm"
+                    fullWidth
+                />
             </Container>
         );
     }

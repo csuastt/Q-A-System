@@ -3,6 +3,7 @@ import { Link as RouterLink, Redirect } from "react-router-dom";
 import userService from "../services/userService";
 import AccountBriefProfile from "./AccountBriefProfile";
 import {
+    ConfigInfo,
     UserFullyInfo,
     UserGender,
     UserInfo,
@@ -31,6 +32,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@mui/material";
+import systemConfigService from "../services/systemConfigService";
 
 // state interface
 interface ProfileState {
@@ -41,8 +43,7 @@ interface ProfileState {
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
-    minPrice: number;
-    maxPrice: number;
+    config: ConfigInfo | null;
     error_msg_username: string;
     error_msg_password: string;
     error_msg_email: string;
@@ -89,8 +90,7 @@ export default class AccountProfile extends Component<
             alert: false,
             alertContent: "",
             alertType: "error",
-            minPrice: 0,
-            maxPrice: 100,
+            config: null,
             error_msg_username: "",
             error_msg_password: "",
             error_msg_money: "",
@@ -155,19 +155,6 @@ export default class AccountProfile extends Component<
                             this.handleAlert("success", "充值成功");
                             // fetch new info
                             this.fetchUserInfo();
-                            // modify balance
-                            if (
-                                this.state.user !== null &&
-                                typeof this.state.user.balance !== "undefined"
-                            )
-                                this.handleChange({
-                                    target: {
-                                        name: "balance",
-                                        value:
-                                            Number(this.state.user?.balance) +
-                                            Number(this.state.money),
-                                    },
-                                });
                         },
                         (error) => {
                             // show the error message
@@ -244,17 +231,20 @@ export default class AccountProfile extends Component<
     // if user not found
     // redirect
     componentDidMount() {
+        // init min price & max price
+        systemConfigService.getSystemConfig().then((config) => {
+            this.setState({
+                config: config,
+            });
+        });
         if (this.props.isAdmin) {
             // todo use admin api to get fully info of user
-            // you also need to get min price and max price for answerer
-            // init state: minPrice maxPrice
             // remove this mock code
             const currentUser = {
                 id: 123213,
                 username: "tester123",
                 password: "thisIsPassword",
                 nickname: "Nickname",
-                avatar: "www.ava.com",
                 sign_up_timestamp: 112323333,
                 email: "sdassss@qq.com",
                 phone: "",
@@ -313,13 +303,15 @@ export default class AccountProfile extends Component<
             new_user_info["balance"] = 10000;
         else if (
             e.target.name === "price" &&
-            e.target.value < this.state.minPrice
+            this.state.config &&
+            e.target.value < this.state.config.minPrice
         ) {
             // @ts-ignore
             new_user_info["price"] = this.state.minPrice;
         } else if (
             e.target.name === "price" &&
-            e.target.value > this.state.maxPrice
+            this.state.config &&
+            e.target.value > this.state.config.maxPrice
         ) {
             // @ts-ignore
             new_user_info["price"] = this.state.maxPrice;
@@ -478,20 +470,20 @@ export default class AccountProfile extends Component<
                         <></>
                     </Grid>
                 ) : (
-                    <Grid item md={4} xs={8} mt={2}>
-                        <AccountBriefProfile
-                            id={this.state.user?.id}
-                            avatar={this.state.user?.avatar}
-                            nickname={this.now_nickname}
-                            username={this.state.user?.username}
-                            role={this.state.user?.role}
-                            alertHandler={this.handleAlert}
-                            redirectHandler={this.handleRedirect}
-                            minPrice={this.state.minPrice}
-                            maxPrice={this.state.maxPrice}
-                            fetchUserInfo={this.fetchUserInfo}
-                        />
-                    </Grid>
+                    this.state.config && (
+                        <Grid item md={4} xs={8} mt={2}>
+                            <AccountBriefProfile
+                                id={this.state.user?.id}
+                                nickname={this.now_nickname}
+                                username={this.state.user?.username}
+                                role={this.state.user?.role}
+                                alertHandler={this.handleAlert}
+                                redirectHandler={this.handleRedirect}
+                                config={this.state.config}
+                                fetchUserInfo={this.fetchUserInfo}
+                            />
+                        </Grid>
+                    )
                 )}
                 <Grid item md={8} xs={12} mt={2}>
                     <form noValidate>
@@ -706,12 +698,12 @@ export default class AccountProfile extends Component<
                                             fullWidth
                                             label="电话"
                                             name="phone"
-                                            // sx={{
-                                            //     "& .MuiPhoneNumber-flagButton":
-                                            //         {
-                                            //             "min-width": "30px",
-                                            //         },
-                                            // }}
+                                            sx={{
+                                                "& .MuiPhoneNumber-flagButton":
+                                                    {
+                                                        "min-width": "30px",
+                                                    },
+                                            }}
                                             defaultCountry={"cn"}
                                             onChange={this.handleChange}
                                             value={this.state.user?.phone || ""}
@@ -767,6 +759,7 @@ export default class AccountProfile extends Component<
                                     this.state.user &&
                                     this.state.user.role ===
                                         UserRole.ANSWERER &&
+                                    this.state.config &&
                                     "price" in this.state.user ? (
                                         <>
                                             <Grid item md={6} xs={12}>
@@ -783,9 +776,10 @@ export default class AccountProfile extends Component<
                                                         ),
                                                     }}
                                                     value={
-                                                        this.state.minPrice.toString() +
+                                                        this.state.config.minPrice.toString() +
                                                         " - " +
-                                                        this.state.maxPrice
+                                                        this.state.config
+                                                            .maxPrice
                                                     }
                                                     variant="outlined"
                                                 />
@@ -800,8 +794,10 @@ export default class AccountProfile extends Component<
                                                     InputProps={{
                                                         inputProps: {
                                                             min: this.state
+                                                                .config
                                                                 .minPrice,
                                                             max: this.state
+                                                                .config
                                                                 .maxPrice,
                                                         },
                                                         startAdornment: (
@@ -948,15 +944,15 @@ export default class AccountProfile extends Component<
                     <DialogTitle>充值钱包</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={3}>
-                            您当前的钱包余额为
+                            您当前的钱包余额为￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {this.state.user?.balance}
                             </Box>
-                            ￥。单笔最高充值金额为
+                            。单笔最高充值金额为￥
                             <Box component="span" fontWeight="fontWeightBold">
                                 {1000}
                             </Box>
-                            ￥。
+                            。
                             <br />
                             请输入您的充值金额：
                         </DialogContentText>

@@ -18,11 +18,13 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { validate_required } from "./Login";
 import userService from "../services/userService";
 import UserContext from "../AuthContext";
-import { UserRole } from "../services/definations";
+import { ConfigInfo, UserRole } from "../services/definations";
+import { renderAnswerHelp } from "./Help";
+import { styled } from "@mui/material/styles";
+import { IconButton } from "@mui/material";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
-    avatar: string | undefined;
     nickname: string | undefined;
     username: string | undefined;
     role: UserRole | undefined;
@@ -31,21 +33,27 @@ interface AccountBriefProfileProps {
         arg2: string
     ) => void;
     redirectHandler: (arg1: string) => void;
-    minPrice: number;
-    maxPrice: number;
+    config: ConfigInfo;
     fetchUserInfo: () => void;
 }
 
 interface AccountBriefProfileState {
     openApplyDialog: boolean;
     openPriceDialog: boolean;
+    openTipsDialog: boolean;
     description: string;
     profession: string;
     price: number;
+    avatarReady: boolean;
     error_msg_description: string;
     error_msg_price: string;
     error_msg_profession: string;
 }
+
+// an Input without display
+const Input = styled("input")({
+    display: "none",
+});
 
 export default class AccountBriefProfile extends Component<
     AccountBriefProfileProps,
@@ -57,14 +65,18 @@ export default class AccountBriefProfile extends Component<
         this.state = {
             openApplyDialog: false,
             openPriceDialog: false,
+            openTipsDialog: false,
             description: "",
             profession: "",
             price: 50,
+            avatarReady: true,
             error_msg_description: "",
             error_msg_price: "",
             error_msg_profession: "",
         };
         this.handleCloseApplyDialog = this.handleCloseApplyDialog.bind(this);
+        this.handleOpenTipsDialog = this.handleOpenTipsDialog.bind(this);
+        this.handleCloseTipsDialog = this.handleCloseTipsDialog.bind(this);
         this.handleOpenApplyDialog = this.handleOpenApplyDialog.bind(this);
         this.handleClosePriceDialog = this.handleClosePriceDialog.bind(this);
         this.handleOpenPriceDialog = this.handleOpenPriceDialog.bind(this);
@@ -72,6 +84,7 @@ export default class AccountBriefProfile extends Component<
         this.handlePriceChange = this.handlePriceChange.bind(this);
         this.handleSubmitApply = this.handleSubmitApply.bind(this);
         this.handleSubmitPrice = this.handleSubmitPrice.bind(this);
+        this.handleSubmitAvatar = this.handleSubmitAvatar.bind(this);
     }
 
     componentDidMount() {
@@ -99,6 +112,14 @@ export default class AccountBriefProfile extends Component<
         this.setState({ openPriceDialog: true });
     }
 
+    handleOpenTipsDialog() {
+        this.setState({ openTipsDialog: true });
+    }
+
+    handleCloseTipsDialog() {
+        this.setState({ openTipsDialog: false });
+    }
+
     handleChange(e: any) {
         let error = validate_required(e.target.value);
         const nextState = {};
@@ -121,8 +142,10 @@ export default class AccountBriefProfile extends Component<
             return false;
         }
         this.setState({ error_msg_price: "" });
-        if (value < this.props.minPrice) value = this.props.minPrice;
-        else if (value > this.props.maxPrice) value = this.props.maxPrice;
+        if (value < this.props.config.minPrice)
+            value = this.props.config.minPrice;
+        else if (value > this.props.config.maxPrice)
+            value = this.props.config.maxPrice;
         this.setState({
             price: value,
         });
@@ -253,6 +276,24 @@ export default class AccountBriefProfile extends Component<
         }
     }
 
+    handleSubmitAvatar(e: any) {
+        if (typeof this.props.id !== "undefined") {
+            this.setState({ avatarReady: false });
+            userService.modifyUserAvatar(this.props.id, e.target.files[0]).then(
+                () => {
+                    // upload success
+                    this.props.alertHandler("success", "上传成功");
+                    // ready
+                    this.setState({ avatarReady: true });
+                },
+                (error) => {
+                    // show the error message
+                    this.props.alertHandler("error", "网络错误");
+                }
+            );
+        }
+    }
+
     render() {
         return (
             <>
@@ -265,13 +306,36 @@ export default class AccountBriefProfile extends Component<
                                 flexDirection: "column",
                             }}
                         >
-                            <Avatar
-                                src={this.props.avatar}
-                                sx={{
-                                    height: 100,
-                                    width: 100,
-                                }}
-                            />
+                            <label htmlFor="avatar-button-file">
+                                <Input
+                                    accept="image/*"
+                                    id="avatar-button-file"
+                                    type="file"
+                                    name="image"
+                                    multiple={false}
+                                    onChange={this.handleSubmitAvatar}
+                                />
+                                <IconButton
+                                    aria-label="upload avatar"
+                                    component="span"
+                                >
+                                    <Avatar
+                                        src={
+                                            this.props.id &&
+                                            this.state.avatarReady
+                                                ? userService.getAvatarUrl(
+                                                      this.props.id
+                                                  )
+                                                : ""
+                                        }
+                                        alt={this.props.username}
+                                        sx={{
+                                            height: 100,
+                                            width: 100,
+                                        }}
+                                    />
+                                </IconButton>
+                            </label>
                             <Box mt={2}>
                                 <Typography
                                     color="textPrimary"
@@ -302,7 +366,7 @@ export default class AccountBriefProfile extends Component<
                                 color="primary"
                                 fullWidth
                                 variant="text"
-                                onClick={this.handleOpenApplyDialog}
+                                onClick={this.handleOpenTipsDialog}
                             >
                                 回答者申请
                             </Button>
@@ -318,6 +382,39 @@ export default class AccountBriefProfile extends Component<
                         )}
                     </CardActions>
                 </Card>
+                <Dialog
+                    fullWidth
+                    open={this.state.openTipsDialog}
+                    onClose={this.handleCloseTipsDialog}
+                >
+                    <DialogTitle>回答者须知</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText mb={1}>
+                            在申请成为回答者前，请首先认真阅读以下
+                            <Box component="span" fontWeight="fontWeightBold">
+                                回答者须知
+                            </Box>
+                            。 您随后可以于侧栏的“平台须知”再次查看该内容
+                        </DialogContentText>
+                        {renderAnswerHelp(this.props.config)}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={this.handleCloseTipsDialog}
+                            color="error"
+                        >
+                            再考虑一下
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                this.handleCloseTipsDialog();
+                                this.handleOpenApplyDialog();
+                            }}
+                        >
+                            阅读完了
+                        </Button>
+                    </DialogActions>
+                </Dialog>
                 <Dialog
                     fullWidth
                     open={this.state.openApplyDialog}
@@ -372,15 +469,15 @@ export default class AccountBriefProfile extends Component<
                             inputProps={{ maxLength: 50 }}
                         />
                         <DialogContentText mt={3} mb={3}>
-                            在当前机制下， 回答定价最高不能超过
+                            在当前机制下， 回答定价最高不能超过￥
                             <Box component="span" fontWeight="fontWeightBold">
-                                {this.props.maxPrice}
+                                {this.props.config.maxPrice}
                             </Box>
-                            ￥/次， 最低不能低于
+                            /次， 最低不能低于￥
                             <Box component="span" fontWeight="fontWeightBold">
-                                {this.props.minPrice}
+                                {this.props.config.minPrice}
                             </Box>
-                            ￥/次。
+                            /次。
                         </DialogContentText>
                         <TextField
                             fullWidth
@@ -390,8 +487,8 @@ export default class AccountBriefProfile extends Component<
                             type="number"
                             InputProps={{
                                 inputProps: {
-                                    min: this.props.minPrice,
-                                    max: this.props.maxPrice,
+                                    min: this.props.config.minPrice,
+                                    max: this.props.config.maxPrice,
                                 },
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -424,15 +521,15 @@ export default class AccountBriefProfile extends Component<
                     <DialogContent>
                         <DialogContentText mb={3}>
                             您可以在任何时候修改您的回答定价。 在当前机制下，
-                            回答定价最高不能超过
+                            回答定价最高不能超过￥
                             <Box component="span" fontWeight="fontWeightBold">
-                                {this.props.maxPrice}
+                                {this.props.config.maxPrice}
                             </Box>
-                            ￥/次， 最低不能低于
+                            /次， 最低不能低于￥
                             <Box component="span" fontWeight="fontWeightBold">
-                                {this.props.minPrice}
+                                {this.props.config.minPrice}
                             </Box>
-                            ￥/次。
+                            /次。
                         </DialogContentText>
                         <TextField
                             fullWidth
@@ -442,8 +539,8 @@ export default class AccountBriefProfile extends Component<
                             type="number"
                             InputProps={{
                                 inputProps: {
-                                    min: this.props.minPrice,
-                                    max: this.props.maxPrice,
+                                    min: this.props.config.minPrice,
+                                    max: this.props.config.maxPrice,
                                 },
                                 startAdornment: (
                                     <InputAdornment position="start">

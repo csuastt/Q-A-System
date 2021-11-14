@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
+import userService from "../services/userService";
 
 interface ReviewListProps {
     filterFinished?: boolean;
@@ -29,6 +30,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);
+    const [longPending, setLongPending] = useState(false);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setOrderList(list.data);
@@ -40,6 +42,9 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         orderService
             .getOrderListByAdmin(OrderState.CREATED, currentPage, itemPrePage)
             .then(acceptOrderList);
+        setTimeout(() => {
+            setLongPending(true);
+        }, 500);
     }, [currentPage, itemPrePage]);
 
     const onPageChanged = (newPage: number) => {
@@ -96,7 +101,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
-                                        {order.question}
+                                        {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ flexGrow: 1 }} />
                                     {/*<OrderStateChip state={order.state} />*/}
@@ -109,7 +114,9 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                     mt={1}
                                 >
                                     <Avatar
-                                        src={order.answerer.avatar}
+                                        src={userService.getAvatarUrl(
+                                            order.answerer.id
+                                        )}
                                         alt={order.answerer.username}
                                         sx={{ width: 30, height: 30 }}
                                     />
@@ -171,21 +178,23 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
             )}
         </>
     );
-    if (orderList == null) {
+    if (longPending && orderList == null) {
         return (
             <Stack spacing={2} mt={4}>
                 {renderCardPlaceholder()}
             </Stack>
         );
     }
-    if (totalCount === 0) {
+    if (orderList && totalCount === 0) {
         return (
             <Typography variant="h3" textAlign="center" sx={{ mt: 3 }}>
                 没有订单
             </Typography>
         );
     }
-    return <Stack spacing={2}>{renderOrderList()}</Stack>;
+    return (
+        <Box>{orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}</Box>
+    );
 };
 
 export default ReviewList;
