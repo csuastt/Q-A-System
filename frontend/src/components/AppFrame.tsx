@@ -196,7 +196,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                             display: { xs: "none", sm: "block" },
                         }}
                     >
-                        {props.isAdmin ? "付费问答管理员系统" : "付费问答系统"}
+                        {props.isAdmin ? "问客管理员系统" : "问客"}
                     </Typography>
                 </Toolbar>
             </AppBar>

@@ -94,6 +94,7 @@ export enum OrderState {
     ANSWER_TIMEOUT = "ANSWER_TIMEOUT",
     CHAT_ENDED = "CHAT_ENDED",
     FULFILLED = "FULFILLED",
+    CANCELLED = "CANCELLED",
 }
 
 export const OrderStateMsg: Map<OrderState, string> = new Map([
@@ -141,6 +142,7 @@ export enum CreationResultType {
 }
 
 export interface CreationResult {
+    id: number;
     type: CreationResultType;
     state: string;
     created_id: number;
@@ -208,4 +210,15 @@ export interface IMMessage {
     senderId: number;
     sendTime: string;
     msgBody: string;
+}
+
+export interface AttachmentInfo {
+    uuid: number;
+    filename: string;
+    size: number;
+}
+
+export interface FileInfo {
+    file: File;
+    url: string;
 }
