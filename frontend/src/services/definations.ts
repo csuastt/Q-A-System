@@ -217,3 +217,8 @@ export interface AttachmentInfo {
     filename: string;
     size: number;
 }
+
+export interface FileInfo {
+    file: File;
+    url: string;
+}

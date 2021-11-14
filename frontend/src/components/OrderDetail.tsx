@@ -38,13 +38,11 @@ import {
     Box,
     Dialog,
     DialogTitle,
-    Link,
     List,
     ListItem,
     ListItemAvatar,
     ListItemText,
 } from "@mui/material";
-import { blue } from "@mui/material/colors";
 import FolderIcon from "@mui/icons-material/Folder";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
@@ -455,16 +453,14 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             key={attachmentInfo.uuid}
                         >
                             <ListItemAvatar>
-                                <Avatar
-                                    sx={{
-                                        bgcolor: blue[100],
-                                        color: blue[600],
-                                    }}
-                                >
+                                <Avatar>
                                     <FolderIcon />
                                 </Avatar>
                             </ListItemAvatar>
-                            <ListItemText primary={attachmentInfo.filename} />
+                            <ListItemText
+                                primary={attachmentInfo.filename}
+                                secondary={formatSize(attachmentInfo.size, 2)}
+                            />
                         </ListItem>
                     ))}
                 </List>
@@ -474,3 +470,18 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
 };
 
 export default OrderDetail;
+
+// size: the size of the file, unit: Byte
+// pointLength: decimal places
+export function formatSize(size: number, pointLength: number | undefined) {
+    let unit;
+    let units = ["B", "K", "M", "G", "TB"];
+    while ((unit = units.shift()) && size > 1024) {
+        size = size / 1024;
+    }
+    return (
+        (unit === "B"
+            ? size.toString()
+            : size.toFixed(pointLength === undefined ? 2 : pointLength)) + unit
+    );
+}
