@@ -1,14 +1,15 @@
 package com.example.qa.test;
 
+import com.example.qa.errorhandling.ApiException;
 import com.example.qa.order.model.Attachment;
+import com.example.qa.order.storage.StorageException;
+import com.example.qa.order.storage.StorageFileNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -50,5 +51,19 @@ class UpLoadBeanTest {
         assertEquals(filename, attachment1.getFilename());
         assertEquals(size, attachment1.getSize());
         assertEquals(uploadTime, attachment1.getUploadTime());
+    }
+
+    @Test
+    void testForException(){
+        StorageException exception = new StorageException("This is an exception");
+        Exception exception1 = new Exception();
+        StorageException exception2 = new StorageException("This is another exception", exception1);
+    }
+
+    @Test
+    void testForNotFoundException(){
+        StorageFileNotFoundException exception = new StorageFileNotFoundException("This is an exception");
+        Exception exception1 = new Exception();
+        StorageFileNotFoundException exception2 = new StorageFileNotFoundException("This is another exception", exception1);
     }
 }
