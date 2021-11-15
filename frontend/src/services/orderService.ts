@@ -106,8 +106,7 @@ class OrderService {
 
     uploadAttachment(orderId: number, file: File): Promise<any> {
         const formData = new FormData();
-        formData.append("multipartFile", file);
-        formData.append("name", file.name);
+        formData.append("file", file);
         return axios.post(`/orders/${orderId}/attachments`, formData, {
             headers: {
                 "content-type": "multipart/form-data",
@@ -116,7 +115,9 @@ class OrderService {
     }
 
     getAttachments(orderId: number): Promise<Array<AttachmentInfo>> {
-        return axios.get(`/orders/${orderId}/attachments`);
+        return axios
+            .get(`/orders/${orderId}/attachments`)
+            .then((response) => response.data);
     }
 
     getAttachmentUrl(orderId: number, uuid: number) {

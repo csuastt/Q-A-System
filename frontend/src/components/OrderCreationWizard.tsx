@@ -455,7 +455,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     direction="row"
                     alignItems={"center"}
                 >
-                    <Typography>上传附件:</Typography>
+                    <Typography>上传附件(小于100M):</Typography>
                     <label htmlFor="contained-button-file">
                         <Input
                             accept="*"
