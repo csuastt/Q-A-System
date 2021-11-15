@@ -47,9 +47,9 @@ public class OrderResponse {
         this.expireTime = order.getExpireTime();
         this.endReason = order.getEndReason();
         this.questionTitle = order.getQuestionTitle();
-        this.questionDescription = order.getQuestionDescription();
         this.price = order.getPrice();
         if (level >= 1) {
+            this.questionDescription = order.getQuestionDescription();
             this.answer = order.getAnswer();
         }
         if (level >= 2) {

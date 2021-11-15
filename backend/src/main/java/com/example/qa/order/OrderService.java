@@ -66,7 +66,6 @@ public class OrderService {
     public void clearExpirations() {
         List<Order> orderList = orderRepository.findAllByExpireTimeBefore(ZonedDateTime.now());
         if (orderList.isEmpty()) {
-            log.info("No expired orders");
             return;
         }
         log.info("Clearing expired orders...");
