@@ -115,11 +115,11 @@ public class OrderController {
     @PostMapping("/{id}/attachments")
     @ResponseBody
     public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile){
-//        authLoginOrThrow();
+        authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
-//        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
-//            throw new ApiException(403, ApiException.NO_PERMISSION);
-//        }
+        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
         Attachment attachment = new Attachment(multipartFile);
         order.getAttachmentList().add(attachment);
         orderService.save(order);
