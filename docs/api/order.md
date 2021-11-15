@@ -4,20 +4,21 @@
 
 ### Order
 
-| 属性          | 类型           | JSON                           | 说明                                    |
-| ------------- | -------------- | ------------------------------ | --------------------------------------- |
-| id            | long           |                                |                                         |
-| deleted       | boolean        |                                | 删除标记（仅管理员）                    |
-| asker         | User           | Get: User, Set: number         |                                         |
-| answerer      | User           | Get: User, Set: number         |                                         |
-| state         | OrderState     | string                         |                                         |
-| finished      | boolean        |                                | 订单结束后设为 true                     |
-| createTime    | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`) | 创建时间                                |
-| expireTime    | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`) | 超时时间                                |
-| endReason     | OrderEndReason | string                         |                                         |
-| question      | string         |                                | 问题（最长 100 字符，后续交给系统设置） |
-| answerSummary | string         |                                | 请求详细信息才会返回                    |
-| price         | int            |                                |                                         |
+| 属性                | 类型           | JSON                                       | 说明                 |
+| ------------------- | -------------- | ------------------------------------------ | -------------------- |
+| id                  | long           |                                            |                      |
+| deleted             | boolean        |                                            | 删除标记（仅管理员） |
+| asker               | User           | Get: User, Set: number                     |                      |
+| answerer            | User           | Get: User, Set: number                     |                      |
+| state               | OrderState     | string                                     |                      |
+| finished            | boolean        |                                            | 订单结束后设为 true  |
+| createTime          | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)             | 创建时间             |
+| expireTime          | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)             | 超时时间             |
+| endReason           | OrderEndReason | string                                     |                      |
+| questionTitle       | string         | Get: questionTitle, Set: title             | 问题标题             |
+| questionDescription | string         | Get: questionDescription, Set: description |                      |
+| answer              | string         |                                            | 请求详细信息才会返回 |
+| price               | int            |                                            |                      |
 
 ### OrderState (enum)
 
@@ -93,8 +94,9 @@ DELETE /api/orders/{id}
 返回值：
 
 - `200` OK
-- `401` 未登录（后续实现）
+- `401` 未登录
 - `403` 错误
+  
   | message 属性      | 说明       |
   | ----------------- | ---------- |
   | `NO_PERMISSION`   | 不是管理员 |
@@ -112,7 +114,7 @@ GET /api/orders/{id}
 返回值：
 
 - `200` OK，内容为 Order
-- `401` 未登录（后续实现）
+- `401` 未登录
 - `403` 错误（没权限）
 - `404` 订单不存在或已删除
 
@@ -136,7 +138,7 @@ PUT /api/orders/{id}
 
 - `400` 格式错误
 
-- `401` 未登录（后续实现）
+- `401` 未登录
 
 - `403` 错误（仅限管理员，无权限）
 
@@ -156,7 +158,7 @@ GET /api/orders
 | page          | int  | 页数（从 1 开始），可选，默认为 1          |
 | sortDirection | enum | { ASC, DESC } 默认用户 DESC，管理员 ASC    |
 
-参数：（用户）（时间降序）
+参数：（用户）
 
 ```
 ?asker={自己的id}
@@ -176,7 +178,7 @@ GET /api/orders
 
 获取已完成/进行中的订单。
 
-参数：（管理员）（时间升序）
+参数：（管理员）
 
 ```
 (无参数)
