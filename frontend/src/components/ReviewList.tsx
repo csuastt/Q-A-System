@@ -1,4 +1,5 @@
 import Button from "@mui/material/Button";
+import CardActionArea from "@mui/material/CardActionArea";
 import React, { useEffect, useState } from "react";
 import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
 import { OrderInfo, OrderState, PagedList } from "../services/definations";
@@ -12,6 +13,7 @@ import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 import userService from "../services/userService";
+import { Link as RouterLink } from "react-router-dom";
 
 interface ReviewListProps {
     filterFinished?: boolean;
@@ -74,97 +76,106 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         <>
             {orderList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
-                    <CardContent>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                p: 1,
-                                m: 1,
-                                flexDirection: "row",
-                            }}
-                        >
+                    <CardActionArea
+                        component={RouterLink}
+                        to={`/admins/orders/${order.id}`}
+                    >
+                        <CardContent>
                             <Box
                                 sx={{
                                     display: "flex",
-                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    p: 1,
+                                    m: 1,
+                                    flexDirection: "row",
                                 }}
                             >
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        flexDirection: "row",
+                                        flexDirection: "column",
                                     }}
                                 >
-                                    <Typography
-                                        variant="h6"
-                                        noWrap
-                                        style={{ fontWeight: 600 }}
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                        }}
                                     >
-                                        {order.questionTitle}
-                                    </Typography>
-                                    <Box sx={{ flexGrow: 1 }} />
-                                    {/*<OrderStateChip state={order.state} />*/}
-                                </Box>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                    }}
-                                    mt={1}
-                                >
-                                    <Avatar
-                                        src={userService.getAvatarUrl(
-                                            order.answerer.id
-                                        )}
-                                        alt={order.answerer.username}
-                                        sx={{ width: 30, height: 30 }}
-                                    />
-                                    <Typography
-                                        variant="subtitle1"
-                                        sx={{ ml: 1 }}
+                                        <Typography
+                                            variant="h6"
+                                            noWrap
+                                            style={{ fontWeight: 600 }}
+                                        >
+                                            {order.questionTitle}
+                                        </Typography>
+                                        <Box sx={{ flexGrow: 1 }} />
+                                        {/*<OrderStateChip state={order.state} />*/}
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                        }}
+                                        mt={1}
                                     >
-                                        {order.answerer.username}
+                                        <Avatar
+                                            src={userService.getAvatarUrl(
+                                                order.answerer.id
+                                            )}
+                                            alt={order.answerer.username}
+                                            sx={{ width: 30, height: 30 }}
+                                        />
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{ ml: 1 }}
+                                        >
+                                            {order.answerer.username}
+                                        </Typography>
+                                    </Box>
+                                    <Typography
+                                        variant="caption"
+                                        mb={-1}
+                                        mt={1}
+                                    >
+                                        创建时间：
+                                        {formatTimestamp(order.createTime)}
                                     </Typography>
                                 </Box>
-                                <Typography variant="caption" mb={-1} mt={1}>
-                                    创建时间：
-                                    {formatTimestamp(order.createTime)}
-                                </Typography>
-                            </Box>
 
-                            <Stack direction="row" p={3} spacing={2}>
-                                <Button
-                                    size="small"
-                                    color="error"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        orderService.reviewOrder(
-                                            order.id,
-                                            false
-                                        );
-                                        window.location.reload();
-                                    }}
-                                >
-                                    驳回
-                                </Button>
-                                <Button
-                                    size="small"
-                                    color="success"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        orderService.reviewOrder(
-                                            order.id,
-                                            true
-                                        );
-                                        window.location.reload();
-                                    }}
-                                >
-                                    通过
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </CardContent>
+                                <Stack direction="row" p={3} spacing={2}>
+                                    <Button
+                                        size="small"
+                                        color="error"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            orderService.reviewOrder(
+                                                order.id,
+                                                false
+                                            );
+                                            window.location.reload();
+                                        }}
+                                    >
+                                        驳回
+                                    </Button>
+                                    <Button
+                                        size="small"
+                                        color="success"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            orderService.reviewOrder(
+                                                order.id,
+                                                true
+                                            );
+                                            window.location.reload();
+                                        }}
+                                    >
+                                        通过
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        </CardContent>
+                    </CardActionArea>
                 </Card>
             ))}
             {maxPage > 1 && (
