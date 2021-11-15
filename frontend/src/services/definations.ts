@@ -1,6 +1,7 @@
 export enum UserRole {
     USER = "USER",
     ANSWERER = "ANSWERER",
+    ALL = "USER_AND_ANSWERER",
 }
 
 export enum UserGender {

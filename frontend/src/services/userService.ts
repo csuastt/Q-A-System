@@ -25,6 +25,19 @@ class UserService {
             })
             .then((response) => response.data);
     }
+    getAllUserList(
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<UserBasicInfo>> {
+        return axios
+            .get("/users", {
+                params: {
+                    page: page,
+                    pageSize: prePage,
+                },
+            })
+            .then((response) => response.data);
+    }
 
     getUsersByIdList(ids: Array<number>): Promise<UserInfoList> {
         return Promise.all(ids.map((id) => this.getUserInfo(id)));
