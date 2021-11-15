@@ -80,7 +80,14 @@ export default function App() {
             />,
         ],
         ["/notif", <NotificationList />],
-        ["/income", <IncomeStatistics userId={user?.id} briefMsg={false} />],
+        [
+            "/income",
+            <IncomeStatistics
+                userId={user?.id}
+                briefMsg={false}
+                isAdmin={false}
+            />,
+        ],
         ["/help", <Help />],
         ["/", <Welcome />],
     ];

@@ -504,7 +504,11 @@ export default function Welcome() {
                     <Grid container spacing={4} direction={"column"}>
                         {user && user.role === UserRole.ANSWERER && (
                             <Grid item>
-                                <IncomeStatistics briefMsg={true} user={user} />
+                                <IncomeStatistics
+                                    briefMsg={true}
+                                    user={user}
+                                    isAdmin={false}
+                                />
                             </Grid>
                         )}
                         <Grid item>{drawAnswererList()}</Grid>

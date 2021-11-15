@@ -13,6 +13,7 @@ import Link from "@mui/material/Link";
 const IncomeStatistics: React.FC<{
     userId?: number;
     user?: UserInfo;
+    isAdmin: boolean;
     briefMsg: boolean;
 }> = (props) => {
     const monthCount: number = props.briefMsg ? 6 : 12;

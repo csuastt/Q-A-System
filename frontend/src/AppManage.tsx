@@ -19,6 +19,7 @@ import ManagerList from "./components/ManagerList";
 import PathParamParser from "./PathParamParser";
 import OrderDetailForAdmin from "./components/OrderDetailForAdmin";
 import SystemSettings from "./components/SystemSettings";
+import IncomeStatistics from "./components/IncomeStatistics";
 
 const managerTheme: Theme = createTheme({
     palette: {
@@ -69,6 +70,11 @@ export default function AppManage() {
         ["/admins/logout", <Logout redirect={"/admins/"} isAdmin={true} />],
         ["/admins/create", <Create />],
         ["/admins/settings", <SystemSettings />],
+        [
+            "/admins/income",
+            <IncomeStatistics briefMsg={false} isAdmin={true} />,
+        ],
+
         [
             "/admins/change_password",
             <ChangePassword
