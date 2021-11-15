@@ -51,7 +51,7 @@ export default function AppManage() {
 
     const routes = [
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
-        ["/admins/users", <UserList userRole={UserRole.USER} />],
+        ["/admins/users", <UserList userRole={UserRole.ALL} />],
         ["/admins/managers", <ManagerList />],
         [
             "/admins/orders/:orderId",

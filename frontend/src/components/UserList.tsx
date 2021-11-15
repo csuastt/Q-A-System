@@ -28,17 +28,25 @@ const UserList: React.FC<{
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);
     useEffect(() => {
-        userService
-            .getUserList(
-                props.userRole === UserRole.ANSWERER,
-                currentPage,
-                itemPrePage
-            )
-            .then((list) => {
-                setUserList(list.data);
-                setMaxPage(list.totalPages);
-                setTotalCount(list.totalCount);
-            });
+        props.userRole === UserRole.ALL
+            ? userService
+                  .getAllUserList(currentPage, itemPrePage)
+                  .then((list) => {
+                      setUserList(list.data);
+                      setMaxPage(list.totalPages);
+                      setTotalCount(list.totalCount);
+                  })
+            : userService
+                  .getUserList(
+                      props.userRole === UserRole.ANSWERER,
+                      currentPage,
+                      itemPrePage
+                  )
+                  .then((list) => {
+                      setUserList(list.data);
+                      setMaxPage(list.totalPages);
+                      setTotalCount(list.totalCount);
+                  });
     }, [currentPage, itemPrePage, props.userRole]);
 
     const onPageChanged = (newPage: number) => {
