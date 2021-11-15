@@ -1,13 +1,9 @@
 package com.example.qa.order.storage;
 
-import com.example.qa.errorhandling.ApiException;
 import com.example.qa.order.OrderService;
-import com.example.qa.order.model.Attachment;
-import com.example.qa.order.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
