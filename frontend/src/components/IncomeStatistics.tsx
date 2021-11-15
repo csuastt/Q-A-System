@@ -9,6 +9,7 @@ import systemConfigService from "../services/systemConfigService";
 import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
+import configService from "../services/configService";
 
 const IncomeStatistics: React.FC<{
     userId?: number;
@@ -36,11 +37,28 @@ const IncomeStatistics: React.FC<{
     }, [monthCount]);
 
     useEffect(() => {
-        let userId = null;
-        if (props.userId) userId = props.userId;
-        else if (props.user) userId = props.user.id;
-        if (userId) {
-            userService.getUserIncome(userId).then((info) => {
+        if (props.isAdmin) {
+            let userId = null;
+            if (props.userId) userId = props.userId;
+            else if (props.user) userId = props.user.id;
+            if (userId) {
+                userService.getUserIncome(userId).then((info) => {
+                    let new_earningsList = new Array(12).fill(0);
+                    info.monthly.forEach((monthly) => {
+                        let index = labelsList.findIndex((label) => {
+                            return label === monthly.month;
+                        });
+                        new_earningsList[index] = monthly.earnings;
+                    });
+                    setEarningsList(new_earningsList);
+                });
+            }
+            if (!props.briefMsg)
+                systemConfigService.getSystemConfig().then((configInfo) => {
+                    setConfig(configInfo);
+                });
+        } else {
+            configService.getSystemEarnings().then((info) => {
                 let new_earningsList = new Array(12).fill(0);
                 info.monthly.forEach((monthly) => {
                     let index = labelsList.findIndex((label) => {
@@ -50,11 +68,12 @@ const IncomeStatistics: React.FC<{
                 });
                 setEarningsList(new_earningsList);
             });
+
+            if (!props.briefMsg)
+                configService.getSystemConfig().then((info) => {
+                    setConfig(info);
+                });
         }
-        if (!props.briefMsg)
-            systemConfigService.getSystemConfig().then((configInfo) => {
-                setConfig(configInfo);
-            });
     }, [labelsList, props.briefMsg, props.user, props.userId]);
 
     const fillType = props.briefMsg ? "solid" : "gradient";
