@@ -14,7 +14,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import SchoolIcon from "@mui/icons-material/School";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import managerService from "../services/managerService";
 import {
     CardHeader,
@@ -312,7 +312,7 @@ export default function HelloAdmin() {
                             {manager ? (
                                 <>
                                     <Typography align="left" variant="body2">
-                                        平台人数情况
+                                        平台规模情况
                                     </Typography>
                                 </>
                             ) : (
@@ -334,29 +334,123 @@ export default function HelloAdmin() {
 
                 <CardContent sx={{ paddingTop: 0 }}>
                     {manager ? (
-                        <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                            <ListItemIcon sx={{ minWidth: 30 }}>
-                                <AssignmentIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={
-                                    <Typography
-                                        color="textPrimary"
-                                        variant="body1"
-                                        gutterBottom
-                                    >
-                                        用户总人数：
-                                        <Box
-                                            component="span"
-                                            fontWeight="fontWeightBold"
-                                            fontSize={22}
+                        <List dense={true} sx={{ paddingBottom: 0 }}>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <GroupIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
                                         >
-                                            {/*{askCount}*/}
-                                        </Box>{" "}
-                                    </Typography>
-                                }
-                            />
-                        </ListItem>
+                                            用户总数：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                555
+                                            </Box>{" "}
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <SchoolIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            回答者总数：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                666
+                                            </Box>{" "}
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <HowToRegIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            管理员总数：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                777
+                                            </Box>{" "}
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <AssignmentIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            订单总数：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                888
+                                            </Box>{" "}
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+                                <ListItemIcon sx={{ minWidth: 30 }}>
+                                    <LibraryAddIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="body1"
+                                            gutterBottom
+                                        >
+                                            问答库收录数：
+                                            <Box
+                                                component="span"
+                                                fontWeight="fontWeightBold"
+                                                fontSize={22}
+                                            >
+                                                999
+                                            </Box>{" "}
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                        </List>
                     ) : (
                         <></>
                     )}
