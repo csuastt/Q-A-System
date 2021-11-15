@@ -17,6 +17,7 @@ import CardContent from "@mui/material/CardContent";
 import Markdown from "./Markdown";
 import Stack from "@mui/material/Stack";
 import { NotifHandlerResult, useNotification } from "./NotificationController";
+import userService from "../services/userService";
 
 interface IMMessageListProps {
     orderInfo: OrderInfo;
@@ -101,7 +102,7 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
                     avatar={
                         <Avatar
                             alt={userInfo.username}
-                            src={userInfo.avatar}
+                            src={userService.getAvatarUrl(userInfo.id)}
                             sx={{
                                 height: 40,
                                 width: 40,

@@ -245,7 +245,6 @@ export default class AccountProfile extends Component<
                 username: "tester123",
                 password: "thisIsPassword",
                 nickname: "Nickname",
-                avatar: "www.ava.com",
                 sign_up_timestamp: 112323333,
                 email: "sdassss@qq.com",
                 phone: "",
@@ -475,7 +474,6 @@ export default class AccountProfile extends Component<
                         <Grid item md={4} xs={8} mt={2}>
                             <AccountBriefProfile
                                 id={this.state.user?.id}
-                                avatar={this.state.user?.avatar}
                                 nickname={this.now_nickname}
                                 username={this.state.user?.username}
                                 role={this.state.user?.role}

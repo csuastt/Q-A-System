@@ -121,7 +121,8 @@ export default function Welcome() {
                         }}
                     >
                         <Avatar
-                            src={user ? user.avatar : ""}
+                            src={user ? userService.getAvatarUrl(user.id) : ""}
+                            alt={user ? user.username : ""}
                             sx={{
                                 height: 80,
                                 width: 80,

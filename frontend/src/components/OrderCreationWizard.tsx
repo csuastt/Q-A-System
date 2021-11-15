@@ -13,9 +13,9 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
-import { ConfigInfo, CreationResult } from "../services/definations";
+import { ConfigInfo, CreationResult, FileInfo } from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import UserContext from "../AuthContext";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -25,6 +25,19 @@ import AnswererDetailCard from "./AnswererDetailCard";
 import Divider from "@mui/material/Divider";
 import Markdown from "./Markdown";
 import systemConfigService from "../services/systemConfigService";
+import {
+    Dialog,
+    DialogTitle,
+    IconButton,
+    Link,
+    ListItemAvatar,
+    ListItemButton,
+    ListItemText,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Avatar from "@mui/material/Avatar";
+import FolderIcon from "@mui/icons-material/Folder";
+import { formatSize } from "./OrderDetail";
 
 function processInt(str?: string): number {
     if (str) {
@@ -43,6 +56,8 @@ const OrderCreationWizard: React.FC = (props) => {
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
     const [config, setConfig] = useState<ConfigInfo>();
+    const [files, setFiles] = useState<Array<FileInfo>>([]);
+    const [open, setOpen] = React.useState(false);
 
     const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
@@ -69,6 +84,40 @@ const OrderCreationWizard: React.FC = (props) => {
         checkInput(event.target.value);
     };
 
+    const handleFilesUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let fileList = [];
+        if (event.target.files !== null) {
+            for (let i = 0; i < event.target.files.length; i++) {
+                fileList.push({
+                    file: event.target.files[i],
+                    url: URL.createObjectURL(event.target.files[i]),
+                });
+            }
+        }
+        setFiles(fileList);
+    };
+
+    const handleFilesClear = () => {
+        setFiles([]);
+    };
+
+    const handleFileDelete = (name: string) => {
+        let curFiles = files;
+        curFiles = curFiles.filter(function (file) {
+            return file.file.name !== name;
+        });
+        if (!curFiles.length) handleClose();
+        setFiles(curFiles);
+    };
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const handleQuestionDescriptionChange = (newValue: string) =>
         setQuestionDescription(newValue);
 
@@ -93,6 +142,7 @@ const OrderCreationWizard: React.FC = (props) => {
         if (user && user.id === answerer) {
             // answering yourself is not allowed
             setResult({
+                id: -1,
                 type: 1,
                 state: "NULL",
                 created_id: -1,
@@ -106,7 +156,30 @@ const OrderCreationWizard: React.FC = (props) => {
                     questionTitle,
                     questionDescription
                 )
-                .then((res) => setResult(res));
+                .then(
+                    (res) => {
+                        setResult(res);
+                        // upload attachments
+                        if (files !== null) {
+                            for (let i = 0; i < files.length; i++) {
+                                questionService
+                                    .uploadAttachment(res.id, files[i].file)
+                                    .then((r) => {
+                                        console.log(r);
+                                    });
+                            }
+                        }
+                    },
+                    (error) => {
+                        setResult({
+                            id: -1,
+                            type: 1,
+                            state: "NULL",
+                            created_id: -1,
+                            message: error.response.data.message,
+                        });
+                    }
+                );
         }
     };
 
@@ -357,6 +430,11 @@ const OrderCreationWizard: React.FC = (props) => {
         );
     };
 
+    // an Input without display
+    const Input = styled("input")({
+        display: "none",
+    });
+
     // render 2nd step
     const renderSecondStep = () => {
         return (
@@ -371,7 +449,42 @@ const OrderCreationWizard: React.FC = (props) => {
                     fullWidth
                     inputProps={{ maxLength: 100 }}
                 />
-                <Divider sx={{ mt: 3, mb: 1 }}>问题描述</Divider>
+                <Stack
+                    sx={{ mt: 2, mb: 2 }}
+                    spacing={2}
+                    direction="row"
+                    alignItems={"center"}
+                >
+                    <Typography>上传附件(小于100M):</Typography>
+                    <label htmlFor="contained-button-file">
+                        <Input
+                            accept="*"
+                            id="contained-button-file"
+                            type="file"
+                            name="attachments"
+                            multiple={true}
+                            onChange={handleFilesUpload}
+                        />
+                        <Link component="span">添加</Link>
+                    </label>
+                    <Link
+                        component="button"
+                        variant="body1"
+                        color={"error"}
+                        onClick={handleFilesClear}
+                    >
+                        清空
+                    </Link>
+                    {files.length > 0 && (
+                        <Link
+                            component="button"
+                            variant="body1"
+                            onClick={handleOpen}
+                        >
+                            查看
+                        </Link>
+                    )}
+                </Stack>
                 <Markdown
                     value={questionDescription}
                     onChange={handleQuestionDescriptionChange}
@@ -421,6 +534,49 @@ const OrderCreationWizard: React.FC = (props) => {
                         </>
                     )}
                 </Stack>
+                <Dialog onClose={handleClose} open={open}>
+                    <DialogTitle>附件列表</DialogTitle>
+                    <List sx={{ pt: 0 }}>
+                        {files.map((fileInfo) => (
+                            <ListItem
+                                secondaryAction={
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="delete"
+                                        onClick={() => {
+                                            handleFileDelete(
+                                                fileInfo.file.name
+                                            );
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                }
+                            >
+                                <ListItemButton
+                                    role={undefined}
+                                    dense
+                                    component="a"
+                                    href={fileInfo.url}
+                                    key={fileInfo.url}
+                                >
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <FolderIcon />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={fileInfo.file.name}
+                                        secondary={formatSize(
+                                            fileInfo.file.size,
+                                            2
+                                        )}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Dialog>
             </>
         );
     };

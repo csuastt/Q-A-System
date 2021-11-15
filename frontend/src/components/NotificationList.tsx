@@ -32,6 +32,8 @@ import { ToggleButton } from "@mui/material";
 import Button from "@mui/material/Button";
 import Pagination from "./Pagination";
 import Typography from "@mui/material/Typography";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import Box from "@mui/material/Box";
 
 const NotificationList: React.FC = (props) => {
     const { user } = useContext(AuthContext);
@@ -159,7 +161,7 @@ const NotificationList: React.FC = (props) => {
 
     return (
         <>
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={3} mt={3}>
                 <ToggleButtonGroup
                     value={filterUnread}
                     exclusive
@@ -191,9 +193,12 @@ const NotificationList: React.FC = (props) => {
             {loading ? (
                 <List>{renderSkeletonItem()}</List>
             ) : notifList?.totalCount === 0 ? (
-                <Typography variant="h5" sx={{ textAlign: "center", mt: 2 }}>
-                    {filterUnread ? "暂无未读通知" : "暂无通知"}
-                </Typography>
+                <Box textAlign={"center"} mt={6}>
+                    <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
+                    <Typography variant={"h5"} mt={1} mb={4}>
+                        {filterUnread ? "您没有新的未读通知" : "您没有新的通知"}
+                    </Typography>
+                </Box>
             ) : (
                 <List>{renderNotifList()}</List>
             )}

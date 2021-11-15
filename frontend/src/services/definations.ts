@@ -35,7 +35,6 @@ export interface UserBasicInfo {
     id: number;
     username: string;
     nickname: string;
-    avatar: string;
     description: string;
     price: number;
     role: UserRole;
@@ -58,7 +57,6 @@ export interface UserInfo {
     id: number;
     username: string;
     nickname: string;
-    avatar: string;
     email: string;
     phone: string;
     price: number;
@@ -73,7 +71,6 @@ export interface UserFullyInfo {
     username: string;
     password: string;
     nickname: string;
-    avatar: string;
     sign_up_timestamp: number;
     email: string;
     phone: string;
@@ -97,6 +94,7 @@ export enum OrderState {
     ANSWER_TIMEOUT = "ANSWER_TIMEOUT",
     CHAT_ENDED = "CHAT_ENDED",
     FULFILLED = "FULFILLED",
+    CANCELLED = "CANCELLED",
 }
 
 export const OrderStateMsg: Map<OrderState, string> = new Map([
@@ -144,6 +142,7 @@ export enum CreationResultType {
 }
 
 export interface CreationResult {
+    id: number;
     type: CreationResultType;
     state: string;
     created_id: number;
@@ -211,4 +210,15 @@ export interface IMMessage {
     senderId: number;
     sendTime: string;
     msgBody: string;
+}
+
+export interface AttachmentInfo {
+    uuid: number;
+    filename: string;
+    size: number;
+}
+
+export interface FileInfo {
+    file: File;
+    url: string;
 }

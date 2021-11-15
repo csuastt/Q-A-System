@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+    AttachmentInfo,
     CreationResult,
     OrderInfo,
     OrderState,
@@ -101,6 +102,28 @@ class OrderService {
 
     endOrder(orderId: number): Promise<any> {
         return axios.post(`/orders/${orderId}/end`);
+    }
+
+    uploadAttachment(orderId: number, file: File): Promise<any> {
+        const formData = new FormData();
+        formData.append("file", file);
+        return axios.post(`/orders/${orderId}/attachments`, formData, {
+            headers: {
+                "content-type": "multipart/form-data",
+            },
+        });
+    }
+
+    getAttachments(orderId: number): Promise<Array<AttachmentInfo>> {
+        return axios
+            .get(`/orders/${orderId}/attachments`)
+            .then((response) => response.data);
+    }
+
+    getAttachmentUrl(orderId: number, uuid: number) {
+        return (
+            axios.defaults.baseURL + `/orders/${orderId}/attachments/${uuid}`
+        );
     }
 }
 
