@@ -6,17 +6,31 @@ import CardContent from "@mui/material/CardContent";
 import LoginIcon from "@mui/icons-material/Login";
 import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
 import AuthContext from "../AuthContext";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import GroupIcon from "@mui/icons-material/Group";
 import SchoolIcon from "@mui/icons-material/School";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import managerService from "../services/managerService";
 
 export default function HelloAdmin() {
     const theme = useTheme();
     const { manager } = useContext(AuthContext);
+    //todo
+    // const [askCount, setAskCount] = useState<number>(0);
+    // const [answerCount, setAnswerCount] = useState<number>(0);
+
+    useEffect(() => {
+        if (manager) {
+            managerService.getManagerStats(manager.id).then((info) => {
+                //todo
+                // setAskCount(info.askCount);
+                // setAnswerCount(info.answerCount);
+            });
+        }
+    }, [manager]);
 
     const ButtonCardWrapper: React.FC<{
         to: string;
@@ -27,11 +41,11 @@ export default function HelloAdmin() {
         <Card
             sx={{
                 display: "flex",
-                margin: theme.spacing(2),
             }}
+            style={{ border: "none", boxShadow: "none" }}
         >
             <CardActionArea component={RouterLink} to={props.to}>
-                <CardContent>
+                <CardContent sx={{ padding: 1 }}>
                     <Box sx={{ display: "flex", flexDirection: "row" }}>
                         <props.Icon
                             sx={{
@@ -39,7 +53,11 @@ export default function HelloAdmin() {
                             }}
                         />
                         <Box sx={{ flexDirection: "column" }}>
-                            <Typography component="div" variant="h5">
+                            <Typography
+                                component="div"
+                                variant="body1"
+                                fontWeight={600}
+                            >
                                 {props.title1}
                             </Typography>
                             <Typography
