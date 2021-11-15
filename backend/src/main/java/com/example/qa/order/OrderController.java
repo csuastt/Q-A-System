@@ -104,16 +104,16 @@ public class OrderController {
 
     @GetMapping("/{id}/attachments/{uuid}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid){
+    public ResponseEntity<Resource> serveFile(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid) {
         Resource file = storageService.loadAsResource(uuid);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                                        "attachment; filename=\"" + storageService.getNameByUUID(uuid) + "\"").body(file);
+                "attachment; filename=\"" + storageService.getNameByUUID(uuid) + "\"").body(file);
     }
 
 
     @PostMapping("/{id}/attachments")
     @ResponseBody
-    public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile){
+    public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile) {
         authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
         if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
@@ -244,6 +244,7 @@ public class OrderController {
             @RequestParam(required = false) Sort.Direction sortDirection
     ) {
         authLoginOrThrow();
+        long startTime = System.currentTimeMillis();
         boolean isAdmin = authIsAdmin();
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
@@ -270,7 +271,9 @@ public class OrderController {
                 throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
-        return new OrderListResponse(result, authIsAdmin() ? 2 : 0);
+        OrderListResponse response = new OrderListResponse(result, authIsAdmin() ? 2 : 0);
+        response.setTimeMillis(System.currentTimeMillis() - startTime);
+        return response;
     }
 
     private Order getByIdOrThrow(long id, boolean allowDeleted) {
