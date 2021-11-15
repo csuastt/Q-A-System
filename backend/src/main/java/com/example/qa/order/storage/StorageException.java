@@ -1,7 +1,5 @@
 package com.example.qa.order.storage;
 
-import java.io.IOException;
-
 public class StorageException extends RuntimeException {
 
     public StorageException(String message){
