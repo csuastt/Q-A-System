@@ -6,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import LoginIcon from "@mui/icons-material/Login";
 import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
 import AuthContext from "../AuthContext";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
@@ -25,24 +25,16 @@ import {
     ListItemText,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-import userService from "../services/userService";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import { ManagerRole, UserRole } from "../services/definations";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
-import MoneyIcon from "@mui/icons-material/Money";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import Link from "@mui/material/Link";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import IncomeStatistics from "./IncomeStatistics";
-import AddCommentIcon from "@mui/icons-material/AddComment";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import RateReviewIcon from "@mui/icons-material/RateReview";
-import { AccountCircle } from "@mui/icons-material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import AnswererList from "./AnswererList";
 
 export default function HelloAdmin() {
     const theme = useTheme();
@@ -257,12 +249,6 @@ export default function HelloAdmin() {
                                 title2="查看所有用户"
                             />
                             <ButtonCardWrapper
-                                to="/admins/answerers"
-                                Icon={SchoolIcon}
-                                title1="回答者列表"
-                                title2="查看所有回答者"
-                            />
-                            <ButtonCardWrapper
                                 to="/admins/orders"
                                 Icon={LibraryBooksIcon}
                                 title1="订单列表"
@@ -275,6 +261,30 @@ export default function HelloAdmin() {
                                         Icon={FactCheckIcon}
                                         title1="审核列表"
                                         title2="查看待审核订单"
+                                    />
+                                </>
+                            ) : (
+                                <></>
+                            )}
+                            {manager.role === ManagerRole.SUPER_ADMIN ? (
+                                <>
+                                    <ButtonCardWrapper
+                                        to="/admins/managers"
+                                        Icon={HowToRegIcon}
+                                        title1="管理员列表"
+                                        title2="查看所有管理员"
+                                    />
+                                </>
+                            ) : (
+                                <></>
+                            )}
+                            {manager.role === ManagerRole.ADMIN ? (
+                                <>
+                                    <ButtonCardWrapper
+                                        to="/admins/answers"
+                                        Icon={SchoolIcon}
+                                        title1="回答者列表"
+                                        title2="查看所有回答者"
                                     />
                                 </>
                             ) : (
@@ -458,6 +468,49 @@ export default function HelloAdmin() {
             </Card>
         );
     };
+    const drawAnswererList = () => {
+        return (
+            <Card>
+                <CardHeader
+                    title={
+                        <>
+                            <Typography align="left" variant="h6">
+                                回答者列表
+                            </Typography>
+                        </>
+                    }
+                    subheader={
+                        <>
+                            <Typography align="left" variant="body2">
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/admins/answerers"
+                                >
+                                    点此查看完整列表
+                                </Link>
+                            </Typography>
+                        </>
+                    }
+                    sx={{ paddingBottom: 0 }}
+                />
+                <CardContent sx={{ paddingTop: 1 }}>
+                    {manager?.role === ManagerRole.SUPER_ADMIN ? (
+                        <AnswererList
+                            userRole={UserRole.ANSWERER}
+                            briefMsg={true}
+                            isSuperAdmin={true}
+                        />
+                    ) : (
+                        <AnswererList
+                            userRole={UserRole.ANSWERER}
+                            briefMsg={true}
+                        />
+                    )}
+                </CardContent>
+            </Card>
+        );
+    };
 
     return (
         <>
@@ -484,20 +537,19 @@ export default function HelloAdmin() {
                 </div>
             </Box>
             <Grid container spacing={4}>
-                {/*<Grid item md={8} xs={12} mt={2}>*/}
-                {/*    <Grid container spacing={4} direction={"column"}>*/}
-                {/*        {user && user.role === UserRole.ANSWERER && (*/}
-                {/*            <Grid item>*/}
-                {/*                <IncomeStatistics*/}
-                {/*                    briefMsg={true}*/}
-                {/*                    user={user}*/}
-                {/*                    isAdmin={false}*/}
-                {/*                />*/}
-                {/*            </Grid>*/}
-                {/*        )}*/}
-                {/*        <Grid item>{drawAnswererList()}</Grid>*/}
-                {/*    </Grid>*/}
-                {/*</Grid>*/}
+                <Grid item md={8} xs={12} mt={2}>
+                    <Grid container spacing={4} direction={"column"}>
+                        {manager && manager.role === ManagerRole.SUPER_ADMIN && (
+                            <Grid item>
+                                <IncomeStatistics
+                                    briefMsg={true}
+                                    isAdmin={true}
+                                />
+                            </Grid>
+                        )}
+                        <Grid item>{drawAnswererList()}</Grid>
+                    </Grid>
+                </Grid>
                 <Grid item md={4} xs={12} mt={2}>
                     <Grid container spacing={4} direction={"column"}>
                         <Grid item>{drawAboutMe()}</Grid>
