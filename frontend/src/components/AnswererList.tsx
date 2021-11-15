@@ -14,6 +14,7 @@ const AnswererList: React.FC<{
     selectModel?: boolean;
     briefMsg?: boolean;
     userRole: UserRole;
+    isSuperAdmin?: boolean;
 }> = (props) => {
     const query = useQuery();
     const [answerList, setAnswerList] = useState<Array<UserBasicInfo>>();
@@ -21,7 +22,7 @@ const AnswererList: React.FC<{
         parseIntWithDefault(query.get("page"), 1)
     );
     const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), 9)
+        parseIntWithDefault(query.get("prepage"), props.isSuperAdmin ? 5 : 9)
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);

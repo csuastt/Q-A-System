@@ -173,6 +173,12 @@ export interface StatsInfo {
     answerCount: number;
 }
 
+export interface ManagerStatsInfo {
+    //todo
+    // askCount: number;
+    // answerCount: number;
+}
+
 export interface ConfigInfo {
     minPrice: number;
     maxPrice: number;
