@@ -5,23 +5,30 @@ import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.order.exchange.*;
+import com.example.qa.order.model.Attachment;
 import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
+import com.example.qa.order.storage.StorageService;
 import com.example.qa.user.UserService;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.FieldValidator;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
 
@@ -31,11 +38,13 @@ public class OrderController {
     private final UserService userService;
     private final OrderService orderService;
     private final AdminService adminService;
+    private final StorageService storageService;
 
-    public OrderController(UserService userService, OrderService orderService, AdminService adminService) {
+    public OrderController(UserService userService, OrderService orderService, AdminService adminService, StorageService storageService) {
         this.userService = userService;
         this.orderService = orderService;
         this.adminService = adminService;
+        this.storageService = storageService;
     }
 
     @PostMapping
@@ -85,6 +94,36 @@ public class OrderController {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         return new OrderResponse(getByIdOrThrow(id, isAdmin), isAdmin ? 2 : 1);
+    }
+
+    @GetMapping("/{id}/attachments")
+    public List<Attachment> queryAttachmentList(@PathVariable(value = "id") long id) {
+        Order order = getByIdOrThrow(id, false);
+        return order.getAttachmentList();
+    }
+
+    @GetMapping("/{id}/attachments/{uuid}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid){
+        Resource file = storageService.loadAsResource(uuid);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                                        "attachment; filename=\"" + storageService.getNameByUUID(uuid) + "\"").body(file);
+    }
+
+
+    @PostMapping("/{id}/attachments")
+    @ResponseBody
+    public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile){
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+        Attachment attachment = new Attachment(multipartFile);
+        order.getAttachmentList().add(attachment);
+        orderService.save(order);
+        storageService.store(multipartFile, attachment.getUuid());
+        return attachment;
     }
 
     @PutMapping("/{id}")

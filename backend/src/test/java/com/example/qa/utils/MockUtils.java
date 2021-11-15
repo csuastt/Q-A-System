@@ -1,7 +1,6 @@
 package com.example.qa.utils;
 
 import com.example.qa.security.SecurityConstants;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;

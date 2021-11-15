@@ -2,7 +2,6 @@ package com.example.qa.test;
 
 import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
-import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
@@ -30,9 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
