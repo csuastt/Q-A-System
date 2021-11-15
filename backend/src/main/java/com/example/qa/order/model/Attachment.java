@@ -23,6 +23,6 @@ public class Attachment{
 
 
         public Attachment(MultipartFile file){
-            this(UUID.fromString(file.getName()), file.getName(), file.getSize(), ZonedDateTime.now());
+            this(UUID.randomUUID(), file.getOriginalFilename(), file.getSize(), ZonedDateTime.now());
         }
 }

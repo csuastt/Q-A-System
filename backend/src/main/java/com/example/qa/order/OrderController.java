@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -97,12 +98,7 @@ public class OrderController {
 
     @GetMapping("/{id}/attachments")
     public List<Attachment> queryAttachmentList(@PathVariable(value = "id") long id) {
-        authLoginOrThrow();
-        long userId = authGetId();
-        Order order = getByIdOrThrow(id, authIsAdmin());
-        if (!authIsAdmin() && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
-            throw new ApiException(403, ApiException.NO_PERMISSION);
-        }
+        Order order = getByIdOrThrow(id, false);
         return order.getAttachmentList();
     }
 
@@ -111,7 +107,23 @@ public class OrderController {
     public ResponseEntity<Resource> serveFile(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid){
         Resource file = storageService.loadAsResource(uuid);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                                        "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+                                        "attachment; filename=\"" + storageService.getNameByUUID(uuid) + "\"").body(file);
+    }
+
+
+    @PostMapping("/{id}/attachments")
+    @ResponseBody
+    public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile){
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+        Attachment attachment = new Attachment(multipartFile);
+        order.getAttachmentList().add(attachment);
+        orderService.save(order);
+        storageService.store(multipartFile, attachment.getUuid());
+        return attachment;
     }
 
     @PutMapping("/{id}")

@@ -1,8 +1,13 @@
 package com.example.qa.order.storage;
 
+import com.example.qa.errorhandling.ApiException;
+import com.example.qa.order.OrderService;
+import com.example.qa.order.model.Attachment;
+import com.example.qa.order.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -21,9 +28,10 @@ import java.util.stream.Stream;
 public class FileSystemStorageService implements StorageService{
 
     private final Path rootLocation;
+    private static HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties){
+    public FileSystemStorageService(StorageProperties properties, OrderService orderService){
         this.rootLocation = Paths.get(properties.getLocation());
     }
 
@@ -38,13 +46,14 @@ public class FileSystemStorageService implements StorageService{
     }
 
     @Override
-    public void store(MultipartFile file) {
+    public void store(MultipartFile file, UUID uuid) {
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file.");
             }
+            uuidStringHashMap.put(uuid, file.getOriginalFilename());
             Path destinationFile = this.rootLocation.resolve(
-                            Paths.get(file.getOriginalFilename()))
+                            Paths.get(uuid.toString()))
                     .normalize().toAbsolutePath();
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
                 // This is a security check
@@ -100,5 +109,22 @@ public class FileSystemStorageService implements StorageService{
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
+    }
+
+    @Override
+    public void delete(UUID uuid) {
+        Path destinationFile = this.rootLocation.resolve(
+                        Paths.get(uuid.toString()))
+                .normalize().toAbsolutePath();
+        try {
+            FileSystemUtils.deleteRecursively(destinationFile);
+        }catch (Exception exception){
+            throw new StorageFileNotFoundException("Could not find file" + uuid, exception);
+        }
+    }
+
+    @Override
+    public String getNameByUUID(UUID uuid) {
+        return uuidStringHashMap.get(uuid);
     }
 }
