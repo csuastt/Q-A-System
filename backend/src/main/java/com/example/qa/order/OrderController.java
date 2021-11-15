@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,7 +108,7 @@ public class OrderController {
     public ResponseEntity<Resource> serveFile(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid){
         Resource file = storageService.loadAsResource(uuid);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                                        "attachment; filename=\"" + storageService.getNameByUUID(uuid) + "\"").body(file);
+                                        "attachment; filename*=UTF-8''" + storageService.getNameByUUID(uuid)).body(file);
     }
 
 

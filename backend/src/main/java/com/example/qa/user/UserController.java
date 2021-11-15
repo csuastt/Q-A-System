@@ -112,7 +112,7 @@ public class UserController {
     public Resource downloadImage(@PathVariable(value = "id") Long id)  {
         byte[] image = userService.getById(id).getAvatar();
         if(image == null)
-            throw new ApiException(HttpStatus.FORBIDDEN, "No Avatar Found");
+            throw new ApiException(HttpStatus.NOT_FOUND, "No Avatar Found");
         return new ByteArrayResource(image);
     }
 
