@@ -1,8 +1,9 @@
 import Button from "@mui/material/Button";
 import CardActionArea from "@mui/material/CardActionArea";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
 import {
+    ManagerRole,
     OrderInfo,
     OrderState,
     PagedList,
@@ -21,6 +22,7 @@ import userService from "../services/userService";
 import { Link as RouterLink } from "react-router-dom";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import AuthContext from "../AuthContext";
 
 interface ReviewListProps {
     filterFinished?: boolean;
@@ -34,6 +36,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
     const [currentPage, setCurrentPage] = useState(
         parseIntWithDefault(query.get("page"), 1)
     );
+    const { manager } = useContext(AuthContext);
     const [itemPrePage] = useState(
         parseIntWithDefault(query.get("prepage"), 9)
     );
@@ -170,37 +173,40 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                         {formatTimestamp(order.createTime)}
                                     </Typography>
                                 </Box>
-
-                                <Stack direction="row" p={3} spacing={2}>
-                                    <Button
-                                        size="small"
-                                        color="error"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            orderService.reviewOrder(
-                                                order.id,
-                                                false
-                                            );
-                                            window.location.reload();
-                                        }}
-                                    >
-                                        驳回
-                                    </Button>
-                                    <Button
-                                        size="small"
-                                        color="success"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            orderService.reviewOrder(
-                                                order.id,
-                                                true
-                                            );
-                                            window.location.reload();
-                                        }}
-                                    >
-                                        通过
-                                    </Button>
-                                </Stack>
+                                {manager?.role == ManagerRole.ADMIN ? (
+                                    <Stack direction="row" p={3} spacing={2}>
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                orderService.reviewOrder(
+                                                    order.id,
+                                                    false
+                                                );
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            驳回
+                                        </Button>
+                                        <Button
+                                            size="small"
+                                            color="success"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                orderService.reviewOrder(
+                                                    order.id,
+                                                    true
+                                                );
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            通过
+                                        </Button>
+                                    </Stack>
+                                ) : (
+                                    <></>
+                                )}
                             </Box>
                         </CardContent>
                     </CardActionArea>
