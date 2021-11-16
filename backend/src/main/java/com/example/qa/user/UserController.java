@@ -5,6 +5,8 @@ import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.EarningsResponse;
 import com.example.qa.exchange.MonthlyEarnings;
+import com.example.qa.notification.NotificationService;
+import com.example.qa.notification.model.Notification;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
@@ -31,10 +33,12 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationService notificationService;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, NotificationService notificationService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.notificationService = notificationService;
     }
 
     @PostMapping
@@ -109,9 +113,9 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}/avatar", produces = MediaType.IMAGE_PNG_VALUE)
-    public Resource downloadImage(@PathVariable(value = "id") Long id)  {
+    public Resource downloadImage(@PathVariable(value = "id") Long id) {
         byte[] image = userService.getById(id).getAvatar();
-        if(image == null)
+        if (image == null)
             throw new ApiException(HttpStatus.NOT_FOUND, "No Avatar Found");
         return new ByteArrayResource(image);
     }
@@ -124,7 +128,7 @@ public class UserController {
         try {
             user.setAvatar(multipartFile.getBytes());
             userService.save(user);
-        } catch (IOException exception){
+        } catch (IOException exception) {
             throw new ApiException(HttpStatus.FORBIDDEN, "Upload File Not Valid");
         }
     }
@@ -155,7 +159,8 @@ public class UserController {
         applyRequest.validateOrThrow();
         user.update(applyRequest);
         user.setRole(UserRole.ANSWERER);
-        userService.save(user);
+        user = userService.save(user);
+        notificationService.send(Notification.ofPlain(user, "你已经成为回答者了，快去回答问题吧~"));
     }
 
     @PostMapping("/{id}/recharge")

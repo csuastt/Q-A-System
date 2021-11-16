@@ -1,14 +1,15 @@
 package com.example.qa.order;
 
 import com.example.qa.config.SystemConfig;
+import com.example.qa.notification.NotificationService;
+import com.example.qa.notification.model.Notification;
 import com.example.qa.order.model.Order;
 import com.example.qa.order.model.OrderEndReason;
 import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserService;
 import com.example.qa.user.model.User;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,17 +22,19 @@ import java.util.Optional;
 
 import static com.example.qa.order.model.OrderState.publicOrderStates;
 
+@Log4j2
 @Service
 public class OrderService {
     private final UserService userService;
     private final OrderRepository orderRepository;
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final NotificationService notificationService;
     @Setter
     private PageRequest pageRequest;
 
-    public OrderService(UserService userService, OrderRepository orderRepository) {
+    public OrderService(UserService userService, OrderRepository orderRepository, NotificationService notificationService) {
         this.userService = userService;
         this.orderRepository = orderRepository;
+        this.notificationService = notificationService;
     }
 
     public Order save(Order order) {
@@ -72,13 +75,18 @@ public class OrderService {
 
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds
     public void clearExpirations() {
-        List<Order> orderList = orderRepository.findAllByExpireTimeBefore(ZonedDateTime.now());
-        if (orderList.isEmpty()) {
-            return;
+        List<Order> notifyList = orderRepository.findAllByNotifyTimeBefore(ZonedDateTime.now());
+        if (!notifyList.isEmpty()) {
+            log.info("Clearing notify orders...");
+            notifyList.forEach(this::handleNotify);
+            log.info("Finished clearing notify orders");
         }
-        log.info("Clearing expired orders...");
-        orderList.forEach(this::handleExpiration);
-        log.info("Finished clearing expired orders");
+        List<Order> expireList = orderRepository.findAllByExpireTimeBefore(ZonedDateTime.now());
+        if (!expireList.isEmpty()) {
+            log.info("Clearing expired orders...");
+            expireList.forEach(this::handleExpiration);
+            log.info("Finished clearing expired orders");
+        }
     }
 
     public void handleExpiration(Order order) {
@@ -87,23 +95,51 @@ public class OrderService {
             order.setState(OrderState.RESPOND_TIMEOUT);
             userService.refund(order);
             order.setExpireTime(null);
+            order = save(order);
+            notificationService.send(Notification.ofDeadlineOrTimeout(
+                    order.getAnswerer(), order, Notification.Type.ACCEPT_TIMEOUT, order.getExpireTime()
+            ));
         } else if (order.getState() == OrderState.ACCEPTED) {
             order.setState(OrderState.ANSWER_TIMEOUT);
             userService.refund(order);
             order.setExpireTime(null);
+            order = save(order);
+            notificationService.send(Notification.ofDeadlineOrTimeout(
+                    order.getAnswerer(), order, Notification.Type.ANSWER_TIMEOUT, order.getExpireTime()
+            ));
         } else if (order.getState() == OrderState.ANSWERED) {
             order.setState(OrderState.CHAT_ENDED);
             order.setEndReason(OrderEndReason.TIME_LIMIT);
             order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
+            order = save(order);
+            notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
+            notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
         } else if (order.getState() == OrderState.CHAT_ENDED) {
             int fee = order.getPrice() * SystemConfig.getFeeRate() / 100;
             userService.addEarnings(order.getAnswerer(), order.getPrice() - fee);
             SystemConfig.incEarnings(fee);
             order.setState(OrderState.FULFILLED);
             order.setExpireTime(null);
+            order = save(order);
+            notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
         } else {
             order.setExpireTime(null);
+            save(order);
         }
-        save(order);
+    }
+
+    public void handleNotify(Order order) {
+        order.setNotifyTime(null);
+        order = save(order);
+        if (order.getState() == OrderState.REVIEWED) {
+            notificationService.send(Notification.ofDeadlineOrTimeout(
+                    order.getAnswerer(), order, Notification.Type.ACCEPT_DEADLINE, order.getExpireTime()
+            ));
+        } else if (order.getState() == OrderState.ACCEPTED) {
+            notificationService.send(Notification.ofDeadlineOrTimeout(
+                    order.getAnswerer(), order, Notification.Type.ANSWER_DEADLINE, order.getExpireTime()
+            ));
+        }
+        log.info("Sent notification for order #{}", order.getId());
     }
 }
