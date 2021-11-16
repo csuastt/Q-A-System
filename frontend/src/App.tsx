@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
-import { Container } from "@mui/material";
+import {Container, createTheme, PaletteMode, ThemeProvider} from "@mui/material";
 import Welcome from "./components/Welcome";
 import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
@@ -22,11 +22,62 @@ import { SnackbarProvider } from "notistack";
 import NotificationController from "./components/NotificationController";
 import websocketService from "./services/websocketService";
 import NotificationList from "./components/NotificationList";
+import {grey} from "@mui/material/colors";
+import {SimplePaletteColorOptions} from "@mui/material/styles/createPalette";
+
+
+export const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+
+const getDesignTokens = (mode: PaletteMode) => ({
+    palette: {
+        mode,
+        ...(mode === 'light'
+            ? {
+                secondary: {main: '#DC3660'} as SimplePaletteColorOptions,
+            }
+            : {
+                // palette values for dark mode
+                primary: {main: '#EA4F1C'} as SimplePaletteColorOptions,
+                secondary: {main: '#03DAC6'} as SimplePaletteColorOptions,
+                background: {
+                    default: '#2f3033',
+                    paper: '#313336',
+                },
+                error: {
+                    main: "#cf6679",
+                },
+                warning: {
+                    main: "#d06b0b",
+                },
+                text: {
+                    primary: '#D9D9D9',
+                    secondary: grey[500],
+                },
+            }),
+    },
+});
+
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
     const [refreshing, setRefreshing] = useState(true);
     const [wsAvailable, setWsAvailable] = useState(false);
+
+    const [mode, setMode] = React.useState<PaletteMode>('light');
+    const colorMode = React.useMemo(
+        () => ({
+            // The dark mode switch would invoke this method
+            toggleColorMode: () => {
+                setMode((prevMode: PaletteMode) =>
+                    prevMode === 'light' ? 'dark' : 'light',
+                );
+            },
+        }),
+        [],
+    );
+
+    // Update the theme only if the mode changes
+    const theme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
     useEffect(() => {
         websocketService.onConnected = () => {
@@ -105,6 +156,8 @@ export default function App() {
                 clearManager: () => {},
             }}
         >
+            <ColorModeContext.Provider value={colorMode}>
+                <ThemeProvider theme={theme}>
             <BrowserRouter>
                 <SnackbarProvider maxSnack={4}>
                     <NotificationController wsAvailable={wsAvailable}>
@@ -127,6 +180,8 @@ export default function App() {
                     </NotificationController>
                 </SnackbarProvider>
             </BrowserRouter>
+                </ThemeProvider>
+            </ColorModeContext.Provider>
         </AuthContext.Provider>
     );
 }
