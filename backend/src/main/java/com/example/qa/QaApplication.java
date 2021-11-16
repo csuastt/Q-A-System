@@ -16,9 +16,10 @@ public class QaApplication {
     public static void main(String[] args) {
         SpringApplication.run(QaApplication.class, args);
     }
+
     @Bean
     CommandLineRunner init(StorageService storageService) {
-        return (args) -> {
+        return args -> {
             storageService.deleteAll();
             storageService.init();
         };

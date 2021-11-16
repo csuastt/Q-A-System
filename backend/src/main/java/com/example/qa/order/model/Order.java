@@ -44,6 +44,7 @@ public class Order {
     @Type(type = "text")
     private String answer;
     private int price;
+    private boolean showPublic = false;
 
     @ElementCollection
     private List<Attachment> attachmentList;
@@ -56,6 +57,7 @@ public class Order {
         questionDescription = data.getDescription();
         createTime = ZonedDateTime.now();
         price = answerer.getPrice();
+        showPublic = Objects.requireNonNullElse(data.getShowPublic(), false);
         if (allProperties) {
             setState(data.getState());
             endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);

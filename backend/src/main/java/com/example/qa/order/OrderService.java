@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.qa.order.model.OrderState.publicOrderStates;
+
 @Service
 public class OrderService {
     private final UserService userService;
@@ -60,6 +62,12 @@ public class OrderService {
 
     public Page<Order> listByReviewed() {
         return orderRepository.findAllByDeletedAndReviewed(false, true, pageRequest);
+    }
+
+    public Page<Order> listByPublic(String keyword) {
+        return keyword == null ?
+                orderRepository.findAllByDeletedAndStateInAndShowPublic(false, publicOrderStates, true, pageRequest) :
+                orderRepository.findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(false, publicOrderStates, true, keyword, pageRequest);
     }
 
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds

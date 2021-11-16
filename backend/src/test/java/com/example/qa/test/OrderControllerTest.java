@@ -255,7 +255,7 @@ class OrderControllerTest {
     @Test
     void queryInvalidOrder() throws Exception {
         mockUtils.getUrl("/api/orders/" + -1, askerToken, null, null, status().isNotFound());
-        mockUtils.getUrl("/api/orders/" + -1, null, null, null, status().isUnauthorized());
+        mockUtils.getUrl("/api/orders/" + -1, null, null, null, status().isNotFound());
     }
 
     @Test
@@ -426,6 +426,8 @@ class OrderControllerTest {
         mockUtils.getUrl("/api/orders?answerer=" + Long.MAX_VALUE + " &reviewed=true", askerToken, null, null, status().isForbidden());
         mockUtils.getUrl("/api/orders", askerToken, null, null, status().isForbidden());
         mockUtils.getUrl("/api/orders", null, null, null, status().isUnauthorized());
+        mockUtils.getUrl("/api/orders?showPublic=1", askerToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders?showPublic=1&keyword=为什么", askerToken, null, null, status().isOk());
     }
 
     OrderResponse query(long id) throws Exception {

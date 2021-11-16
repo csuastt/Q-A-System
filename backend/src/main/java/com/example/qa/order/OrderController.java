@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,12 +86,14 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public OrderResponse queryOrder(@PathVariable(value = "id") long id) {
-        authLoginOrThrow();
-        boolean isAdmin = authIsAdmin();
-        long userId = authGetId();
+        boolean isAdmin = authLogin() && authIsAdmin();
         Order order = getByIdOrThrow(id, isAdmin);
-        if (!isAdmin && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
-            throw new ApiException(403, ApiException.NO_PERMISSION);
+        if (!order.isShowPublic()) {
+            authLoginOrThrow();
+            long userId = authGetId();
+            if (!isAdmin && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
+                throw new ApiException(403, ApiException.NO_PERMISSION);
+            }
         }
         return new OrderResponse(getByIdOrThrow(id, isAdmin), isAdmin ? 2 : 1);
     }
@@ -108,7 +109,7 @@ public class OrderController {
     public ResponseEntity<Resource> serveFile(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid) {
         Resource file = storageService.loadAsResource(uuid);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                                        "attachment; filename*=UTF-8''" + storageService.getNameByUUID(uuid)).body(file);
+                "attachment; filename*=UTF-8''" + storageService.getNameByUUID(uuid)).body(file);
     }
 
 
@@ -235,6 +236,8 @@ public class OrderController {
 
     @GetMapping
     public OrderListResponse listOrders(
+            @RequestParam(required = false) Boolean showPublic,
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long asker,
             @RequestParam(required = false) Long answerer,
             @RequestParam(required = false) Boolean finished,
@@ -244,32 +247,37 @@ public class OrderController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(required = false) Sort.Direction sortDirection
     ) {
-        authLoginOrThrow();
         long startTime = System.currentTimeMillis();
-        boolean isAdmin = authIsAdmin();
+        boolean isAdmin = authLogin() && authIsAdmin();
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ORDER_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
-                .withSort(Sort.by(Objects.requireNonNullElse(sortDirection, isAdmin ? Sort.Direction.ASC : Sort.Direction.DESC), "createTime"));
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize,
+                Objects.requireNonNullElse(sortDirection, isAdmin ? Sort.Direction.ASC : Sort.Direction.DESC), "createTime");
         orderService.setPageRequest(pageRequest);
         Page<Order> result;
-        if (isAdmin) {
-            if (Boolean.TRUE.equals(reviewed)) {
-                result = orderService.listByReviewed();
-            } else {
-                // state == null 时列出所有订单，包含已删除
-                result = orderService.listByState(state);
-            }
+        if (Boolean.TRUE.equals(showPublic)) {
+            // keyword == null 时列出所有公开订单
+            result = orderService.listByPublic(keyword);
         } else {
-            if (asker != null && authIsUser(asker)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAsker(userService.getById(asker), finished);
-            } else if (answerer != null && authIsUser(answerer)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAnswerer(userService.getById(answerer), finished);
+            authLoginOrThrow();
+            if (isAdmin) {
+                if (Boolean.TRUE.equals(reviewed)) {
+                    result = orderService.listByReviewed();
+                } else {
+                    // state == null 时列出所有订单，包含已删除
+                    result = orderService.listByState(state);
+                }
             } else {
-                throw new ApiException(403, ApiException.NO_PERMISSION);
+                if (asker != null && authIsUser(asker)) {
+                    // finished == null 时列出所有该用户的订单
+                    result = orderService.listByAsker(userService.getById(asker), finished);
+                } else if (answerer != null && authIsUser(answerer)) {
+                    // finished == null 时列出所有该用户的订单
+                    result = orderService.listByAnswerer(userService.getById(answerer), finished);
+                } else {
+                    throw new ApiException(403, ApiException.NO_PERMISSION);
+                }
             }
         }
         OrderListResponse response = new OrderListResponse(result, authIsAdmin() ? 2 : 0);
