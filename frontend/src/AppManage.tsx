@@ -84,7 +84,7 @@ export default function AppManage() {
                 isAdmin={true}
             />,
         ],
-        ["/admins/help", <Help />],
+        ["/help", <Help />],
         ["/admins/", <HelloAdmin />],
     ];
 
