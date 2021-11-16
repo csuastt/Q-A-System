@@ -86,12 +86,14 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public OrderResponse queryOrder(@PathVariable(value = "id") long id) {
-        authLoginOrThrow();
-        boolean isAdmin = authIsAdmin();
-        long userId = authGetId();
+        boolean isAdmin = authLogin() && authIsAdmin();
         Order order = getByIdOrThrow(id, isAdmin);
-        if (!isAdmin && !order.isShowPublic() && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
-            throw new ApiException(403, ApiException.NO_PERMISSION);
+        if (!order.isShowPublic()) {
+            authLoginOrThrow();
+            long userId = authGetId();
+            if (!isAdmin && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
+                throw new ApiException(403, ApiException.NO_PERMISSION);
+            }
         }
         return new OrderResponse(getByIdOrThrow(id, isAdmin), isAdmin ? 2 : 1);
     }
@@ -245,9 +247,8 @@ public class OrderController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(required = false) Sort.Direction sortDirection
     ) {
-        authLoginOrThrow();
         long startTime = System.currentTimeMillis();
-        boolean isAdmin = authIsAdmin();
+        boolean isAdmin = authLogin() && authIsAdmin();
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ORDER_LIST_MAX_PAGE_SIZE);
@@ -255,25 +256,28 @@ public class OrderController {
                 Objects.requireNonNullElse(sortDirection, isAdmin ? Sort.Direction.ASC : Sort.Direction.DESC), "createTime");
         orderService.setPageRequest(pageRequest);
         Page<Order> result;
-        if (isAdmin) {
-            if (Boolean.TRUE.equals(reviewed)) {
-                result = orderService.listByReviewed();
-            } else {
-                // state == null 时列出所有订单，包含已删除
-                result = orderService.listByState(state);
-            }
+        if (Boolean.TRUE.equals(showPublic)) {
+            // keyword == null 时列出所有公开订单
+            result = orderService.listByPublic(keyword);
         } else {
-            if (Boolean.TRUE.equals(showPublic)) {
-                // keyword == null 时列出所有公开订单
-                result = orderService.listByPublic(keyword);
-            } else if (asker != null && authIsUser(asker)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAsker(userService.getById(asker), finished);
-            } else if (answerer != null && authIsUser(answerer)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAnswerer(userService.getById(answerer), finished);
+            authLoginOrThrow();
+            if (isAdmin) {
+                if (Boolean.TRUE.equals(reviewed)) {
+                    result = orderService.listByReviewed();
+                } else {
+                    // state == null 时列出所有订单，包含已删除
+                    result = orderService.listByState(state);
+                }
             } else {
-                throw new ApiException(403, ApiException.NO_PERMISSION);
+                if (asker != null && authIsUser(asker)) {
+                    // finished == null 时列出所有该用户的订单
+                    result = orderService.listByAsker(userService.getById(asker), finished);
+                } else if (answerer != null && authIsUser(answerer)) {
+                    // finished == null 时列出所有该用户的订单
+                    result = orderService.listByAnswerer(userService.getById(answerer), finished);
+                } else {
+                    throw new ApiException(403, ApiException.NO_PERMISSION);
+                }
             }
         }
         OrderListResponse response = new OrderListResponse(result, authIsAdmin() ? 2 : 0);

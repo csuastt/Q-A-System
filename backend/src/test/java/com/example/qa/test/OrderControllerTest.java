@@ -255,7 +255,7 @@ class OrderControllerTest {
     @Test
     void queryInvalidOrder() throws Exception {
         mockUtils.getUrl("/api/orders/" + -1, askerToken, null, null, status().isNotFound());
-        mockUtils.getUrl("/api/orders/" + -1, null, null, null, status().isUnauthorized());
+        mockUtils.getUrl("/api/orders/" + -1, null, null, null, status().isNotFound());
     }
 
     @Test
