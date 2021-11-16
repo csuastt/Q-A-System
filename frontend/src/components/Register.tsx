@@ -340,13 +340,19 @@ export default class Register extends Component<any, RegisterState> {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link
+                                <Typography
                                     variant="body2"
-                                    component={RouterLink}
-                                    to="/login"
+                                    color={"textSecondary"}
                                 >
-                                    已有账号？快速登录
-                                </Link>
+                                    已有账号？
+                                    <Link
+                                        variant="body2"
+                                        component={RouterLink}
+                                        to="/login"
+                                    >
+                                        快速登录
+                                    </Link>
+                                </Typography>
                             </Grid>
                         </Grid>
                     </Box>

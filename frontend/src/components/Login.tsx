@@ -303,21 +303,33 @@ export default class Login extends Component<LoginProps, LoginState> {
                     <Grid container justifyContent="flex-end">
                         <Grid item>
                             {this.props.isAdmin ? (
-                                <Link
+                                <Typography
                                     variant="body2"
-                                    component="button"
-                                    onClick={this.handleOpenDialog}
+                                    color={"textSecondary"}
                                 >
-                                    还没有账号？请联系超级管理员
-                                </Link>
+                                    还没有账号？
+                                    <Link
+                                        variant="body2"
+                                        component="button"
+                                        onClick={this.handleOpenDialog}
+                                    >
+                                        请联系超级管理员
+                                    </Link>
+                                </Typography>
                             ) : (
-                                <Link
+                                <Typography
                                     variant="body2"
-                                    component={RouterLink}
-                                    to="/register"
+                                    color={"textSecondary"}
                                 >
-                                    还没有账号？快速注册
-                                </Link>
+                                    还没有账号？
+                                    <Link
+                                        variant="body2"
+                                        component={RouterLink}
+                                        to="/register"
+                                    >
+                                        快速注册
+                                    </Link>
+                                </Typography>
                             )}
                         </Grid>
                     </Grid>
