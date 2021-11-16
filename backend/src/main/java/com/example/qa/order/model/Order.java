@@ -47,6 +47,7 @@ public class Order {
     private int price;
     private boolean showPublic = false;
     private int messageCount = 0;
+    private int rating = 0;
 
     @ElementCollection
     private List<Attachment> attachmentList;

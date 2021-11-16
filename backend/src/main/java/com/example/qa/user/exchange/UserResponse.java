@@ -31,6 +31,8 @@ public class UserResponse {
     private Integer balance;
     private Integer askCount;
     private Integer answerCount;
+    private Integer ratingCount;
+    private Integer ratingTotal;
 
     public UserResponse(User user) {
         this(user, 0);
@@ -41,7 +43,11 @@ public class UserResponse {
         username = user.getUsername();
         nickname = user.getNickname();
         description = user.getDescription();
-        price = user.getRole() == UserRole.ANSWERER ? user.getPrice() : null;
+        if (user.getRole() == UserRole.ANSWERER) {
+            price = user.getPrice();
+            ratingCount = user.getRatingCount();
+            ratingTotal = user.getRatingTotal();
+        }
         if (level >= 1) {  // 本用户或管理员
             email = user.getEmail();
             phone = user.getPhone();

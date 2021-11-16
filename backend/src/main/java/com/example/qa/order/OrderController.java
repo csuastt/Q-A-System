@@ -4,6 +4,7 @@ import com.example.qa.admin.AdminService;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
+import com.example.qa.exchange.ValueRequest;
 import com.example.qa.im.IMService;
 import com.example.qa.notification.NotificationService;
 import com.example.qa.notification.model.Notification;
@@ -102,7 +103,7 @@ public class OrderController {
                 throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
-        return new OrderResponse(getByIdOrThrow(id, isAdmin), isAdmin ? 2 : 1);
+        return new OrderResponse(order, isAdmin ? 2 : 1);
     }
 
     @GetMapping("/{id}/attachments")
@@ -210,7 +211,6 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/cancel")
-    @ResponseStatus(value = HttpStatus.OK)
     public void cancelOrder(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
@@ -226,7 +226,6 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/answer")
-    @ResponseStatus(value = HttpStatus.OK)
     public void answerOrder(@PathVariable(value = "id") long id, @RequestBody AnswerRequest request) {
         authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
@@ -245,6 +244,21 @@ public class OrderController {
         asker.setAskCount(asker.getAskCount() + 1);
         userService.save(asker);
         notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
+    }
+
+    @PostMapping("/{id}/rate")
+    public void rateOrder(@PathVariable(value = "id") long id, @RequestBody ValueRequest request) {
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+        authUserOrThrow(order.getAsker().getId());
+        if (order.getRating() > 0 || !OrderState.completedOrderStates.contains(order.getState())) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_RATE");
+        }
+        order.setRating(request.getValue());
+        order = orderService.save(order);
+        User answerer = order.getAnswerer();
+        answerer.addRating(request.getValue());
+        userService.save(answerer);
     }
 
     @GetMapping

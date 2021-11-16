@@ -53,6 +53,9 @@ public class User {
     private int askCount = 0;
     private int answerCount = 0;
 
+    private int ratingCount = 0;
+    private int ratingTotal = 0;
+
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();
         password = registerRequest.getPassword();
@@ -77,5 +80,10 @@ public class User {
     public void update(ApplyRequest data) {
         description = data.getDescription();
         price = data.getPrice();
+    }
+
+    public void addRating(int rating) {
+        ratingCount++;
+        ratingTotal += rating;
     }
 }

@@ -21,6 +21,7 @@
 | price               | int            |                                            |                      |
 | showPublic          | boolean        |                                            | 公开问题             |
 | messageCount        | int            |                                            | 聊天消息条数         |
+| rating              | int            | Get: > 0 已评分，= 0 未评分                | 评分                 |
 
 ### OrderState (enum)
 
@@ -298,5 +299,32 @@ POST /api/orders/{id}/cancel
   | --------------- | -------------- |
   | `NO_PERMISSION` | 不是提问者     |
   | `CANNOT_CANCEL` | 已接单无法取消 |
+- `404` 订单不存在或已删除
+
+### 评价订单
+
+```
+POST /api/orders/{id}/rate
+```
+
+参数：
+
+```json
+{ "value": 5 }
+```
+
+返回值：
+
+- `200` OK
+
+- `401` 未登录
+
+- `403` 错误
+
+  | message 属性    | 说明                           |
+  | --------------- | ------------------------------ |
+  | `NO_PERMISSION` | 不是提问者                     |
+  | `CANNOT_RATE`   | 不能评分（聊天未结束或已评分） |
+
 - `404` 订单不存在或已删除
 

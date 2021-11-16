@@ -5,6 +5,7 @@ import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.EarningsResponse;
 import com.example.qa.exchange.MonthlyEarnings;
+import com.example.qa.exchange.ValueRequest;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;

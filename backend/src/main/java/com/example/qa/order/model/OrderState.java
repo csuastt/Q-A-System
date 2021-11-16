@@ -25,5 +25,5 @@ public enum OrderState {
     @Getter
     private final boolean visibleToAnswerer;
 
-    public static final List<OrderState> publicOrderStates = List.of(OrderState.CHAT_ENDED, OrderState.FULFILLED);
+    public static final List<OrderState> completedOrderStates = List.of(OrderState.CHAT_ENDED, OrderState.FULFILLED);
 }

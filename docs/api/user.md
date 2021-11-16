@@ -7,14 +7,16 @@
 
 #### 公开属性
 
-| 属性        | 类型   | JSON | 说明                     |
-| ----------- | ------ | ---- | ------------------------ |
-| id          | long   |      |                          |
-| username    | string |      | Unique，不可修改         |
-| nickname    | string |      | 默认设成与 username 相同 |
-| avatar      | string |      | 未上传则为空             |
-| description | string |      |                          |
-| price       | int    |      | 回答问题定价（仅回答者） |
+| 属性        | 类型   | JSON | 说明                                 |
+| ----------- | ------ | ---- | ------------------------------------ |
+| id          | long   |      |                                      |
+| username    | string |      | Unique，不可修改                     |
+| nickname    | string |      | 默认设成与 username 相同             |
+| avatar      | string |      | 未上传则为空                         |
+| description | string |      |                                      |
+| price       | int    |      | 回答问题定价（仅回答者）             |
+| ratingCount | int    |      | 评分次数（有可能为 0，代表没有评分） |
+| ratingTotal | int    |      | 评分总数（除以评分次数得到评分）     |
 
 #### 私有属性 (仅限本用户)
 
