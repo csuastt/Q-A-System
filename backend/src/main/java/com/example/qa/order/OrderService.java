@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.qa.order.model.OrderState.ANSWERED;
-import static com.example.qa.order.model.OrderState.publicOrderStates;
+import static com.example.qa.order.model.OrderState.completedOrderStates;
 
 @Log4j2
 @Service
@@ -74,8 +74,8 @@ public class OrderService {
 
     public Page<Order> listByPublic(String keyword) {
         return keyword == null ?
-                orderRepository.findAllByDeletedAndStateInAndShowPublic(false, publicOrderStates, true, pageRequest) :
-                orderRepository.findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(false, publicOrderStates, true, keyword, pageRequest);
+                orderRepository.findAllByDeletedAndStateInAndShowPublic(false, completedOrderStates, true, pageRequest) :
+                orderRepository.findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(false, completedOrderStates, true, keyword, pageRequest);
     }
 
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds

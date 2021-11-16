@@ -56,6 +56,9 @@ public class DevelopmentDataLoader implements ApplicationRunner {
         if (order.getState() == OrderState.REVIEWED || order.getState() == OrderState.ACCEPTED || order.getState() == OrderState.ANSWERED || order.getState() == OrderState.CHAT_ENDED) {
             order.setExpireTime(ZonedDateTime.now().plusWeeks(1));
         }
+        if (OrderState.completedOrderStates.contains(order.getState())) {
+            order.setRating(random.nextInt(6));
+        }
         order.setShowPublic(random.nextBoolean());
         return order;
     }
@@ -84,6 +87,8 @@ public class DevelopmentDataLoader implements ApplicationRunner {
                 }).collect(Collectors.toList());
         user.setEarningsTotal(total.get());
         user.setEarningsMonthly("[" + String.join(",", earningsList) + "]");
+        user.setRatingCount(random.nextInt(20));
+        user.setRatingTotal((int) (user.getRatingCount() * 5 * random.nextDouble()));
         return user;
     }
 
