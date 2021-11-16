@@ -272,25 +272,27 @@ public class OrderController {
         if (Boolean.TRUE.equals(showPublic)) {
             // keyword == null 时列出所有公开订单
             result = orderService.listByPublic(keyword);
-        } else {
-            authLoginOrThrow();
-            if (isAdmin) {
-                if (Boolean.TRUE.equals(reviewed)) {
-                    result = orderService.listByReviewed();
-                } else {
-                    // state == null 时列出所有订单，包含已删除
-                    result = orderService.listByState(state);
-                }
+            OrderListResponse response = new OrderListResponse(result, 0);
+            response.setTimeMillis(System.currentTimeMillis() - startTime);
+            return response;
+        }
+        authLoginOrThrow();
+        if (isAdmin) {
+            if (Boolean.TRUE.equals(reviewed)) {
+                result = orderService.listByReviewed();
             } else {
-                if (asker != null && authIsUser(asker)) {
-                    // finished == null 时列出所有该用户的订单
-                    result = orderService.listByAsker(userService.getById(asker), finished);
-                } else if (answerer != null && authIsUser(answerer)) {
-                    // finished == null 时列出所有该用户的订单
-                    result = orderService.listByAnswerer(userService.getById(answerer), finished);
-                } else {
-                    throw new ApiException(403, ApiException.NO_PERMISSION);
-                }
+                // state == null 时列出所有订单，包含已删除
+                result = orderService.listByState(state);
+            }
+        } else {
+            if (asker != null && authIsUser(asker)) {
+                // finished == null 时列出所有该用户的订单
+                result = orderService.listByAsker(userService.getById(asker), finished);
+            } else if (answerer != null && authIsUser(answerer)) {
+                // finished == null 时列出所有该用户的订单
+                result = orderService.listByAnswerer(userService.getById(answerer), finished);
+            } else {
+                throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
         OrderListResponse response = new OrderListResponse(result, authIsAdmin() ? 2 : 0);
