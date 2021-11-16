@@ -6,7 +6,6 @@ import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.EarningsResponse;
 import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.notification.NotificationService;
-import com.example.qa.notification.model.Notification;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import com.example.qa.user.model.UserRole;
@@ -160,7 +159,7 @@ public class UserController {
         user.update(applyRequest);
         user.setRole(UserRole.ANSWERER);
         user = userService.save(user);
-        notificationService.send(Notification.ofPlain(user, "你已经成为回答者了，快去回答问题吧~"));
+        // notificationService.send(Notification.ofPlain(user, "你已经成为回答者了，快去回答问题吧~"));
     }
 
     @PostMapping("/{id}/recharge")

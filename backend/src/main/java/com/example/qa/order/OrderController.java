@@ -4,6 +4,7 @@ import com.example.qa.admin.AdminService;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
+import com.example.qa.im.IMService;
 import com.example.qa.notification.NotificationService;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.order.exchange.*;
@@ -42,13 +43,15 @@ public class OrderController {
     private final AdminService adminService;
     private final StorageService storageService;
     private final NotificationService notificationService;
+    private final IMService imService;
 
-    public OrderController(UserService userService, OrderService orderService, AdminService adminService, StorageService storageService, NotificationService notificationService) {
+    public OrderController(UserService userService, OrderService orderService, AdminService adminService, StorageService storageService, NotificationService notificationService, IMService imService) {
         this.userService = userService;
         this.orderService = orderService;
         this.adminService = adminService;
         this.storageService = storageService;
         this.notificationService = notificationService;
+        this.imService = imService;
     }
 
     @PostMapping
@@ -203,6 +206,7 @@ public class OrderController {
         order = orderService.save(order);
         notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
         notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
+        imService.sendFromSystem(order, (reason == OrderEndReason.ASKER ? "提问者" : "回答者") + "已结束聊天");
     }
 
     @PostMapping("/{id}/cancel")
