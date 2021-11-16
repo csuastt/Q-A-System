@@ -9,8 +9,7 @@ import com.example.qa.user.exchange.ApplyRequest;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.exchange.UserRequest;
 import com.example.qa.exchange.ValueRequest;
-import com.example.qa.user.model.Gender;
-import com.example.qa.user.model.UserRole;
+import com.example.qa.user.model.User;
 import com.example.qa.utils.MockUtils;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeAll;
@@ -118,11 +117,11 @@ class UserControllerTest {
 
         userRequest.setNickname(null);
         userRequest.setPhone("example");
-        userRequest.setGender(Gender.MALE);
+        userRequest.setGender(User.Gender.MALE);
         userRequest.setPrice(50);
         userRequest.setDescription("MyDescription");
         userRequest.setEmail(email);
-        userRequest.setRole(UserRole.ANSWERER);
+        userRequest.setRole(User.Role.ANSWERER);
         userRequest.setBalance(200);
         mockUtils.putUrl("/api/users/" + id, token, userRequest, status().isOk());
 

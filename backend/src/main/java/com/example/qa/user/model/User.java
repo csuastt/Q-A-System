@@ -41,7 +41,7 @@ public class User {
 
     private ZonedDateTime createTime;
 
-    private UserRole role = UserRole.USER;
+    private Role role = Role.USER;
 
     private int balance = 100;
 
@@ -85,5 +85,13 @@ public class User {
     public void addRating(int rating) {
         ratingCount++;
         ratingTotal += rating;
+    }
+
+    public enum Role {
+        USER, ANSWERER
+    }
+
+    public enum Gender {
+        UNKNOWN, MALE, FEMALE;
     }
 }

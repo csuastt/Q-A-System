@@ -8,7 +8,6 @@ import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.exchange.ValueRequest;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -50,19 +49,18 @@ public class UserController {
 
     @GetMapping
     public UserListResponse listUsers(
-            @RequestParam(required = false) List<UserRole> role,
+            @RequestParam(required = false) List<User.Role> role,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page
     ) {
         boolean isAdmin = authLogin() && authIsAdmin();
         if (!isAdmin) {
-            role = List.of(UserRole.ANSWERER);
+            role = List.of(User.Role.ANSWERER);
         }
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.USER_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
-                .withSort(Sort.Direction.ASC, "id");
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.Direction.ASC, "id");
         Page<User> result = userService.listByRole(role, pageRequest);
         int userResponseLevel = isAdmin ? 2 : 0;
         return new UserListResponse(result, userResponseLevel);
@@ -101,7 +99,7 @@ public class UserController {
         authUserOrSuperAdminOrThrow(id);
         boolean isAdmin = authIsSuperAdmin();
         User user = getUserOrThrow(id, false);
-        if (user.getRole() != UserRole.ANSWERER) {
+        if (user.getRole() != User.Role.ANSWERER) {
             userRequest.setPrice(null);
         }
         userRequest.validateOrThrow();
@@ -150,12 +148,12 @@ public class UserController {
         authLoginOrThrow();
         authUserOrThrow(id);
         User user = getUserOrThrow(id, false);
-        if (user.getRole() == UserRole.ANSWERER) {
+        if (user.getRole() == User.Role.ANSWERER) {
             throw new ApiException(403, "ALREADY_ANSWERER");
         }
         applyRequest.validateOrThrow();
         user.update(applyRequest);
-        user.setRole(UserRole.ANSWERER);
+        user.setRole(User.Role.ANSWERER);
         userService.save(user);
     }
 

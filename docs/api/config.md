@@ -55,6 +55,31 @@ GET /api/config/earnings
 返回值：
 
 - `200` OK（数据参考用户收入 API）
-- `400` 格式错误
 - `401` 未登录
 - `403` 无权限（仅限超级管理员）
+
+### 系统统计
+
+（仅限管理员）
+
+```
+GET /api/config/stats
+```
+
+返回值：
+
+- `200` OK
+- `401` 未登录
+- `403` 无权限（仅限管理员）
+
+```json
+{
+    "userCount": 40,
+    "answererCount": 20,
+    "orderCount": 400,
+    "orderToReviewCount": 40,  // 待审核数
+    "publicOrderCount": 44,    // 问答库数
+    "adminCount": 1
+}
+```
+

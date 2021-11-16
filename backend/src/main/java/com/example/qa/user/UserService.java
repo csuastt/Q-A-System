@@ -3,7 +3,6 @@ package com.example.qa.user;
 import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.order.model.Order;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -56,7 +55,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Page<User> listByRole(Collection<UserRole> role, Pageable pageable) {
+    public Page<User> listByRole(Collection<User.Role> role, Pageable pageable) {
         return role == null ? userRepository.findAll(pageable) : userRepository.findAllByRoleIn(role, pageable);
     }
 

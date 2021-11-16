@@ -4,20 +4,17 @@ import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
-import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.order.exchange.AnswerRequest;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
-import com.example.qa.order.model.OrderEndReason;
-import com.example.qa.order.model.OrderState;
+import com.example.qa.order.model.Order;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -69,7 +66,7 @@ class OrderControllerTest {
 
         registerRequest.setUsername("testAnswerer");
         User answerer = new User(registerRequest);
-        answerer.setRole(UserRole.ANSWERER);
+        answerer.setRole(User.Role.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
 
@@ -82,14 +79,14 @@ class OrderControllerTest {
 
         registerRequest.setUsername("testAnswerer2");
         User answerer2 = new User(registerRequest);
-        answerer2.setRole(UserRole.ANSWERER);
+        answerer2.setRole(User.Role.ANSWERER);
         userRepository.save(answerer2);
 //        answererId = answerer2.getId();
 
         AdminRequest adminRequest = new AdminRequest();
         adminRequest.setUsername("testAdmin");
         adminRequest.setPassword(passwordEncoder.encode(password));
-        adminRequest.setRole(AdminRole.ADMIN);
+        adminRequest.setRole(Admin.Role.ADMIN);
         Admin admin = new Admin(adminRequest);
         adminRepository.save(admin);
 
@@ -119,7 +116,7 @@ class OrderControllerTest {
 
         AdminRequest request = new AdminRequest();
         request.setUsername("testAdmin" + 1);
-        request.setRole(AdminRole.ADMIN);
+        request.setRole(Admin.Role.ADMIN);
         request.setPassword("password");
         mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         PasswordResponse passwordResponse = mockUtils.postAndDeserialize("/api/admins", superAdminToken, request, status().isOk(),PasswordResponse.class);
@@ -165,7 +162,7 @@ class OrderControllerTest {
         request.setAnswerer(answererId);
         request.setTitle(question);
         request.setDescription(description);
-        request.setEndReason(OrderEndReason.ASKER);
+        request.setEndReason(Order.EndReason.ASKER);
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/orders", askerToken, request, status().isOk());
         mockUtils.postUrl("/api/orders", superAdminToken, request, status().isOk());
@@ -193,7 +190,7 @@ class OrderControllerTest {
         assertEquals(result.getAnswerer().getId(), answererId);
         assertEquals(question, result.getQuestionTitle());
         assertEquals(description, result.getQuestionDescription());
-        assertEquals(OrderState.CREATED, result.getState());
+        assertEquals(Order.State.CREATED, result.getState());
 
         request.setPrice(Integer.MAX_VALUE);
         mockUtils.postUrl("/api/orders", null, request, status().isUnauthorized());
@@ -264,7 +261,7 @@ class OrderControllerTest {
         String newQuestion = "NewQuestion";
         OrderRequest request = new OrderRequest();
         request.setTitle(newQuestion);
-        request.setEndReason(OrderEndReason.ASKER);
+        request.setEndReason(Order.EndReason.ASKER);
         edit(id, request);
         request.setPrice(10);
         edit(id, request);
@@ -281,7 +278,7 @@ class OrderControllerTest {
     void reviewOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.CREATED);
+        request.setState(Order.State.CREATED);
         edit(id, request);
         AcceptRequest accept = new AcceptRequest(true);
         mockUtils.postUrl("/api/orders/" + id + "/review", superAdminToken, accept, status().isOk());
@@ -290,13 +287,13 @@ class OrderControllerTest {
         mockUtils.postUrl("/api/orders/" + id + "/review", adminToken, accept, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/review", askerToken, accept, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/review", null, accept, status().isUnauthorized());
-        assertEquals(OrderState.REVIEWED, query(id).getState());
+        assertEquals(Order.State.REVIEWED, query(id).getState());
     }
     @Test
     void reviewNotOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.CREATED);
+        request.setState(Order.State.CREATED);
         edit(id, request);
         AcceptRequest accept = new AcceptRequest(false);
         mockUtils.postUrl("/api/orders/" + id + "/review", superAdminToken, accept, status().isOk());
@@ -309,12 +306,12 @@ class OrderControllerTest {
     void answerOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.CREATED);
+        request.setState(Order.State.CREATED);
         edit(id, request);
         AnswerRequest answer = new AnswerRequest();
         answer.setAnswer("This is an answer");
         mockUtils.postUrl("/api/orders/" + id + "/answer", answererToken, answer, status().isForbidden());
-        request.setState(OrderState.ACCEPTED);
+        request.setState(Order.State.ACCEPTED);
         edit(id, request);
         mockUtils.postUrl("/api/orders/" + id + "/answer", answererToken, answer, status().isOk());
         mockUtils.postUrl("/api/orders/" + id + "/answer", answererToken2, answer, status().isForbidden());
@@ -332,24 +329,24 @@ class OrderControllerTest {
     void respondOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.REVIEWED);
+        request.setState(Order.State.REVIEWED);
         edit(id, request);
         AcceptRequest accept = new AcceptRequest(true);
         mockUtils.postUrl("/api/orders/" + id + "/respond", null, accept, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/respond", answererToken, accept, status().isOk());
-        assertEquals(OrderState.ACCEPTED, query(id).getState());
+        assertEquals(Order.State.ACCEPTED, query(id).getState());
     }
 
     @Test
     void noRespondOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.REVIEWED);
+        request.setState(Order.State.REVIEWED);
         edit(id, request);
         AcceptRequest accept = new AcceptRequest(false);
         mockUtils.postUrl("/api/orders/" + id + "/respond", null, accept, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/respond", answererToken, accept, status().isOk());
-        assertEquals(OrderState.REJECTED_BY_ANSWERER, query(id).getState());
+        assertEquals(Order.State.REJECTED_BY_ANSWERER, query(id).getState());
     }
 
 
@@ -365,25 +362,25 @@ class OrderControllerTest {
     void endOrder() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.ANSWERED);
+        request.setState(Order.State.ANSWERED);
         edit(id, request);
         mockUtils.postUrl("/api/orders/" + id + "/end", answererToken2, null, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/end", askerToken2, null, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/end", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/end", askerToken, null, status().isOk());
-        assertEquals(OrderState.CHAT_ENDED, query(id).getState());
+        assertEquals(Order.State.CHAT_ENDED, query(id).getState());
     }
 
     @Test
     void endOrderAnswer() throws Exception {
         long id = createOrder();
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.ANSWERED);
+        request.setState(Order.State.ANSWERED);
         edit(id, request);
         mockUtils.postUrl("/api/orders/" + id + "/end", null, null, status().isUnauthorized());
 //        mockUtils.postUrl("/api/orders/" + id + "/end", askerToken, null, status().isOk());
         mockUtils.postUrl("/api/orders/" + id + "/end", answererToken, null, status().isOk());
-        assertEquals(OrderState.CHAT_ENDED, query(id).getState());
+        assertEquals(Order.State.CHAT_ENDED, query(id).getState());
     }
 
     @Test
@@ -399,11 +396,11 @@ class OrderControllerTest {
         mockUtils.postUrl("/api/orders/" + id + "/cancel", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/cancel", askerToken, null, status().isOk());
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.REVIEWED);
+        request.setState(Order.State.REVIEWED);
         edit(id, request);
         mockUtils.postUrl("/api/orders/" + id + "/cancel", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/cancel", askerToken, null, status().isOk());
-        assertEquals(OrderState.CANCELLED, query(id).getState());
+        assertEquals(Order.State.CANCELLED, query(id).getState());
     }
 
     @Test
@@ -411,7 +408,7 @@ class OrderControllerTest {
         long id = createOrder();
         mockUtils.postUrl("/api/orders/" + id + "/cancel", null, null, status().isUnauthorized());
         OrderRequest request = new OrderRequest();
-        request.setState(OrderState.ACCEPTED);
+        request.setState(Order.State.ACCEPTED);
         edit(id, request);
         mockUtils.postUrl("/api/orders/" + id + "/cancel", askerToken, null, status().isForbidden());
     }

@@ -3,7 +3,6 @@ package com.example.qa.test;
 import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.Admin;
-import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.im.IMService;
@@ -13,12 +12,10 @@ import com.example.qa.order.OrderService;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -91,14 +88,14 @@ class IMControllerTest {
 
         registerRequest.setUsername("testAnswerer5");
         answerer = new User(registerRequest);
-        answerer.setRole(UserRole.ANSWERER);
+        answerer.setRole(User.Role.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
 
         AdminRequest adminRequest = new AdminRequest();
         adminRequest.setUsername("testAdmin5");
         adminRequest.setPassword(passwordEncoder.encode(password));
-        adminRequest.setRole(AdminRole.ADMIN);
+        adminRequest.setRole(Admin.Role.ADMIN);
         Admin admin = new Admin(adminRequest);
         adminRepository.save(admin);
 
@@ -111,7 +108,7 @@ class IMControllerTest {
 
         registerRequest.setUsername("testAnswerer6");
         User answerer2 = new User(registerRequest);
-        answerer2.setRole(UserRole.ANSWERER);
+        answerer2.setRole(User.Role.ANSWERER);
         userRepository.save(answerer2);
         answererId2 = answerer2.getId();
 
@@ -163,7 +160,7 @@ class IMControllerTest {
         user.setId(1L);
         user.setUsername("aa");
         user.setPassword("aaaa");
-        user.setRole(UserRole.ANSWERER);
+        user.setRole(User.Role.ANSWERER);
         OrderRequest request = new OrderRequest();
         request.setAsker(askerId);
         request.setAnswerer(answererId);
@@ -185,20 +182,20 @@ class IMControllerTest {
         orderService.listByReviewed();
         orderService.clearExpirations();
 
-        order.setState(OrderState.ACCEPTED);
+        order.setState(Order.State.ACCEPTED);
         orderRepo.save(order);
 
-        order.setState(OrderState.REVIEWED);
+        order.setState(Order.State.REVIEWED);
         orderRepo.save(order);
 
-        order.setState(OrderState.ANSWERED);
+        order.setState(Order.State.ANSWERED);
         orderRepo.save(order);
         imService.sendFromUser(order, asker, ZonedDateTime.now(), "1234567");
 
-        order.setState(OrderState.CHAT_ENDED);
+        order.setState(Order.State.CHAT_ENDED);
         orderRepo.save(order);
 
-        order.setState(OrderState.CANCELLED);
+        order.setState(Order.State.CANCELLED);
         orderRepo.save(order);
 
         mockUtils.getUrl("/api/im/history/" + order.getId(), askerToken, null, null, status().isOk());

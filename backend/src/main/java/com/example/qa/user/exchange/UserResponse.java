@@ -1,8 +1,6 @@
 package com.example.qa.user.exchange;
 
-import com.example.qa.user.model.Gender;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -22,12 +20,12 @@ public class UserResponse {
     private String nickname;
     private String email;
     private String phone;
-    private Gender gender;
+    private User.Gender gender;
     private Integer price;
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
-    private UserRole role;
+    private User.Role role;
     private Integer balance;
     private Integer askCount;
     private Integer answerCount;
@@ -43,7 +41,7 @@ public class UserResponse {
         username = user.getUsername();
         nickname = user.getNickname();
         description = user.getDescription();
-        if (user.getRole() == UserRole.ANSWERER) {
+        if (user.getRole() == User.Role.ANSWERER) {
             price = user.getPrice();
             ratingCount = user.getRatingCount();
             ratingTotal = user.getRatingTotal();

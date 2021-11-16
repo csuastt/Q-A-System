@@ -1,7 +1,7 @@
 package com.example.qa.order;
 
 import com.example.qa.admin.AdminService;
-import com.example.qa.admin.model.AdminRole;
+import com.example.qa.admin.model.Admin;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ValueRequest;
@@ -11,12 +11,9 @@ import com.example.qa.notification.model.Notification;
 import com.example.qa.order.exchange.*;
 import com.example.qa.order.model.Attachment;
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderEndReason;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.order.storage.StorageService;
 import com.example.qa.user.UserService;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.FieldValidator;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -147,18 +144,18 @@ public class OrderController {
     @PostMapping("/{id}/review")
     public void reviewOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         authLoginOrThrow();
-        if (!authIsAdmin() || adminService.getById(authGetId(), false).getRole() == AdminRole.ADMIN) {
+        if (!authIsAdmin() || adminService.getById(authGetId(), false).getRole() == Admin.Role.ADMIN) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         Order order = getByIdOrThrow(id, false);
-        if (order.getState() != OrderState.CREATED) {
+        if (order.getState() != Order.State.CREATED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
         }
         if (data.isAccept()) {
-            order.setState(OrderState.REVIEWED);
+            order.setState(Order.State.REVIEWED);
             order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getRespondExpirationSeconds()));
         } else {
-            order.setState(OrderState.REJECTED_BY_REVIEWER);
+            order.setState(Order.State.REJECTED_BY_REVIEWER);
             userService.refund(order);
         }
         order.setReviewed(true);
@@ -172,14 +169,14 @@ public class OrderController {
         authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
         authUserOrThrow(order.getAnswerer().getId());
-        if (order.getState() != OrderState.REVIEWED) {
+        if (order.getState() != Order.State.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
         }
         if (data.isAccept()) {
-            order.setState(OrderState.ACCEPTED);
+            order.setState(Order.State.ACCEPTED);
             order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getAnswerExpirationSeconds()));
         } else {
-            order.setState(OrderState.REJECTED_BY_ANSWERER);
+            order.setState(Order.State.REJECTED_BY_ANSWERER);
             userService.refund(order);
         }
         order = orderService.save(order);
@@ -190,24 +187,24 @@ public class OrderController {
     public void endChat(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
-        OrderEndReason reason;
+        Order.EndReason reason;
         if (authIsUser(order.getAsker().getId())) {
-            reason = OrderEndReason.ASKER;
+            reason = Order.EndReason.ASKER;
         } else if (authIsUser(order.getAnswerer().getId())) {
-            reason = OrderEndReason.ANSWERER;
+            reason = Order.EndReason.ANSWERER;
         } else {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
-        if (order.getState() != OrderState.ANSWERED) {
+        if (order.getState() != Order.State.ANSWERED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_ENDED");
         }
-        order.setState(OrderState.CHAT_ENDED);
+        order.setState(Order.State.CHAT_ENDED);
         order.setEndReason(reason);
         order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
         order = orderService.save(order);
         notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
         notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
-        imService.sendFromSystem(order, (reason == OrderEndReason.ASKER ? "提问者" : "回答者") + "已结束聊天");
+        imService.sendFromSystem(order, (reason == Order.EndReason.ASKER ? "提问者" : "回答者") + "已结束聊天");
     }
 
     @PostMapping("/{id}/cancel")
@@ -216,12 +213,12 @@ public class OrderController {
         Order order = getByIdOrThrow(id, false);
         User asker = order.getAsker();
         authUserOrThrow(asker.getId());
-        if (order.getState() != OrderState.CREATED
-                && order.getState() != OrderState.REVIEWED) {
+        if (order.getState() != Order.State.CREATED
+                && order.getState() != Order.State.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_CANCEL");
         }
         userService.refund(order);
-        order.setState(OrderState.CANCELLED);
+        order.setState(Order.State.CANCELLED);
         orderService.save(order);
     }
 
@@ -231,11 +228,11 @@ public class OrderController {
         Order order = getByIdOrThrow(id, false);
         User answerer = order.getAnswerer();
         authUserOrThrow(answerer.getId());
-        if (order.getState() != OrderState.ACCEPTED) {
+        if (order.getState() != Order.State.ACCEPTED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_ANSWER");
         }
         order.setAnswer(request.getAnswer());
-        order.setState(OrderState.ANSWERED);
+        order.setState(Order.State.ANSWERED);
         order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getMaxChatTimeSeconds()));
         order = orderService.save(order);
         answerer.setAnswerCount(answerer.getAnswerCount() + 1);
@@ -251,7 +248,7 @@ public class OrderController {
         authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
         authUserOrThrow(order.getAsker().getId());
-        if (order.getRating() > 0 || !OrderState.completedOrderStates.contains(order.getState())) {
+        if (order.getRating() > 0 || !Order.State.completedOrderStates.contains(order.getState())) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_RATE");
         }
         order.setRating(request.getValue());
@@ -269,7 +266,7 @@ public class OrderController {
             @RequestParam(required = false) Long answerer,
             @RequestParam(required = false) Boolean finished,
             @RequestParam(required = false) Boolean reviewed,
-            @RequestParam(required = false) List<OrderState> state,
+            @RequestParam(required = false) List<Order.State> state,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(required = false) Sort.Direction sortDirection
@@ -333,7 +330,7 @@ public class OrderController {
         long newAnswerer = data.getAnswerer();
         if (newAsker == newAnswerer
                 || !userService.existsById(newAnswerer)
-                || userService.getById(newAnswerer).getRole() != UserRole.ANSWERER) {
+                || userService.getById(newAnswerer).getRole() != User.Role.ANSWERER) {
             throw new ApiException(HttpStatus.FORBIDDEN, "ANSWERER_INVALID");
         }
         if (!FieldValidator.length
