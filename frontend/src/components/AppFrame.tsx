@@ -266,7 +266,9 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["创建", "/admins/create", <PersonAddIcon />],
                           ["收入统计", "/admins/income", <EqualizerIcon />],
                       ])
-                    : renderDrawerList([["平台须知", "/help", <HelpIcon />]])}
+                    : renderDrawerList([
+                          ["平台须知", "/admins/help", <HelpIcon />],
+                      ])}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />

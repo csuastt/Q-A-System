@@ -2,7 +2,12 @@ import Button from "@mui/material/Button";
 import CardActionArea from "@mui/material/CardActionArea";
 import React, { useEffect, useState } from "react";
 import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
-import { OrderInfo, OrderState, PagedList } from "../services/definations";
+import {
+    OrderInfo,
+    OrderState,
+    PagedList,
+    SortDirection,
+} from "../services/definations";
 import orderService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -14,6 +19,8 @@ import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 import userService from "../services/userService";
 import { Link as RouterLink } from "react-router-dom";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 interface ReviewListProps {
     filterFinished?: boolean;
@@ -51,6 +58,27 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
+    };
+
+    const timeAsc = () => {
+        orderService
+            .getAllOrderListByAdmin(
+                currentPage,
+                itemPrePage,
+                SortDirection.ASC,
+                OrderState.CREATED
+            )
+            .then(acceptOrderList);
+    };
+    const timeDesc = () => {
+        orderService
+            .getAllOrderListByAdmin(
+                currentPage,
+                itemPrePage,
+                SortDirection.DESC,
+                OrderState.CREATED
+            )
+            .then(acceptOrderList);
     };
 
     const renderCardPlaceholder = () => (
@@ -204,7 +232,32 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         );
     }
     return (
-        <Box>{orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}</Box>
+        <>
+            <Stack direction="row" spacing={3} mt={3}>
+                <Button
+                    onClick={timeAsc}
+                    startIcon={<ArrowUpwardIcon />}
+                    color="success"
+                    variant="outlined"
+                    size="small"
+                >
+                    时间顺序
+                </Button>
+                <Button
+                    onClick={timeDesc}
+                    startIcon={<ArrowDownwardIcon />}
+                    color="warning"
+                    variant="outlined"
+                    size="small"
+                >
+                    时间倒序
+                </Button>
+            </Stack>
+
+            <Box marginTop={1.4}>
+                {orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}
+            </Box>
+        </>
     );
 };
 

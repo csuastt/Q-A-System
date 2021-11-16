@@ -20,6 +20,7 @@ import PathParamParser from "./PathParamParser";
 import OrderDetailForAdmin from "./components/OrderDetailForAdmin";
 import SystemSettings from "./components/SystemSettings";
 import IncomeStatistics from "./components/IncomeStatistics";
+import Help from "./components/Help";
 
 const managerTheme: Theme = createTheme({
     palette: {
@@ -83,6 +84,7 @@ export default function AppManage() {
                 isAdmin={true}
             />,
         ],
+        ["/admins/help", <Help />],
         ["/admins/", <HelloAdmin />],
     ];
 

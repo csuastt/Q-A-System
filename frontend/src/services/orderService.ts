@@ -5,6 +5,7 @@ import {
     OrderInfo,
     OrderState,
     PagedList,
+    SortDirection,
 } from "./definations";
 
 class OrderService {
@@ -46,13 +47,17 @@ class OrderService {
 
     getAllOrderListByAdmin(
         page: number,
-        pageSize: number
+        pageSize: number,
+        sortDirection?: SortDirection,
+        state?: OrderState
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
                 params: {
                     page: page,
                     pageSize: pageSize,
+                    sortDirection: sortDirection,
+                    state: state,
                 },
             })
             .then((response) => response.data);
