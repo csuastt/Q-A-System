@@ -43,6 +43,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     const [maxPage, setMaxPage] = useState(currentPage);
     const [longPending, setLongPending] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
+    const [filterReviewed, setFilterReviewed] = useState(false);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setOrderList(list.data);
@@ -70,18 +71,70 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     };
 
     const timeAsc = () => {
-        orderService
-            .getAllOrderListByAdmin(currentPage, itemPrePage, SortDirection.ASC)
-            .then(acceptOrderList);
+        if (filterReviewed) {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC,
+                    OrderState.CREATED
+                )
+                .then(acceptOrderList);
+        } else {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC
+                )
+                .then(acceptOrderList);
+        }
     };
     const timeDesc = () => {
-        orderService
-            .getAllOrderListByAdmin(
-                currentPage,
-                itemPrePage,
-                SortDirection.DESC
-            )
-            .then(acceptOrderList);
+        if (filterReviewed) {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.DESC,
+                    OrderState.CREATED
+                )
+                .then(acceptOrderList);
+        } else {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.DESC
+                )
+                .then(acceptOrderList);
+        }
+    };
+
+    const onFilterChanged = (
+        event: React.MouseEvent<HTMLElement>,
+        value: boolean
+    ) => {
+        if (value) {
+            setFilterReviewed(value);
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC,
+                    OrderState.CREATED
+                )
+                .then(acceptOrderList);
+        } else {
+            setFilterReviewed(value);
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC
+                )
+                .then(acceptOrderList);
+        }
     };
 
     const renderCardPlaceholder = () => (
@@ -193,9 +246,9 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
         <>
             <Stack direction="row" spacing={3} mt={3}>
                 <ToggleButtonGroup
-                    // value={filterUnread}
+                    value={filterReviewed}
                     exclusive
-                    // onChange={onFilterChanged}
+                    onChange={onFilterChanged}
                     size="small"
                 >
                     <ToggleButton value={true}>等待审核</ToggleButton>
@@ -205,7 +258,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                     onClick={timeAsc}
                     startIcon={<ArrowUpwardIcon />}
                     color="success"
-                    variant="contained"
+                    variant="outlined"
                     size="small"
                 >
                     时间顺序
