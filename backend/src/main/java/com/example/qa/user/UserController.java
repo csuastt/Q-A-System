@@ -109,9 +109,9 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}/avatar", produces = MediaType.IMAGE_PNG_VALUE)
-    public Resource downloadImage(@PathVariable(value = "id") Long id)  {
+    public Resource downloadImage(@PathVariable(value = "id") Long id) {
         byte[] image = userService.getById(id).getAvatar();
-        if(image == null)
+        if (image == null)
             throw new ApiException(HttpStatus.NOT_FOUND, "No Avatar Found");
         return new ByteArrayResource(image);
     }
@@ -124,7 +124,7 @@ public class UserController {
         try {
             user.setAvatar(multipartFile.getBytes());
             userService.save(user);
-        } catch (IOException exception){
+        } catch (IOException exception) {
             throw new ApiException(HttpStatus.FORBIDDEN, "Upload File Not Valid");
         }
     }

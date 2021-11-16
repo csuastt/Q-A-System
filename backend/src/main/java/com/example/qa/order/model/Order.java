@@ -35,6 +35,7 @@ public class Order {
     private boolean reviewed = false;
     private ZonedDateTime createTime;
     private ZonedDateTime expireTime;
+    private ZonedDateTime notifyTime;
     private OrderEndReason endReason = OrderEndReason.UNKNOWN;
     private String questionTitle;
     @Lob
@@ -45,6 +46,7 @@ public class Order {
     private String answer;
     private int price;
     private boolean showPublic = false;
+    private int messageCount = 0;
 
     @ElementCollection
     private List<Attachment> attachmentList;
@@ -75,6 +77,13 @@ public class Order {
             } else {
                 visibleToAnswerer = state.isVisibleToAnswerer();
             }
+        }
+    }
+
+    public void setExpireTime(ZonedDateTime expireTime) {
+        this.expireTime = expireTime;
+        if (state == OrderState.REVIEWED || state == OrderState.ACCEPTED) {
+            this.notifyTime = expireTime.minusHours(1);
         }
     }
 

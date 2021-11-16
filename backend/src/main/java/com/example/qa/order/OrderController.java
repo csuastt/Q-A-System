@@ -4,6 +4,9 @@ import com.example.qa.admin.AdminService;
 import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
+import com.example.qa.im.IMService;
+import com.example.qa.notification.NotificationService;
+import com.example.qa.notification.model.Notification;
 import com.example.qa.order.exchange.*;
 import com.example.qa.order.model.Attachment;
 import com.example.qa.order.model.Order;
@@ -39,12 +42,16 @@ public class OrderController {
     private final OrderService orderService;
     private final AdminService adminService;
     private final StorageService storageService;
+    private final NotificationService notificationService;
+    private final IMService imService;
 
-    public OrderController(UserService userService, OrderService orderService, AdminService adminService, StorageService storageService) {
+    public OrderController(UserService userService, OrderService orderService, AdminService adminService, StorageService storageService, NotificationService notificationService, IMService imService) {
         this.userService = userService;
         this.orderService = orderService;
         this.adminService = adminService;
         this.storageService = storageService;
+        this.notificationService = notificationService;
+        this.imService = imService;
     }
 
     @PostMapping
@@ -112,7 +119,6 @@ public class OrderController {
                 "attachment; filename*=UTF-8''" + storageService.getNameByUUID(uuid)).body(file);
     }
 
-
     @PostMapping("/{id}/attachments")
     @ResponseBody
     public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile) {
@@ -155,7 +161,9 @@ public class OrderController {
             userService.refund(order);
         }
         order.setReviewed(true);
-        orderService.save(order);
+        order = orderService.save(order);
+        notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
+        notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
     }
 
     @PostMapping("/{id}/respond")
@@ -173,7 +181,8 @@ public class OrderController {
             order.setState(OrderState.REJECTED_BY_ANSWERER);
             userService.refund(order);
         }
-        orderService.save(order);
+        order = orderService.save(order);
+        notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
     }
 
     @PostMapping("/{id}/end")
@@ -194,7 +203,10 @@ public class OrderController {
         order.setState(OrderState.CHAT_ENDED);
         order.setEndReason(reason);
         order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
-        orderService.save(order);
+        order = orderService.save(order);
+        notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
+        notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
+        imService.sendFromSystem(order, (reason == OrderEndReason.ASKER ? "提问者" : "回答者") + "已结束聊天");
     }
 
     @PostMapping("/{id}/cancel")
@@ -232,6 +244,7 @@ public class OrderController {
         User asker = order.getAsker();
         asker.setAskCount(asker.getAskCount() + 1);
         userService.save(asker);
+        notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
     }
 
     @GetMapping
@@ -259,25 +272,27 @@ public class OrderController {
         if (Boolean.TRUE.equals(showPublic)) {
             // keyword == null 时列出所有公开订单
             result = orderService.listByPublic(keyword);
-        } else {
-            authLoginOrThrow();
-            if (isAdmin) {
-                if (Boolean.TRUE.equals(reviewed)) {
-                    result = orderService.listByReviewed();
-                } else {
-                    // state == null 时列出所有订单，包含已删除
-                    result = orderService.listByState(state);
-                }
+            OrderListResponse response = new OrderListResponse(result, 0);
+            response.setTimeMillis(System.currentTimeMillis() - startTime);
+            return response;
+        }
+        authLoginOrThrow();
+        if (isAdmin) {
+            if (Boolean.TRUE.equals(reviewed)) {
+                result = orderService.listByReviewed();
             } else {
-                if (asker != null && authIsUser(asker)) {
-                    // finished == null 时列出所有该用户的订单
-                    result = orderService.listByAsker(userService.getById(asker), finished);
-                } else if (answerer != null && authIsUser(answerer)) {
-                    // finished == null 时列出所有该用户的订单
-                    result = orderService.listByAnswerer(userService.getById(answerer), finished);
-                } else {
-                    throw new ApiException(403, ApiException.NO_PERMISSION);
-                }
+                // state == null 时列出所有订单，包含已删除
+                result = orderService.listByState(state);
+            }
+        } else {
+            if (asker != null && authIsUser(asker)) {
+                // finished == null 时列出所有该用户的订单
+                result = orderService.listByAsker(userService.getById(asker), finished);
+            } else if (answerer != null && authIsUser(answerer)) {
+                // finished == null 时列出所有该用户的订单
+                result = orderService.listByAnswerer(userService.getById(answerer), finished);
+            } else {
+                throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
         OrderListResponse response = new OrderListResponse(result, authIsAdmin() ? 2 : 0);

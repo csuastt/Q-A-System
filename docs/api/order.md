@@ -20,6 +20,7 @@
 | answer              | string         |                                            | 请求详细信息才会返回 |
 | price               | int            |                                            |                      |
 | showPublic          | boolean        |                                            | 公开问题             |
+| messageCount        | int            |                                            | 聊天消息条数         |
 
 ### OrderState (enum)
 
