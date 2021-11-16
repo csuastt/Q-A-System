@@ -316,7 +316,6 @@ export default class Login extends Component<LoginProps, LoginState> {
                                         请联系超级管理员
                                     </Link>
                                 </Typography>
-
                             ) : (
                                 <Typography
                                     variant="body2"

@@ -16,7 +16,7 @@ import List from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
-import {Badge, FormControlLabel, ListItem, ListItemButton, Switch} from "@mui/material";
+import { Badge, FormControlLabel, ListItemButton, Switch } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -40,7 +40,7 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import HelpIcon from "@mui/icons-material/Help";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useNotification } from "./NotificationController";
-import {ColorModeContext} from "../App";
+import { ColorModeContext } from "../App";
 
 const drawerWidth = 240;
 
@@ -200,15 +200,18 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     >
                         {props.isAdmin ? "问客管理员系统" : "问客"}
                     </Typography>
-                    {!props.isAdmin &&
-                        <FormControlLabel control={
-                            <Switch
-                                checked={theme.palette.mode === 'dark'}
-                                onChange={toggleColorMode}
-                                inputProps={{ 'aria-label': 'controlled' }}
-                            />
-                        } label="夜间模式" />
-                    }
+                    {!props.isAdmin && (
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={theme.palette.mode === "dark"}
+                                    onChange={toggleColorMode}
+                                    inputProps={{ "aria-label": "controlled" }}
+                                />
+                            }
+                            label="夜间模式"
+                        />
+                    )}
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={drawerOpen}>
@@ -277,9 +280,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["创建", "/admins/create", <PersonAddIcon />],
                           ["收入统计", "/admins/income", <EqualizerIcon />],
                       ])
-                    : renderDrawerList([
-                          ["平台须知", "/admins/help", <HelpIcon />],
-                      ])}
+                    : renderDrawerList([["平台须知", "/help", <HelpIcon />]])}
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
