@@ -1,15 +1,14 @@
 package com.example.qa.test;
 
 import com.example.qa.admin.exchange.AdminRequest;
-import com.example.qa.admin.model.AdminRole;
+import com.example.qa.admin.model.Admin;
 import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.exchange.UserRequest;
-import com.example.qa.user.model.Gender;
-import com.example.qa.user.model.UserRole;
+import com.example.qa.user.model.User;
 import com.example.qa.utils.MockUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -64,19 +63,19 @@ class AdminControllerTest {
         mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
         request.setUsername("testAdmin" + adminCounter++);
-        request.setRole(AdminRole.ADMIN);
+        request.setRole(Admin.Role.ADMIN);
         mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
-        request.setRole(AdminRole.SUPER_ADMIN);
+        request.setRole(Admin.Role.SUPER_ADMIN);
         mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
         request.setUsername("@testUser" + adminCounter++);
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
         request.setUsername("testUser" + adminCounter);
-        request.setRole(AdminRole.REVIEWER);
+        request.setRole(Admin.Role.REVIEWER);
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isOk());
         request.setUsername("testUser" + adminCounter);
-        request.setRole(AdminRole.REVIEWER);
+        request.setRole(Admin.Role.REVIEWER);
         mockUtils.postUrl("/api/admins", superAdminToken, request, status().isForbidden());
     }
 
@@ -92,14 +91,14 @@ class AdminControllerTest {
         long id = 2;
         String username = "testAdminUser";
         String password = "passW";
-        AdminRole role = AdminRole.REVIEWER;
+        Admin.Role role = Admin.Role.REVIEWER;
         AdminRequest request = new AdminRequest();
         request.setUsername(username);
         request.setPassword(password);
         request.setRole(role);
         mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isOk());
         mockUtils.putUrl("/api/admins/" + 1, superAdminToken ,request, status().isForbidden());
-        request.setRole(AdminRole.SUPER_ADMIN);
+        request.setRole(Admin.Role.SUPER_ADMIN);
         mockUtils.putUrl("/api/admins/" + id, superAdminToken ,request, status().isForbidden());
 
         ChangePasswordRequest request1 = new ChangePasswordRequest();
@@ -140,11 +139,11 @@ class AdminControllerTest {
 
         userRequest.setNickname(null);
         userRequest.setPhone("example");
-        userRequest.setGender(Gender.MALE);
+        userRequest.setGender(User.Gender.MALE);
         userRequest.setPrice(50);
         userRequest.setDescription("MyDescription");
         userRequest.setEmail("177@qq.com");
-        userRequest.setRole(UserRole.ANSWERER);
+        userRequest.setRole(User.Role.ANSWERER);
         userRequest.setBalance(200);
         mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
 

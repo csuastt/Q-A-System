@@ -2,7 +2,6 @@ package com.example.qa.admin;
 
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.Admin;
-import com.example.qa.admin.model.AdminRole;
 import com.example.qa.security.SecurityConstants;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +24,7 @@ public class AdminService {
                     new AdminRequest(
                             SecurityConstants.SUPER_ADMIN_USERNAME,
                             passwordEncoder.encode(SecurityConstants.SUPER_ADMIN_PASSWORD),
-                            AdminRole.SUPER_ADMIN
+                            Admin.Role.SUPER_ADMIN
                     )
             );
             save(admin);
@@ -36,7 +35,7 @@ public class AdminService {
         adminRepository.save(admin);
     }
 
-    public Page<Admin> listByRole(Collection<AdminRole> role, Pageable pageable) {
+    public Page<Admin> listByRole(Collection<Admin.Role> role, Pageable pageable) {
         return adminRepository.findAllByRoleIn(role, pageable);
     }
 

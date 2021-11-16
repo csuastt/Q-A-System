@@ -5,8 +5,6 @@ import com.example.qa.im.IMService;
 import com.example.qa.notification.NotificationService;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderEndReason;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserService;
 import com.example.qa.user.model.User;
 import lombok.Setter;
@@ -22,8 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.qa.order.model.OrderState.ANSWERED;
-import static com.example.qa.order.model.OrderState.completedOrderStates;
+import static com.example.qa.order.model.Order.State.ANSWERED;
+import static com.example.qa.order.model.Order.State.completedOrderStates;
 
 @Log4j2
 @Service
@@ -62,7 +60,7 @@ public class OrderService {
                 orderRepository.findAllByDeletedAndVisibleToAnswererAndAnswererAndFinished(false, true, answerer, finished, pageRequest);
     }
 
-    public Page<Order> listByState(Collection<OrderState> state) {
+    public Page<Order> listByState(Collection<Order.State> state) {
         return state == null ?
                 orderRepository.findAll(pageRequest) :
                 orderRepository.findAllByDeletedAndStateIn(false, state, pageRequest);
@@ -96,35 +94,35 @@ public class OrderService {
 
     public void handleExpiration(Order order) {
         log.info("Order #{} expired", order.getId());
-        if (order.getState() == OrderState.REVIEWED) {
-            order.setState(OrderState.RESPOND_TIMEOUT);
+        if (order.getState() == Order.State.REVIEWED) {
+            order.setState(Order.State.RESPOND_TIMEOUT);
             userService.refund(order);
             order.setExpireTime(null);
             order = save(order);
             notificationService.send(Notification.ofDeadlineOrTimeout(
                     order.getAnswerer(), order, Notification.Type.ACCEPT_TIMEOUT, order.getExpireTime()
             ));
-        } else if (order.getState() == OrderState.ACCEPTED) {
-            order.setState(OrderState.ANSWER_TIMEOUT);
+        } else if (order.getState() == Order.State.ACCEPTED) {
+            order.setState(Order.State.ANSWER_TIMEOUT);
             userService.refund(order);
             order.setExpireTime(null);
             order = save(order);
             notificationService.send(Notification.ofDeadlineOrTimeout(
                     order.getAnswerer(), order, Notification.Type.ANSWER_TIMEOUT, order.getExpireTime()
             ));
-        } else if (order.getState() == OrderState.ANSWERED) {
-            order.setState(OrderState.CHAT_ENDED);
-            order.setEndReason(OrderEndReason.TIME_LIMIT);
+        } else if (order.getState() == Order.State.ANSWERED) {
+            order.setState(Order.State.CHAT_ENDED);
+            order.setEndReason(Order.EndReason.TIME_LIMIT);
             order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
             order = save(order);
             imService.sendFromSystem(order, "达到聊天时间上限，系统自动结束聊天");
             notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
             notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
-        } else if (order.getState() == OrderState.CHAT_ENDED) {
+        } else if (order.getState() == Order.State.CHAT_ENDED) {
             int fee = order.getPrice() * SystemConfig.getFeeRate() / 100;
             userService.addEarnings(order.getAnswerer(), order.getPrice() - fee);
             SystemConfig.incEarnings(fee);
-            order.setState(OrderState.FULFILLED);
+            order.setState(Order.State.FULFILLED);
             order.setExpireTime(null);
             order = save(order);
             notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
@@ -137,11 +135,11 @@ public class OrderService {
     public void handleNotify(Order order) {
         order.setNotifyTime(null);
         order = save(order);
-        if (order.getState() == OrderState.REVIEWED) {
+        if (order.getState() == Order.State.REVIEWED) {
             notificationService.send(Notification.ofDeadlineOrTimeout(
                     order.getAnswerer(), order, Notification.Type.ACCEPT_DEADLINE, order.getExpireTime()
             ));
-        } else if (order.getState() == OrderState.ACCEPTED) {
+        } else if (order.getState() == Order.State.ACCEPTED) {
             notificationService.send(Notification.ofDeadlineOrTimeout(
                     order.getAnswerer(), order, Notification.Type.ANSWER_DEADLINE, order.getExpireTime()
             ));
@@ -153,8 +151,8 @@ public class OrderService {
         order.setMessageCount(order.getMessageCount() + 1);
         order = save(order);
         if (order.getState() == ANSWERED && order.getMessageCount() >= SystemConfig.getMaxChatMessages()) {
-            order.setState(OrderState.CHAT_ENDED);
-            order.setEndReason(OrderEndReason.MESSAGE_LIMIT);
+            order.setState(Order.State.CHAT_ENDED);
+            order.setEndReason(Order.EndReason.MESSAGE_LIMIT);
             order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
             order = save(order);
             imService.sendFromSystem(order, "聊天消息数量达到上限，系统自动结束聊天");

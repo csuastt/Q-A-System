@@ -3,12 +3,9 @@ package com.example.qa;
 import com.example.qa.order.OrderRepository;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderEndReason;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -45,18 +42,18 @@ public class DevelopmentDataLoader implements ApplicationRunner {
         var question = "为什么随机字符串是 " + RandomStringUtils.random(5, true, false) + "？";
         data.setTitle(question);
         data.setDescription("顺便问一下为什么 $ \\int_0^1 x dx = \\frac 1 2 $？");
-        data.setState(OrderState.values()[random.nextInt(OrderState.values().length)]);
-        if (data.getState() == OrderState.ANSWERED) {
+        data.setState(Order.State.values()[random.nextInt(Order.State.values().length)]);
+        if (data.getState() == Order.State.ANSWERED) {
             data.setAnswer(ANSWER);
-        } else if (data.getState() == OrderState.CHAT_ENDED || data.getState() == OrderState.FULFILLED) {
+        } else if (data.getState() == Order.State.CHAT_ENDED || data.getState() == Order.State.FULFILLED) {
             data.setAnswer(ANSWER);
-            data.setEndReason(OrderEndReason.values()[random.nextInt(OrderEndReason.values().length)]);
+            data.setEndReason(Order.EndReason.values()[random.nextInt(Order.EndReason.values().length)]);
         }
         var order = new Order(data, asker, answerer, true);
-        if (order.getState() == OrderState.REVIEWED || order.getState() == OrderState.ACCEPTED || order.getState() == OrderState.ANSWERED || order.getState() == OrderState.CHAT_ENDED) {
+        if (order.getState() == Order.State.REVIEWED || order.getState() == Order.State.ACCEPTED || order.getState() == Order.State.ANSWERED || order.getState() == Order.State.CHAT_ENDED) {
             order.setExpireTime(ZonedDateTime.now().plusWeeks(1));
         }
-        if (OrderState.completedOrderStates.contains(order.getState())) {
+        if (Order.State.completedOrderStates.contains(order.getState())) {
             order.setRating(random.nextInt(6));
         }
         order.setShowPublic(random.nextBoolean());
@@ -74,7 +71,7 @@ public class DevelopmentDataLoader implements ApplicationRunner {
     }
 
     private User makeAnswerer(User user) {
-        user.setRole(UserRole.ANSWERER);
+        user.setRole(User.Role.ANSWERER);
         user.setPrice(random.nextInt(100) + 1);
         user.setDescription("我是" + user.getNickname() + "EwbkK8TU" + "领域" + random.nextInt(10));
         user.setAnswerCount(random.nextInt(20));

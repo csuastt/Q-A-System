@@ -1,6 +1,6 @@
 package com.example.qa.admin.exchange;
 
-import com.example.qa.admin.model.AdminRole;
+import com.example.qa.admin.model.Admin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +13,5 @@ import lombok.Setter;
 public class AdminRequest {
     private String username;
     private String password;
-    private AdminRole role;
+    private Admin.Role role;
 }

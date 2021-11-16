@@ -1,7 +1,6 @@
 package com.example.qa.admin.exchange;
 
 import com.example.qa.admin.model.Admin;
-import com.example.qa.admin.model.AdminRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ public class AdminResponse {
     private String username;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
-    private AdminRole role;
+    private Admin.Role role;
 
     public AdminResponse(Admin admin) {
         id = admin.getId();

@@ -6,7 +6,6 @@ import com.example.qa.notification.NotificationService;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.order.OrderService;
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.user.model.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class IMService {
     }
 
     public final void sendFromUser(Order order, User sender, ZonedDateTime sendTime, String body) {
-        if (order.getState() != OrderState.ANSWERED) {
+        if (order.getState() != Order.State.ANSWERED) {
             log.warn("Discard IMMessage: Order State {} is not ANSWERED.", order.getState());
             return;
         }

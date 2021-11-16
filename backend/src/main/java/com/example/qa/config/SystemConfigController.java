@@ -1,13 +1,13 @@
 package com.example.qa.config;
 
 import com.example.qa.admin.AdminService;
-import com.example.qa.admin.model.AdminRole;
+import com.example.qa.admin.model.Admin;
 import com.example.qa.exchange.EarningsResponse;
 import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.order.OrderService;
-import com.example.qa.order.model.OrderState;
+import com.example.qa.order.model.Order;
 import com.example.qa.user.UserService;
-import com.example.qa.user.model.UserRole;
+import com.example.qa.user.model.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,12 +56,12 @@ public class SystemConfigController {
         SystemStatsResponse response = new SystemStatsResponse();
         PageRequest pageRequest = PageRequest.of(0, 1);
         response.setUserCount(userService.listByRole(null, pageRequest).getTotalElements());
-        response.setAnswererCount(userService.listByRole(List.of(UserRole.ANSWERER), pageRequest).getTotalElements());
+        response.setAnswererCount(userService.listByRole(List.of(User.Role.ANSWERER), pageRequest).getTotalElements());
         orderService.setPageRequest(pageRequest);
         response.setOrderCount(orderService.listByState(null).getTotalElements());
-        response.setOrderToReviewCount(orderService.listByState(List.of(OrderState.CREATED)).getTotalElements());
+        response.setOrderToReviewCount(orderService.listByState(List.of(Order.State.CREATED)).getTotalElements());
         response.setPublicOrderCount(orderService.listByPublic(null).getTotalElements());
-        response.setAdminCount(adminService.listByRole(Arrays.asList(AdminRole.values()), pageRequest).getTotalElements());
+        response.setAdminCount(adminService.listByRole(Arrays.asList(Admin.Role.values()), pageRequest).getTotalElements());
         return response;
     }
 }
