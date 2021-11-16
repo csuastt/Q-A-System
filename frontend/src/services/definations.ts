@@ -10,6 +10,11 @@ export enum UserGender {
     UNKNOWN = "UNKNOWN",
 }
 
+export enum SortDirection {
+    ASC = "ASC",
+    DESC = "DESC",
+}
+
 export enum UserType {
     Normal,
     Answerer,
