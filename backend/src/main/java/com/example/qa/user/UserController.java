@@ -61,8 +61,7 @@ public class UserController {
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.USER_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
-                .withSort(Sort.Direction.ASC, "id");
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.Direction.ASC, "id");
         Page<User> result = userService.listByRole(role, pageRequest);
         int userResponseLevel = isAdmin ? 2 : 0;
         return new UserListResponse(result, userResponseLevel);

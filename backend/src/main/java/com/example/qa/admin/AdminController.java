@@ -66,8 +66,7 @@ public class AdminController {
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ADMIN_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
-                .withSort(Sort.by(Sort.Direction.ASC, "id"));
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.Direction.ASC, "id");
         role = Objects.requireNonNullElse(role, Arrays.asList(AdminRole.REVIEWER, AdminRole.ADMIN));
         Page<Admin> result = adminService.listByRole(role, pageRequest);
         return new AdminListResponse(result);
