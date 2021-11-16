@@ -39,21 +39,37 @@ const getDesignTokens = (mode: PaletteMode) => ({
         mode,
         ...(mode === "light"
             ? {
-                  secondary: { main: "#DC3660" } as SimplePaletteColorOptions,
+                  secondary: {
+                      main: "#DC368D",
+                      light: "#E666B2",
+                      dark: "#BB2B69",
+                  } as SimplePaletteColorOptions,
               }
             : {
                   // palette values for dark mode
-                  primary: { main: "#EA4F1C" } as SimplePaletteColorOptions,
-                  secondary: { main: "#03DAC6" } as SimplePaletteColorOptions,
+                  primary: {
+                      main: "#EA4F1C",
+                      light: "#F29373",
+                      dark: "#BA3C12",
+                  } as SimplePaletteColorOptions,
+                  secondary: {
+                      main: "#03DAC6",
+                      light: "#A6F2E7",
+                      dark: "#02B19F",
+                  } as SimplePaletteColorOptions,
                   background: {
                       default: "#2f3033",
                       paper: "#313336",
                   },
                   error: {
                       main: "#cf6679",
+                      light: "#E19EAA",
+                      dark: "#9C3043",
                   },
                   warning: {
                       main: "#d06b0b",
+                      light: "#F6A456",
+                      dark: "#C2640A",
                   },
                   text: {
                       primary: "#D9D9D9",
