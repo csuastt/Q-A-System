@@ -26,4 +26,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByDeletedAndVisibleToAnswererAndAnswererAndFinished(boolean deleted, boolean visible, User answerer, boolean finished, Pageable pageable);
 
     List<Order> findAllByExpireTimeBefore(ZonedDateTime time);
+
+    Page<Order> findAllByDeletedAndStateInAndShowPublic(boolean deleted, Collection<OrderState> state, boolean showPublic, Pageable pageable);
+
+    Page<Order> findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(boolean deleted, Collection<OrderState> state, boolean showPublic, String keyword, Pageable pageable);
 }

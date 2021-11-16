@@ -16,9 +16,10 @@
 | expireTime          | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)             | 超时时间             |
 | endReason           | OrderEndReason | string                                     |                      |
 | questionTitle       | string         | Get: questionTitle, Set: title             | 问题标题             |
-| questionDescription | string         | Get: questionDescription, Set: description |                      |
+| questionDescription | string         | Get: questionDescription, Set: description | 请求详细信息才会返回 |
 | answer              | string         |                                            | 请求详细信息才会返回 |
 | price               | int            |                                            |                      |
+| showPublic          | boolean        |                                            | 公开问题             |
 
 ### OrderState (enum)
 
@@ -55,10 +56,11 @@ POST /api/orders
 
 参数：（用户）
 
-| 名称     | 类型   | 说明    |
-| -------- | ------ | ------- |
-| answerer | number | 用户 ID |
-| question | string | 问题    |
+| 名称       | 类型    | 说明     |
+| ---------- | ------- | -------- |
+| answerer   | number  | 用户 ID  |
+| question   | string  | 问题     |
+| showPublic | boolean | 是否公开 |
 
 参数：（超级管理员）
 
@@ -177,6 +179,13 @@ GET /api/orders
 ```
 
 获取已完成/进行中的订单。
+
+```
+?showPublic={true,yes,1}
+?showPublic={true,yes,1}&keyword={关键词}
+```
+
+获取问答库/搜索问答库。（无需登录）
 
 参数：（管理员）
 

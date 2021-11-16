@@ -56,6 +56,7 @@ public class DevelopmentDataLoader implements ApplicationRunner {
         if (order.getState() == OrderState.REVIEWED || order.getState() == OrderState.ACCEPTED || order.getState() == OrderState.ANSWERED || order.getState() == OrderState.CHAT_ENDED) {
             order.setExpireTime(ZonedDateTime.now().plusWeeks(1));
         }
+        order.setShowPublic(random.nextBoolean());
         return order;
     }
 

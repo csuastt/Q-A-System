@@ -32,6 +32,7 @@ public class OrderResponse {
     private String questionDescription;
     private String answer;
     private Integer price;
+    private Boolean showPublic;
 
     public OrderResponse(Order order) {
         this(order, 0);
@@ -48,6 +49,7 @@ public class OrderResponse {
         this.endReason = order.getEndReason();
         this.questionTitle = order.getQuestionTitle();
         this.price = order.getPrice();
+        this.showPublic = order.isShowPublic();
         if (level >= 1) {
             this.questionDescription = order.getQuestionDescription();
             this.answer = order.getAnswer();

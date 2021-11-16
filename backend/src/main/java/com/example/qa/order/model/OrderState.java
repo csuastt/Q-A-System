@@ -3,6 +3,8 @@ package com.example.qa.order.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public enum OrderState {
     // 储存时使用编号，添加时务必加在最后
@@ -22,4 +24,6 @@ public enum OrderState {
     private final boolean finished;
     @Getter
     private final boolean visibleToAnswerer;
+
+    public static final List<OrderState> publicOrderStates = List.of(OrderState.CHAT_ENDED, OrderState.FULFILLED);
 }
