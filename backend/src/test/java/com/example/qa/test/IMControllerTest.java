@@ -13,6 +13,7 @@ import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.Order;
 import com.example.qa.order.storage.FileSystemStorageService;
+import com.example.qa.order.storage.StorageProperties;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
@@ -200,6 +201,7 @@ class IMControllerTest {
 
         order.setState(Order.State.CHAT_ENDED);
         orderRepo.save(order);
+        imService.sendFromUser(order, asker, ZonedDateTime.now(), "1234567");
 
         order.setState(Order.State.CANCELLED);
         orderRepo.save(order);
@@ -239,6 +241,8 @@ class IMControllerTest {
             storageService.getNameByUUID(uuid2);
         }catch (Exception exception){}
 
+        StorageProperties properties = new StorageProperties();
+        properties.setLocation("1234");
 
         mockUtils.getUrl("/api/im/history/" + order.getId(), askerToken, null, null, status().isOk());
         mockUtils.getUrl("/api/im/history/" + order.getId(), answererToken, null, null, status().isOk());

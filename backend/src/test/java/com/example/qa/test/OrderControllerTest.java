@@ -67,6 +67,7 @@ class OrderControllerTest {
         registerRequest.setUsername("testAnswerer");
         User answerer = new User(registerRequest);
         answerer.setRole(User.Role.ANSWERER);
+        answerer.addRating(1);
         userRepository.save(answerer);
         answererId = answerer.getId();
 

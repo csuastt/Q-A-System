@@ -1,6 +1,5 @@
 package com.example.qa.test;
 
-import com.example.qa.errorhandling.ApiException;
 import com.example.qa.order.model.Attachment;
 import com.example.qa.order.storage.StorageException;
 import com.example.qa.order.storage.StorageFileNotFoundException;
@@ -14,7 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class UpLoadBeanTest {

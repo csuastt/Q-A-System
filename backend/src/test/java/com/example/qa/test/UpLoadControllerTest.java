@@ -14,6 +14,8 @@ import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
 import com.example.qa.utils.MockUtils;
+import com.talanlabs.avatargenerator.Avatar;
+import com.talanlabs.avatargenerator.IdenticonAvatar;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import javax.imageio.ImageIO;
+import java.io.ByteArrayOutputStream;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -163,12 +163,28 @@ class UpLoadControllerTest {
         );
 
 
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken,file,status().isOk());
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken,file,status().isOk());
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",adminToken,file,status().isOk());
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken2,file,status().isForbidden());
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken2,file,status().isForbidden());
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",null,file,status().isUnauthorized());
+        Avatar avatar = IdenticonAvatar.newAvatarBuilder().build();
+        var img = avatar.create(("wen_ke").hashCode());
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", bao);
+        MockMultipartFile avatars
+                = new MockMultipartFile(
+                "img",
+                "avatar.png",
+                MediaType.IMAGE_PNG_VALUE,
+                bao.toByteArray()
+        );
+        mockUtils.multiPart("/api/users/" + askerId + "/avatar",askerToken,avatars,"multipartFile",status().isOk());
+        mockUtils.multiPart("/api/users/" + answererId + "/avatar",adminToken,avatars,"multipartFile",status().isForbidden());
+        mockUtils.multiPart("/api/users/" + answererId + "/avatar",askerToken,avatars,"multipartFile",status().isForbidden());
+        mockUtils.multiPart("/api/users/" + answererId + "/avatar",null,avatars,"multipartFile",status().isUnauthorized());
+
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken,file,"file",status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken,file,"file",status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",adminToken,file,"file",status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken2,file,"file",status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken2,file,"file",status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",null,file,"file",status().isUnauthorized());
 
         mockUtils.getUrl("/api/orders/" + id + "/attachments",askerToken,null,null,status().isOk());
         mockUtils.getUrl("/api/orders/" + id + "/attachments",answererToken,null,null,status().isOk());
@@ -176,5 +192,10 @@ class UpLoadControllerTest {
         mockUtils.getUrl("/api/orders/" + id + "/attachments",askerToken2,null,null,status().isOk());
         mockUtils.getUrl("/api/orders/" + id + "/attachments",answererToken2,null,null,status().isOk());
         mockUtils.getUrl("/api/orders/" + id + "/attachments",null,null,null,status().isOk());
+
+        mockUtils.getUrl("/api/users/" + askerId + "/avatar",askerToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + askerId + "/avatar",answererToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + askerId + "/avatar",adminToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + askerId + "/avatar",null,null,null,status().isOk());
     }
 }

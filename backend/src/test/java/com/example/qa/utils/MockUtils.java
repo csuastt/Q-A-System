@@ -7,7 +7,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -32,8 +31,8 @@ public class MockUtils {
         return mockMvc.perform(requestBuilder).andExpect(matcher).andReturn();
     }
 
-    public MvcResult multiPart(String url, String token, MockMultipartFile request, ResultMatcher matcher) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = multipart(url).file(request);
+    public MvcResult multiPart(String url, String token, MockMultipartFile request,String name, ResultMatcher matcher) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = multipart(url).file(name, request.getBytes());
         if (token != null) {
             requestBuilder = requestBuilder.header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
         }
