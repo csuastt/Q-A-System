@@ -274,7 +274,6 @@ public class OrderController {
             @RequestParam(required = false) String sortProperty
     ) {
         long startTime = System.currentTimeMillis();
-        boolean isAdmin = authLogin() && authIsAdmin();
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ORDER_LIST_MAX_PAGE_SIZE);
@@ -282,8 +281,7 @@ public class OrderController {
             sortProperty = "createTime";
         }
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize,
-                Objects.requireNonNullElse(sortDirection, isAdmin ? Sort.Direction.ASC : Sort.Direction.DESC),
-                sortProperty);
+                Objects.requireNonNullElse(sortDirection, Sort.Direction.DESC), sortProperty);
         orderService.setPageRequest(pageRequest);
         Page<Order> result;
         if (Boolean.TRUE.equals(showPublic)) {
@@ -294,13 +292,17 @@ public class OrderController {
             return response;
         }
         authLoginOrThrow();
-        if (isAdmin) {
+        int orderResponseLevel = 0;
+        if (authIsAdmin()) {
+            pageRequest = pageRequest.withSort(Objects.requireNonNullElse(sortDirection, Sort.Direction.ASC), sortProperty);
+            orderService.setPageRequest(pageRequest);
             if (Boolean.TRUE.equals(reviewed)) {
                 result = orderService.listByReviewed();
             } else {
                 // state == null 时列出所有订单，包含已删除
                 result = orderService.listByState(state);
             }
+            orderResponseLevel = 2;
         } else {
             if (asker != null && authIsUser(asker)) {
                 // finished == null 时列出所有该用户的订单
@@ -312,7 +314,7 @@ public class OrderController {
                 throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
-        OrderListResponse response = new OrderListResponse(result, authIsAdmin() ? 2 : 0);
+        OrderListResponse response = new OrderListResponse(result, orderResponseLevel);
         response.setTimeMillis(System.currentTimeMillis() - startTime);
         return response;
     }
