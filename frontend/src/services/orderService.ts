@@ -87,6 +87,35 @@ class OrderService {
             .then((response) => response.data);
     }
 
+    getPublicOrderListBySearch(
+        keywords: string,
+        page?: number,
+        prePage?: number,
+    ): Promise<PagedList<OrderInfo>> {
+        if (keywords.length === 0) {
+            return axios
+                .get("/orders", {
+                    params: {
+                        showPublic: 1,
+                        page: page,
+                        pageSize: prePage,
+                    },
+                })
+                .then((response) => response.data);
+        } else {
+            return axios
+                .get("/orders", {
+                    params: {
+                        showPublic: 1,
+                        keyword: keywords,
+                        page: page,
+                        pageSize: prePage,
+                    },
+                })
+                .then((response) => response.data);
+        }
+    }
+
     modifyOrderInfo(orderId: number, newInfo: OrderInfo): Promise<any> {
         return axios.put(`/orders/${orderId}`, {
             ...newInfo,

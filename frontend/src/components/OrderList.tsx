@@ -21,8 +21,9 @@ import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import PublicIcon from '@mui/icons-material/Public';
 
 interface OrderListProps {
-    userId: number;
-    showAnswerer: boolean;
+    userId?: number;
+    showAnswerer?: boolean;
+    keywords?: string;
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
@@ -45,7 +46,16 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     };
 
     useEffect(() => {
-        if (props.showAnswerer) {
+        if (typeof props.keywords !== "undefined") {
+            questionService
+                .getPublicOrderListBySearch(
+                    props.keywords,
+                    currentPage,
+                    itemPrePage
+                )
+                .then(acceptOrderList);
+        }
+        else if (props.showAnswerer) {
             questionService
                 .getOrdersOfUser(
                     undefined,
@@ -75,6 +85,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.filterFinished,
         props.showAnswerer,
         props.userId,
+        props.keywords
     ]);
 
     const onPageChanged = (newPage: number) => {

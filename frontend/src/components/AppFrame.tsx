@@ -41,6 +41,7 @@ import HelpIcon from "@mui/icons-material/Help";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useNotification } from "./NotificationController";
 import { ColorModeContext } from "../App";
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 
 const drawerWidth = 240;
 
@@ -153,16 +154,21 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
 
     const drawerList3: () => Array<[string, string, React.ReactNode]> = () => {
         if (user == null) {
-            return [["回答者列表", "/answerers", <SchoolIcon />]];
+            return [
+                ["问答库", "/lib", <LocalLibraryIcon />],
+                ["回答者列表", "/answerers", <SchoolIcon />]
+            ];
         }
         if (user.role === UserRole.USER) {
             return [
+                ["问答库", "/lib", <LocalLibraryIcon />],
                 ["回答者列表", "/answerers", <SchoolIcon />],
                 ["我的提问", "/orders", <QuestionAnswerIcon />],
                 ["提出问题", "/order/create", <AddCommentIcon />],
             ];
         }
         return [
+            ["问答库", "/lib", <LocalLibraryIcon />],
             ["回答者列表", "/answerers", <SchoolIcon />],
             ["我的提问", "/orders", <QuestionAnswerIcon />],
             ["我的回答", "/orders?answerer=true", <RateReviewIcon />],

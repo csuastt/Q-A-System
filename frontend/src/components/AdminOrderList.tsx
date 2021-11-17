@@ -38,7 +38,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
         parseIntWithDefault(query.get("page"), 1)
     );
     const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), 9)
+        parseIntWithDefault(query.get("prepage"), 10)
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [longPending, setLongPending] = useState(false);
