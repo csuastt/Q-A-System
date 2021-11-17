@@ -40,6 +40,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [maxPage, setMaxPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [longPending, setLongPending] = useState(false);
+    const [errorFlag, setErrorFlag] = useState(false);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setQuestionList(list.data);
@@ -48,35 +49,33 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     };
 
     useEffect(() => {
+        let fetchPromise: Promise<PagedList<OrderInfo>>;
         if (typeof props.keywords !== "undefined") {
-            questionService
-                .getPublicOrderListBySearch(
-                    props.keywords,
-                    currentPage,
-                    itemPrePage
-                )
-                .then(acceptOrderList);
+            fetchPromise = questionService.getPublicOrderListBySearch(
+                props.keywords,
+                currentPage,
+                itemPrePage
+            );
         } else if (props.showAnswerer) {
-            questionService
-                .getOrdersOfUser(
-                    undefined,
-                    props.userId,
-                    currentPage,
-                    itemPrePage,
-                    props.filterFinished
-                )
-                .then(acceptOrderList);
+            fetchPromise = questionService.getOrdersOfUser(
+                undefined,
+                props.userId,
+                currentPage,
+                itemPrePage,
+                props.filterFinished
+            );
         } else {
-            questionService
-                .getOrdersOfUser(
-                    props.userId,
-                    undefined,
-                    currentPage,
-                    itemPrePage,
-                    props.filterFinished
-                )
-                .then(acceptOrderList);
+            fetchPromise = questionService.getOrdersOfUser(
+                props.userId,
+                undefined,
+                currentPage,
+                itemPrePage,
+                props.filterFinished
+            );
         }
+        fetchPromise.then(acceptOrderList, () => {
+            setErrorFlag(true);
+        });
         setTimeout(() => {
             setLongPending(true);
         }, 500);
@@ -230,6 +229,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         </>
     );
 
+    if (errorFlag) {
+        return <Typography>加载失败</Typography>;
+    }
     if (longPending && questionList == null) {
         return (
             <Stack spacing={2} mt={4}>
