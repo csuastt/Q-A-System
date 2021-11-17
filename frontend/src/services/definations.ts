@@ -114,6 +114,7 @@ export const OrderStateMsg: Map<OrderState, string> = new Map([
     [OrderState.ANSWER_TIMEOUT, "回答超时"],
     [OrderState.CHAT_ENDED, "交流结束"],
     [OrderState.FULFILLED, "交易完成"],
+    [OrderState.CANCELLED, "已取消"],
 ]);
 
 export enum OrderEndReason {

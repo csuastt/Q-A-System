@@ -52,3 +52,18 @@ export function describeNotification(notif: Notification) {
             return `编号为${notif.targetId}的订单超时未回答`;
     }
 }
+
+// size: the size of the file, unit: Byte
+// pointLength: decimal places
+export function formatSize(size: number, pointLength: number | undefined) {
+    let unit;
+    let units = ["B", "K", "M", "G", "TB"];
+    while ((unit = units.shift()) && size > 1024) {
+        size = size / 1024;
+    }
+    return (
+        (unit === "B"
+            ? size.toString()
+            : size.toFixed(pointLength === undefined ? 2 : pointLength)) + unit
+    );
+}

@@ -37,7 +37,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
-import { formatSize } from "./OrderDetail";
+import { formatSize } from "../util";
 
 function processInt(str?: string): number {
     if (str) {

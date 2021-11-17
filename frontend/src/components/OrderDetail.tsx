@@ -44,6 +44,7 @@ import {
     ListItemText,
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
+import { formatSize } from "../util";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -393,7 +394,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 }}
                             />
                         }
-                        title={orderInfo.answerer.nickname}
+                        title={orderInfo.answerer.username}
                         subheader="回答者"
                     />
                     <CardContent sx={{ paddingTop: 0 }}>
@@ -405,7 +406,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         ) : (
                             <Markdown
                                 value={
-                                    orderInfo.state === OrderState.ANSWERED
+                                    [
+                                        OrderState.ANSWERED,
+                                        OrderState.CHAT_ENDED,
+                                        OrderState.FULFILLED,
+                                    ].indexOf(orderInfo.state) >= 0
                                         ? orderInfo.answer
                                         : "该问题还未回答"
                                 }
@@ -413,9 +418,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             />
                         )}
                     </CardContent>
-                    <CardActions sx={{ margin: 1, marginTop: 0 }}>
-                        {renderAnswererActions()}
-                    </CardActions>
+                    <CardActions>{renderAnswererActions()}</CardActions>
                 </Card>
                 <IMMessageList orderInfo={orderInfo} />
                 {orderInfo.state === OrderState.ANSWERED && (
@@ -470,18 +473,3 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
 };
 
 export default OrderDetail;
-
-// size: the size of the file, unit: Byte
-// pointLength: decimal places
-export function formatSize(size: number, pointLength: number | undefined) {
-    let unit;
-    let units = ["B", "K", "M", "G", "TB"];
-    while ((unit = units.shift()) && size > 1024) {
-        size = size / 1024;
-    }
-    return (
-        (unit === "B"
-            ? size.toString()
-            : size.toFixed(pointLength === undefined ? 2 : pointLength)) + unit
-    );
-}
