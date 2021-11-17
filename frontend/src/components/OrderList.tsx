@@ -19,6 +19,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import userService from "../services/userService";
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import PublicIcon from '@mui/icons-material/Public';
+import styled from "@emotion/styled";
 
 interface OrderListProps {
     userId?: number;
@@ -27,6 +28,7 @@ interface OrderListProps {
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
+    listMode?: boolean;
 }
 
 const OrderList: React.FC<OrderListProps> = (props) => {
@@ -119,15 +121,38 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         </>
     );
 
+    const CardContentNoPadding = styled(CardContent)(`
+      padding: 10px;
+      &:last-child {
+        padding-bottom: 0;
+      }
+    `);
+
+    const CardContentWrapper: React.FC<{}> = (wrapperProps) => {
+        return (
+            props.listMode ?
+                <CardContentNoPadding>
+                    {wrapperProps.children}
+                </CardContentNoPadding>:
+            <CardContent>
+                {wrapperProps.children}
+            </CardContent>
+        );
+    };
+
     const renderQuestionList = () => (
         <>
             {questionList!.map((order: OrderInfo, index: number) => (
-                <Card key={index}>
+                <Card key={index} style={
+                    props.listMode ?
+                    { border: "none", boxShadow: "none" } :
+                    {}
+                }>
                     <CardActionArea
                         component={RouterLink}
                         to={`/orders/${order.id}`}
                     >
-                        <CardContent>
+                        <CardContentWrapper>
                             <Box
                                 sx={{
                                     display: "flex",
@@ -142,7 +167,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     alignItems="center"
                                 >
                                     <Typography
-                                        variant="h6"
+                                        variant={props.listMode ? "body1" : "h6"}
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
@@ -155,7 +180,10 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                             <PrivacyTipIcon color={"secondary"}/>
                                     }
                                     <Box sx={{ flexGrow: 1 }} />
-                                    <OrderStateChip state={order.state} />
+                                    {
+                                        !props.listMode &&
+                                        <OrderStateChip state={order.state} />
+                                    }
                                 </Box>
                                 <Box
                                     sx={{
@@ -187,11 +215,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     {formatTimestamp(order.createTime)}
                                 </Typography>
                             </Box>
-                        </CardContent>
+                        </CardContentWrapper>
                     </CardActionArea>
                 </Card>
             ))}
-            {maxPage > 1 && (
+            {maxPage > 1 && !props.listMode &&(
                 <Pagination
                     currentPage={currentPage}
                     maxPage={maxPage}
@@ -212,10 +240,10 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }
     if (questionList && totalCount === 0) {
         return (
-            <Box textAlign={"center"} mt={6}>
+            <Box textAlign={"center"} mt={typeof props.keywords === "undefined" ? 6 : 3}>
                 <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
                 <Typography variant={"h5"} mt={1} mb={4}>
-                    {"您还没有订单"}
+                    {typeof props.keywords === "undefined" ? "您还没有订单" : "没有找到匹配的结果"}
                 </Typography>
             </Box>
         );

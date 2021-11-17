@@ -41,7 +41,6 @@ import FolderIcon from "@mui/icons-material/Folder";
 import { formatSize } from "./OrderDetail";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import {renderAnswerHelp} from "./Help";
 import DialogActions from "@mui/material/DialogActions";
 
 function processInt(str?: string): number {

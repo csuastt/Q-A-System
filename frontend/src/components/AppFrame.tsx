@@ -206,6 +206,22 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     >
                         {props.isAdmin ? "问客管理员系统" : "问客"}
                     </Typography>
+                    {
+                        !props.isAdmin && user && (
+                            <IconButton
+                                component={RouterLink}
+                                to={"/notif"} color="inherit" size="large"
+                                sx={{marginRight: 1}}
+                            >
+                                <Badge
+                                    badgeContent={unreadCount}
+                                    color="warning"
+                                >
+                                    <NotificationsIcon />
+                                </Badge>
+                            </IconButton>
+                        )
+                    }
                     {!props.isAdmin && (
                         <FormControlLabel
                             control={
@@ -252,16 +268,6 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                         : user
                         ? [
                               ["个人信息", "/profile", <AccountCircleIcon />],
-                              [
-                                  "通知中心",
-                                  "/notif",
-                                  <Badge
-                                      badgeContent={unreadCount}
-                                      color="warning"
-                                  >
-                                      <NotificationsIcon />
-                                  </Badge>,
-                              ],
                               ["登出", "/logout", <LogoutIcon />],
                           ]
                         : [

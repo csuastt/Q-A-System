@@ -35,6 +35,8 @@ import userService from "../services/userService";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import MoneyIcon from "@mui/icons-material/Money";
 import AnswererList from "./AnswererList";
+import OrderList from "./OrderList";
+import Library from "./Library";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -425,6 +427,56 @@ export default function Welcome() {
         );
     };
 
+
+    const drawLibrary = () => {
+        return (
+            <Card>
+                <CardHeader
+                    title={
+                        <>
+                            <Typography align="left" variant="h6">
+                                问答库
+                            </Typography>
+                        </>
+                    }
+                    subheader={
+                        <>
+                            <Typography align="left" variant="body2">
+                                请浏览问答库，
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/lib"
+                                >
+                                    点此查看完整列表
+                                </Link>
+                                {!user && (
+                                    <>
+                                        {"（"}
+                                        <Link
+                                            variant="body2"
+                                            component={RouterLink}
+                                            to="/login"
+                                        >
+                                            登录
+                                        </Link>
+                                        {"后才可查看详情哦~）"}
+                                    </>
+                                )}
+                            </Typography>
+                        </>
+                    }
+                    sx={{ paddingBottom: 0 }}
+                />
+                <CardContent sx={{ paddingTop: 1 }}>
+                    <Library
+                        briefMsg={true}
+                    />
+                </CardContent>
+            </Card>
+        );
+    };
+
     const drawAnswererList = () => {
         return (
             <Card>
@@ -512,6 +564,7 @@ export default function Welcome() {
                                 />
                             </Grid>
                         )}
+                        <Grid item>{drawLibrary()}</Grid>
                         <Grid item>{drawAnswererList()}</Grid>
                     </Grid>
                 </Grid>
