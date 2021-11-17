@@ -38,7 +38,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
     );
     const { manager } = useContext(AuthContext);
     const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), 9)
+        parseIntWithDefault(query.get("prepage"), 10)
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);

@@ -22,11 +22,15 @@ const AnswererList: React.FC<{
         parseIntWithDefault(query.get("page"), 1)
     );
     const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), props.isSuperAdmin ? 5 : 9)
+        parseIntWithDefault(
+            query.get("prepage"),
+            props.isSuperAdmin || props.briefMsg ? 5 : 9
+        )
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);
     const [longPending, setLongPending] = useState(false);
+    const [errorFlag, setErrorFlag] = useState(false);
 
     useEffect(() => {
         userService
@@ -35,12 +39,15 @@ const AnswererList: React.FC<{
                 currentPage,
                 itemPrePage
             )
-            .then((list) => {
-                // list.data.forEach((user) => (user.role = props.userRole));
-                setAnswerList(list.data);
-                setMaxPage(list.totalPages);
-                setTotalCount(list.totalCount);
-            });
+            .then(
+                (list) => {
+                    // list.data.forEach((user) => (user.role = props.userRole));
+                    setAnswerList(list.data);
+                    setMaxPage(list.totalPages);
+                    setTotalCount(list.totalCount);
+                },
+                () => setErrorFlag(true)
+            );
 
         setTimeout(() => {
             setLongPending(true);
@@ -51,6 +58,9 @@ const AnswererList: React.FC<{
         setCurrentPage(newPage);
     };
 
+    if (errorFlag) {
+        return <Typography>加载失败</Typography>;
+    }
     if (longPending && !answerList) {
         return props.briefMsg ? (
             <UserList userRole={UserRole.ANSWERER} renderPlaceHolder={true} />
@@ -93,15 +103,6 @@ const AnswererList: React.FC<{
                         />
                     ))}
                 </List>
-            )}
-            {maxPage > 1 && (
-                <Pagination
-                    currentPage={currentPage}
-                    maxPage={maxPage}
-                    totalCount={totalCount}
-                    itemPrePage={itemPrePage}
-                    onPageChanged={onPageChanged}
-                />
             )}
         </Box>
     ) : (

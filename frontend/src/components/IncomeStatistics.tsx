@@ -74,7 +74,7 @@ const IncomeStatistics: React.FC<{
                     setConfig(info);
                 });
         }
-    }, [labelsList, props.briefMsg, props.user, props.userId]);
+    }, [labelsList, props.briefMsg, props.isAdmin, props.user, props.userId]);
 
     const fillType = props.briefMsg ? "solid" : "gradient";
     const chartOptions = merge(BaseOptionChart(), {

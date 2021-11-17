@@ -41,6 +41,7 @@ import HelpIcon from "@mui/icons-material/Help";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useNotification } from "./NotificationController";
 import { ColorModeContext } from "../App";
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 
 const drawerWidth = 240;
 
@@ -153,16 +154,21 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
 
     const drawerList3: () => Array<[string, string, React.ReactNode]> = () => {
         if (user == null) {
-            return [["回答者列表", "/answerers", <SchoolIcon />]];
+            return [
+                ["问答库", "/lib", <LocalLibraryIcon />],
+                ["回答者列表", "/answerers", <SchoolIcon />],
+            ];
         }
         if (user.role === UserRole.USER) {
             return [
+                ["问答库", "/lib", <LocalLibraryIcon />],
                 ["回答者列表", "/answerers", <SchoolIcon />],
                 ["我的提问", "/orders", <QuestionAnswerIcon />],
                 ["提出问题", "/order/create", <AddCommentIcon />],
             ];
         }
         return [
+            ["问答库", "/lib", <LocalLibraryIcon />],
             ["回答者列表", "/answerers", <SchoolIcon />],
             ["我的提问", "/orders", <QuestionAnswerIcon />],
             ["我的回答", "/orders?answerer=true", <RateReviewIcon />],
@@ -200,6 +206,19 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     >
                         {props.isAdmin ? "问客管理员系统" : "问客"}
                     </Typography>
+                    {!props.isAdmin && user && (
+                        <IconButton
+                            component={RouterLink}
+                            to={"/notif"}
+                            color="inherit"
+                            size="large"
+                            sx={{ marginRight: 1 }}
+                        >
+                            <Badge badgeContent={unreadCount} color="warning">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    )}
                     {!props.isAdmin && (
                         <FormControlLabel
                             control={
@@ -246,16 +265,6 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                         : user
                         ? [
                               ["个人信息", "/profile", <AccountCircleIcon />],
-                              [
-                                  "通知中心",
-                                  "/notif",
-                                  <Badge
-                                      badgeContent={unreadCount}
-                                      color="warning"
-                                  >
-                                      <NotificationsIcon />
-                                  </Badge>,
-                              ],
                               ["登出", "/logout", <LogoutIcon />],
                           ]
                         : [

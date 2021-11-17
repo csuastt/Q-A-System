@@ -332,6 +332,7 @@ export default class AccountBriefProfile extends Component<
                                         sx={{
                                             height: 100,
                                             width: 100,
+                                            fontSize: 50,
                                         }}
                                     />
                                 </IconButton>

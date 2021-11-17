@@ -46,6 +46,8 @@ import {
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import { formatSize } from "../util";
+import PublicIcon from "@mui/icons-material/Public";
+import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -149,6 +151,16 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     color="error"
                 >
                     该问题被审核员驳回，已全额退款
+                </Button>
+            );
+        } else if (state === OrderState.CREATED) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<HourglassEmptyIcon />}
+                    color="warning"
+                >
+                    订单已创建，等待平台审核
                 </Button>
             );
         } else if (state === OrderState.PAY_TIMEOUT) {
@@ -423,6 +435,38 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             />
                         }
                         title={orderInfo.asker.nickname}
+                        action={
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                }}
+                                alignItems="center"
+                            >
+                                {orderInfo.showPublic ? (
+                                    <Typography
+                                        variant={"body2"}
+                                        color={"primary"}
+                                    >
+                                        {"公开问题"}
+                                    </Typography>
+                                ) : (
+                                    <Typography
+                                        variant={"body2"}
+                                        color={"secondary"}
+                                    >
+                                        {"私密问题"}
+                                    </Typography>
+                                )}
+                                <Box sx={{ paddingRight: 0.5 }} />
+                                {orderInfo.showPublic ? (
+                                    <PublicIcon color={"primary"} />
+                                ) : (
+                                    <PrivacyTipIcon color={"secondary"} />
+                                )}
+                                <Box sx={{ paddingRight: 1 }} />
+                            </Box>
+                        }
                         subheader="提问者"
                     />
                     <CardContent sx={{ paddingTop: 1 }}>

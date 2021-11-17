@@ -67,7 +67,8 @@ class OrderService {
         asker: number,
         answerer: number,
         questionTitle: string,
-        questionDescription: string
+        questionDescription: string,
+        showPublic: boolean
     ): Promise<CreationResult> {
         return axios
             .post("/orders", {
@@ -75,6 +76,7 @@ class OrderService {
                 answerer: answerer,
                 title: questionTitle,
                 description: questionDescription,
+                showPublic: showPublic,
             })
             .then((response) => response.data);
     }
@@ -83,6 +85,35 @@ class OrderService {
         return axios
             .get(`/orders/${orderId}`)
             .then((response) => response.data);
+    }
+
+    getPublicOrderListBySearch(
+        keywords: string,
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<OrderInfo>> {
+        if (keywords.length === 0) {
+            return axios
+                .get("/orders", {
+                    params: {
+                        showPublic: 1,
+                        page: page,
+                        pageSize: prePage,
+                    },
+                })
+                .then((response) => response.data);
+        } else {
+            return axios
+                .get("/orders", {
+                    params: {
+                        showPublic: 1,
+                        keyword: keywords,
+                        page: page,
+                        pageSize: prePage,
+                    },
+                })
+                .then((response) => response.data);
+        }
     }
 
     modifyOrderInfo(orderId: number, newInfo: OrderInfo): Promise<any> {

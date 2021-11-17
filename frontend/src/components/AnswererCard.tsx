@@ -159,6 +159,7 @@ const AnswererCard: React.FC<{
                                     sx={{
                                         height: 70,
                                         width: 70,
+                                        fontSize: 35,
                                     }}
                                 />
                                 <Box mt={1}>

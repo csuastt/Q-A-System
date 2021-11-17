@@ -29,6 +29,7 @@ import websocketService from "./services/websocketService";
 import NotificationList from "./components/NotificationList";
 import { grey } from "@mui/material/colors";
 import { SimplePaletteColorOptions } from "@mui/material/styles/createPalette";
+import Library from "./components/Library";
 
 export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -164,6 +165,7 @@ export default function App() {
             />,
         ],
         ["/help", <Help />],
+        ["/lib", <Library />],
         ["/", <Welcome />],
     ];
 

@@ -17,13 +17,18 @@ import _ from "lodash";
 import OrderStateChip from "./OrderStateChip";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import userService from "../services/userService";
+import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
+import PublicIcon from "@mui/icons-material/Public";
+import styled from "@emotion/styled";
 
 interface OrderListProps {
-    userId: number;
-    showAnswerer: boolean;
+    userId?: number;
+    showAnswerer?: boolean;
+    keywords?: string;
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
+    listMode?: boolean;
 }
 
 const OrderList: React.FC<OrderListProps> = (props) => {
@@ -35,6 +40,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [maxPage, setMaxPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [longPending, setLongPending] = useState(false);
+    const [errorFlag, setErrorFlag] = useState(false);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setQuestionList(list.data);
@@ -43,27 +49,33 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     };
 
     useEffect(() => {
-        if (props.showAnswerer) {
-            questionService
-                .getOrdersOfUser(
-                    undefined,
-                    props.userId,
-                    currentPage,
-                    itemPrePage,
-                    props.filterFinished
-                )
-                .then(acceptOrderList);
+        let fetchPromise: Promise<PagedList<OrderInfo>>;
+        if (typeof props.keywords !== "undefined") {
+            fetchPromise = questionService.getPublicOrderListBySearch(
+                props.keywords,
+                currentPage,
+                itemPrePage
+            );
+        } else if (props.showAnswerer) {
+            fetchPromise = questionService.getOrdersOfUser(
+                undefined,
+                props.userId,
+                currentPage,
+                itemPrePage,
+                props.filterFinished
+            );
         } else {
-            questionService
-                .getOrdersOfUser(
-                    props.userId,
-                    undefined,
-                    currentPage,
-                    itemPrePage,
-                    props.filterFinished
-                )
-                .then(acceptOrderList);
+            fetchPromise = questionService.getOrdersOfUser(
+                props.userId,
+                undefined,
+                currentPage,
+                itemPrePage,
+                props.filterFinished
+            );
         }
+        fetchPromise.then(acceptOrderList, () => {
+            setErrorFlag(true);
+        });
         setTimeout(() => {
             setLongPending(true);
         }, 500);
@@ -73,6 +85,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.filterFinished,
         props.showAnswerer,
         props.userId,
+        props.keywords,
     ]);
 
     const onPageChanged = (newPage: number) => {
@@ -106,15 +119,37 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         </>
     );
 
+    const CardContentNoPadding = styled(CardContent)(`
+      padding: 10px;
+      &:last-child {
+        padding-bottom: 0;
+      }
+    `);
+
+    const CardContentWrapper: React.FC<{}> = (wrapperProps) => {
+        return props.listMode ? (
+            <CardContentNoPadding>{wrapperProps.children}</CardContentNoPadding>
+        ) : (
+            <CardContent>{wrapperProps.children}</CardContent>
+        );
+    };
+
     const renderQuestionList = () => (
         <>
             {questionList!.map((order: OrderInfo, index: number) => (
-                <Card key={index}>
+                <Card
+                    key={index}
+                    style={
+                        props.listMode
+                            ? { border: "none", boxShadow: "none" }
+                            : {}
+                    }
+                >
                     <CardActionArea
                         component={RouterLink}
                         to={`/orders/${order.id}`}
                     >
-                        <CardContent>
+                        <CardContentWrapper>
                             <Box
                                 sx={{
                                     display: "flex",
@@ -126,16 +161,27 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         display: "flex",
                                         flexDirection: "row",
                                     }}
+                                    alignItems="center"
                                 >
                                     <Typography
-                                        variant="h6"
+                                        variant={
+                                            props.listMode ? "body1" : "h6"
+                                        }
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
                                         {order.questionTitle}
                                     </Typography>
+                                    <Box sx={{ paddingRight: 1 }} />
+                                    {order.showPublic ? (
+                                        <PublicIcon color={"primary"} />
+                                    ) : (
+                                        <PrivacyTipIcon color={"secondary"} />
+                                    )}
                                     <Box sx={{ flexGrow: 1 }} />
-                                    <OrderStateChip state={order.state} />
+                                    {!props.listMode && (
+                                        <OrderStateChip state={order.state} />
+                                    )}
                                 </Box>
                                 <Box
                                     sx={{
@@ -149,7 +195,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                             order.answerer.id
                                         )}
                                         alt={order.answerer.username}
-                                        sx={{ width: 30, height: 30 }}
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                            fontSize: 15,
+                                        }}
                                     />
                                     <Typography
                                         variant="subtitle1"
@@ -163,11 +213,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     {formatTimestamp(order.createTime)}
                                 </Typography>
                             </Box>
-                        </CardContent>
+                        </CardContentWrapper>
                     </CardActionArea>
                 </Card>
             ))}
-            {maxPage > 1 && (
+            {maxPage > 1 && !props.listMode && (
                 <Pagination
                     currentPage={currentPage}
                     maxPage={maxPage}
@@ -179,6 +229,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         </>
     );
 
+    if (errorFlag) {
+        return <Typography>加载失败</Typography>;
+    }
     if (longPending && questionList == null) {
         return (
             <Stack spacing={2} mt={4}>
@@ -188,10 +241,15 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }
     if (questionList && totalCount === 0) {
         return (
-            <Box textAlign={"center"} mt={6}>
+            <Box
+                textAlign={"center"}
+                mt={typeof props.keywords === "undefined" ? 6 : 3}
+            >
                 <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
                 <Typography variant={"h5"} mt={1} mb={4}>
-                    {"您还没有订单"}
+                    {typeof props.keywords === "undefined"
+                        ? "您还没有订单"
+                        : "没有找到匹配的结果"}
                 </Typography>
             </Box>
         );
