@@ -38,7 +38,6 @@ import {
     Box,
     Dialog,
     DialogTitle,
-    IconButton,
     List,
     ListItem,
     ListItemAvatar,
@@ -47,7 +46,6 @@ import {
 import FolderIcon from "@mui/icons-material/Folder";
 import PublicIcon from "@mui/icons-material/Public";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
-import OrderStateChip from "./OrderStateChip";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);

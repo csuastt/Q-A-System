@@ -173,7 +173,7 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
                                         {formatTimestamp(order.createTime)}
                                     </Typography>
                                 </Box>
-                                {manager?.role == ManagerRole.ADMIN ? (
+                                {manager?.role === ManagerRole.ADMIN ? (
                                     <Stack direction="row" p={3} spacing={2}>
                                         <Button
                                             size="small"
