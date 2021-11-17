@@ -31,6 +31,7 @@ public class UserResponse {
     private Integer answerCount;
     private Integer ratingCount;
     private Integer ratingTotal;
+    private Double rating;
 
     public UserResponse(User user) {
         this(user, 0);
@@ -45,6 +46,7 @@ public class UserResponse {
             price = user.getPrice();
             ratingCount = user.getRatingCount();
             ratingTotal = user.getRatingTotal();
+            rating = user.getRating();
         }
         if (level >= 1) {  // 本用户或管理员
             email = user.getEmail();
