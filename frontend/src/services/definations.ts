@@ -139,6 +139,7 @@ export interface OrderInfo {
     deleted: boolean;
     answer: string;
     price: number;
+    rating: number;
 }
 
 export enum CreationResultType {

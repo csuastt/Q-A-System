@@ -42,6 +42,7 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
+    Rating,
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import { formatSize } from "../util";
@@ -59,6 +60,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [message, setMessage] = useState<string>("");
     const [open, setOpen] = React.useState(false);
     const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
+    const [rating, setRating] = useState<number>(0);
 
     const handleOpen = () => {
         setOpen(true);
@@ -280,6 +282,78 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             );
         }
     };
+
+    const ratingMsg: Array<string> = [
+        "还未评价",
+        "毫无作用",
+        "不满意",
+        "差强人意",
+        "还不错～",
+        "太棒了！",
+    ];
+    const confirmRating = () => {
+        orderService
+            .rateOrder(orderInfo!.id, rating)
+            .then(() => setNeedReload(true));
+    };
+    const renderRating = () => {
+        if (
+            orderInfo == null ||
+            !(
+                orderInfo.state === OrderState.CHAT_ENDED ||
+                orderInfo.state === OrderState.FULFILLED
+            )
+        ) {
+            return null;
+        }
+        if (orderInfo.rating === 0) {
+            return (
+                <Card>
+                    <CardContent>
+                        <Stack spacing={2} sx={{ alignItems: "center" }}>
+                            <Typography variant="h4">
+                                {ratingMsg[rating]}
+                            </Typography>
+                            <Rating
+                                value={rating}
+                                onChange={(_, newValue) =>
+                                    setRating(newValue ? newValue : 0)
+                                }
+                                size="large"
+                            />
+                            <Button
+                                color="success"
+                                variant="contained"
+                                disabled={rating === 0}
+                                onClick={confirmRating}
+                            >
+                                确认评价
+                            </Button>
+                        </Stack>
+                    </CardContent>
+                </Card>
+            );
+        } else {
+            return (
+                <Card>
+                    <CardContent>
+                        <Stack spacing={2} sx={{ alignItems: "center" }}>
+                            <Typography variant="h4">
+                                {ratingMsg[orderInfo.rating]}
+                            </Typography>
+                            <Rating
+                                value={orderInfo.rating}
+                                size="large"
+                                readOnly
+                            />
+                            <Typography variant="subtitle1">已评价</Typography>
+                        </Stack>
+                    </CardContent>
+                </Card>
+            );
+        }
+    };
+
     if (needLogin) {
         console.log("needLogin");
         return <Redirect to="/login" />;
@@ -441,6 +515,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         </CardActions>
                     </Card>
                 )}
+                {renderRating()}
             </Stack>
             <Dialog onClose={handleClose} open={open}>
                 <DialogTitle>附件列表</DialogTitle>
