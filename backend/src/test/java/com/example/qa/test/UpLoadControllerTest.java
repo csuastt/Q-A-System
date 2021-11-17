@@ -4,18 +4,15 @@ import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
-import com.example.qa.admin.model.AdminRole;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
-import com.example.qa.order.exchange.UploadRequest;
 import com.example.qa.order.storage.StorageProperties;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
 import com.example.qa.utils.MockUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,9 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @EnableConfigurationProperties(StorageProperties.class)
 class UpLoadControllerTest {
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     private static final String password = "password";
     private static final String question = "TestQuestion";
@@ -77,7 +71,7 @@ class UpLoadControllerTest {
 
         registerRequest.setUsername("testAnswerer10");
         User answerer = new User(registerRequest);
-        answerer.setRole(UserRole.ANSWERER);
+        answerer.setRole(User.Role.ANSWERER);
         userRepository.save(answerer);
         answererId = answerer.getId();
 
@@ -90,14 +84,14 @@ class UpLoadControllerTest {
 
         registerRequest.setUsername("testAnswerer12");
         User answerer2 = new User(registerRequest);
-        answerer2.setRole(UserRole.ANSWERER);
+        answerer2.setRole(User.Role.ANSWERER);
         userRepository.save(answerer2);
 //        answererId = answerer2.getId();
 
         AdminRequest adminRequest = new AdminRequest();
         adminRequest.setUsername("testAdmin");
         adminRequest.setPassword(passwordEncoder.encode(password));
-        adminRequest.setRole(AdminRole.ADMIN);
+        adminRequest.setRole(Admin.Role.ADMIN);
         Admin admin = new Admin(adminRequest);
         adminRepository.save(admin);
 
@@ -115,7 +109,7 @@ class UpLoadControllerTest {
         user2Request.setPassword(password);
         askerToken2 = mockUtils.postAndDeserialize("/api/user/login", askerToken, user2Request, status().isOk(), TokenResponse.class).getToken();
 
-        user2Request.setUsername("testAnswerer1git 2");
+        user2Request.setUsername("testAnswerer12");
         user2Request.setPassword(password);
         answererToken2 = mockUtils.postAndDeserialize("/api/user/login", askerToken, user2Request, status().isOk(), TokenResponse.class).getToken();
 
@@ -127,7 +121,7 @@ class UpLoadControllerTest {
 
         AdminRequest request = new AdminRequest();
         request.setUsername("testAdmin" + 1);
-        request.setRole(AdminRole.ADMIN);
+        request.setRole(Admin.Role.ADMIN);
         request.setPassword("password");
         mockUtils.postUrl("/api/admins", null, request, status().isUnauthorized());
         PasswordResponse passwordResponse = mockUtils.postAndDeserialize("/api/admins", superAdminToken, request, status().isOk(),PasswordResponse.class);
@@ -167,15 +161,20 @@ class UpLoadControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes()
         );
-//        UploadRequest request = new UploadRequest(file);
-//        mockUtils.postUrl("/api/orders/" + id + "/attachments",askerToken, request, status().isOk());
 
-        MockHttpServletRequestBuilder requestBuilder = multipart("/api/orders/" + id + "/attachments").file(file);
-        requestBuilder = requestBuilder.header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + askerToken);
 
-        MockMvc mockMvc
-                = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().isUnauthorized());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken,file,status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken,file,status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",adminToken,file,status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken2,file,status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken2,file,status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/attachments",null,file,status().isUnauthorized());
+
+        mockUtils.getUrl("/api/orders/" + id + "/attachments",askerToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments",answererToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments",adminToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments",askerToken2,null,null,status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments",answererToken2,null,null,status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments",null,null,null,status().isOk());
     }
 }

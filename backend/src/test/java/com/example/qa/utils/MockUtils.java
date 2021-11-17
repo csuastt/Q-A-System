@@ -2,10 +2,12 @@ package com.example.qa.utils;
 
 import com.example.qa.security.SecurityConstants;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -26,6 +28,14 @@ public class MockUtils {
         }
         if (request != null) {
             requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(request));
+        }
+        return mockMvc.perform(requestBuilder).andExpect(matcher).andReturn();
+    }
+
+    public MvcResult multiPart(String url, String token, MockMultipartFile request, ResultMatcher matcher) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = multipart(url).file(request);
+        if (token != null) {
+            requestBuilder = requestBuilder.header(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
         }
         return mockMvc.perform(requestBuilder).andExpect(matcher).andReturn();
     }

@@ -12,6 +12,7 @@ import com.example.qa.order.OrderService;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.Order;
+import com.example.qa.order.storage.FileSystemStorageService;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
 import com.example.qa.user.exchange.RegisterRequest;
@@ -22,10 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,18 +56,20 @@ class IMControllerTest {
     private static String answererToken2;
     private final IMService imService;
     private final OrderService orderService;
+    private final FileSystemStorageService storageService;
     private final NotificationRepository noRepo;
     private final OrderRepository orderRepo;
     private final UserRepository userRepo;
     private final AdminRepository adminRepo;
 
 
-    IMControllerTest(@Autowired IMService imService, @Autowired OrderService orderService, @Autowired NotificationRepository notificationRepository,
+    IMControllerTest(@Autowired IMService imService, @Autowired OrderService orderService, @Autowired FileSystemStorageService storageService, @Autowired NotificationRepository notificationRepository,
                      @Autowired OrderRepository orderRepository,
                      @Autowired UserRepository userRepository,
                      @Autowired AdminRepository adminRepository) {
         this.imService = imService;
         this.orderService = orderService;
+        this.storageService = storageService;
         noRepo = notificationRepository;
         orderRepo = orderRepository;
         userRepo = userRepository;
@@ -197,6 +203,42 @@ class IMControllerTest {
 
         order.setState(Order.State.CANCELLED);
         orderRepo.save(order);
+
+        storageService.init();
+        UUID uuid = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        MockMultipartFile file
+                = new MockMultipartFile(
+                "file",
+                "hello.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "Hello, World!".getBytes()
+        );
+        storageService.store(file, uuid);
+        storageService.load(uuid);
+        storageService.loadAll();
+        storageService.getNameByUUID(uuid);
+        storageService.loadAsResource(uuid);
+        storageService.delete(uuid);
+        storageService.deleteAll();
+        storageService.getNameByUUID(uuid);
+
+        try{
+            storageService.load(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.loadAsResource(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.delete(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.getNameByUUID(uuid2);
+        }catch (Exception exception){}
+
 
         mockUtils.getUrl("/api/im/history/" + order.getId(), askerToken, null, null, status().isOk());
         mockUtils.getUrl("/api/im/history/" + order.getId(), answererToken, null, null, status().isOk());
