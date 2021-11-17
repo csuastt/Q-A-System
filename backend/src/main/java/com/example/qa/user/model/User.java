@@ -55,6 +55,7 @@ public class User {
 
     private int ratingCount = 0;
     private int ratingTotal = 0;
+    private double rating = 0.0;
 
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();
@@ -82,9 +83,10 @@ public class User {
         price = data.getPrice();
     }
 
-    public void addRating(int rating) {
+    public void addRating(int value) {
         ratingCount++;
-        ratingTotal += rating;
+        ratingTotal += value;
+        rating = (double) ratingTotal / ratingCount;
     }
 
     public enum Role {

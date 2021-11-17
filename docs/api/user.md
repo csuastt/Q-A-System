@@ -17,6 +17,7 @@
 | price       | int    |      | 回答问题定价（仅回答者）             |
 | ratingCount | int    |      | 评分次数（有可能为 0，代表没有评分） |
 | ratingTotal | int    |      | 评分总数（除以评分次数得到评分）     |
+| rating      | double |      | 评分（评分总数/评分次数）            |
 
 #### 私有属性 (仅限本用户)
 
