@@ -130,6 +130,10 @@ class OrderService {
             axios.defaults.baseURL + `/orders/${orderId}/attachments/${uuid}`
         );
     }
+
+    rateOrder(orderId: number, rating: number): Promise<any> {
+        return axios.post(`/orders/${orderId}/rate`, { value: rating });
+    }
 }
 
 const orderService = new OrderService();
