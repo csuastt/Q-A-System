@@ -1,7 +1,6 @@
 package com.example.qa.order;
 
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +12,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    Page<Order> findAllByDeletedAndStateIn(boolean deleted, Collection<OrderState> state, Pageable pageable);
+    Page<Order> findAllByDeletedAndStateIn(boolean deleted, Collection<Order.State> state, Pageable pageable);
 
     Page<Order> findAllByDeletedAndReviewed(boolean deleted, boolean reviewed, Pageable pageable);
 
@@ -26,4 +25,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByDeletedAndVisibleToAnswererAndAnswererAndFinished(boolean deleted, boolean visible, User answerer, boolean finished, Pageable pageable);
 
     List<Order> findAllByExpireTimeBefore(ZonedDateTime time);
+
+    List<Order> findAllByNotifyTimeBefore(ZonedDateTime time);
+
+    Page<Order> findAllByDeletedAndStateInAndShowPublic(boolean deleted, Collection<Order.State> state, boolean showPublic, Pageable pageable);
+
+    Page<Order> findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(boolean deleted, Collection<Order.State> state, boolean showPublic, String keyword, Pageable pageable);
 }

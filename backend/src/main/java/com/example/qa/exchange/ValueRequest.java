@@ -1,4 +1,4 @@
-package com.example.qa.user.exchange;
+package com.example.qa.exchange;
 
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;

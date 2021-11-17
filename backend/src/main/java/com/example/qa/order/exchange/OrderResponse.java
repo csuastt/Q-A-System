@@ -1,8 +1,6 @@
 package com.example.qa.order.exchange;
 
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderEndReason;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.user.exchange.UserResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,17 +19,20 @@ public class OrderResponse {
     private Boolean deleted;
     private UserResponse asker;
     private UserResponse answerer;
-    private OrderState state;
+    private Order.State state;
     private Boolean finished;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime expireTime;
-    private OrderEndReason endReason;
+    private Order.EndReason endReason;
     private String questionTitle;
     private String questionDescription;
     private String answer;
     private Integer price;
+    private Boolean showPublic;
+    private Integer messageCount;
+    private Integer rating;
 
     public OrderResponse(Order order) {
         this(order, 0);
@@ -48,6 +49,9 @@ public class OrderResponse {
         this.endReason = order.getEndReason();
         this.questionTitle = order.getQuestionTitle();
         this.price = order.getPrice();
+        this.showPublic = order.isShowPublic();
+        this.messageCount = order.getMessageCount();
+        this.rating = order.getRating();
         if (level >= 1) {
             this.questionDescription = order.getQuestionDescription();
             this.answer = order.getAnswer();

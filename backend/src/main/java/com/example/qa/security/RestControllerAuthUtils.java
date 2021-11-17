@@ -53,6 +53,12 @@ public final class RestControllerAuthUtils {
         }
     }
 
+    public static void authAdminOrThrow() {
+        if (!authIsAdmin()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+    }
+
     public static void authUserOrThrow(long id) {
         if (!authIsUser(id)) {
             throw new ApiException(403, ApiException.NO_PERMISSION);

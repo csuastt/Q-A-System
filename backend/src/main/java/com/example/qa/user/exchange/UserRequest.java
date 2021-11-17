@@ -2,8 +2,7 @@ package com.example.qa.user.exchange;
 
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
-import com.example.qa.user.model.Gender;
-import com.example.qa.user.model.UserRole;
+import com.example.qa.user.model.User;
 import com.example.qa.utils.FieldValidator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +15,10 @@ public class UserRequest {
     private String nickname;
     private String email;
     private String phone;
-    private Gender gender;
+    private User.Gender gender;
     private Integer price;
     private String description;
-    private UserRole role;
+    private User.Role role;
     private Integer balance;
 
     public void validateOrThrow() {

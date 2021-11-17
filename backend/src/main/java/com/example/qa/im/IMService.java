@@ -4,8 +4,8 @@ import com.example.qa.im.exchange.MessagePayload;
 import com.example.qa.im.model.Message;
 import com.example.qa.notification.NotificationService;
 import com.example.qa.notification.model.Notification;
+import com.example.qa.order.OrderService;
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.user.model.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,24 +21,32 @@ public class IMService {
 
     private final MessageRepository repo;
     private final NotificationService notifService;
+    private final OrderService orderService;
     private final SimpMessagingTemplate template;
 
     public IMService(
             @Autowired MessageRepository repo,
             @Autowired NotificationService notifService,
+            @Autowired OrderService orderService,
             @Autowired SimpMessagingTemplate template) {
         this.repo = repo;
         this.notifService = notifService;
+        this.orderService = orderService;
         this.template = template;
     }
 
     public final void sendFromUser(Order order, User sender, ZonedDateTime sendTime, String body) {
+        if (order.getState() != Order.State.ANSWERED) {
+            log.warn("Discard IMMessage: Order State {} is not ANSWERED.", order.getState());
+            return;
+        }
         processNewMessage(Message.builder()
                 .order(order)
                 .sender(sender)
                 .sendTime(sendTime)
                 .body(body)
                 .build());
+        orderService.newMessage(order);
     }
 
     public final void sendFromSystem(Order order, String body) {
@@ -58,10 +66,6 @@ public class IMService {
     }
 
     private void processNewMessage(Message msg) {
-        if (msg.getOrder().getState() != OrderState.ANSWERED) {
-            log.warn("Discard IMMessage: Order State {} is not ANSWERED.", msg.getOrder().getState());
-            return;
-        }
         repo.saveAndFlush(msg);
         var notif =
                 Notification.builder()

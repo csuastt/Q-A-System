@@ -16,9 +16,12 @@
 | expireTime          | ZonedDateTime  | ISO string (UTC, 即末尾带 `Z`)             | 超时时间             |
 | endReason           | OrderEndReason | string                                     |                      |
 | questionTitle       | string         | Get: questionTitle, Set: title             | 问题标题             |
-| questionDescription | string         | Get: questionDescription, Set: description |                      |
+| questionDescription | string         | Get: questionDescription, Set: description | 请求详细信息才会返回 |
 | answer              | string         |                                            | 请求详细信息才会返回 |
 | price               | int            |                                            |                      |
+| showPublic          | boolean        |                                            | 公开问题             |
+| messageCount        | int            |                                            | 聊天消息条数         |
+| rating              | int            | Get: > 0 已评分，= 0 未评分                | 评分                 |
 
 ### OrderState (enum)
 
@@ -55,10 +58,11 @@ POST /api/orders
 
 参数：（用户）
 
-| 名称     | 类型   | 说明    |
-| -------- | ------ | ------- |
-| answerer | number | 用户 ID |
-| question | string | 问题    |
+| 名称       | 类型    | 说明     |
+| ---------- | ------- | -------- |
+| answerer   | number  | 用户 ID  |
+| question   | string  | 问题     |
+| showPublic | boolean | 是否公开 |
 
 参数：（超级管理员）
 
@@ -152,11 +156,12 @@ GET /api/orders
 
 公共参数：
 
-| 名称          | 类型 | 说明                                       |
-| ------------- | ---- | ------------------------------------------ |
-| pageSize      | int  | 单页最大订单数，可选，默认为 20，最大为 50 |
-| page          | int  | 页数（从 1 开始），可选，默认为 1          |
-| sortDirection | enum | { ASC, DESC } 默认用户 DESC，管理员 ASC    |
+| 名称          | 类型   | 说明                                       |
+| ------------- | ------ | ------------------------------------------ |
+| pageSize      | int    | 单页最大订单数，可选，默认为 20，最大为 50 |
+| page          | int    | 页数（从 1 开始），可选，默认为 1          |
+| sortDirection | enum   | { ASC, DESC } 默认用户 DESC，管理员 ASC    |
+| sortProperty  | string | 默认 createTime                            |
 
 参数：（用户）
 
@@ -177,6 +182,13 @@ GET /api/orders
 ```
 
 获取已完成/进行中的订单。
+
+```
+?showPublic={true,yes,1}
+?showPublic={true,yes,1}&keyword={关键词}
+```
+
+获取问答库/搜索问答库。（无需登录）
 
 参数：（管理员）
 
@@ -288,5 +300,32 @@ POST /api/orders/{id}/cancel
   | --------------- | -------------- |
   | `NO_PERMISSION` | 不是提问者     |
   | `CANNOT_CANCEL` | 已接单无法取消 |
+- `404` 订单不存在或已删除
+
+### 评价订单
+
+```
+POST /api/orders/{id}/rate
+```
+
+参数：
+
+```json
+{ "value": 5 }
+```
+
+返回值：
+
+- `200` OK
+
+- `401` 未登录
+
+- `403` 错误
+
+  | message 属性    | 说明                           |
+  | --------------- | ------------------------------ |
+  | `NO_PERMISSION` | 不是提问者                     |
+  | `CANNOT_RATE`   | 不能评分（聊天未结束或已评分） |
+
 - `404` 订单不存在或已删除
 

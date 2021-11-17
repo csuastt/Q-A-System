@@ -4,7 +4,6 @@ import com.example.qa.admin.exchange.AdminListResponse;
 import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
-import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.Configurable;
 import com.example.qa.errorhandling.ApiError;
 import com.example.qa.security.UserAuthentication;
@@ -61,7 +60,7 @@ class AdminBeanTest {
         Boolean adminDeleted = false;
         String adminUsername = "test";
         ZonedDateTime adminCreateTime = ZonedDateTime.now();
-        AdminRole adminRole = AdminRole.SUPER_ADMIN;
+        Admin.Role adminRole = Admin.Role.SUPER_ADMIN;
         AdminResponse adminResponse = new AdminResponse();
         adminResponse.setId(adminId);
         adminResponse.setDeleted(adminDeleted);
@@ -85,7 +84,7 @@ class AdminBeanTest {
         boolean Deleted = false;
         String Username = "test";
         ZonedDateTime CreateTime = ZonedDateTime.now();
-        AdminRole Role = AdminRole.SUPER_ADMIN;
+        Admin.Role Role = Admin.Role.SUPER_ADMIN;
         Admin admin = new Admin();
         admin.setId(Id);
         admin.setDeleted(Deleted);

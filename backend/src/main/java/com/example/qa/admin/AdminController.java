@@ -5,7 +5,6 @@ import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
-import com.example.qa.admin.model.AdminRole;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
@@ -40,14 +39,14 @@ public class AdminController {
     public PasswordResponse createAdmin(@RequestBody AdminRequest request) {
         authLoginOrThrow();
         authSuperAdminOrThrow();
-        if (request.getRole() == AdminRole.SUPER_ADMIN) {
+        if (request.getRole() == Admin.Role.SUPER_ADMIN) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         if (request.getUsername().contains("@") || adminService.existsByUsername(request.getUsername())) {
             throw new ApiException(403, "USERNAME_INVALID");
         }
         if (request.getRole() == null) {
-            request.setRole(AdminRole.ADMIN);
+            request.setRole(Admin.Role.ADMIN);
         }
         String password = RandomStringUtils.randomAlphanumeric(10);
         request.setPassword(passwordEncoder.encode(password));
@@ -57,7 +56,7 @@ public class AdminController {
 
     @GetMapping
     public AdminListResponse listAdmins(
-            @RequestParam(required = false) List<AdminRole> role,
+            @RequestParam(required = false) List<Admin.Role> role,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page
     ) {
@@ -66,9 +65,8 @@ public class AdminController {
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ADMIN_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
-                .withSort(Sort.by(Sort.Direction.ASC, "id"));
-        role = Objects.requireNonNullElse(role, Arrays.asList(AdminRole.REVIEWER, AdminRole.ADMIN));
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.Direction.ASC, "id");
+        role = Objects.requireNonNullElse(role, Arrays.asList(Admin.Role.REVIEWER, Admin.Role.ADMIN));
         Page<Admin> result = adminService.listByRole(role, pageRequest);
         return new AdminListResponse(result);
     }
@@ -85,7 +83,7 @@ public class AdminController {
     public void editAdmin(@PathVariable(value = "id") long id, @RequestBody AdminRequest request) {
         authLoginOrThrow();
         authSuperAdminOrThrow();
-        if (id == 1 || request.getRole() == AdminRole.SUPER_ADMIN) {
+        if (id == 1 || request.getRole() == Admin.Role.SUPER_ADMIN) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
         Admin admin = getAdminOrThrow(id, false);

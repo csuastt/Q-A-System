@@ -26,7 +26,7 @@ public class Admin {
 
     private ZonedDateTime createTime;
 
-    private AdminRole role = AdminRole.ADMIN;
+    private Role role = Role.ADMIN;
 
     public Admin(AdminRequest request) {
         username = request.getUsername();
@@ -38,5 +38,9 @@ public class Admin {
     public void update(AdminRequest request) {
         password = Objects.requireNonNullElse(request.getPassword(), password);
         role = Objects.requireNonNullElse(request.getRole(), role);
+    }
+
+    public enum Role {
+        ADMIN, REVIEWER, SUPER_ADMIN;
     }
 }

@@ -1,7 +1,6 @@
 package com.example.qa.order.exchange;
 
-import com.example.qa.order.model.OrderEndReason;
-import com.example.qa.order.model.OrderState;
+import com.example.qa.order.model.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,10 +11,11 @@ import lombok.Setter;
 public class OrderRequest {
     private Long asker;
     private Long answerer;
-    private OrderState state;
-    private OrderEndReason endReason;
+    private Order.State state;
+    private Order.EndReason endReason;
     private String title;
     private String description;
     private String answer;
     private Integer price;
+    private Boolean showPublic;
 }

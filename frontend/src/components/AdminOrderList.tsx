@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
-import { OrderInfo, OrderState, PagedList } from "../services/definations";
+import {
+    OrderInfo,
+    OrderState,
+    PagedList,
+    SortDirection,
+} from "../services/definations";
 import orderService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -14,6 +19,11 @@ import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 import OrderStateChip from "./OrderStateChip";
 import userService from "../services/userService";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { ToggleButton } from "@mui/material";
+import Button from "@mui/material/Button";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 interface AdminOrderListProps {
     orderState?: OrderState;
@@ -33,6 +43,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
     const [maxPage, setMaxPage] = useState(currentPage);
     const [longPending, setLongPending] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
+    const [filterReviewed, setFilterReviewed] = useState(false);
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setOrderList(list.data);
@@ -57,6 +68,73 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
+    };
+
+    const timeAsc = () => {
+        if (filterReviewed) {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC,
+                    OrderState.CREATED
+                )
+                .then(acceptOrderList);
+        } else {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC
+                )
+                .then(acceptOrderList);
+        }
+    };
+    const timeDesc = () => {
+        if (filterReviewed) {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.DESC,
+                    OrderState.CREATED
+                )
+                .then(acceptOrderList);
+        } else {
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.DESC
+                )
+                .then(acceptOrderList);
+        }
+    };
+
+    const onFilterChanged = (
+        event: React.MouseEvent<HTMLElement>,
+        value: boolean
+    ) => {
+        if (value) {
+            setFilterReviewed(value);
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC,
+                    OrderState.CREATED
+                )
+                .then(acceptOrderList);
+        } else {
+            setFilterReviewed(value);
+            orderService
+                .getAllOrderListByAdmin(
+                    currentPage,
+                    itemPrePage,
+                    SortDirection.ASC
+                )
+                .then(acceptOrderList);
+        }
     };
 
     const renderCardPlaceholder = () => (
@@ -165,7 +243,41 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
         );
     }
     return (
-        <Box>{orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}</Box>
+        <>
+            <Stack direction="row" spacing={3} mt={3}>
+                <ToggleButtonGroup
+                    value={filterReviewed}
+                    exclusive
+                    onChange={onFilterChanged}
+                    size="small"
+                >
+                    <ToggleButton value={true}>等待审核</ToggleButton>
+                    <ToggleButton value={false}>显示全部</ToggleButton>
+                </ToggleButtonGroup>
+                <Button
+                    onClick={timeAsc}
+                    startIcon={<ArrowUpwardIcon />}
+                    color="success"
+                    variant="outlined"
+                    size="small"
+                >
+                    时间顺序
+                </Button>
+                <Button
+                    onClick={timeDesc}
+                    startIcon={<ArrowDownwardIcon />}
+                    color="warning"
+                    variant="outlined"
+                    size="small"
+                >
+                    时间倒序
+                </Button>
+            </Stack>
+
+            <Box marginTop={1.4}>
+                {orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}
+            </Box>
+        </>
     );
 };
 
