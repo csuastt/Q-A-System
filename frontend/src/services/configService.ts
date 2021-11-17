@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ConfigInfo, EarningsInfo } from "./definations";
+import { AdminStatsInfo, ConfigInfo, EarningsInfo } from "./definations";
 
 class ConfigService {
     getSystemConfig(): Promise<ConfigInfo> {
@@ -21,6 +21,10 @@ class ConfigService {
 
     getSystemEarnings(): Promise<EarningsInfo> {
         return axios.get(`/config/earnings`).then((response) => response.data);
+    }
+
+    getAdminStats(): Promise<AdminStatsInfo> {
+        return axios.get("/config/stats").then((response) => response.data);
     }
 }
 

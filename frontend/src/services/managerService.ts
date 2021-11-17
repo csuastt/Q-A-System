@@ -52,11 +52,6 @@ class ManagerService {
     deleteManager(id: number) {
         return axios.delete(`/admins/${id}`, {});
     }
-    getManagerStats(id: number): Promise<ManagerStatsInfo> {
-        return axios
-            .get(`/admins/${id}/stats`)
-            .then((response) => response.data);
-    }
 }
 const managerService = new ManagerService();
 export default managerService;

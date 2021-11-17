@@ -6,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import LoginIcon from "@mui/icons-material/Login";
 import CardActionArea from "@mui/material/CardActionArea";
 import { Link as RouterLink } from "react-router-dom";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SvgIcon from "@mui/material/SvgIcon/SvgIcon";
 import AuthContext from "../AuthContext";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
@@ -15,7 +15,6 @@ import SchoolIcon from "@mui/icons-material/School";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
-import managerService from "../services/managerService";
 import {
     CardHeader,
     Grid,
@@ -26,7 +25,7 @@ import {
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import { ManagerRole, UserRole } from "../services/definations";
+import { AdminStatsInfo, ManagerRole, UserRole } from "../services/definations";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import Link from "@mui/material/Link";
@@ -35,20 +34,17 @@ import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import IncomeStatistics from "./IncomeStatistics";
 import AnswererList from "./AnswererList";
+import configService from "../services/configService";
 
 export default function HelloAdmin() {
     const theme = useTheme();
     const { manager } = useContext(AuthContext);
-    //todo
-    // const [askCount, setAskCount] = useState<number>(0);
-    // const [answerCount, setAnswerCount] = useState<number>(0);
+    const [adminStats, setAdminStats] = useState<AdminStatsInfo>();
 
     useEffect(() => {
         if (manager) {
-            managerService.getManagerStats(manager.id).then((info) => {
-                //todo
-                // setAskCount(info.askCount);
-                // setAnswerCount(info.answerCount);
+            configService.getAdminStats().then((info) => {
+                setAdminStats(info);
             });
         }
     }, [manager]);
@@ -331,7 +327,7 @@ export default function HelloAdmin() {
                                     <Link
                                         variant="body2"
                                         component={RouterLink}
-                                        to="/login"
+                                        to="/admins/login"
                                     >
                                         登录
                                     </Link>
@@ -362,7 +358,7 @@ export default function HelloAdmin() {
                                                 fontWeight="fontWeightBold"
                                                 fontSize={22}
                                             >
-                                                555
+                                                {adminStats?.userCount}
                                             </Box>{" "}
                                         </Typography>
                                     }
@@ -385,7 +381,7 @@ export default function HelloAdmin() {
                                                 fontWeight="fontWeightBold"
                                                 fontSize={22}
                                             >
-                                                666
+                                                {adminStats?.answererCount}
                                             </Box>{" "}
                                         </Typography>
                                     }
@@ -408,7 +404,7 @@ export default function HelloAdmin() {
                                                 fontWeight="fontWeightBold"
                                                 fontSize={22}
                                             >
-                                                777
+                                                {adminStats?.adminCount}
                                             </Box>{" "}
                                         </Typography>
                                     }
@@ -431,7 +427,7 @@ export default function HelloAdmin() {
                                                 fontWeight="fontWeightBold"
                                                 fontSize={22}
                                             >
-                                                888
+                                                {adminStats?.orderCount}
                                             </Box>{" "}
                                         </Typography>
                                     }
@@ -454,7 +450,8 @@ export default function HelloAdmin() {
                                                 fontWeight="fontWeightBold"
                                                 fontSize={22}
                                             >
-                                                999
+                                                {" "}
+                                                {adminStats?.publicOrderCount}
                                             </Box>{" "}
                                         </Typography>
                                     }
