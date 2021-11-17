@@ -67,7 +67,8 @@ class OrderService {
         asker: number,
         answerer: number,
         questionTitle: string,
-        questionDescription: string
+        questionDescription: string,
+        showPublic: boolean
     ): Promise<CreationResult> {
         return axios
             .post("/orders", {
@@ -75,6 +76,7 @@ class OrderService {
                 answerer: answerer,
                 title: questionTitle,
                 description: questionDescription,
+                showPublic: showPublic
             })
             .then((response) => response.data);
     }
