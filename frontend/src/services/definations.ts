@@ -104,7 +104,7 @@ export enum OrderState {
 }
 
 export const OrderStateMsg: Map<OrderState, string> = new Map([
-    [OrderState.CREATED, "已创建"],
+    [OrderState.CREATED, "审核中"],
     [OrderState.PAYED, "已支付"],
     [OrderState.PAY_TIMEOUT, "支付超时"],
     [OrderState.REVIEWED, "审核通过"],
@@ -140,6 +140,7 @@ export interface OrderInfo {
     deleted: boolean;
     answer: string;
     price: number;
+    showPublic: boolean;
 }
 
 export enum CreationResultType {

@@ -17,6 +17,8 @@ import _ from "lodash";
 import OrderStateChip from "./OrderStateChip";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import userService from "../services/userService";
+import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
+import PublicIcon from '@mui/icons-material/Public';
 
 interface OrderListProps {
     userId: number;
@@ -126,6 +128,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         display: "flex",
                                         flexDirection: "row",
                                     }}
+                                    alignItems="center"
                                 >
                                     <Typography
                                         variant="h6"
@@ -134,6 +137,12 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     >
                                         {order.questionTitle}
                                     </Typography>
+                                    <Box sx={{ paddingRight: 1 }} />
+                                    {
+                                        order.showPublic ?
+                                            <PublicIcon color={"primary"}/> :
+                                            <PrivacyTipIcon color={"secondary"}/>
+                                    }
                                     <Box sx={{ flexGrow: 1 }} />
                                     <OrderStateChip state={order.state} />
                                 </Box>
@@ -149,7 +158,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                             order.answerer.id
                                         )}
                                         alt={order.answerer.username}
-                                        sx={{ width: 30, height: 30 }}
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                            fontSize: 15
+                                        }}
                                     />
                                     <Typography
                                         variant="subtitle1"

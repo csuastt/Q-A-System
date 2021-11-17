@@ -126,6 +126,7 @@ export default function Welcome() {
                             sx={{
                                 height: 80,
                                 width: 80,
+                                fontSize: 40
                             }}
                         />
                         <Box mt={2}>
