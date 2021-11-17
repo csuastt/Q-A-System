@@ -5,6 +5,7 @@ import com.example.qa.admin.exchange.AdminResponse;
 import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.config.Configurable;
+import com.example.qa.config.SystemStatsResponse;
 import com.example.qa.errorhandling.ApiError;
 import com.example.qa.security.UserAuthentication;
 import com.example.qa.user.model.User;
@@ -130,5 +131,26 @@ class AdminBeanTest {
         assertEquals(maxChatMessages, configurable.getMaxChatMessages());
         assertEquals(maxChatTimeSeconds, configurable.getMaxChatTimeSeconds());
         assertEquals(feeRate, configurable.getFeeRate());
+
+        //Test for SystemStatsResponse
+        long userCount = 1L;
+        long answererCount = 1L;
+        long orderCount = 1L;
+        long orderToReviewCount = 1L;
+        long publicOrderCount = 1L;
+        long adminCount = 1L;
+        SystemStatsResponse response1 = new SystemStatsResponse();
+        response1.setUserCount(userCount);
+        response1.setAdminCount(adminCount);
+        response1.setAnswererCount(answererCount);
+        response1.setOrderCount(orderCount);
+        response1.setOrderToReviewCount(orderToReviewCount);
+        response1.setPublicOrderCount(publicOrderCount);
+        assertEquals(userCount, response1.getUserCount());
+        assertEquals(answererCount, response1.getAnswererCount());
+        assertEquals(orderCount, response1.getOrderCount());
+        assertEquals(orderToReviewCount, response1.getOrderToReviewCount());
+        assertEquals(publicOrderCount, response1.getPublicOrderCount());
+        assertEquals(adminCount, response1.getAdminCount());
     }
 }

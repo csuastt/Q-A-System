@@ -197,5 +197,16 @@ class UpLoadControllerTest {
         mockUtils.getUrl("/api/users/" + askerId + "/avatar",answererToken,null,null,status().isOk());
         mockUtils.getUrl("/api/users/" + askerId + "/avatar",adminToken,null,null,status().isOk());
         mockUtils.getUrl("/api/users/" + askerId + "/avatar",null,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + answererId + "/avatar",answererToken,null,null,status().isNotFound());
+
+        mockUtils.getUrl("/api/users/" + askerId + "/earnings",askerToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + askerId + "/earnings",answererToken,null,null,status().isForbidden());
+        mockUtils.getUrl("/api/users/" + askerId + "/earnings",adminToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + askerId + "/earnings",null,null,null,status().isUnauthorized());
+
+        mockUtils.getUrl("/api/users/" + askerId + "/stats",askerToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + askerId + "/stats",answererToken,null,null,status().isForbidden());
+        mockUtils.getUrl("/api/users/" + askerId + "/stats",adminToken,null,null,status().isOk());
+        mockUtils.getUrl("/api/users/" + askerId + "/stats",null,null,null,status().isUnauthorized());
     }
 }
