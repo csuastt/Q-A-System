@@ -26,15 +26,13 @@ export enum ManagerRole {
     SUPER_ADMIN = "SUPER_ADMIN",
 }
 
-export interface ConfigInfo {
-    minPrice: number;
-    maxPrice: number;
-    respondExpirationSeconds: number;
-    answerExpirationSeconds: number;
-    fulfillExpirationSeconds: number;
-    maxChatMessages: number;
-    maxChatTimeSeconds: number;
-    feeRate: number;
+export interface AdminStatsInfo {
+    userCount: number;
+    answererCount: number;
+    orderCount: number;
+    orderToReviewCount: number; // 待审核数
+    publicOrderCount: number; // 问答库数
+    adminCount: number;
 }
 
 export interface UserBasicInfo {
