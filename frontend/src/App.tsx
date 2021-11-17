@@ -165,7 +165,7 @@ export default function App() {
             />,
         ],
         ["/help", <Help />],
-        ["/lib", <Library/>],
+        ["/lib", <Library />],
         ["/", <Welcome />],
     ];
 

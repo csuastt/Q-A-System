@@ -128,7 +128,7 @@ export default function Welcome() {
                             sx={{
                                 height: 80,
                                 width: 80,
-                                fontSize: 40
+                                fontSize: 40,
                             }}
                         />
                         <Box mt={2}>
@@ -427,7 +427,6 @@ export default function Welcome() {
         );
     };
 
-
     const drawLibrary = () => {
         return (
             <Card>
@@ -469,9 +468,7 @@ export default function Welcome() {
                     sx={{ paddingBottom: 0 }}
                 />
                 <CardContent sx={{ paddingTop: 1 }}>
-                    <Library
-                        briefMsg={true}
-                    />
+                    <Library briefMsg={true} />
                 </CardContent>
             </Card>
         );

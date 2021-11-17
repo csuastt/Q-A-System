@@ -17,8 +17,8 @@ import _ from "lodash";
 import OrderStateChip from "./OrderStateChip";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import userService from "../services/userService";
-import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
-import PublicIcon from '@mui/icons-material/Public';
+import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
+import PublicIcon from "@mui/icons-material/Public";
 import styled from "@emotion/styled";
 
 interface OrderListProps {
@@ -56,8 +56,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     itemPrePage
                 )
                 .then(acceptOrderList);
-        }
-        else if (props.showAnswerer) {
+        } else if (props.showAnswerer) {
             questionService
                 .getOrdersOfUser(
                     undefined,
@@ -87,7 +86,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.filterFinished,
         props.showAnswerer,
         props.userId,
-        props.keywords
+        props.keywords,
     ]);
 
     const onPageChanged = (newPage: number) => {
@@ -129,25 +128,24 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     `);
 
     const CardContentWrapper: React.FC<{}> = (wrapperProps) => {
-        return (
-            props.listMode ?
-                <CardContentNoPadding>
-                    {wrapperProps.children}
-                </CardContentNoPadding>:
-            <CardContent>
-                {wrapperProps.children}
-            </CardContent>
+        return props.listMode ? (
+            <CardContentNoPadding>{wrapperProps.children}</CardContentNoPadding>
+        ) : (
+            <CardContent>{wrapperProps.children}</CardContent>
         );
     };
 
     const renderQuestionList = () => (
         <>
             {questionList!.map((order: OrderInfo, index: number) => (
-                <Card key={index} style={
-                    props.listMode ?
-                    { border: "none", boxShadow: "none" } :
-                    {}
-                }>
+                <Card
+                    key={index}
+                    style={
+                        props.listMode
+                            ? { border: "none", boxShadow: "none" }
+                            : {}
+                    }
+                >
                     <CardActionArea
                         component={RouterLink}
                         to={`/orders/${order.id}`}
@@ -167,23 +165,24 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     alignItems="center"
                                 >
                                     <Typography
-                                        variant={props.listMode ? "body1" : "h6"}
+                                        variant={
+                                            props.listMode ? "body1" : "h6"
+                                        }
                                         noWrap
                                         style={{ fontWeight: 600 }}
                                     >
                                         {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ paddingRight: 1 }} />
-                                    {
-                                        order.showPublic ?
-                                            <PublicIcon color={"primary"}/> :
-                                            <PrivacyTipIcon color={"secondary"}/>
-                                    }
+                                    {order.showPublic ? (
+                                        <PublicIcon color={"primary"} />
+                                    ) : (
+                                        <PrivacyTipIcon color={"secondary"} />
+                                    )}
                                     <Box sx={{ flexGrow: 1 }} />
-                                    {
-                                        !props.listMode &&
+                                    {!props.listMode && (
                                         <OrderStateChip state={order.state} />
-                                    }
+                                    )}
                                 </Box>
                                 <Box
                                     sx={{
@@ -200,7 +199,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         sx={{
                                             width: 30,
                                             height: 30,
-                                            fontSize: 15
+                                            fontSize: 15,
                                         }}
                                     />
                                     <Typography
@@ -219,7 +218,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     </CardActionArea>
                 </Card>
             ))}
-            {maxPage > 1 && !props.listMode &&(
+            {maxPage > 1 && !props.listMode && (
                 <Pagination
                     currentPage={currentPage}
                     maxPage={maxPage}
@@ -240,10 +239,15 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }
     if (questionList && totalCount === 0) {
         return (
-            <Box textAlign={"center"} mt={typeof props.keywords === "undefined" ? 6 : 3}>
+            <Box
+                textAlign={"center"}
+                mt={typeof props.keywords === "undefined" ? 6 : 3}
+            >
                 <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
                 <Typography variant={"h5"} mt={1} mb={4}>
-                    {typeof props.keywords === "undefined" ? "您还没有订单" : "没有找到匹配的结果"}
+                    {typeof props.keywords === "undefined"
+                        ? "您还没有订单"
+                        : "没有找到匹配的结果"}
                 </Typography>
             </Box>
         );

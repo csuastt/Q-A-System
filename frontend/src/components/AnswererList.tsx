@@ -22,7 +22,10 @@ const AnswererList: React.FC<{
         parseIntWithDefault(query.get("page"), 1)
     );
     const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), props.isSuperAdmin || props.briefMsg ? 5 : 9)
+        parseIntWithDefault(
+            query.get("prepage"),
+            props.isSuperAdmin || props.briefMsg ? 5 : 9
+        )
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);

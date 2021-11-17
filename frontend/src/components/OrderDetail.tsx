@@ -37,7 +37,8 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import {
     Box,
     Dialog,
-    DialogTitle, IconButton,
+    DialogTitle,
+    IconButton,
     List,
     ListItem,
     ListItemAvatar,
@@ -161,8 +162,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     订单已创建，等待平台审核
                 </Button>
             );
-        }
-        else if (state === OrderState.PAY_TIMEOUT) {
+        } else if (state === OrderState.PAY_TIMEOUT) {
             return (
                 <Button
                     variant="text"
@@ -370,27 +370,27 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 }}
                                 alignItems="center"
                             >
-                                {
-                                    orderInfo.showPublic ?
-                                        <Typography
-                                            variant={"body2"}
-                                            color={"primary"}
-                                        >
-                                            {"公开问题"}
-                                        </Typography> :
-                                        <Typography
-                                            variant={"body2"}
-                                            color={"secondary"}
-                                        >
-                                            {"私密问题"}
-                                        </Typography>
-                                }
+                                {orderInfo.showPublic ? (
+                                    <Typography
+                                        variant={"body2"}
+                                        color={"primary"}
+                                    >
+                                        {"公开问题"}
+                                    </Typography>
+                                ) : (
+                                    <Typography
+                                        variant={"body2"}
+                                        color={"secondary"}
+                                    >
+                                        {"私密问题"}
+                                    </Typography>
+                                )}
                                 <Box sx={{ paddingRight: 0.5 }} />
-                                {
-                                    orderInfo.showPublic ?
-                                        <PublicIcon color={"primary"}/> :
-                                        <PrivacyTipIcon color={"secondary"}/>
-                                }
+                                {orderInfo.showPublic ? (
+                                    <PublicIcon color={"primary"} />
+                                ) : (
+                                    <PrivacyTipIcon color={"secondary"} />
+                                )}
                                 <Box sx={{ paddingRight: 1 }} />
                             </Box>
                         }

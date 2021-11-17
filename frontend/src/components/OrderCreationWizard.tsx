@@ -25,15 +25,17 @@ import AnswererDetailCard from "./AnswererDetailCard";
 import Divider from "@mui/material/Divider";
 import Markdown from "./Markdown";
 import systemConfigService from "../services/systemConfigService";
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import {
     Dialog,
-    DialogTitle, FormControlLabel,
+    DialogTitle,
+    FormControlLabel,
     IconButton,
     Link,
     ListItemAvatar,
     ListItemButton,
-    ListItemText, Switch,
+    ListItemText,
+    Switch,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
@@ -470,11 +472,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     alignItems={"center"}
                     justifyContent="space-between"
                 >
-                    <Stack
-                        spacing={2}
-                        alignItems={"center"}
-                        direction="row"
-                    >
+                    <Stack spacing={2} alignItems={"center"} direction="row">
                         <Typography>上传附件(小于300M):</Typography>
                         <label htmlFor="contained-button-file">
                             <Input
@@ -515,15 +513,17 @@ const OrderCreationWizard: React.FC = (props) => {
                             control={
                                 <Switch
                                     checked={showPublic}
-                                    onChange={(e) => {setShowPublic(e.target.checked);}}
+                                    onChange={(e) => {
+                                        setShowPublic(e.target.checked);
+                                    }}
                                     inputProps={{ "aria-label": "controlled" }}
                                 />
                             }
                             label="是否公开"
-                            sx={{marginRight:1}}
+                            sx={{ marginRight: 1 }}
                         />
                         <IconButton aria-label="help" onClick={handleOpenHelp}>
-                            <HelpOutlineIcon/>
+                            <HelpOutlineIcon />
                         </IconButton>
                     </Stack>
                 </Stack>
@@ -619,11 +619,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         ))}
                     </List>
                 </Dialog>
-                <Dialog
-                    fullWidth
-                    open={openHelp}
-                    onClose={handleCloseHelp}
-                >
+                <Dialog fullWidth open={openHelp} onClose={handleCloseHelp}>
                     <DialogTitle>公开您的问题</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={1}>
@@ -631,7 +627,8 @@ const OrderCreationWizard: React.FC = (props) => {
                             <Box component="span" fontWeight="fontWeightBold">
                                 公开可见
                             </Box>
-                            的。 一旦创建问题，您不可以再修改此问题的可见性。请仔细考虑。
+                            的。
+                            一旦创建问题，您不可以再修改此问题的可见性。请仔细考虑。
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

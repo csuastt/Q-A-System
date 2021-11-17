@@ -76,7 +76,7 @@ class OrderService {
                 answerer: answerer,
                 title: questionTitle,
                 description: questionDescription,
-                showPublic: showPublic
+                showPublic: showPublic,
             })
             .then((response) => response.data);
     }
@@ -90,7 +90,7 @@ class OrderService {
     getPublicOrderListBySearch(
         keywords: string,
         page?: number,
-        prePage?: number,
+        prePage?: number
     ): Promise<PagedList<OrderInfo>> {
         if (keywords.length === 0) {
             return axios

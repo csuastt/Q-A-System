@@ -156,7 +156,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
         if (user == null) {
             return [
                 ["问答库", "/lib", <LocalLibraryIcon />],
-                ["回答者列表", "/answerers", <SchoolIcon />]
+                ["回答者列表", "/answerers", <SchoolIcon />],
             ];
         }
         if (user.role === UserRole.USER) {
@@ -206,22 +206,19 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     >
                         {props.isAdmin ? "问客管理员系统" : "问客"}
                     </Typography>
-                    {
-                        !props.isAdmin && user && (
-                            <IconButton
-                                component={RouterLink}
-                                to={"/notif"} color="inherit" size="large"
-                                sx={{marginRight: 1}}
-                            >
-                                <Badge
-                                    badgeContent={unreadCount}
-                                    color="warning"
-                                >
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
-                        )
-                    }
+                    {!props.isAdmin && user && (
+                        <IconButton
+                            component={RouterLink}
+                            to={"/notif"}
+                            color="inherit"
+                            size="large"
+                            sx={{ marginRight: 1 }}
+                        >
+                            <Badge badgeContent={unreadCount} color="warning">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    )}
                     {!props.isAdmin && (
                         <FormControlLabel
                             control={
