@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
+import static com.example.qa.utils.ReflectionUtils.hasField;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -269,15 +270,20 @@ public class OrderController {
             @RequestParam(required = false) List<Order.State> state,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(required = false) Sort.Direction sortDirection
+            @RequestParam(required = false) Sort.Direction sortDirection,
+            @RequestParam(required = false) String sortProperty
     ) {
         long startTime = System.currentTimeMillis();
         boolean isAdmin = authLogin() && authIsAdmin();
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.ORDER_LIST_MAX_PAGE_SIZE);
+        if (!hasField(Order.class, sortProperty)) {
+            sortProperty = "createTime";
+        }
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize,
-                Objects.requireNonNullElse(sortDirection, isAdmin ? Sort.Direction.ASC : Sort.Direction.DESC), "createTime");
+                Objects.requireNonNullElse(sortDirection, isAdmin ? Sort.Direction.ASC : Sort.Direction.DESC),
+                sortProperty);
         orderService.setPageRequest(pageRequest);
         Page<Order> result;
         if (Boolean.TRUE.equals(showPublic)) {

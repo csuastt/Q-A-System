@@ -22,8 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
+import static com.example.qa.utils.ReflectionUtils.hasField;
 
 @RestController
 @RequestMapping("/api/users")
@@ -51,7 +53,9 @@ public class UserController {
     public UserListResponse listUsers(
             @RequestParam(required = false) List<User.Role> role,
             @RequestParam(defaultValue = "20") int pageSize,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Sort.Direction sortDirection,
+            @RequestParam(required = false) String sortProperty
     ) {
         boolean isAdmin = authLogin() && authIsAdmin();
         if (!isAdmin) {
@@ -60,7 +64,11 @@ public class UserController {
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.USER_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.Direction.ASC, "id");
+        if (!hasField(User.class, sortProperty)) {
+            sortProperty = "id";
+        }
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize,
+                Objects.requireNonNullElse(sortDirection, Sort.Direction.ASC), sortProperty);
         Page<User> result = userService.listByRole(role, pageRequest);
         int userResponseLevel = isAdmin ? 2 : 0;
         return new UserListResponse(result, userResponseLevel);

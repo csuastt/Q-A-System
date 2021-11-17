@@ -156,11 +156,12 @@ GET /api/orders
 
 公共参数：
 
-| 名称          | 类型 | 说明                                       |
-| ------------- | ---- | ------------------------------------------ |
-| pageSize      | int  | 单页最大订单数，可选，默认为 20，最大为 50 |
-| page          | int  | 页数（从 1 开始），可选，默认为 1          |
-| sortDirection | enum | { ASC, DESC } 默认用户 DESC，管理员 ASC    |
+| 名称          | 类型   | 说明                                       |
+| ------------- | ------ | ------------------------------------------ |
+| pageSize      | int    | 单页最大订单数，可选，默认为 20，最大为 50 |
+| page          | int    | 页数（从 1 开始），可选，默认为 1          |
+| sortDirection | enum   | { ASC, DESC } 默认用户 DESC，管理员 ASC    |
+| sortProperty  | string | 默认 createTime                            |
 
 参数：（用户）
 
