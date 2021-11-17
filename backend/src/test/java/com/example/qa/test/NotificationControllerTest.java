@@ -6,6 +6,7 @@ import com.example.qa.admin.model.Admin;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.notification.NotificationRepository;
+import com.example.qa.notification.exchange.ItemCount;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.order.OrderRepository;
 import com.example.qa.order.exchange.OrderRequest;
@@ -93,6 +94,10 @@ class NotificationControllerTest {
         loginRequest.setPassword(SecurityConstants.SUPER_ADMIN_PASSWORD);
         TokenResponse tokenResponse = mockUtils.postAndDeserialize("/api/admin/login", null, loginRequest, status().isOk(), TokenResponse.class);
         superAdminToken = tokenResponse.getToken();
+
+        long count = 1L;
+        ItemCount itemCount = new ItemCount(count);
+        itemCount.toString();
 
         User user = new User();
         user.setId(1L);

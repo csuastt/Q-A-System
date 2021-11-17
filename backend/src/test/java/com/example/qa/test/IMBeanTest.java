@@ -125,6 +125,7 @@ class IMBeanTest {
         message.setBody("1");
         message.setSender(user);
         MessagePayload message2 = new MessagePayload(message);
+        message2.toString();
     }
     @Test
     void notificationTest(){
