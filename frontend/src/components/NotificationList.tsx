@@ -28,14 +28,20 @@ import { describeNotification, formatTimestamp } from "../util";
 import { Redirect, useHistory } from "react-router-dom";
 import notificationService from "../services/notificationService";
 import Stack from "@mui/material/Stack";
-import { ToggleButton } from "@mui/material";
+import {
+    FormControl,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    ToggleButton,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import Pagination from "./Pagination";
 import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import Box from "@mui/material/Box";
 
-const NotificationList: React.FC = (props) => {
+const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     const { user } = useContext(AuthContext);
     const { setUnreadCount } = useNotification();
     const routerHistory = useHistory();
@@ -70,10 +76,13 @@ const NotificationList: React.FC = (props) => {
         return <Redirect to={"/login"} />;
     }
 
-    const onFilterChanged = (
+    const onFilterButtonChanged = (
         event: React.MouseEvent<HTMLElement>,
         value: boolean
     ) => setFilterUnread(value);
+
+    const onFilterSelectChanged = (event: SelectChangeEvent) =>
+        setFilterUnread(event.target.value === "true");
 
     const readAll = () => {
         setLoading(true);
@@ -90,6 +99,55 @@ const NotificationList: React.FC = (props) => {
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
     };
+
+    const renderNormalControl = () => (
+        <Stack direction="row" spacing={3} mt={3}>
+            <ToggleButtonGroup
+                value={filterUnread}
+                exclusive
+                onChange={onFilterButtonChanged}
+                size="small"
+            >
+                <ToggleButton value={true}>筛选未读</ToggleButton>
+                <ToggleButton value={false}>显示全部</ToggleButton>
+            </ToggleButtonGroup>
+            <Button
+                onClick={readAll}
+                startIcon={<DoneAllIcon />}
+                color="success"
+                variant="contained"
+                size="small"
+            >
+                全部已读
+            </Button>
+            <Button
+                onClick={deleteRead}
+                startIcon={<DeleteOutlineIcon />}
+                color="warning"
+                variant="outlined"
+                size="small"
+            >
+                删除已读
+            </Button>
+        </Stack>
+    );
+
+    const renderCompactControl = () => (
+        <Stack direction="row">
+            <FormControl variant="standard">
+                <Select
+                    value={filterUnread ? "true" : "false"}
+                    onChange={onFilterSelectChanged}
+                >
+                    <MenuItem value={"true"}>未读消息</MenuItem>
+                    <MenuItem value={"false"}>全部消息</MenuItem>
+                </Select>
+            </FormControl>
+            <Button onClick={() => routerHistory.push("/notif")}>
+                查看完整列表
+            </Button>
+        </Stack>
+    );
 
     const renderSkeletonItem = () => (
         <ListItem>
@@ -147,6 +205,7 @@ const NotificationList: React.FC = (props) => {
                     key={idx}
                     onClick={() => {
                         routerHistory.push(`/orders/${notif.targetId}`);
+                        notificationService.readOne(user!.id, notif.notifId);
                     }}
                 >
                     <ListItemIcon>{notifIcon(notif)}</ListItemIcon>
@@ -161,35 +220,7 @@ const NotificationList: React.FC = (props) => {
 
     return (
         <>
-            <Stack direction="row" spacing={3} mt={3}>
-                <ToggleButtonGroup
-                    value={filterUnread}
-                    exclusive
-                    onChange={onFilterChanged}
-                    size="small"
-                >
-                    <ToggleButton value={true}>筛选未读</ToggleButton>
-                    <ToggleButton value={false}>显示全部</ToggleButton>
-                </ToggleButtonGroup>
-                <Button
-                    onClick={readAll}
-                    startIcon={<DoneAllIcon />}
-                    color="success"
-                    variant="contained"
-                    size="small"
-                >
-                    全部已读
-                </Button>
-                <Button
-                    onClick={deleteRead}
-                    startIcon={<DeleteOutlineIcon />}
-                    color="warning"
-                    variant="outlined"
-                    size="small"
-                >
-                    删除已读
-                </Button>
-            </Stack>
+            {props.compact ? renderCompactControl() : renderNormalControl()}
             {loading ? (
                 <List>{renderSkeletonItem()}</List>
             ) : notifList?.totalCount === 0 ? (
@@ -202,7 +233,7 @@ const NotificationList: React.FC = (props) => {
             ) : (
                 <List>{renderNotifList()}</List>
             )}
-            {notifList && notifList.totalPages > 1 && (
+            {!props.compact && notifList && notifList.totalPages > 1 && (
                 <Pagination
                     currentPage={currentPage}
                     maxPage={notifList.totalPages}

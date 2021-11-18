@@ -36,6 +36,7 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import MoneyIcon from "@mui/icons-material/Money";
 import AnswererList from "./AnswererList";
 import Library from "./Library";
+import NotificationList from "./NotificationList";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -328,9 +329,12 @@ export default function Welcome() {
                     subheader={
                         <>
                             {user ? (
-                                <Typography align="left" variant="body2">
-                                    下方显示了您的消息列表
-                                </Typography>
+                                <>
+                                    <Typography align="left" variant="body2">
+                                        下方显示了您的消息列表
+                                    </Typography>
+                                    <NotificationList compact/>
+                                </>
                             ) : (
                                 <Typography align="left" variant="body2">
                                     请
