@@ -93,9 +93,12 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     ]);
 
     useEffect(() => {
-        systemConfigService.getSystemConfig().then((config) => {
-            setMaxMsgCount(config.maxChatMessages);
-        });
+        systemConfigService.getSystemConfig().then(
+            (config) => {
+                setMaxMsgCount(config.maxChatMessages);
+            },
+            () => {}
+        );
     }, []);
 
     const onPageChanged = (newPage: number) => {
