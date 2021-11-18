@@ -333,7 +333,7 @@ export default function Welcome() {
                                     <Typography align="left" variant="body2">
                                         下方显示了您的消息列表
                                     </Typography>
-                                    <NotificationList compact/>
+                                    <NotificationList compact />
                                 </>
                             ) : (
                                 <Typography align="left" variant="body2">
