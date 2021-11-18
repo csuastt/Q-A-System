@@ -134,11 +134,13 @@ export interface OrderInfo {
     questionTitle: string;
     questionDescription: string;
     createTime: string;
+    expireTime: string;
     endReason: OrderEndReason;
     finished: boolean;
     deleted: boolean;
     answer: string;
     price: number;
+    messageCount: number;
     rating: number;
     showPublic: boolean;
 }

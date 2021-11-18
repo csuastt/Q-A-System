@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Link as RouterLink } from "react-router-dom";
-import { OrderInfo, PagedList } from "../services/definations";
+import { OrderInfo, OrderState, PagedList } from "../services/definations";
 import questionService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -10,7 +10,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
-
+import AlarmIcon from "@mui/icons-material/Alarm";
+import ChatIcon from "@mui/icons-material/Chat";
 import CardActionArea from "@mui/material/CardActionArea";
 import Pagination from "./Pagination";
 import _ from "lodash";
@@ -134,6 +135,39 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         );
     };
 
+    const renderExpireTime = (order: OrderInfo) => {
+        if (
+            [
+                OrderState.REVIEWED,
+                OrderState.ACCEPTED,
+                OrderState.ANSWERED,
+                OrderState.CHAT_ENDED,
+            ].indexOf(order.state) !== -1
+        ) {
+            return (
+                <>
+                    <AlarmIcon fontSize="small" />
+                    <Typography variant="caption">
+                        {formatTimestamp(order.expireTime)}
+                    </Typography>
+                </>
+            );
+        }
+    };
+
+    const renderMsgCount = (order: OrderInfo) => {
+        if (order.state === OrderState.ANSWERED) {
+            return (
+                <>
+                    <ChatIcon fontSize="small" sx={{ ml: 1 }} />
+                    <Typography variant="caption">
+                        {`剩余${order.messageCount}次`}
+                    </Typography>
+                </>
+            );
+        }
+    };
+
     const renderQuestionList = () => (
         <>
             {questionList!.map((order: OrderInfo, index: number) => (
@@ -208,10 +242,23 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         {order.answerer.nickname}
                                     </Typography>
                                 </Box>
-                                <Typography variant="caption" mb={-1} mt={1}>
-                                    创建时间：
-                                    {formatTimestamp(order.createTime)}
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        mt: 1,
+                                        mb: -1,
+                                    }}
+                                    alignItems="center"
+                                >
+                                    <Typography variant="caption">
+                                        创建时间：
+                                        {formatTimestamp(order.createTime)}
+                                    </Typography>
+                                    <Box sx={{ flexGrow: 1 }} />
+                                    {renderExpireTime(order)}
+                                    {renderMsgCount(order)}
+                                </Box>
                             </Box>
                         </CardContentWrapper>
                     </CardActionArea>
