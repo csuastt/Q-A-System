@@ -22,6 +22,7 @@ import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import PublicIcon from "@mui/icons-material/Public";
 import styled from "@emotion/styled";
 import systemConfigService from "../services/systemConfigService";
+import Rating from "@mui/material/Rating";
 
 interface OrderListProps {
     userId?: number;
@@ -265,6 +266,28 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         创建时间：
                                         {formatTimestamp(order.createTime)}
                                     </Typography>
+                                    <Box ml={1} />
+                                    {(order.state === OrderState.CHAT_ENDED ||
+                                        order.state === OrderState.FULFILLED) &&
+                                        (order.rating === 0 ? (
+                                            <Typography
+                                                variant="caption"
+                                                color="error"
+                                            >
+                                                未评价
+                                            </Typography>
+                                        ) : (
+                                            <>
+                                                <Typography variant="caption">
+                                                    评分：
+                                                </Typography>
+                                                <Rating
+                                                    value={order.rating}
+                                                    readOnly
+                                                    size="small"
+                                                />
+                                            </>
+                                        ))}
                                     <Box sx={{ flexGrow: 1 }} />
                                     {renderExpireTime(order)}
                                     {renderMsgCount(order)}

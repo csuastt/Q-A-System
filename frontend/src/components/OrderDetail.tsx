@@ -34,17 +34,15 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import {
-    Alert,
-    Box,
-    Dialog,
-    DialogTitle,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
-    Rating,
-} from "@mui/material";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import Rating from "@mui/material/Rating";
 import FolderIcon from "@mui/icons-material/Folder";
 import { formatSize, formatTimestamp } from "../util";
 import PublicIcon from "@mui/icons-material/Public";
@@ -52,6 +50,9 @@ import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import AlarmIcon from "@mui/icons-material/Alarm";
 import ChatIcon from "@mui/icons-material/Chat";
 import systemConfigService from "../services/systemConfigService";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogContent from "@mui/material/DialogContent";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -67,6 +68,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [msgCount, setMsgCount] = useState<number>();
     const [maxMsgCount, setMaxMsgCount] = useState<number>();
     const [open, setOpen] = React.useState(false);
+    const [openRatingDialog, setOpenRatingDialog] = useState(false);
     const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
     const [rating, setRating] = useState<number>(0);
 
@@ -76,6 +78,14 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleOpenRatingDialog = () => {
+        setOpenRatingDialog(true);
+    };
+
+    const handleCloseRatingDialog = () => {
+        setOpenRatingDialog(false);
     };
 
     useEffect(() => {
@@ -400,59 +410,29 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .then(() => setNeedReload(true));
     };
     const renderRating = () => {
-        if (
-            orderInfo == null ||
-            !(
-                orderInfo.state === OrderState.CHAT_ENDED ||
-                orderInfo.state === OrderState.FULFILLED
-            )
-        ) {
-            return null;
-        }
+        if (!orderInfo) return null;
         if (orderInfo.rating === 0) {
             return (
-                <Card>
-                    <CardContent>
-                        <Stack spacing={2} sx={{ alignItems: "center" }}>
-                            <Typography variant="h4">
-                                {ratingMsg[rating]}
-                            </Typography>
-                            <Rating
-                                value={rating}
-                                onChange={(_, newValue) =>
-                                    setRating(newValue ? newValue : 0)
-                                }
-                                size="large"
-                            />
-                            <Button
-                                color="success"
-                                variant="contained"
-                                disabled={rating === 0}
-                                onClick={confirmRating}
-                            >
-                                确认评价
-                            </Button>
-                        </Stack>
-                    </CardContent>
-                </Card>
+                <Stack spacing={1} sx={{ alignItems: "center" }}>
+                    <Typography variant="h5">{ratingMsg[rating]}</Typography>
+                    <Rating
+                        value={rating}
+                        onChange={(_, newValue) =>
+                            setRating(newValue ? newValue : 0)
+                        }
+                        size="large"
+                    />
+                </Stack>
             );
         } else {
             return (
-                <Card>
-                    <CardContent>
-                        <Stack spacing={2} sx={{ alignItems: "center" }}>
-                            <Typography variant="h4">
-                                {ratingMsg[orderInfo.rating]}
-                            </Typography>
-                            <Rating
-                                value={orderInfo.rating}
-                                size="large"
-                                readOnly
-                            />
-                            <Typography variant="subtitle1">已评价</Typography>
-                        </Stack>
-                    </CardContent>
-                </Card>
+                <Stack spacing={1} sx={{ alignItems: "center" }}>
+                    <Typography variant="h5">
+                        {ratingMsg[orderInfo.rating]}
+                    </Typography>
+                    <Rating value={orderInfo.rating} size="large" readOnly />
+                    <Typography variant="subtitle1">已评价</Typography>
+                </Stack>
             );
         }
     };
@@ -588,6 +568,38 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             </Box>
                         )}
                         {renderExpireTime(orderInfo)}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                            }}
+                            mb={-1}
+                            mt={1}
+                        >
+                            <Box sx={{ flexGrow: 1 }} />
+                            {orderInfo &&
+                                (orderInfo.state === OrderState.CHAT_ENDED ||
+                                    orderInfo.state === OrderState.FULFILLED) &&
+                                (orderInfo.rating === 0 ? (
+                                    orderInfo.answerer.id === user!.id ? (
+                                        <></>
+                                    ) : (
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleOpenRatingDialog}
+                                        >
+                                            评价
+                                        </Button>
+                                    )
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleOpenRatingDialog}
+                                    >
+                                        查看评价
+                                    </Button>
+                                ))}
+                        </Box>
                     </CardContent>
                 </Card>
                 <Card>
@@ -635,7 +647,6 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     onNewMessage={increaseMsgCount}
                 />
                 {renderMessageInput(orderInfo)}
-                {renderRating()}
             </Stack>
             <Dialog onClose={handleClose} open={open}>
                 <DialogTitle>附件列表</DialogTitle>
@@ -662,6 +673,37 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         </ListItem>
                     ))}
                 </List>
+            </Dialog>
+            <Dialog
+                onClose={handleCloseRatingDialog}
+                open={openRatingDialog}
+                fullWidth
+            >
+                <DialogTitle>订单评价</DialogTitle>
+                <DialogContent>
+                    <DialogContentText mb={1}>
+                        {orderInfo &&
+                            (orderInfo.rating === 0
+                                ? "请对本次服务进行评价。您的评价是对回答者最好的鼓励和肯定。非常感谢您的支持！"
+                                : "请查看此订单的评价。")}
+                    </DialogContentText>
+                    {renderRating()}
+                </DialogContent>
+                <DialogActions>
+                    {orderInfo &&
+                        (orderInfo.rating === 0 ? (
+                            <Button
+                                disabled={rating === 0}
+                                onClick={confirmRating}
+                            >
+                                确认评价
+                            </Button>
+                        ) : (
+                            <Button onClick={handleCloseRatingDialog}>
+                                知道了
+                            </Button>
+                        ))}
+                </DialogActions>
             </Dialog>
         </>
     );
