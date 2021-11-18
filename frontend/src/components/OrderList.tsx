@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Link as RouterLink } from "react-router-dom";
-import { OrderInfo, PagedList } from "../services/definations";
+import {OrderInfo, OrderState, PagedList} from "../services/definations";
 import questionService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -20,6 +20,7 @@ import userService from "../services/userService";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import PublicIcon from "@mui/icons-material/Public";
 import styled from "@emotion/styled";
+import {Rating} from "@mui/material";
 
 interface OrderListProps {
     userId?: number;
@@ -208,10 +209,34 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         {order.answerer.nickname}
                                     </Typography>
                                 </Box>
-                                <Typography variant="caption" mb={-1} mt={1}>
-                                    创建时间：
-                                    {formatTimestamp(order.createTime)}
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+
+                                    }}
+                                    mb={-1} mt={1}
+                                >
+                                    <Typography variant="caption">
+                                        创建时间：
+                                        {formatTimestamp(order.createTime)}
+                                    </Typography>
+                                    <Box ml={1}/>
+                                    {
+                                        (order.state === OrderState.CHAT_ENDED ||
+                                        order.state === OrderState.FULFILLED) &&
+                                        (order.rating === 0 ?
+                                        <Typography variant="caption" color="error">
+                                            未评价
+                                        </Typography> :
+                                        <>
+                                            <Typography variant="caption">
+                                                评分：
+                                            </Typography>
+                                            <Rating value={order.rating} readOnly size="small"/>
+                                        </>)
+                                    }
+                                </Box>
                             </Box>
                         </CardContentWrapper>
                     </CardActionArea>

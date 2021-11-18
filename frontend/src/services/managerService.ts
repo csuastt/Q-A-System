@@ -3,7 +3,6 @@ import {
     ManagerInfo,
     ManagerInfoList,
     ManagerRole,
-    ManagerStatsInfo,
     PagedList,
 } from "./definations";
 
