@@ -574,16 +574,14 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 flexDirection: "row",
                             }}
                             mb={-1}
-                            mt={1}
+                            mt={3}
                         >
                             <Box sx={{ flexGrow: 1 }} />
                             {orderInfo &&
                                 (orderInfo.state === OrderState.CHAT_ENDED ||
                                     orderInfo.state === OrderState.FULFILLED) &&
                                 (orderInfo.rating === 0 ? (
-                                    orderInfo.answerer.id === user!.id ? (
-                                        <></>
-                                    ) : (
+                                    orderInfo.asker.id === user!.id && (
                                         <Button
                                             variant="contained"
                                             onClick={handleOpenRatingDialog}

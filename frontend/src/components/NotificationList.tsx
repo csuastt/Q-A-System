@@ -242,7 +242,7 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
                     key={idx}
                     onClick={() => {
                         routerHistory.push(`/orders/${notif.targetId}`);
-                        notificationService.readOne(user!.id, notif.notifId);
+                        notificationService.readOne(user.id, notif.notifId);
                     }}
                 >
                     {props.compact ? (
