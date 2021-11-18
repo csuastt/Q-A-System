@@ -21,6 +21,7 @@ import userService from "../services/userService";
 
 interface IMMessageListProps {
     orderInfo: OrderInfo;
+    onNewMessage?: (msg: IMMessage) => void;
 }
 
 const IMMessageList: React.FC<IMMessageListProps> = (props) => {
@@ -50,6 +51,7 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
         if (chatEnded) {
             return;
         }
+        const onNewMessage = props.onNewMessage;
         websocketService.onNewMessage = (newMsg) => {
             const newMsgList = [...msgList!];
             // Find insert position for new message.
@@ -65,11 +67,14 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
             }
             newMsgList.splice(insertPos, 0, newMsg);
             setMsgList(newMsgList);
+            if (onNewMessage) {
+                onNewMessage(newMsg);
+            }
         };
         return () => {
             websocketService.onNewMessage = () => null;
         };
-    }, [msgList, props.orderInfo.state]);
+    }, [msgList, props.onNewMessage, props.orderInfo.state]);
 
     useEffect(() => {
         const chatEnded =
@@ -121,8 +126,8 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
 
     return msgList ? (
         <Stack spacing={2}>
-            {msgList.map((msg) => (
-                <SingleMessage msg={msg} />
+            {msgList.map((msg, idx) => (
+                <SingleMessage msg={msg} key={idx} />
             ))}
         </Stack>
     ) : (

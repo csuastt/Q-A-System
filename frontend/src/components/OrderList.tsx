@@ -21,6 +21,7 @@ import userService from "../services/userService";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import PublicIcon from "@mui/icons-material/Public";
 import styled from "@emotion/styled";
+import systemConfigService from "../services/systemConfigService";
 
 interface OrderListProps {
     userId?: number;
@@ -42,6 +43,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [totalCount, setTotalCount] = useState(0);
     const [longPending, setLongPending] = useState(false);
     const [errorFlag, setErrorFlag] = useState(false);
+    const [maxMsgCount, setMaxMsgCount] = useState<number>();
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setQuestionList(list.data);
@@ -88,6 +90,12 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.userId,
         props.keywords,
     ]);
+
+    useEffect(() => {
+        systemConfigService.getSystemConfig().then((config) => {
+            setMaxMsgCount(config.maxChatMessages);
+        });
+    }, []);
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
@@ -146,8 +154,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         ) {
             return (
                 <>
-                    <AlarmIcon fontSize="small" />
-                    <Typography variant="caption">
+                    <AlarmIcon fontSize="small" color="warning" />
+                    <Typography variant="caption" color="warning">
                         {formatTimestamp(order.expireTime)}
                     </Typography>
                 </>
@@ -159,9 +167,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         if (order.state === OrderState.ANSWERED) {
             return (
                 <>
-                    <ChatIcon fontSize="small" sx={{ ml: 1 }} />
-                    <Typography variant="caption">
-                        {`剩余${order.messageCount}次`}
+                    <ChatIcon fontSize="small" sx={{ ml: 1 }} color="info" />
+                    <Typography variant="caption" color="info">
+                        {maxMsgCount
+                            ? `${order.messageCount}/${maxMsgCount}`
+                            : `${order.messageCount}`}
                     </Typography>
                 </>
             );
