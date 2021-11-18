@@ -321,14 +321,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .then(() => setNeedReload(true));
     };
     const renderRating = () => {
-        if (!orderInfo)
-            return null;
+        if (!orderInfo) return null;
         if (orderInfo.rating === 0) {
             return (
                 <Stack spacing={1} sx={{ alignItems: "center" }}>
-                    <Typography variant="h5">
-                        {ratingMsg[rating]}
-                    </Typography>
+                    <Typography variant="h5">{ratingMsg[rating]}</Typography>
                     <Rating
                         value={rating}
                         onChange={(_, newValue) =>
@@ -344,11 +341,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     <Typography variant="h5">
                         {ratingMsg[orderInfo.rating]}
                     </Typography>
-                    <Rating
-                        value={orderInfo.rating}
-                        size="large"
-                        readOnly
-                    />
+                    <Rating value={orderInfo.rating} size="large" readOnly />
                     <Typography variant="subtitle1">已评价</Typography>
                 </Stack>
             );
@@ -489,30 +482,33 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             sx={{
                                 display: "flex",
                                 flexDirection: "row",
-
                             }}
-                            mb={-1} mt={1}
+                            mb={-1}
+                            mt={1}
                         >
                             <Box sx={{ flexGrow: 1 }} />
-                            { orderInfo &&
-                                (
-                                    orderInfo.state === OrderState.CHAT_ENDED ||
-                                    orderInfo.state === OrderState.FULFILLED
-                                ) && (
-                                    orderInfo.rating === 0 ?
-                                        (
-                                            orderInfo.answerer.id === user!.id ?
-                                                <></>:
-                                                <Button variant="contained" onClick={handleOpenRatingDialog}>
-                                                    评价
-                                                </Button>
-                                        )
-                                        :
-                                        <Button variant="contained" onClick={handleOpenRatingDialog}>
-                                            查看评价
+                            {orderInfo &&
+                                (orderInfo.state === OrderState.CHAT_ENDED ||
+                                    orderInfo.state === OrderState.FULFILLED) &&
+                                (orderInfo.rating === 0 ? (
+                                    orderInfo.answerer.id === user!.id ? (
+                                        <></>
+                                    ) : (
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleOpenRatingDialog}
+                                        >
+                                            评价
                                         </Button>
-                                )
-                            }
+                                    )
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleOpenRatingDialog}
+                                    >
+                                        查看评价
+                                    </Button>
+                                ))}
                         </Box>
                     </CardContent>
                 </Card>
@@ -604,37 +600,35 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     ))}
                 </List>
             </Dialog>
-            <Dialog onClose={handleCloseRatingDialog} open={openRatingDialog} fullWidth>
+            <Dialog
+                onClose={handleCloseRatingDialog}
+                open={openRatingDialog}
+                fullWidth
+            >
                 <DialogTitle>订单评价</DialogTitle>
                 <DialogContent>
                     <DialogContentText mb={1}>
-                        {
-                            orderInfo && (
-                                orderInfo.rating === 0 ?
-                                    "请对本次服务进行评价。您的评价是对回答者最好的鼓励和肯定。非常感谢您的支持！":
-                                    "请查看您的订单评价。"
-                            )
-                        }
+                        {orderInfo &&
+                            (orderInfo.rating === 0
+                                ? "请对本次服务进行评价。您的评价是对回答者最好的鼓励和肯定。非常感谢您的支持！"
+                                : "请查看此订单的评价。")}
                     </DialogContentText>
                     {renderRating()}
                 </DialogContent>
                 <DialogActions>
-                    {
-                        orderInfo && (
-                            orderInfo.rating === 0 ?
-                                <Button
-                                    disabled={rating === 0}
-                                    onClick={confirmRating}
-                                >
-                                    确认评价
-                                </Button>:
-                                <Button
-                                    onClick={handleCloseRatingDialog}
-                                >
-                                    知道了
-                                </Button>
-                        )
-                    }
+                    {orderInfo &&
+                        (orderInfo.rating === 0 ? (
+                            <Button
+                                disabled={rating === 0}
+                                onClick={confirmRating}
+                            >
+                                确认评价
+                            </Button>
+                        ) : (
+                            <Button onClick={handleCloseRatingDialog}>
+                                知道了
+                            </Button>
+                        ))}
                 </DialogActions>
             </Dialog>
         </>

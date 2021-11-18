@@ -42,6 +42,7 @@ export interface UserBasicInfo {
     description: string;
     price: number;
     role: UserRole;
+    rating: number;
 }
 
 export type ManagerInfoList = Array<ManagerInfo>;
@@ -68,6 +69,7 @@ export interface UserInfo {
     balance: number;
     description: string;
     role: UserRole;
+    rating: number;
 }
 
 export interface UserFullyInfo {
@@ -83,6 +85,7 @@ export interface UserFullyInfo {
     description: string;
     price: number;
     role: UserRole;
+    rating: number;
 }
 
 export enum OrderState {

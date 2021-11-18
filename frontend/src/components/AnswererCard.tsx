@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
-import { UserBasicInfo } from "../services/definations";
+import { OrderState, UserBasicInfo } from "../services/definations";
 import userService from "../services/userService";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
@@ -18,11 +18,13 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
+    Rating,
     Stack,
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AnswererDetailDialog from "./AnswererDetailDialog";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import { formatTimestamp } from "../util";
 
 const AnswererCard: React.FC<{
     userInfo?: UserBasicInfo;
@@ -60,7 +62,8 @@ const AnswererCard: React.FC<{
     };
 
     const trimString = (str: string) => {
-        if (str.length > 8) return str.substr(0, 8) + "...";
+        const maxLen = props.listMode ? 8 : 12;
+        if (str.length > maxLen) return str.substr(0, maxLen) + "...";
         else return str;
     };
 
@@ -98,9 +101,26 @@ const AnswererCard: React.FC<{
                                     {"@" + userInfo.username}
                                 </Typography>
                                 {" — " + profession + "；" + description}
-                                <Typography variant="body2" color="primary">
-                                    {"￥" + userInfo.price + "/次"}
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                    }}
+                                >
+                                    <Typography variant="body2" color="primary">
+                                        {"￥" + userInfo.price + "/次"}
+                                    </Typography>
+                                    <Box ml={2} />
+                                    <Typography variant="caption">
+                                        评分：
+                                    </Typography>
+                                    <Rating
+                                        value={userInfo.rating}
+                                        precision={0.1}
+                                        readOnly
+                                        size="small"
+                                    />
+                                </Box>
                             </React.Fragment>
                         }
                     />
@@ -171,7 +191,15 @@ const AnswererCard: React.FC<{
                                         {userInfo.nickname}
                                     </Typography>
                                 </Box>
-                                <Box mx={2} mt={-1}>
+                                <Box mt={-1}>
+                                    <Rating
+                                        name="half-rating-read"
+                                        value={userInfo.rating}
+                                        precision={0.1}
+                                        readOnly
+                                    />
+                                </Box>
+                                <Box mx={2} mt={0}>
                                     {typeof props.briefMsg === "undefined" ||
                                     !props.briefMsg ? (
                                         <>
