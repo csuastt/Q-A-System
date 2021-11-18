@@ -10,7 +10,7 @@ class AdminAuthService {
                 password: password,
             })
             .then((response) => {
-                localStorage.setItem("token", response.data.token);
+                localStorage.setItem("AdminToken", response.data.token);
                 axios.defaults.headers.common["Authorization"] =
                     "Bearer " + response.data.token;
             })
@@ -38,7 +38,7 @@ class AdminAuthService {
     }
 
     refreshToken(): Promise<ManagerInfo> {
-        const storedToken: string | null = localStorage.getItem("token");
+        const storedToken: string | null = localStorage.getItem("AdminToken");
         if (storedToken) {
             axios.defaults.headers.common["Authorization"] =
                 "Bearer " + storedToken;
@@ -53,7 +53,7 @@ class AdminAuthService {
     }
 
     clearToken() {
-        localStorage.removeItem("token");
+        localStorage.removeItem("AdminToken");
         delete axios.defaults.headers.common["Authorization"];
     }
 }

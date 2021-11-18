@@ -5,7 +5,7 @@
 ### 上传文件
 
 ```
-POST /api/orders/{id}/attachment
+POST /api/orders/{id}/attachments
 ```
 
 参数：
@@ -13,7 +13,6 @@ POST /api/orders/{id}/attachment
 | 名称      | 类型           | 说明     |
 | -------- | ------        | -------  |
 | file     | MultipartFile |          |
-| name     | String        | 文件名称  |
 
 
 ### 上传头像
@@ -26,7 +25,7 @@ POST /api/users/{id}/avatar
 
 | 名称      | 类型           | 说明     |
 | -------- | ------        | -------  |
-| file     | MultipartFile |          |
+| multiPartFile     | MultipartFile |          |
 
 返回：
 

@@ -35,6 +35,8 @@ import userService from "../services/userService";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import MoneyIcon from "@mui/icons-material/Money";
 import AnswererList from "./AnswererList";
+import Library from "./Library";
+import NotificationList from "./NotificationList";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -126,6 +128,7 @@ export default function Welcome() {
                             sx={{
                                 height: 80,
                                 width: 80,
+                                fontSize: 40,
                             }}
                         />
                         <Box mt={2}>
@@ -326,9 +329,12 @@ export default function Welcome() {
                     subheader={
                         <>
                             {user ? (
-                                <Typography align="left" variant="body2">
-                                    下方显示了您的消息列表
-                                </Typography>
+                                <>
+                                    <Typography align="left" variant="body2">
+                                        下方显示了您的消息列表
+                                    </Typography>
+                                    <NotificationList compact />
+                                </>
                             ) : (
                                 <Typography align="left" variant="body2">
                                     请
@@ -424,6 +430,53 @@ export default function Welcome() {
         );
     };
 
+    const drawLibrary = () => {
+        return (
+            <Card>
+                <CardHeader
+                    title={
+                        <>
+                            <Typography align="left" variant="h6">
+                                问答库
+                            </Typography>
+                        </>
+                    }
+                    subheader={
+                        <>
+                            <Typography align="left" variant="body2">
+                                请浏览问答库，
+                                <Link
+                                    variant="body2"
+                                    component={RouterLink}
+                                    to="/lib"
+                                >
+                                    点此查看完整列表
+                                </Link>
+                                {!user && (
+                                    <>
+                                        {"（"}
+                                        <Link
+                                            variant="body2"
+                                            component={RouterLink}
+                                            to="/login"
+                                        >
+                                            登录
+                                        </Link>
+                                        {"后才可查看详情哦~）"}
+                                    </>
+                                )}
+                            </Typography>
+                        </>
+                    }
+                    sx={{ paddingBottom: 0 }}
+                />
+                <CardContent sx={{ paddingTop: 1 }}>
+                    <Library briefMsg={true} />
+                </CardContent>
+            </Card>
+        );
+    };
+
     const drawAnswererList = () => {
         return (
             <Card>
@@ -504,9 +557,14 @@ export default function Welcome() {
                     <Grid container spacing={4} direction={"column"}>
                         {user && user.role === UserRole.ANSWERER && (
                             <Grid item>
-                                <IncomeStatistics briefMsg={true} user={user} />
+                                <IncomeStatistics
+                                    briefMsg={true}
+                                    user={user}
+                                    isAdmin={false}
+                                />
                             </Grid>
                         )}
+                        <Grid item>{drawLibrary()}</Grid>
                         <Grid item>{drawAnswererList()}</Grid>
                     </Grid>
                 </Grid>

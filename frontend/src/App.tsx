@@ -1,7 +1,12 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import AuthContext from "./AuthContext";
 import AppFrame from "./components/AppFrame";
-import { Container } from "@mui/material";
+import {
+    Container,
+    createTheme,
+    PaletteMode,
+    ThemeProvider,
+} from "@mui/material";
 import Welcome from "./components/Welcome";
 import OrderCreationWizard from "./components/OrderCreationWizard";
 import AccountProfile from "./components/AccountProfile";
@@ -22,11 +27,82 @@ import { SnackbarProvider } from "notistack";
 import NotificationController from "./components/NotificationController";
 import websocketService from "./services/websocketService";
 import NotificationList from "./components/NotificationList";
+import { grey } from "@mui/material/colors";
+import { SimplePaletteColorOptions } from "@mui/material/styles/createPalette";
+import Library from "./components/Library";
+
+export const ColorModeContext = React.createContext({
+    toggleColorMode: () => {},
+});
+
+const getDesignTokens = (mode: PaletteMode) => ({
+    palette: {
+        mode,
+        ...(mode === "light"
+            ? {
+                  secondary: {
+                      main: "#DC368D",
+                      light: "#E666B2",
+                      dark: "#BB2B69",
+                  } as SimplePaletteColorOptions,
+              }
+            : {
+                  // palette values for dark mode
+                  primary: {
+                      main: "#EA4F1C",
+                      light: "#F29373",
+                      dark: "#BA3C12",
+                  } as SimplePaletteColorOptions,
+                  secondary: {
+                      main: "#03DAC6",
+                      light: "#A6F2E7",
+                      dark: "#02B19F",
+                  } as SimplePaletteColorOptions,
+                  background: {
+                      default: "#2f3033",
+                      paper: "#313336",
+                  },
+                  error: {
+                      main: "#cf6679",
+                      light: "#E19EAA",
+                      dark: "#9C3043",
+                  },
+                  warning: {
+                      main: "#d06b0b",
+                      light: "#F6A456",
+                      dark: "#C2640A",
+                  },
+                  text: {
+                      primary: "#D9D9D9",
+                      secondary: grey[500],
+                  },
+              }),
+    },
+});
 
 export default function App() {
     const [user, setUser] = useState<UserInfo>();
     const [refreshing, setRefreshing] = useState(true);
     const [wsAvailable, setWsAvailable] = useState(false);
+
+    const [mode, setMode] = React.useState<PaletteMode>("light");
+    const colorMode = React.useMemo(
+        () => ({
+            // The dark mode switch would invoke this method
+            toggleColorMode: () => {
+                setMode((prevMode: PaletteMode) =>
+                    prevMode === "light" ? "dark" : "light"
+                );
+            },
+        }),
+        []
+    );
+
+    // Update the theme only if the mode changes
+    const theme = React.useMemo(
+        () => createTheme(getDesignTokens(mode)),
+        [mode]
+    );
 
     useEffect(() => {
         websocketService.onConnected = () => {
@@ -80,8 +156,16 @@ export default function App() {
             />,
         ],
         ["/notif", <NotificationList />],
-        ["/income", <IncomeStatistics userId={user?.id} briefMsg={false} />],
+        [
+            "/income",
+            <IncomeStatistics
+                userId={user?.id}
+                briefMsg={false}
+                isAdmin={false}
+            />,
+        ],
         ["/help", <Help />],
+        ["/lib", <Library />],
         ["/", <Welcome />],
     ];
 
@@ -98,28 +182,32 @@ export default function App() {
                 clearManager: () => {},
             }}
         >
-            <BrowserRouter>
-                <SnackbarProvider maxSnack={4}>
-                    <NotificationController wsAvailable={wsAvailable}>
-                        <AppFrame isAdmin={false}>
-                            <Container maxWidth="md">
-                                <Switch>
-                                    {routes.map((routeItem) => {
-                                        return (
-                                            <Route
-                                                path={routeItem[0].toString()}
-                                                key={routeItem[0].toString()}
-                                            >
-                                                {routeItem[1]}
-                                            </Route>
-                                        );
-                                    })}
-                                </Switch>
-                            </Container>
-                        </AppFrame>
-                    </NotificationController>
-                </SnackbarProvider>
-            </BrowserRouter>
+            <ColorModeContext.Provider value={colorMode}>
+                <ThemeProvider theme={theme}>
+                    <BrowserRouter>
+                        <SnackbarProvider maxSnack={4}>
+                            <NotificationController wsAvailable={wsAvailable}>
+                                <AppFrame isAdmin={false}>
+                                    <Container maxWidth="md">
+                                        <Switch>
+                                            {routes.map((routeItem) => {
+                                                return (
+                                                    <Route
+                                                        path={routeItem[0].toString()}
+                                                        key={routeItem[0].toString()}
+                                                    >
+                                                        {routeItem[1]}
+                                                    </Route>
+                                                );
+                                            })}
+                                        </Switch>
+                                    </Container>
+                                </AppFrame>
+                            </NotificationController>
+                        </SnackbarProvider>
+                    </BrowserRouter>
+                </ThemeProvider>
+            </ColorModeContext.Provider>
         </AuthContext.Provider>
     );
 }

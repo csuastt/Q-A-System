@@ -9,6 +9,9 @@ import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import CardContent from "@mui/material/CardContent";
 import userService from "../services/userService";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { Rating } from "@mui/material";
 
 const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
     props
@@ -37,6 +40,24 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
                         subheader={info.nickname && "@" + info.username}
                     />
                     <CardContent>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                            }}
+                            mb={4}
+                            mt={-1}
+                        >
+                            <Typography variant="body1">
+                                {"平均评分："}
+                            </Typography>
+                            <Rating
+                                value={info.rating}
+                                precision={0.1}
+                                readOnly
+                                size="small"
+                            />
+                        </Box>
                         <TextField
                             label="专业领域"
                             contentEditable={false}

@@ -5,6 +5,7 @@ import {
     OrderInfo,
     OrderState,
     PagedList,
+    SortDirection,
 } from "./definations";
 
 class OrderService {
@@ -46,13 +47,17 @@ class OrderService {
 
     getAllOrderListByAdmin(
         page: number,
-        pageSize: number
+        pageSize: number,
+        sortDirection?: SortDirection,
+        state?: OrderState
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
                 params: {
                     page: page,
                     pageSize: pageSize,
+                    sortDirection: sortDirection,
+                    state: state,
                 },
             })
             .then((response) => response.data);
@@ -62,7 +67,8 @@ class OrderService {
         asker: number,
         answerer: number,
         questionTitle: string,
-        questionDescription: string
+        questionDescription: string,
+        showPublic: boolean
     ): Promise<CreationResult> {
         return axios
             .post("/orders", {
@@ -70,6 +76,7 @@ class OrderService {
                 answerer: answerer,
                 title: questionTitle,
                 description: questionDescription,
+                showPublic: showPublic,
             })
             .then((response) => response.data);
     }
@@ -78,6 +85,35 @@ class OrderService {
         return axios
             .get(`/orders/${orderId}`)
             .then((response) => response.data);
+    }
+
+    getPublicOrderListBySearch(
+        keywords: string,
+        page?: number,
+        prePage?: number
+    ): Promise<PagedList<OrderInfo>> {
+        if (keywords.length === 0) {
+            return axios
+                .get("/orders", {
+                    params: {
+                        showPublic: 1,
+                        page: page,
+                        pageSize: prePage,
+                    },
+                })
+                .then((response) => response.data);
+        } else {
+            return axios
+                .get("/orders", {
+                    params: {
+                        showPublic: 1,
+                        keyword: keywords,
+                        page: page,
+                        pageSize: prePage,
+                    },
+                })
+                .then((response) => response.data);
+        }
     }
 
     modifyOrderInfo(orderId: number, newInfo: OrderInfo): Promise<any> {
@@ -106,8 +142,7 @@ class OrderService {
 
     uploadAttachment(orderId: number, file: File): Promise<any> {
         const formData = new FormData();
-        formData.append("multipartFile", file);
-        formData.append("name", file.name);
+        formData.append("file", file);
         return axios.post(`/orders/${orderId}/attachments`, formData, {
             headers: {
                 "content-type": "multipart/form-data",
@@ -116,13 +151,19 @@ class OrderService {
     }
 
     getAttachments(orderId: number): Promise<Array<AttachmentInfo>> {
-        return axios.get(`/orders/${orderId}/attachments`);
+        return axios
+            .get(`/orders/${orderId}/attachments`)
+            .then((response) => response.data);
     }
 
     getAttachmentUrl(orderId: number, uuid: number) {
         return (
             axios.defaults.baseURL + `/orders/${orderId}/attachments/${uuid}`
         );
+    }
+
+    rateOrder(orderId: number, rating: number): Promise<any> {
+        return axios.post(`/orders/${orderId}/rate`, { value: rating });
     }
 }
 

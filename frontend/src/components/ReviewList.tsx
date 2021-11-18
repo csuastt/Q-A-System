@@ -1,7 +1,14 @@
 import Button from "@mui/material/Button";
-import React, { useEffect, useState } from "react";
+import CardActionArea from "@mui/material/CardActionArea";
+import React, { useContext, useEffect, useState } from "react";
 import { formatTimestamp, parseIntWithDefault, useQuery } from "../util";
-import { OrderInfo, OrderState, PagedList } from "../services/definations";
+import {
+    ManagerRole,
+    OrderInfo,
+    OrderState,
+    PagedList,
+    SortDirection,
+} from "../services/definations";
 import orderService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -12,6 +19,10 @@ import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 import userService from "../services/userService";
+import { Link as RouterLink } from "react-router-dom";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import AuthContext from "../AuthContext";
 
 interface ReviewListProps {
     filterFinished?: boolean;
@@ -25,8 +36,9 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
     const [currentPage, setCurrentPage] = useState(
         parseIntWithDefault(query.get("page"), 1)
     );
+    const { manager } = useContext(AuthContext);
     const [itemPrePage] = useState(
-        parseIntWithDefault(query.get("prepage"), 9)
+        parseIntWithDefault(query.get("prepage"), 10)
     );
     const [maxPage, setMaxPage] = useState(currentPage);
     const [totalCount, setTotalCount] = useState(0);
@@ -49,6 +61,27 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
 
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
+    };
+
+    const timeAsc = () => {
+        orderService
+            .getAllOrderListByAdmin(
+                currentPage,
+                itemPrePage,
+                SortDirection.ASC,
+                OrderState.CREATED
+            )
+            .then(acceptOrderList);
+    };
+    const timeDesc = () => {
+        orderService
+            .getAllOrderListByAdmin(
+                currentPage,
+                itemPrePage,
+                SortDirection.DESC,
+                OrderState.CREATED
+            )
+            .then(acceptOrderList);
     };
 
     const renderCardPlaceholder = () => (
@@ -74,97 +107,109 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         <>
             {orderList!.map((order: OrderInfo, index: number) => (
                 <Card key={index}>
-                    <CardContent>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                p: 1,
-                                m: 1,
-                                flexDirection: "row",
-                            }}
-                        >
+                    <CardActionArea
+                        component={RouterLink}
+                        to={`/admins/orders/${order.id}`}
+                    >
+                        <CardContent>
                             <Box
                                 sx={{
                                     display: "flex",
-                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    p: 1,
+                                    m: 1,
+                                    flexDirection: "row",
                                 }}
                             >
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        flexDirection: "row",
+                                        flexDirection: "column",
                                     }}
                                 >
-                                    <Typography
-                                        variant="h6"
-                                        noWrap
-                                        style={{ fontWeight: 600 }}
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                        }}
                                     >
-                                        {order.questionTitle}
-                                    </Typography>
-                                    <Box sx={{ flexGrow: 1 }} />
-                                    {/*<OrderStateChip state={order.state} />*/}
-                                </Box>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                    }}
-                                    mt={1}
-                                >
-                                    <Avatar
-                                        src={userService.getAvatarUrl(
-                                            order.answerer.id
-                                        )}
-                                        alt={order.answerer.username}
-                                        sx={{ width: 30, height: 30 }}
-                                    />
-                                    <Typography
-                                        variant="subtitle1"
-                                        sx={{ ml: 1 }}
+                                        <Typography
+                                            variant="h6"
+                                            noWrap
+                                            style={{ fontWeight: 600 }}
+                                        >
+                                            {order.questionTitle}
+                                        </Typography>
+                                        <Box sx={{ flexGrow: 1 }} />
+                                        {/*<OrderStateChip state={order.state} />*/}
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                        }}
+                                        mt={1}
                                     >
-                                        {order.answerer.username}
+                                        <Avatar
+                                            src={userService.getAvatarUrl(
+                                                order.answerer.id
+                                            )}
+                                            alt={order.answerer.username}
+                                            sx={{ width: 30, height: 30 }}
+                                        />
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{ ml: 1 }}
+                                        >
+                                            {order.answerer.username}
+                                        </Typography>
+                                    </Box>
+                                    <Typography
+                                        variant="caption"
+                                        mb={-1}
+                                        mt={1}
+                                    >
+                                        创建时间：
+                                        {formatTimestamp(order.createTime)}
                                     </Typography>
                                 </Box>
-                                <Typography variant="caption" mb={-1} mt={1}>
-                                    创建时间：
-                                    {formatTimestamp(order.createTime)}
-                                </Typography>
+                                {manager?.role === ManagerRole.ADMIN ? (
+                                    <></>
+                                ) : (
+                                    <Stack direction="row" p={3} spacing={2}>
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                orderService.reviewOrder(
+                                                    order.id,
+                                                    false
+                                                );
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            驳回
+                                        </Button>
+                                        <Button
+                                            size="small"
+                                            color="success"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                orderService.reviewOrder(
+                                                    order.id,
+                                                    true
+                                                );
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            通过
+                                        </Button>
+                                    </Stack>
+                                )}
                             </Box>
-
-                            <Stack direction="row" p={3} spacing={2}>
-                                <Button
-                                    size="small"
-                                    color="error"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        orderService.reviewOrder(
-                                            order.id,
-                                            false
-                                        );
-                                        window.location.reload();
-                                    }}
-                                >
-                                    驳回
-                                </Button>
-                                <Button
-                                    size="small"
-                                    color="success"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        orderService.reviewOrder(
-                                            order.id,
-                                            true
-                                        );
-                                        window.location.reload();
-                                    }}
-                                >
-                                    通过
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </CardContent>
+                        </CardContent>
+                    </CardActionArea>
                 </Card>
             ))}
             {maxPage > 1 && (
@@ -193,7 +238,32 @@ const ReviewList: React.FC<ReviewListProps> = (props) => {
         );
     }
     return (
-        <Box>{orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}</Box>
+        <>
+            <Stack direction="row" spacing={3} mt={3}>
+                <Button
+                    onClick={timeAsc}
+                    startIcon={<ArrowUpwardIcon />}
+                    color="success"
+                    variant="outlined"
+                    size="small"
+                >
+                    时间顺序
+                </Button>
+                <Button
+                    onClick={timeDesc}
+                    startIcon={<ArrowDownwardIcon />}
+                    color="warning"
+                    variant="outlined"
+                    size="small"
+                >
+                    时间倒序
+                </Button>
+            </Stack>
+
+            <Box marginTop={1.4}>
+                {orderList && <Stack spacing={2}>{renderOrderList()}</Stack>}
+            </Box>
+        </>
     );
 };
 

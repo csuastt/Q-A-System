@@ -41,7 +41,7 @@ public class User {
 
     private ZonedDateTime createTime;
 
-    private UserRole role = UserRole.USER;
+    private Role role = Role.USER;
 
     private int balance = 100;
 
@@ -52,6 +52,10 @@ public class User {
 
     private int askCount = 0;
     private int answerCount = 0;
+
+    private int ratingCount = 0;
+    private int ratingTotal = 0;
+    private double rating = 0.0;
 
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();
@@ -77,5 +81,19 @@ public class User {
     public void update(ApplyRequest data) {
         description = data.getDescription();
         price = data.getPrice();
+    }
+
+    public void addRating(int value) {
+        ratingCount++;
+        ratingTotal += value;
+        rating = (double) ratingTotal / ratingCount;
+    }
+
+    public enum Role {
+        USER, ANSWERER
+    }
+
+    public enum Gender {
+        UNKNOWN, MALE, FEMALE;
     }
 }

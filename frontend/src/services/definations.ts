@@ -1,12 +1,18 @@
 export enum UserRole {
     USER = "USER",
     ANSWERER = "ANSWERER",
+    ALL = "USER_AND_ANSWERER",
 }
 
 export enum UserGender {
     FEMALE = "FEMALE",
     MALE = "MALE",
     UNKNOWN = "UNKNOWN",
+}
+
+export enum SortDirection {
+    ASC = "ASC",
+    DESC = "DESC",
 }
 
 export enum UserType {
@@ -20,15 +26,13 @@ export enum ManagerRole {
     SUPER_ADMIN = "SUPER_ADMIN",
 }
 
-export interface ConfigInfo {
-    minPrice: number;
-    maxPrice: number;
-    respondExpirationSeconds: number;
-    answerExpirationSeconds: number;
-    fulfillExpirationSeconds: number;
-    maxChatMessages: number;
-    maxChatTimeSeconds: number;
-    feeRate: number;
+export interface AdminStatsInfo {
+    userCount: number;
+    answererCount: number;
+    orderCount: number;
+    orderToReviewCount: number; // 待审核数
+    publicOrderCount: number; // 问答库数
+    adminCount: number;
 }
 
 export interface UserBasicInfo {
@@ -38,6 +42,7 @@ export interface UserBasicInfo {
     description: string;
     price: number;
     role: UserRole;
+    rating: number;
 }
 
 export type ManagerInfoList = Array<ManagerInfo>;
@@ -64,6 +69,7 @@ export interface UserInfo {
     balance: number;
     description: string;
     role: UserRole;
+    rating: number;
 }
 
 export interface UserFullyInfo {
@@ -79,6 +85,7 @@ export interface UserFullyInfo {
     description: string;
     price: number;
     role: UserRole;
+    rating: number;
 }
 
 export enum OrderState {
@@ -98,7 +105,7 @@ export enum OrderState {
 }
 
 export const OrderStateMsg: Map<OrderState, string> = new Map([
-    [OrderState.CREATED, "已创建"],
+    [OrderState.CREATED, "审核中"],
     [OrderState.PAYED, "已支付"],
     [OrderState.PAY_TIMEOUT, "支付超时"],
     [OrderState.REVIEWED, "审核通过"],
@@ -110,6 +117,7 @@ export const OrderStateMsg: Map<OrderState, string> = new Map([
     [OrderState.ANSWER_TIMEOUT, "回答超时"],
     [OrderState.CHAT_ENDED, "交流结束"],
     [OrderState.FULFILLED, "交易完成"],
+    [OrderState.CANCELLED, "已取消"],
 ]);
 
 export enum OrderEndReason {
@@ -129,11 +137,15 @@ export interface OrderInfo {
     questionTitle: string;
     questionDescription: string;
     createTime: string;
+    expireTime: string;
     endReason: OrderEndReason;
     finished: boolean;
     deleted: boolean;
     answer: string;
     price: number;
+    messageCount: number;
+    rating: number;
+    showPublic: boolean;
 }
 
 export enum CreationResultType {
@@ -170,6 +182,12 @@ export interface EarningsInfo {
 export interface StatsInfo {
     askCount: number;
     answerCount: number;
+}
+
+export interface ManagerStatsInfo {
+    //todo
+    // askCount: number;
+    // answerCount: number;
 }
 
 export interface ConfigInfo {

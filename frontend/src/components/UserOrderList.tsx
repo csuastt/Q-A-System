@@ -23,7 +23,7 @@ const UserOrderList: React.FC = () => {
     const showAnswerer =
         user.role === UserRole.ANSWERER && query.get("answerer") === "true";
     const currentPage = parseIntWithDefault(query.get("page"), 1);
-    const itemPrePage = parseIntWithDefault(query.get("prepage"), 20);
+    const itemPrePage = parseIntWithDefault(query.get("prepage"), 10);
 
     const OrderListWrapper: React.FC<{ finished: boolean }> = (props) => (
         <OrderList

@@ -1,6 +1,6 @@
 import AuthContext from "../AuthContext";
 import React, { useContext, useEffect, useState } from "react";
-import { useNotification } from "./NotificationController";
+import { NotifHandlerResult, useNotification } from "./NotificationController";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -28,22 +28,33 @@ import { describeNotification, formatTimestamp } from "../util";
 import { Redirect, useHistory } from "react-router-dom";
 import notificationService from "../services/notificationService";
 import Stack from "@mui/material/Stack";
-import { ToggleButton } from "@mui/material";
+import {
+    Alert,
+    FormControl,
+    IconButton,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    ToggleButton,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import Pagination from "./Pagination";
 import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import Box from "@mui/material/Box";
 
-const NotificationList: React.FC = (props) => {
+const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     const { user } = useContext(AuthContext);
-    const { setUnreadCount } = useNotification();
+    const { setUnreadCount, setNotifHandler, resetNotifHandler } =
+        useNotification();
     const routerHistory = useHistory();
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [filterUnread, setFilterUnread] = useState(false);
+    const [filterUnread, setFilterUnread] = useState(true);
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [newNotif, setNewNotif] = useState(false);
     const [notifList, setNotifList] = useState<PagedList<Notification>>();
 
     useEffect(() => {
@@ -54,26 +65,46 @@ const NotificationList: React.FC = (props) => {
             .getNotificationList(
                 user.id,
                 filterUnread ? false : undefined,
-                currentPage
+                currentPage,
+                props.compact ? 5 : 20
             )
             .then((list) => {
                 setNotifList(list);
                 setLoading(false);
                 setRefreshFlag(false);
+                setNewNotif(false);
             });
         notificationService
             .getUnreadCount(user.id)
             .then((value) => setUnreadCount(value.count));
-    }, [filterUnread, user, refreshFlag, currentPage, setUnreadCount]);
+    }, [
+        filterUnread,
+        user,
+        refreshFlag,
+        currentPage,
+        setUnreadCount,
+        props.compact,
+    ]);
+
+    useEffect(() => {
+        setNotifHandler(() => () => {
+            setNewNotif(true);
+            return NotifHandlerResult.PASS;
+        });
+        return () => resetNotifHandler();
+    }, [resetNotifHandler, setNotifHandler]);
 
     if (!user) {
         return <Redirect to={"/login"} />;
     }
 
-    const onFilterChanged = (
+    const onFilterButtonChanged = (
         event: React.MouseEvent<HTMLElement>,
         value: boolean
     ) => setFilterUnread(value);
+
+    const onFilterSelectChanged = (event: SelectChangeEvent) =>
+        setFilterUnread(event.target.value === "true");
 
     const readAll = () => {
         setLoading(true);
@@ -87,9 +118,73 @@ const NotificationList: React.FC = (props) => {
             .then(() => setRefreshFlag(true));
     };
 
+    const refresh = () => {
+        setRefreshFlag(true);
+    };
+
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
     };
+
+    const renderNormalControl = () => (
+        <Stack direction="row" spacing={3} mt={3}>
+            <ToggleButtonGroup
+                value={filterUnread}
+                exclusive
+                onChange={onFilterButtonChanged}
+                size="small"
+            >
+                <ToggleButton value={true}>筛选未读</ToggleButton>
+                <ToggleButton value={false}>显示全部</ToggleButton>
+            </ToggleButtonGroup>
+            <Button
+                onClick={readAll}
+                startIcon={<DoneAllIcon />}
+                color="success"
+                variant="contained"
+                size="small"
+            >
+                全部已读
+            </Button>
+            <Button
+                onClick={deleteRead}
+                startIcon={<DeleteOutlineIcon />}
+                color="warning"
+                variant="outlined"
+                size="small"
+            >
+                删除已读
+            </Button>
+            <Button
+                onClick={refresh}
+                startIcon={<RefreshIcon />}
+                variant="outlined"
+                size="small"
+            >
+                刷新
+            </Button>
+        </Stack>
+    );
+
+    const renderCompactControl = () => (
+        <Stack direction="row">
+            <FormControl variant="standard">
+                <Select
+                    value={filterUnread ? "true" : "false"}
+                    onChange={onFilterSelectChanged}
+                >
+                    <MenuItem value={"true"}>未读消息</MenuItem>
+                    <MenuItem value={"false"}>全部消息</MenuItem>
+                </Select>
+            </FormControl>
+            <Button onClick={() => routerHistory.push("/notif")}>
+                查看完整列表
+            </Button>
+            <IconButton onClick={refresh} size="small">
+                <RefreshIcon />
+            </IconButton>
+        </Stack>
+    );
 
     const renderSkeletonItem = () => (
         <ListItem>
@@ -147,9 +242,16 @@ const NotificationList: React.FC = (props) => {
                     key={idx}
                     onClick={() => {
                         routerHistory.push(`/orders/${notif.targetId}`);
+                        notificationService.readOne(user.id, notif.notifId);
                     }}
                 >
-                    <ListItemIcon>{notifIcon(notif)}</ListItemIcon>
+                    {props.compact ? (
+                        <ListItemIcon sx={{ minWidth: 30 }}>
+                            {notifIcon(notif)}
+                        </ListItemIcon>
+                    ) : (
+                        <ListItemIcon>{notifIcon(notif)}</ListItemIcon>
+                    )}
                     <ListItemText
                         primary={describeNotification(notif)}
                         secondary={formatTimestamp(notif.createTime)}
@@ -161,35 +263,12 @@ const NotificationList: React.FC = (props) => {
 
     return (
         <>
-            <Stack direction="row" spacing={3} mt={3}>
-                <ToggleButtonGroup
-                    value={filterUnread}
-                    exclusive
-                    onChange={onFilterChanged}
-                    size="small"
-                >
-                    <ToggleButton value={true}>筛选未读</ToggleButton>
-                    <ToggleButton value={false}>显示全部</ToggleButton>
-                </ToggleButtonGroup>
-                <Button
-                    onClick={readAll}
-                    startIcon={<DoneAllIcon />}
-                    color="success"
-                    variant="contained"
-                    size="small"
-                >
-                    全部已读
-                </Button>
-                <Button
-                    onClick={deleteRead}
-                    startIcon={<DeleteOutlineIcon />}
-                    color="warning"
-                    variant="outlined"
-                    size="small"
-                >
-                    删除已读
-                </Button>
-            </Stack>
+            {props.compact ? renderCompactControl() : renderNormalControl()}
+            {newNotif && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                    有新通知，请刷新
+                </Alert>
+            )}
             {loading ? (
                 <List>{renderSkeletonItem()}</List>
             ) : notifList?.totalCount === 0 ? (
@@ -200,9 +279,9 @@ const NotificationList: React.FC = (props) => {
                     </Typography>
                 </Box>
             ) : (
-                <List>{renderNotifList()}</List>
+                <List dense={props.compact}>{renderNotifList()}</List>
             )}
-            {notifList && notifList.totalPages > 1 && (
+            {!props.compact && notifList && notifList.totalPages > 1 && (
                 <Pagination
                     currentPage={currentPage}
                     maxPage={notifList.totalPages}

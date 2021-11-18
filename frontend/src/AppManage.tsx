@@ -19,6 +19,8 @@ import ManagerList from "./components/ManagerList";
 import PathParamParser from "./PathParamParser";
 import OrderDetailForAdmin from "./components/OrderDetailForAdmin";
 import SystemSettings from "./components/SystemSettings";
+import IncomeStatistics from "./components/IncomeStatistics";
+import Help from "./components/Help";
 
 const managerTheme: Theme = createTheme({
     palette: {
@@ -51,7 +53,7 @@ export default function AppManage() {
 
     const routes = [
         ["/admins/answerers", <AnswererList userRole={UserRole.ANSWERER} />],
-        ["/admins/users", <UserList userRole={UserRole.USER} />],
+        ["/admins/users", <UserList userRole={UserRole.ALL} />],
         ["/admins/managers", <ManagerList />],
         [
             "/admins/orders/:orderId",
@@ -70,6 +72,11 @@ export default function AppManage() {
         ["/admins/create", <Create />],
         ["/admins/settings", <SystemSettings />],
         [
+            "/admins/income",
+            <IncomeStatistics briefMsg={false} isAdmin={true} />,
+        ],
+
+        [
             "/admins/change_password",
             <ChangePassword
                 redirectConfirm={"/admins/logout"}
@@ -77,6 +84,7 @@ export default function AppManage() {
                 isAdmin={true}
             />,
         ],
+        ["/help", <Help />],
         ["/admins/", <HelloAdmin />],
     ];
 

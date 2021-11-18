@@ -16,6 +16,7 @@ const renderMap: Map<QS, [string, string]> = new Map([
     [QS.ANSWER_TIMEOUT, ["warning", "outlined"]],
     [QS.CHAT_ENDED, ["default", "filled"]],
     [QS.FULFILLED, ["default", "outlined"]],
+    [QS.CANCELLED, ["default", "outlined"]],
 ]);
 
 const OrderStateChip: React.FC<{ state: QS }> = (props) => {

@@ -34,16 +34,25 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import {
-    Box,
-    Dialog,
-    DialogTitle,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
-} from "@mui/material";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import Rating from "@mui/material/Rating";
 import FolderIcon from "@mui/icons-material/Folder";
+import { formatSize, formatTimestamp } from "../util";
+import PublicIcon from "@mui/icons-material/Public";
+import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
+import AlarmIcon from "@mui/icons-material/Alarm";
+import ChatIcon from "@mui/icons-material/Chat";
+import systemConfigService from "../services/systemConfigService";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogContent from "@mui/material/DialogContent";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -56,8 +65,12 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [answering, setAnswering] = useState(false);
     const [answer, setAnswer] = useState<string>("");
     const [message, setMessage] = useState<string>("");
+    const [msgCount, setMsgCount] = useState<number>();
+    const [maxMsgCount, setMaxMsgCount] = useState<number>();
     const [open, setOpen] = React.useState(false);
+    const [openRatingDialog, setOpenRatingDialog] = useState(false);
     const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
+    const [rating, setRating] = useState<number>(0);
 
     const handleOpen = () => {
         setOpen(true);
@@ -67,6 +80,14 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
         setOpen(false);
     };
 
+    const handleOpenRatingDialog = () => {
+        setOpenRatingDialog(true);
+    };
+
+    const handleCloseRatingDialog = () => {
+        setOpenRatingDialog(false);
+    };
+
     useEffect(() => {
         if (!needReload) {
             return;
@@ -74,11 +95,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
         orderService
             .getOrderInfo(props.orderId)
             .then((order) => {
-                // if (order.id !== user?.id && order.id !== user?.id) {
-                //     setNoPermission(true);
-                // } else {
                 setOrderInfo(order);
-                // }
+                setMsgCount(order.messageCount);
             })
             .catch((err) => {
                 if (err.response.status === 401) {
@@ -92,6 +110,12 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             setAttachments(attachmentList);
         });
     }, [needReload, props.orderId, user?.id]);
+
+    useEffect(() => {
+        systemConfigService.getSystemConfig().then((config) => {
+            setMaxMsgCount(config.maxChatMessages);
+        });
+    }, []);
 
     // Answerering helper functions
     const handleAnswerChange = (newValue: string) => {
@@ -116,6 +140,12 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .respondOrder(orderInfo!.id, ok)
             .then(() => setNeedReload(true));
     };
+
+    const increaseMsgCount = React.useCallback(() => {
+        if (msgCount && msgCount > 0) {
+            setMsgCount(msgCount + 1);
+        }
+    }, [msgCount]);
 
     // IM helper function
     const sendMessage = () => {
@@ -146,6 +176,16 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     color="error"
                 >
                     该问题被审核员驳回，已全额退款
+                </Button>
+            );
+        } else if (state === OrderState.CREATED) {
+            return (
+                <Button
+                    variant="text"
+                    startIcon={<HourglassEmptyIcon />}
+                    color="warning"
+                >
+                    订单已创建，等待平台审核
                 </Button>
             );
         } else if (state === OrderState.PAY_TIMEOUT) {
@@ -279,6 +319,124 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             );
         }
     };
+
+    const stateHasExpireTime: Array<OrderState> = [
+        OrderState.REVIEWED,
+        OrderState.ACCEPTED,
+        OrderState.ANSWERED,
+        OrderState.CHAT_ENDED,
+    ];
+    const renderExpireTime = (order: OrderInfo) => {
+        const expireTimeType = stateHasExpireTime.indexOf(order.state);
+        const expireTimeMsg = [
+            "接单超时时间：",
+            "首次回答超时时间：",
+            "聊天自动结束时间：",
+            "结算时间：",
+        ];
+        if (expireTimeType !== -1) {
+            return (
+                <Alert
+                    variant="outlined"
+                    severity="warning"
+                    icon={<AlarmIcon />}
+                    sx={{ mt: 3, mb: -1 }}
+                >
+                    {expireTimeMsg[expireTimeType] +
+                        formatTimestamp(order.expireTime)}
+                </Alert>
+            );
+        }
+    };
+
+    const renderMessageInput = (order: OrderInfo) => {
+        if (order.state === OrderState.ANSWERED) {
+            if (msgCount && maxMsgCount && msgCount === maxMsgCount) {
+                return <Alert security="warning">聊天次数已用完</Alert>;
+            } else {
+                const msgCountUsage = msgCount
+                    ? "聊天次数使用：" +
+                      (maxMsgCount
+                          ? `${msgCount}/${maxMsgCount}`
+                          : `${msgCount}`)
+                    : "";
+                return (
+                    <Card>
+                        <Markdown value={message} onChange={setMessage} />
+                        <CardActions>
+                            <Button
+                                onClick={sendMessage}
+                                startIcon={<SendIcon />}
+                            >
+                                发送消息
+                            </Button>
+                            <Button
+                                onClick={endOrder}
+                                startIcon={<CloseIcon />}
+                                color={"error"}
+                            >
+                                结束订单
+                            </Button>
+                            <Box sx={{ flexGrow: 1 }} />
+                            {msgCountUsage && (
+                                <>
+                                    <ChatIcon sx={{ mr: 1 }} color="info" />
+                                    <Typography
+                                        variant="subtitle2"
+                                        color="info"
+                                    >
+                                        {msgCountUsage}
+                                    </Typography>
+                                </>
+                            )}
+                        </CardActions>
+                    </Card>
+                );
+            }
+        }
+    };
+
+    const ratingMsg: Array<string> = [
+        "还未评价",
+        "毫无作用",
+        "不满意",
+        "差强人意",
+        "还不错～",
+        "太棒了！",
+    ];
+    const confirmRating = () => {
+        orderService
+            .rateOrder(orderInfo!.id, rating)
+            .then(() => setNeedReload(true));
+    };
+    const renderRating = () => {
+        if (!orderInfo) return null;
+        if (orderInfo.rating === 0) {
+            return (
+                <Stack spacing={1} sx={{ alignItems: "center" }}>
+                    <Typography variant="h5">{ratingMsg[rating]}</Typography>
+                    <Rating
+                        value={rating}
+                        onChange={(_, newValue) =>
+                            setRating(newValue ? newValue : 0)
+                        }
+                        size="large"
+                    />
+                </Stack>
+            );
+        } else {
+            return (
+                <Stack spacing={1} sx={{ alignItems: "center" }}>
+                    <Typography variant="h5">
+                        {ratingMsg[orderInfo.rating]}
+                    </Typography>
+                    <Rating value={orderInfo.rating} size="large" readOnly />
+                    <Typography variant="subtitle1">已评价</Typography>
+                </Stack>
+            );
+        }
+    };
+
     if (needLogin) {
         console.log("needLogin");
         return <Redirect to="/login" />;
@@ -348,6 +506,38 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             />
                         }
                         title={orderInfo.asker.nickname}
+                        action={
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                }}
+                                alignItems="center"
+                            >
+                                {orderInfo.showPublic ? (
+                                    <Typography
+                                        variant={"body2"}
+                                        color={"primary"}
+                                    >
+                                        {"公开问题"}
+                                    </Typography>
+                                ) : (
+                                    <Typography
+                                        variant={"body2"}
+                                        color={"secondary"}
+                                    >
+                                        {"私密问题"}
+                                    </Typography>
+                                )}
+                                <Box sx={{ paddingRight: 0.5 }} />
+                                {orderInfo.showPublic ? (
+                                    <PublicIcon color={"primary"} />
+                                ) : (
+                                    <PrivacyTipIcon color={"secondary"} />
+                                )}
+                                <Box sx={{ paddingRight: 1 }} />
+                            </Box>
+                        }
                         subheader="提问者"
                     />
                     <CardContent sx={{ paddingTop: 1 }}>
@@ -377,6 +567,37 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 </Button>
                             </Box>
                         )}
+                        {renderExpireTime(orderInfo)}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                            }}
+                            mb={-1}
+                            mt={3}
+                        >
+                            <Box sx={{ flexGrow: 1 }} />
+                            {orderInfo &&
+                                (orderInfo.state === OrderState.CHAT_ENDED ||
+                                    orderInfo.state === OrderState.FULFILLED) &&
+                                (orderInfo.rating === 0 ? (
+                                    orderInfo.asker.id === user!.id && (
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleOpenRatingDialog}
+                                        >
+                                            评价
+                                        </Button>
+                                    )
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleOpenRatingDialog}
+                                    >
+                                        查看评价
+                                    </Button>
+                                ))}
+                        </Box>
                     </CardContent>
                 </Card>
                 <Card>
@@ -393,7 +614,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 }}
                             />
                         }
-                        title={orderInfo.answerer.nickname}
+                        title={orderInfo.answerer.username}
                         subheader="回答者"
                     />
                     <CardContent sx={{ paddingTop: 0 }}>
@@ -405,7 +626,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         ) : (
                             <Markdown
                                 value={
-                                    orderInfo.state === OrderState.ANSWERED
+                                    [
+                                        OrderState.ANSWERED,
+                                        OrderState.CHAT_ENDED,
+                                        OrderState.FULFILLED,
+                                    ].indexOf(orderInfo.state) >= 0
                                         ? orderInfo.answer
                                         : "该问题还未回答"
                                 }
@@ -413,31 +638,13 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             />
                         )}
                     </CardContent>
-                    <CardActions sx={{ margin: 1, marginTop: 0 }}>
-                        {renderAnswererActions()}
-                    </CardActions>
+                    <CardActions>{renderAnswererActions()}</CardActions>
                 </Card>
-                <IMMessageList orderInfo={orderInfo} />
-                {orderInfo.state === OrderState.ANSWERED && (
-                    <Card>
-                        <Markdown value={message} onChange={setMessage} />
-                        <CardActions>
-                            <Button
-                                onClick={sendMessage}
-                                startIcon={<SendIcon />}
-                            >
-                                发送消息
-                            </Button>
-                            <Button
-                                onClick={endOrder}
-                                startIcon={<CloseIcon />}
-                                color={"error"}
-                            >
-                                结束订单
-                            </Button>
-                        </CardActions>
-                    </Card>
-                )}
+                <IMMessageList
+                    orderInfo={orderInfo}
+                    onNewMessage={increaseMsgCount}
+                />
+                {renderMessageInput(orderInfo)}
             </Stack>
             <Dialog onClose={handleClose} open={open}>
                 <DialogTitle>附件列表</DialogTitle>
@@ -465,23 +672,39 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     ))}
                 </List>
             </Dialog>
+            <Dialog
+                onClose={handleCloseRatingDialog}
+                open={openRatingDialog}
+                fullWidth
+            >
+                <DialogTitle>订单评价</DialogTitle>
+                <DialogContent>
+                    <DialogContentText mb={1}>
+                        {orderInfo &&
+                            (orderInfo.rating === 0
+                                ? "请对本次服务进行评价。您的评价是对回答者最好的鼓励和肯定。非常感谢您的支持！"
+                                : "请查看此订单的评价。")}
+                    </DialogContentText>
+                    {renderRating()}
+                </DialogContent>
+                <DialogActions>
+                    {orderInfo &&
+                        (orderInfo.rating === 0 ? (
+                            <Button
+                                disabled={rating === 0}
+                                onClick={confirmRating}
+                            >
+                                确认评价
+                            </Button>
+                        ) : (
+                            <Button onClick={handleCloseRatingDialog}>
+                                知道了
+                            </Button>
+                        ))}
+                </DialogActions>
+            </Dialog>
         </>
     );
 };
 
 export default OrderDetail;
-
-// size: the size of the file, unit: Byte
-// pointLength: decimal places
-export function formatSize(size: number, pointLength: number | undefined) {
-    let unit;
-    let units = ["B", "K", "M", "G", "TB"];
-    while ((unit = units.shift()) && size > 1024) {
-        size = size / 1024;
-    }
-    return (
-        (unit === "B"
-            ? size.toString()
-            : size.toFixed(pointLength === undefined ? 2 : pointLength)) + unit
-    );
-}

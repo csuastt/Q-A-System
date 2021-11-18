@@ -25,19 +25,25 @@ import AnswererDetailCard from "./AnswererDetailCard";
 import Divider from "@mui/material/Divider";
 import Markdown from "./Markdown";
 import systemConfigService from "../services/systemConfigService";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import {
     Dialog,
     DialogTitle,
+    FormControlLabel,
     IconButton,
     Link,
     ListItemAvatar,
     ListItemButton,
     ListItemText,
+    Switch,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
-import { formatSize } from "./OrderDetail";
+import { formatSize } from "../util";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
 
 function processInt(str?: string): number {
     if (str) {
@@ -57,7 +63,9 @@ const OrderCreationWizard: React.FC = (props) => {
     const [result, setResult] = useState<CreationResult>();
     const [config, setConfig] = useState<ConfigInfo>();
     const [files, setFiles] = useState<Array<FileInfo>>([]);
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const [showPublic, setShowPublic] = useState(false);
+    const [openHelp, setOpenHelp] = useState(false);
 
     const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
@@ -118,6 +126,14 @@ const OrderCreationWizard: React.FC = (props) => {
         setOpen(false);
     };
 
+    const handleOpenHelp = () => {
+        setOpenHelp(true);
+    };
+
+    const handleCloseHelp = () => {
+        setOpenHelp(false);
+    };
+
     const handleQuestionDescriptionChange = (newValue: string) =>
         setQuestionDescription(newValue);
 
@@ -154,7 +170,8 @@ const OrderCreationWizard: React.FC = (props) => {
                     user!.id,
                     answerer,
                     questionTitle,
-                    questionDescription
+                    questionDescription,
+                    showPublic
                 )
                 .then(
                     (res) => {
@@ -451,39 +468,64 @@ const OrderCreationWizard: React.FC = (props) => {
                 />
                 <Stack
                     sx={{ mt: 2, mb: 2 }}
-                    spacing={2}
                     direction="row"
                     alignItems={"center"}
+                    justifyContent="space-between"
                 >
-                    <Typography>上传附件:</Typography>
-                    <label htmlFor="contained-button-file">
-                        <Input
-                            accept="*"
-                            id="contained-button-file"
-                            type="file"
-                            name="attachments"
-                            multiple={true}
-                            onChange={handleFilesUpload}
-                        />
-                        <Link component="span">添加</Link>
-                    </label>
-                    <Link
-                        component="button"
-                        variant="body1"
-                        color={"error"}
-                        onClick={handleFilesClear}
-                    >
-                        清空
-                    </Link>
-                    {files.length > 0 && (
+                    <Stack spacing={2} alignItems={"center"} direction="row">
+                        <Typography>上传附件(小于300M):</Typography>
+                        <label htmlFor="contained-button-file">
+                            <Input
+                                accept="*"
+                                id="contained-button-file"
+                                type="file"
+                                name="attachments"
+                                multiple={true}
+                                onChange={handleFilesUpload}
+                            />
+                            <Link component="span">添加</Link>
+                        </label>
                         <Link
                             component="button"
                             variant="body1"
-                            onClick={handleOpen}
+                            color={"error"}
+                            onClick={handleFilesClear}
                         >
-                            查看
+                            清空
                         </Link>
-                    )}
+                        {files.length > 0 && (
+                            <Link
+                                component="button"
+                                variant="body1"
+                                onClick={handleOpen}
+                            >
+                                查看
+                            </Link>
+                        )}
+                    </Stack>
+                    <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        alignItems="center"
+                        spacing={0}
+                    >
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={showPublic}
+                                    onChange={(e) => {
+                                        setShowPublic(e.target.checked);
+                                    }}
+                                    inputProps={{ "aria-label": "controlled" }}
+                                />
+                            }
+                            label="是否公开"
+                            sx={{ marginRight: 1 }}
+                        />
+                        <IconButton aria-label="help" onClick={handleOpenHelp}>
+                            <HelpOutlineIcon />
+                        </IconButton>
+                    </Stack>
                 </Stack>
                 <Markdown
                     value={questionDescription}
@@ -576,6 +618,28 @@ const OrderCreationWizard: React.FC = (props) => {
                             </ListItem>
                         ))}
                     </List>
+                </Dialog>
+                <Dialog fullWidth open={openHelp} onClose={handleCloseHelp}>
+                    <DialogTitle>公开您的问题</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText mb={1}>
+                            勾选此开关将会将您的问题加入问答库。问答库中所有问题的内容及聊天记录是
+                            <Box component="span" fontWeight="fontWeightBold">
+                                公开可见
+                            </Box>
+                            的。
+                            一旦创建问题，您不可以再修改此问题的可见性。请仔细考虑。
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={() => {
+                                handleCloseHelp();
+                            }}
+                        >
+                            知道了
+                        </Button>
+                    </DialogActions>
                 </Dialog>
             </>
         );

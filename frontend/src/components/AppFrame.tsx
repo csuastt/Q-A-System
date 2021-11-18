@@ -16,7 +16,7 @@ import List from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Badge, ListItemButton } from "@mui/material";
+import { Badge, FormControlLabel, ListItemButton, Switch } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -40,6 +40,8 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import HelpIcon from "@mui/icons-material/Help";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useNotification } from "./NotificationController";
+import { ColorModeContext } from "../App";
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 
 const drawerWidth = 240;
 
@@ -115,6 +117,7 @@ const AppBar = styled(MuiAppBar, {
 const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const { user, manager } = useContext(AuthContext);
+    const { toggleColorMode } = useContext(ColorModeContext);
     const { unreadCount } = useNotification();
 
     const theme = useTheme();
@@ -151,16 +154,21 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
 
     const drawerList3: () => Array<[string, string, React.ReactNode]> = () => {
         if (user == null) {
-            return [["回答者列表", "/answerers", <SchoolIcon />]];
+            return [
+                ["问答库", "/lib", <LocalLibraryIcon />],
+                ["回答者列表", "/answerers", <SchoolIcon />],
+            ];
         }
         if (user.role === UserRole.USER) {
             return [
+                ["问答库", "/lib", <LocalLibraryIcon />],
                 ["回答者列表", "/answerers", <SchoolIcon />],
                 ["我的提问", "/orders", <QuestionAnswerIcon />],
                 ["提出问题", "/order/create", <AddCommentIcon />],
             ];
         }
         return [
+            ["问答库", "/lib", <LocalLibraryIcon />],
             ["回答者列表", "/answerers", <SchoolIcon />],
             ["我的提问", "/orders", <QuestionAnswerIcon />],
             ["我的回答", "/orders?answerer=true", <RateReviewIcon />],
@@ -198,6 +206,31 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     >
                         {props.isAdmin ? "问客管理员系统" : "问客"}
                     </Typography>
+                    {!props.isAdmin && user && (
+                        <IconButton
+                            component={RouterLink}
+                            to={"/notif"}
+                            color="inherit"
+                            size="large"
+                            sx={{ marginRight: 1 }}
+                        >
+                            <Badge badgeContent={unreadCount} color="warning">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    )}
+                    {!props.isAdmin && (
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={theme.palette.mode === "dark"}
+                                    onChange={toggleColorMode}
+                                    inputProps={{ "aria-label": "controlled" }}
+                                />
+                            }
+                            label="夜间模式"
+                        />
+                    )}
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={drawerOpen}>
@@ -232,16 +265,6 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                         : user
                         ? [
                               ["个人信息", "/profile", <AccountCircleIcon />],
-                              [
-                                  "通知中心",
-                                  "/notif",
-                                  <Badge
-                                      badgeContent={unreadCount}
-                                      color="warning"
-                                  >
-                                      <NotificationsIcon />
-                                  </Badge>,
-                              ],
                               ["登出", "/logout", <LogoutIcon />],
                           ]
                         : [
@@ -264,6 +287,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ["系统参数", "/admins/settings", <SettingsIcon />],
                           ["管理员列表", "/admins/managers", <HowToRegIcon />],
                           ["创建", "/admins/create", <PersonAddIcon />],
+                          ["收入统计", "/admins/income", <EqualizerIcon />],
                       ])
                     : renderDrawerList([["平台须知", "/help", <HelpIcon />]])}
             </Drawer>

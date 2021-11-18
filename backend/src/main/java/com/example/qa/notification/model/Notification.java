@@ -1,7 +1,6 @@
 package com.example.qa.notification.model;
 
 import com.example.qa.order.model.Order;
-import com.example.qa.order.model.OrderState;
 import com.example.qa.user.model.User;
 import lombok.*;
 
@@ -35,7 +34,7 @@ public class Notification {
 
     private String msgSummary;
     @Enumerated(EnumType.STRING)
-    private OrderState newState;
+    private Order.State newState;
     private ZonedDateTime deadline;
 
     public static Notification ofPlain(User receiver, String msg) {

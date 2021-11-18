@@ -1,7 +1,7 @@
 package com.example.qa.notification.exchange;
 
 import com.example.qa.notification.model.Notification;
-import com.example.qa.order.model.OrderState;
+import com.example.qa.order.model.Order;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.ZonedDateTime;
@@ -15,7 +15,7 @@ public record NotifPayload(
         long targetId,
         boolean haveRead,
         String msgSummary,
-        OrderState newState,
+        Order.State newState,
         ZonedDateTime deadline
 ) {
     public NotifPayload(Notification notif) {

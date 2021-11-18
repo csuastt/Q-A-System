@@ -5,11 +5,9 @@ import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.EarningsResponse;
 import com.example.qa.exchange.MonthlyEarnings;
+import com.example.qa.exchange.ValueRequest;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
-import com.example.qa.user.model.UserRole;
-import com.talanlabs.avatargenerator.Avatar;
-import com.talanlabs.avatargenerator.IdenticonAvatar;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -22,12 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.qa.security.RestControllerAuthUtils.*;
+import static com.example.qa.utils.ReflectionUtils.hasField;
 
 @RestController
 @RequestMapping("/api/users")
@@ -53,19 +51,24 @@ public class UserController {
 
     @GetMapping
     public UserListResponse listUsers(
-            @RequestParam(required = false) List<UserRole> role,
+            @RequestParam(required = false) List<User.Role> role,
             @RequestParam(defaultValue = "20") int pageSize,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Sort.Direction sortDirection,
+            @RequestParam(required = false) String sortProperty
     ) {
         boolean isAdmin = authLogin() && authIsAdmin();
         if (!isAdmin) {
-            role = List.of(UserRole.ANSWERER);
+            role = List.of(User.Role.ANSWERER);
         }
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.USER_LIST_MAX_PAGE_SIZE);
-        PageRequest pageRequest = PageRequest.ofSize(pageSize).withPage(page - 1)
-                .withSort(Sort.Direction.ASC, "id");
+        if (!hasField(User.class, sortProperty)) {
+            sortProperty = "id";
+        }
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize,
+                Objects.requireNonNullElse(sortDirection, Sort.Direction.ASC), sortProperty);
         Page<User> result = userService.listByRole(role, pageRequest);
         int userResponseLevel = isAdmin ? 2 : 0;
         return new UserListResponse(result, userResponseLevel);
@@ -104,7 +107,7 @@ public class UserController {
         authUserOrSuperAdminOrThrow(id);
         boolean isAdmin = authIsSuperAdmin();
         User user = getUserOrThrow(id, false);
-        if (user.getRole() != UserRole.ANSWERER) {
+        if (user.getRole() != User.Role.ANSWERER) {
             userRequest.setPrice(null);
         }
         userRequest.validateOrThrow();
@@ -113,10 +116,10 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}/avatar", produces = MediaType.IMAGE_PNG_VALUE)
-    public Resource downloadImage(@PathVariable(value = "id") Long id)  {
+    public Resource downloadImage(@PathVariable(value = "id") Long id) {
         byte[] image = userService.getById(id).getAvatar();
-        if(image == null)
-            throw new ApiException(HttpStatus.FORBIDDEN, "No Avatar Found");
+        if (image == null)
+            throw new ApiException(HttpStatus.NOT_FOUND, "No Avatar Found");
         return new ByteArrayResource(image);
     }
 
@@ -128,7 +131,7 @@ public class UserController {
         try {
             user.setAvatar(multipartFile.getBytes());
             userService.save(user);
-        } catch (IOException exception){
+        } catch (IOException exception) {
             throw new ApiException(HttpStatus.FORBIDDEN, "Upload File Not Valid");
         }
     }
@@ -153,12 +156,12 @@ public class UserController {
         authLoginOrThrow();
         authUserOrThrow(id);
         User user = getUserOrThrow(id, false);
-        if (user.getRole() == UserRole.ANSWERER) {
+        if (user.getRole() == User.Role.ANSWERER) {
             throw new ApiException(403, "ALREADY_ANSWERER");
         }
         applyRequest.validateOrThrow();
         user.update(applyRequest);
-        user.setRole(UserRole.ANSWERER);
+        user.setRole(User.Role.ANSWERER);
         userService.save(user);
     }
 

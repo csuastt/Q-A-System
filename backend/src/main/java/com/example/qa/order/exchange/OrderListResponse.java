@@ -15,6 +15,7 @@ public class OrderListResponse {
     private int totalPages;
     private long totalCount;
     private OrderResponse[] data;
+    private long timeMillis;
 
     public OrderListResponse(Page<Order> orderPage, int level) {
         pageSize = orderPage.getSize();

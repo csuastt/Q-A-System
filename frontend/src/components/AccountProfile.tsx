@@ -254,6 +254,7 @@ export default class AccountProfile extends Component<
                 description: "This is the description",
                 price: 50,
                 role: UserRole.ANSWERER,
+                rating: 0.5,
             };
             this.setState({
                 user: currentUser,
