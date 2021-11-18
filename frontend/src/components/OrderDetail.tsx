@@ -35,6 +35,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import {
+    Alert,
     Box,
     Dialog,
     DialogTitle,
@@ -45,9 +46,12 @@ import {
     Rating,
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
-import { formatSize } from "../util";
+import { formatSize, formatTimestamp } from "../util";
 import PublicIcon from "@mui/icons-material/Public";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
+import AlarmIcon from "@mui/icons-material/Alarm";
+import ChatIcon from "@mui/icons-material/Chat";
+import systemConfigService from "../services/systemConfigService";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -60,6 +64,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [answering, setAnswering] = useState(false);
     const [answer, setAnswer] = useState<string>("");
     const [message, setMessage] = useState<string>("");
+    const [msgCount, setMsgCount] = useState<number>();
+    const [maxMsgCount, setMaxMsgCount] = useState<number>();
     const [open, setOpen] = React.useState(false);
     const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
     const [rating, setRating] = useState<number>(0);
@@ -79,11 +85,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
         orderService
             .getOrderInfo(props.orderId)
             .then((order) => {
-                // if (order.id !== user?.id && order.id !== user?.id) {
-                //     setNoPermission(true);
-                // } else {
                 setOrderInfo(order);
-                // }
+                setMsgCount(order.messageCount);
             })
             .catch((err) => {
                 if (err.response.status === 401) {
@@ -97,6 +100,12 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             setAttachments(attachmentList);
         });
     }, [needReload, props.orderId, user?.id]);
+
+    useEffect(() => {
+        systemConfigService.getSystemConfig().then((config) => {
+            setMaxMsgCount(config.maxChatMessages);
+        });
+    }, []);
 
     // Answerering helper functions
     const handleAnswerChange = (newValue: string) => {
@@ -121,6 +130,12 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .respondOrder(orderInfo!.id, ok)
             .then(() => setNeedReload(true));
     };
+
+    const increaseMsgCount = React.useCallback(() => {
+        if (msgCount && msgCount > 0) {
+            setMsgCount(msgCount + 1);
+        }
+    }, [msgCount]);
 
     // IM helper function
     const sendMessage = () => {
@@ -292,6 +307,82 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     )}
                 </>
             );
+        }
+    };
+
+    const stateHasExpireTime: Array<OrderState> = [
+        OrderState.REVIEWED,
+        OrderState.ACCEPTED,
+        OrderState.ANSWERED,
+        OrderState.CHAT_ENDED,
+    ];
+    const renderExpireTime = (order: OrderInfo) => {
+        const expireTimeType = stateHasExpireTime.indexOf(order.state);
+        const expireTimeMsg = [
+            "接单超时时间：",
+            "首次回答超时时间：",
+            "聊天自动结束时间：",
+            "结算时间：",
+        ];
+        if (expireTimeType !== -1) {
+            return (
+                <Alert
+                    variant="outlined"
+                    severity="warning"
+                    icon={<AlarmIcon />}
+                    sx={{ mt: 3, mb: -1 }}
+                >
+                    {expireTimeMsg[expireTimeType] +
+                        formatTimestamp(order.expireTime)}
+                </Alert>
+            );
+        }
+    };
+
+    const renderMessageInput = (order: OrderInfo) => {
+        if (order.state === OrderState.ANSWERED) {
+            if (msgCount && maxMsgCount && msgCount === maxMsgCount) {
+                return <Alert security="warning">聊天次数已用完</Alert>;
+            } else {
+                const msgCountUsage = msgCount
+                    ? "聊天次数使用：" +
+                      (maxMsgCount
+                          ? `${msgCount}/${maxMsgCount}`
+                          : `${msgCount}`)
+                    : "";
+                return (
+                    <Card>
+                        <Markdown value={message} onChange={setMessage} />
+                        <CardActions>
+                            <Button
+                                onClick={sendMessage}
+                                startIcon={<SendIcon />}
+                            >
+                                发送消息
+                            </Button>
+                            <Button
+                                onClick={endOrder}
+                                startIcon={<CloseIcon />}
+                                color={"error"}
+                            >
+                                结束订单
+                            </Button>
+                            <Box sx={{ flexGrow: 1 }} />
+                            {msgCountUsage && (
+                                <>
+                                    <ChatIcon sx={{ mr: 1 }} color="info" />
+                                    <Typography
+                                        variant="subtitle2"
+                                        color="info"
+                                    >
+                                        {msgCountUsage}
+                                    </Typography>
+                                </>
+                            )}
+                        </CardActions>
+                    </Card>
+                );
+            }
         }
     };
 
@@ -496,6 +587,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 </Button>
                             </Box>
                         )}
+                        {renderExpireTime(orderInfo)}
                     </CardContent>
                 </Card>
                 <Card>
@@ -538,27 +630,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     </CardContent>
                     <CardActions>{renderAnswererActions()}</CardActions>
                 </Card>
-                <IMMessageList orderInfo={orderInfo} />
-                {orderInfo.state === OrderState.ANSWERED && (
-                    <Card>
-                        <Markdown value={message} onChange={setMessage} />
-                        <CardActions>
-                            <Button
-                                onClick={sendMessage}
-                                startIcon={<SendIcon />}
-                            >
-                                发送消息
-                            </Button>
-                            <Button
-                                onClick={endOrder}
-                                startIcon={<CloseIcon />}
-                                color={"error"}
-                            >
-                                结束订单
-                            </Button>
-                        </CardActions>
-                    </Card>
-                )}
+                <IMMessageList
+                    orderInfo={orderInfo}
+                    onNewMessage={increaseMsgCount}
+                />
+                {renderMessageInput(orderInfo)}
                 {renderRating()}
             </Stack>
             <Dialog onClose={handleClose} open={open}>

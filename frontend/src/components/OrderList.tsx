@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Link as RouterLink } from "react-router-dom";
-import { OrderInfo, PagedList } from "../services/definations";
+import { OrderInfo, OrderState, PagedList } from "../services/definations";
 import questionService from "../services/orderService";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -10,7 +10,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { formatTimestamp } from "../util";
 import Stack from "@mui/material/Stack";
-
+import AlarmIcon from "@mui/icons-material/Alarm";
+import ChatIcon from "@mui/icons-material/Chat";
 import CardActionArea from "@mui/material/CardActionArea";
 import Pagination from "./Pagination";
 import _ from "lodash";
@@ -20,6 +21,7 @@ import userService from "../services/userService";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import PublicIcon from "@mui/icons-material/Public";
 import styled from "@emotion/styled";
+import systemConfigService from "../services/systemConfigService";
 
 interface OrderListProps {
     userId?: number;
@@ -41,6 +43,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [totalCount, setTotalCount] = useState(0);
     const [longPending, setLongPending] = useState(false);
     const [errorFlag, setErrorFlag] = useState(false);
+    const [maxMsgCount, setMaxMsgCount] = useState<number>();
 
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setQuestionList(list.data);
@@ -88,6 +91,12 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.keywords,
     ]);
 
+    useEffect(() => {
+        systemConfigService.getSystemConfig().then((config) => {
+            setMaxMsgCount(config.maxChatMessages);
+        });
+    }, []);
+
     const onPageChanged = (newPage: number) => {
         setCurrentPage(newPage);
     };
@@ -132,6 +141,41 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         ) : (
             <CardContent>{wrapperProps.children}</CardContent>
         );
+    };
+
+    const renderExpireTime = (order: OrderInfo) => {
+        if (
+            [
+                OrderState.REVIEWED,
+                OrderState.ACCEPTED,
+                OrderState.ANSWERED,
+                OrderState.CHAT_ENDED,
+            ].indexOf(order.state) !== -1
+        ) {
+            return (
+                <>
+                    <AlarmIcon fontSize="small" color="warning" />
+                    <Typography variant="caption" color="warning">
+                        {formatTimestamp(order.expireTime)}
+                    </Typography>
+                </>
+            );
+        }
+    };
+
+    const renderMsgCount = (order: OrderInfo) => {
+        if (order.state === OrderState.ANSWERED) {
+            return (
+                <>
+                    <ChatIcon fontSize="small" sx={{ ml: 1 }} color="info" />
+                    <Typography variant="caption" color="info">
+                        {maxMsgCount
+                            ? `${order.messageCount}/${maxMsgCount}`
+                            : `${order.messageCount}`}
+                    </Typography>
+                </>
+            );
+        }
     };
 
     const renderQuestionList = () => (
@@ -208,10 +252,23 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         {order.answerer.nickname}
                                     </Typography>
                                 </Box>
-                                <Typography variant="caption" mb={-1} mt={1}>
-                                    创建时间：
-                                    {formatTimestamp(order.createTime)}
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        mt: 1,
+                                        mb: -1,
+                                    }}
+                                    alignItems="center"
+                                >
+                                    <Typography variant="caption">
+                                        创建时间：
+                                        {formatTimestamp(order.createTime)}
+                                    </Typography>
+                                    <Box sx={{ flexGrow: 1 }} />
+                                    {renderExpireTime(order)}
+                                    {renderMsgCount(order)}
+                                </Box>
                             </Box>
                         </CardContentWrapper>
                     </CardActionArea>
