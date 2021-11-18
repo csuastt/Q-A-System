@@ -84,12 +84,7 @@ public class DevelopmentDataLoader implements ApplicationRunner {
                 }).collect(Collectors.toList());
         user.setEarningsTotal(total.get());
         user.setEarningsMonthly("[" + String.join(",", earningsList) + "]");
-        user.setRatingCount(20);
-        user.setRatingTotal(20 + random.nextInt(81));
-        if (random.nextBoolean()) {
-            user.setRatingCount(0);
-            user.setRatingTotal(0);
-        }
+        IntStream.range(0, random.nextInt(20)).forEach(i -> user.addRating(random.nextInt(5) + 1));
         return user;
     }
 
