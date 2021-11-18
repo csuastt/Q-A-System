@@ -190,6 +190,16 @@ const IncomeStatistics: React.FC<{
                                         type: "area",
                                         data: earningsList,
                                     },
+                                    {
+                                        name: "支出",
+                                        type: "line",
+                                        data: [],
+                                    },
+                                    {
+                                        name: "净收入",
+                                        type: "column",
+                                        data: [],
+                                    },
                                 ]}
                                 // @ts-ignore
                                 options={chartOptions}
