@@ -131,11 +131,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             .then(() => setNeedReload(true));
     };
 
-    const increaseMsgCount = () => {
+    const increaseMsgCount = React.useCallback(() => {
         if (msgCount && msgCount > 0) {
             setMsgCount(msgCount + 1);
         }
-    };
+    }, [msgCount]);
 
     // IM helper function
     const sendMessage = () => {

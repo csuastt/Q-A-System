@@ -18,6 +18,7 @@ import Markdown from "./Markdown";
 import Stack from "@mui/material/Stack";
 import { NotifHandlerResult, useNotification } from "./NotificationController";
 import userService from "../services/userService";
+import _ from "lodash";
 
 interface IMMessageListProps {
     orderInfo: OrderInfo;
@@ -95,39 +96,42 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
               };
     }, [props.orderInfo.id, props.orderInfo.state]);
 
-    const SingleMessage: React.FC<{ msg: IMMessage }> = (subProps) => {
-        const isAsker: boolean =
-            subProps.msg.senderId === props.orderInfo.asker.id;
-        const userInfo: UserBasicInfo = isAsker
-            ? props.orderInfo.asker
-            : props.orderInfo.answerer;
-        return (
-            <Card>
-                <CardHeader
-                    avatar={
-                        <Avatar
-                            alt={userInfo.username}
-                            src={userService.getAvatarUrl(userInfo.id)}
-                            sx={{
-                                height: 40,
-                                width: 40,
-                            }}
-                        />
-                    }
-                    title={userInfo.username}
-                    subheader={formatTimestamp(subProps.msg.sendTime)}
-                />
-                <CardContent>
-                    <Markdown value={subProps.msg.msgBody} viewOnly />
-                </CardContent>
-            </Card>
-        );
-    };
+    const SingleMessage: React.FC<{ msg: IMMessage }> = React.memo(
+        (subProps) => {
+            const isAsker: boolean =
+                subProps.msg.senderId === props.orderInfo.asker.id;
+            const userInfo: UserBasicInfo = isAsker
+                ? props.orderInfo.asker
+                : props.orderInfo.answerer;
+            return (
+                <Card>
+                    <CardHeader
+                        avatar={
+                            <Avatar
+                                alt={userInfo.username}
+                                src={userService.getAvatarUrl(userInfo.id)}
+                                sx={{
+                                    height: 40,
+                                    width: 40,
+                                }}
+                            />
+                        }
+                        title={userInfo.username}
+                        subheader={formatTimestamp(subProps.msg.sendTime)}
+                    />
+                    <CardContent>
+                        <Markdown value={subProps.msg.msgBody} viewOnly />
+                    </CardContent>
+                </Card>
+            );
+        },
+        (prevProps, nextProps) => _.isEqual(prevProps.msg, nextProps.msg)
+    );
 
     return msgList ? (
         <Stack spacing={2}>
-            {msgList.map((msg, idx) => (
-                <SingleMessage msg={msg} key={idx} />
+            {msgList.map((msg) => (
+                <SingleMessage msg={msg} key={msg.messageId} />
             ))}
         </Stack>
     ) : (
@@ -135,4 +139,4 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
     );
 };
 
-export default IMMessageList;
+export default React.memo(IMMessageList);
