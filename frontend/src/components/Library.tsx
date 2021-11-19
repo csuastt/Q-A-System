@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import { parseIntWithDefault, useQuery } from "../util";
 import OrderList from "./OrderList";
-import { Box, Grid, InputAdornment } from "@mui/material";
+import {Box, Grid, InputAdornment, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -12,6 +12,8 @@ const Library: React.FC<{
     briefMsg?: boolean;
 }> = (props) => {
     const [keywords, setKeywords] = useState<string>("");
+    const [millis, setMillis] = useState<number>(-1);
+    const [count, setCount] = useState<number>(-1);
     const query = useQuery();
     const currentPage = parseIntWithDefault(query.get("page"), 1);
     const itemPrePage = parseIntWithDefault(
@@ -27,6 +29,8 @@ const Library: React.FC<{
     }> = (wrapperProps) => (
         <OrderList
             keywords={keywords}
+            setMillis={setMillis}
+            setCount={setCount}
             itemPrePage={itemPrePage}
             initCurrentPage={currentPage}
             listMode={wrapperProps.listMode}
@@ -93,6 +97,15 @@ const Library: React.FC<{
                         >
                             搜一搜
                         </Button>
+                    </Grid>
+                    <Grid item xs={10} md={10} mt={-1}>
+                        <Typography color={"textSecondary"}>
+                            {millis !== -1 && count !== -1 ?
+                                "问客为您找到相关结果" + count.toString() +
+                                "个，耗时" + millis.toString() +  "毫秒":
+                                ""
+                            }
+                        </Typography>
                     </Grid>
                 </Grid>
             </form>

@@ -169,6 +169,15 @@ export interface PagedList<T> {
     totalCount: number;
 }
 
+export interface SearchResult {
+    data: Array<OrderInfo>;
+    pageSize: number;
+    page: number;
+    totalPages: number;
+    totalCount: number;
+    timeMillis: number;
+}
+
 export interface EarningsMonthly {
     month: string;
     earnings: number;
