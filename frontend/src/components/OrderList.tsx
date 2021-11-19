@@ -157,12 +157,16 @@ const OrderList: React.FC<OrderListProps> = (props) => {
             ].indexOf(order.state) !== -1
         ) {
             return (
-                <>
-                    <AlarmIcon fontSize="small" color="warning" />
+                <Stack
+                    direction={"row"}
+                    alignItems="center"
+                    spacing={1}
+                >
+                    <AlarmIcon fontSize="small" color="warning"/>
                     <Typography variant="caption" color="warning">
                         {formatTimestamp(order.expireTime)}
                     </Typography>
-                </>
+                </Stack>
             );
         }
     };
@@ -170,14 +174,18 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const renderMsgCount = (order: OrderInfo) => {
         if (order.state === OrderState.ANSWERED) {
             return (
-                <>
+                <Stack
+                    direction={"row"}
+                    alignItems="center"
+                    spacing={1}
+                >
                     <ChatIcon fontSize="small" sx={{ ml: 1 }} color="info" />
                     <Typography variant="caption" color="info">
                         {maxMsgCount
                             ? `${order.messageCount}/${maxMsgCount}`
                             : `${order.messageCount}`}
                     </Typography>
-                </>
+                </Stack>
             );
         }
     };

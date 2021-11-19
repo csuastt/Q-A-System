@@ -87,7 +87,6 @@ const AnswererList: React.FC<{
                 <List
                     sx={{
                         width: "100%",
-                        bgcolor: "background.paper",
                         paddingTop: 0,
                     }}
                 >
