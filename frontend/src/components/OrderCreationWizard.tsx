@@ -40,7 +40,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
-import { formatSize } from "../util";
+import { formatInterval, formatSize } from "../util";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
@@ -666,12 +666,12 @@ const OrderCreationWizard: React.FC = (props) => {
                             3、完成提问后，系统会及时通知回答者。回答者将在
                             <Box component="span" fontWeight="fontWeightBold">
                                 {config?.respondExpirationSeconds
-                                    ? config?.respondExpirationSeconds /
-                                      3600 /
-                                      24
+                                    ? formatInterval(
+                                          config?.respondExpirationSeconds
+                                      )
                                     : ""}
                             </Box>
-                            天内接单。
+                            内接单。
                         </Typography>
                     </ListItem>
                     <ListItem>
@@ -690,10 +690,10 @@ const OrderCreationWizard: React.FC = (props) => {
                             条，最长聊天时间为
                             <Box component="span" fontWeight="fontWeightBold">
                                 {config?.maxChatTimeSeconds
-                                    ? config?.maxChatTimeSeconds / 3600
+                                    ? formatInterval(config?.maxChatTimeSeconds)
                                     : ""}
                             </Box>
-                            小时。
+                            。
                         </Typography>
                     </ListItem>
                     <ListItem>

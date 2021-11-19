@@ -16,7 +16,8 @@ import {
     List,
     ListItem,
     ListItemIcon,
-    ListItemText, Stack,
+    ListItemText,
+    Stack,
 } from "@mui/material";
 import IncomeStatistics from "./IncomeStatistics";
 import Avatar from "@mui/material/Avatar";
@@ -359,18 +360,24 @@ export default function Welcome() {
                     }
                 />
                 <CardContent>
-                    {user ?
-                        <NotificationList compact /> :
-                        <Stack direction="column"
-                               justifyContent="center"
-                               alignItems="center"
-                               spacing={2}>
-                            < ErrorOutlineIcon color="warning" sx={{fontSize: 60}} />
+                    {user ? (
+                        <NotificationList compact />
+                    ) : (
+                        <Stack
+                            direction="column"
+                            justifyContent="center"
+                            alignItems="center"
+                            spacing={2}
+                        >
+                            <ErrorOutlineIcon
+                                color="warning"
+                                sx={{ fontSize: 60 }}
+                            />
                             <Typography variant={"h6"} mt={1} mb={4}>
                                 {"请登录后重试"}
                             </Typography>
                         </Stack>
-                    }
+                    )}
                 </CardContent>
             </Card>
         );

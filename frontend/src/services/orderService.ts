@@ -4,7 +4,8 @@ import {
     CreationResult,
     OrderInfo,
     OrderState,
-    PagedList, SearchResult,
+    PagedList,
+    SearchResult,
     SortDirection,
 } from "./definations";
 

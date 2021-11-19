@@ -1,4 +1,4 @@
-import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Link as RouterLink } from "react-router-dom";
@@ -56,25 +56,28 @@ const OrderList: React.FC<OrderListProps> = (props) => {
 
     useEffect(() => {
         if (typeof props.keywords !== "undefined") {
-            questionService.getPublicOrderListBySearch(
-                props.keywords,
-                currentPage,
-                itemPrePage
-            ).then((res) =>{
-                acceptOrderList({
-                    data: res.data,
-                    pageSize: res.pageSize,
-                    page: res.page,
-                    totalPages: res.totalPages,
-                    totalCount: res.totalCount
-                } as PagedList<OrderInfo>);
-                if (props.setMillis)
-                    props.setMillis(res.timeMillis);
-                if (props.setCount)
-                    props.setCount(res.totalCount);
-            }, () => {
-                setErrorFlag(true);
-            });
+            questionService
+                .getPublicOrderListBySearch(
+                    props.keywords,
+                    currentPage,
+                    itemPrePage
+                )
+                .then(
+                    (res) => {
+                        acceptOrderList({
+                            data: res.data,
+                            pageSize: res.pageSize,
+                            page: res.page,
+                            totalPages: res.totalPages,
+                            totalCount: res.totalCount,
+                        } as PagedList<OrderInfo>);
+                        if (props.setMillis) props.setMillis(res.timeMillis);
+                        if (props.setCount) props.setCount(res.totalCount);
+                    },
+                    () => {
+                        setErrorFlag(true);
+                    }
+                );
         } else {
             let fetchPromise: Promise<PagedList<OrderInfo>>;
             if (props.showAnswerer) {
@@ -175,12 +178,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
             ].indexOf(order.state) !== -1
         ) {
             return (
-                <Stack
-                    direction={"row"}
-                    alignItems="center"
-                    spacing={1}
-                >
-                    <AlarmIcon fontSize="small" color="warning"/>
+                <Stack direction={"row"} alignItems="center" spacing={1}>
+                    <AlarmIcon fontSize="small" color="warning" />
                     <Typography variant="caption" color="warning">
                         {formatTimestamp(order.expireTime)}
                     </Typography>
@@ -192,11 +191,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const renderMsgCount = (order: OrderInfo) => {
         if (order.state === OrderState.ANSWERED) {
             return (
-                <Stack
-                    direction={"row"}
-                    alignItems="center"
-                    spacing={1}
-                >
+                <Stack direction={"row"} alignItems="center" spacing={1}>
                     <ChatIcon fontSize="small" sx={{ ml: 1 }} color="info" />
                     <Typography variant="caption" color="info">
                         {maxMsgCount

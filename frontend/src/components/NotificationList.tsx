@@ -167,10 +167,7 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     );
 
     const renderCompactControl = () => (
-        <Stack
-            direction="row"
-            justifyContent="space-between"
-        >
+        <Stack direction="row" justifyContent="space-between">
             <FormControl variant="outlined" size={"small"}>
                 <Select
                     value={filterUnread ? "true" : "false"}
@@ -273,12 +270,15 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
                 <List>{renderSkeletonItem()}</List>
             ) : notifList?.totalCount === 0 ? (
                 <Box textAlign={"center"} mt={props.compact ? 0 : 6}>
-                    <ErrorOutlineIcon color="warning" sx={
-                        props.compact?
-                            { fontSize: 60 }:
-                        { fontSize: 80 }
-                    } />
-                    <Typography variant={props.compact? "h6":"h5"} mt={1} mb={4}>
+                    <ErrorOutlineIcon
+                        color="warning"
+                        sx={props.compact ? { fontSize: 60 } : { fontSize: 80 }}
+                    />
+                    <Typography
+                        variant={props.compact ? "h6" : "h5"}
+                        mt={1}
+                        mb={4}
+                    >
                         {filterUnread ? "您没有新的未读通知" : "您没有新的通知"}
                     </Typography>
                 </Box>

@@ -67,3 +67,29 @@ export function formatSize(size: number, pointLength: number | undefined) {
             : size.toFixed(pointLength === undefined ? 2 : pointLength)) + unit
     );
 }
+
+// seconds: interval, unit (seconds)
+export function formatInterval(seconds: number) {
+    let interval = seconds / 31536000;
+
+    if (interval > 1) {
+        return Math.floor(interval) + "年";
+    }
+    interval = seconds / 2592000;
+    if (interval > 1) {
+        return Math.floor(interval) + "月";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+        return Math.floor(interval) + "天";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+        return Math.floor(interval) + "小时";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+        return Math.floor(interval) + "分钟";
+    }
+    return Math.floor(seconds) + "秒";
+}
