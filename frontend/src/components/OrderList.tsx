@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
 import { Link as RouterLink } from "react-router-dom";
@@ -28,6 +28,8 @@ interface OrderListProps {
     userId?: number;
     showAnswerer?: boolean;
     keywords?: string;
+    setMillis?: Dispatch<SetStateAction<number>>;
+    setCount?: Dispatch<SetStateAction<number>>;
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
@@ -53,33 +55,52 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     };
 
     useEffect(() => {
-        let fetchPromise: Promise<PagedList<OrderInfo>>;
         if (typeof props.keywords !== "undefined") {
-            fetchPromise = questionService.getPublicOrderListBySearch(
-                props.keywords,
-                currentPage,
-                itemPrePage
-            );
-        } else if (props.showAnswerer) {
-            fetchPromise = questionService.getOrdersOfUser(
-                undefined,
-                props.userId,
-                currentPage,
-                itemPrePage,
-                props.filterFinished
-            );
+            questionService
+                .getPublicOrderListBySearch(
+                    props.keywords,
+                    currentPage,
+                    itemPrePage
+                )
+                .then(
+                    (res) => {
+                        acceptOrderList({
+                            data: res.data,
+                            pageSize: res.pageSize,
+                            page: res.page,
+                            totalPages: res.totalPages,
+                            totalCount: res.totalCount,
+                        } as PagedList<OrderInfo>);
+                        if (props.setMillis) props.setMillis(res.timeMillis);
+                        if (props.setCount) props.setCount(res.totalCount);
+                    },
+                    () => {
+                        setErrorFlag(true);
+                    }
+                );
         } else {
-            fetchPromise = questionService.getOrdersOfUser(
-                props.userId,
-                undefined,
-                currentPage,
-                itemPrePage,
-                props.filterFinished
-            );
+            let fetchPromise: Promise<PagedList<OrderInfo>>;
+            if (props.showAnswerer) {
+                fetchPromise = questionService.getOrdersOfUser(
+                    undefined,
+                    props.userId,
+                    currentPage,
+                    itemPrePage,
+                    props.filterFinished
+                );
+            } else {
+                fetchPromise = questionService.getOrdersOfUser(
+                    props.userId,
+                    undefined,
+                    currentPage,
+                    itemPrePage,
+                    props.filterFinished
+                );
+            }
+            fetchPromise.then(acceptOrderList, () => {
+                setErrorFlag(true);
+            });
         }
-        fetchPromise.then(acceptOrderList, () => {
-            setErrorFlag(true);
-        });
         setTimeout(() => {
             setLongPending(true);
         }, 500);
@@ -157,12 +178,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
             ].indexOf(order.state) !== -1
         ) {
             return (
-                <Stack
-                    direction={"row"}
-                    alignItems="center"
-                    spacing={1}
-                >
-                    <AlarmIcon fontSize="small" color="warning"/>
+                <Stack direction={"row"} alignItems="center" spacing={1}>
+                    <AlarmIcon fontSize="small" color="warning" />
                     <Typography variant="caption" color="warning">
                         {formatTimestamp(order.expireTime)}
                     </Typography>
@@ -174,11 +191,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const renderMsgCount = (order: OrderInfo) => {
         if (order.state === OrderState.ANSWERED) {
             return (
-                <Stack
-                    direction={"row"}
-                    alignItems="center"
-                    spacing={1}
-                >
+                <Stack direction={"row"} alignItems="center" spacing={1}>
                     <ChatIcon fontSize="small" sx={{ ml: 1 }} color="info" />
                     <Typography variant="caption" color="info">
                         {maxMsgCount

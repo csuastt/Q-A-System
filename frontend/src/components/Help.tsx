@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
+import { formatInterval } from "../util";
 
 export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
     return (
@@ -28,10 +29,10 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                     2、在平台给您发送订单后。您需要在
                     <Box component="span" fontWeight="fontWeightBold">
                         {config?.respondExpirationSeconds
-                            ? config?.respondExpirationSeconds / 3600 / 24
+                            ? formatInterval(config?.respondExpirationSeconds)
                             : ""}
                     </Box>
-                    天内接单。超时视为放弃订单。消息中心会随时提醒您剩余时长。
+                    内接单。超时视为放弃订单。消息中心会随时提醒您剩余时长。
                 </Typography>
             </ListItem>
             <ListItem>
@@ -39,10 +40,10 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                     3、在您接单后。您需要在
                     <Box component="span" fontWeight="fontWeightBold">
                         {config?.answerExpirationSeconds
-                            ? config?.answerExpirationSeconds / 3600 / 24
+                            ? formatInterval(config?.answerExpirationSeconds)
                             : ""}
                     </Box>
-                    天内进行首次回答。超时视为放弃订单。消息中心会随时提醒您剩余时长。
+                    内进行首次回答。超时视为放弃订单。消息中心会随时提醒您剩余时长。
                 </Typography>
             </ListItem>
             <ListItem>
@@ -54,10 +55,10 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                     条，最长聊天时间为
                     <Box component="span" fontWeight="fontWeightBold">
                         {config?.maxChatTimeSeconds
-                            ? config?.maxChatTimeSeconds / 3600
+                            ? formatInterval(config?.maxChatTimeSeconds)
                             : ""}
                     </Box>
-                    小时。
+                    。
                 </Typography>
             </ListItem>
             <ListItem>
@@ -75,10 +76,10 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                     7、在结束订单后。平台将在
                     <Box component="span" fontWeight="fontWeightBold">
                         {config?.fulfillExpirationSeconds
-                            ? config?.fulfillExpirationSeconds / 3600 / 24
+                            ? formatInterval(config?.fulfillExpirationSeconds)
                             : ""}
                     </Box>
-                    天内进行进行分成。当前平台抽成率为
+                    内进行分成。当前平台抽成率为
                     <Box component="span" fontWeight="fontWeightBold">
                         {config?.feeRate ? config?.feeRate : ""}
                     </Box>
@@ -145,10 +146,12 @@ const Help: React.FC<{}> = (props) => {
                                     fontWeight="fontWeightBold"
                                 >
                                     {config?.maxChatTimeSeconds
-                                        ? config?.maxChatTimeSeconds / 3600
+                                        ? formatInterval(
+                                              config?.maxChatTimeSeconds
+                                          )
                                         : ""}
                                 </Box>
-                                小时。
+                                。
                             </Typography>
                         </ListItem>
                         <ListItem>

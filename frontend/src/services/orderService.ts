@@ -5,6 +5,7 @@ import {
     OrderInfo,
     OrderState,
     PagedList,
+    SearchResult,
     SortDirection,
 } from "./definations";
 
@@ -91,7 +92,7 @@ class OrderService {
         keywords: string,
         page?: number,
         prePage?: number
-    ): Promise<PagedList<OrderInfo>> {
+    ): Promise<SearchResult> {
         if (keywords.length === 0) {
             return axios
                 .get("/orders", {
