@@ -23,6 +23,8 @@ import PublicIcon from "@mui/icons-material/Public";
 import styled from "@emotion/styled";
 import systemConfigService from "../services/systemConfigService";
 import Rating from "@mui/material/Rating";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {useTheme} from "@mui/material/styles";
 
 interface OrderListProps {
     userId?: number;
@@ -48,6 +50,10 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [errorFlag, setErrorFlag] = useState(false);
     const [maxMsgCount, setMaxMsgCount] = useState<number>();
 
+    // if match the mobile size
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
+
     const acceptOrderList: (list: PagedList<OrderInfo>) => void = (list) => {
         setQuestionList(list.data);
         setMaxPage(list.totalPages);
@@ -56,6 +62,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
 
     useEffect(() => {
         if (typeof props.keywords !== "undefined") {
+            const setMillis = props.setMillis;
+            const setCount = props.setCount;
             questionService
                 .getPublicOrderListBySearch(
                     props.keywords,
@@ -71,8 +79,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                             totalPages: res.totalPages,
                             totalCount: res.totalCount,
                         } as PagedList<OrderInfo>);
-                        if (props.setMillis) props.setMillis(res.timeMillis);
-                        if (props.setCount) props.setCount(res.totalCount);
+                        if (setMillis) setMillis(res.timeMillis);
+                        if (setCount) setCount(res.totalCount);
                     },
                     () => {
                         setErrorFlag(true);
@@ -111,6 +119,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.showAnswerer,
         props.userId,
         props.keywords,
+        props.setMillis,
+        props.setCount
     ]);
 
     useEffect(() => {
@@ -192,7 +202,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         if (order.state === OrderState.ANSWERED) {
             return (
                 <Stack direction={"row"} alignItems="center" spacing={1}>
-                    <ChatIcon fontSize="small" sx={{ ml: 1 }} color="info" />
+                    <ChatIcon fontSize="small" sx={
+                        matches? { ml: 1 } : { ml: 0 }
+                    } color="info" />
                     <Typography variant="caption" color="info">
                         {maxMsgCount
                             ? `${order.messageCount}/${maxMsgCount}`
@@ -242,11 +254,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ paddingRight: 1 }} />
-                                    {order.showPublic ? (
+                                    {matches && (order.showPublic ? (
                                         <PublicIcon color={"primary"} />
                                     ) : (
                                         <PrivacyTipIcon color={"secondary"} />
-                                    )}
+                                    ))}
                                     <Box sx={{ flexGrow: 1 }} />
                                     {!props.listMode && (
                                         <OrderStateChip state={order.state} />
@@ -278,13 +290,21 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     </Typography>
                                 </Box>
                                 <Box
-                                    sx={{
+                                    sx={
+                                        matches ?{
                                         display: "flex",
                                         flexDirection: "row",
                                         mt: 1,
                                         mb: -1,
-                                    }}
-                                    alignItems="center"
+                                        }:
+                                            {
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                mt: 1,
+                                                mb: -1,
+                                            }
+                                    }
+                                    alignItems={matches ? "center": "flex-start"}
                                 >
                                     <Typography variant="caption">
                                         创建时间：
@@ -301,7 +321,10 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                                 未评价
                                             </Typography>
                                         ) : (
-                                            <>
+                                            <Box sx={{display: "flex",
+                                                flexDirection: "row",}}
+                                                 justifyContent="center"
+                                            >
                                                 <Typography variant="caption">
                                                     评分：
                                                 </Typography>
@@ -310,7 +333,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                                     readOnly
                                                     size="small"
                                                 />
-                                            </>
+                                            </Box>
                                         ))}
                                     <Box sx={{ flexGrow: 1 }} />
                                     {renderExpireTime(order)}

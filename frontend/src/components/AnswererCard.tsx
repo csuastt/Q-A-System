@@ -154,7 +154,6 @@ const AnswererCard: React.FC<{
         ) : (
             <>
                 <Card
-                    sx={{ display: "flex", flexDirection: "column", flex: 1 }}
                 >
                     <CardActionWrapper>
                         <CardContent

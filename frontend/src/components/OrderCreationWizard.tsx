@@ -472,8 +472,9 @@ const OrderCreationWizard: React.FC = (props) => {
                     alignItems={"center"}
                     justifyContent="space-between"
                 >
-                    <Stack spacing={2} alignItems={"center"} direction="row">
-                        <Typography>上传附件(小于300M):</Typography>
+                    <Stack spacing={matches ?2:0} alignItems={"flex-start"} direction={matches?"row":"column"}>
+                    <Typography>上传附件(小于300M):</Typography>
+                    <Stack spacing={matches ?2:2} alignItems={"flex-start"} direction={"row"}>
                         <label htmlFor="contained-button-file">
                             <Input
                                 accept="*"
@@ -502,6 +503,7 @@ const OrderCreationWizard: React.FC = (props) => {
                                 查看
                             </Link>
                         )}
+                    </Stack>
                     </Stack>
                     <Stack
                         direction="row"

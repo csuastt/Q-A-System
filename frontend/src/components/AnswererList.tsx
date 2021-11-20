@@ -115,11 +115,6 @@ const AnswererList: React.FC<{
                             lg={4}
                             md={6}
                             xs={12}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                flex: 1,
-                            }}
                         >
                             <AnswererCard
                                 userInfo={user}
