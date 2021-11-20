@@ -32,6 +32,7 @@ interface OrderListProps {
     keywords?: string;
     setMillis?: Dispatch<SetStateAction<number>>;
     setCount?: Dispatch<SetStateAction<number>>;
+    setCurrentPage?: Dispatch<SetStateAction<number>>;
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
@@ -133,7 +134,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }, []);
 
     const onPageChanged = (newPage: number) => {
-        setCurrentPage(newPage);
+        if (props.setCurrentPage)
+            props.setCurrentPage(newPage);
+        else {
+            setCurrentPage(newPage);
+        }
     };
 
     const renderCardPlaceholder = () => (

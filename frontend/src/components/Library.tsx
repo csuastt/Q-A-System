@@ -15,7 +15,7 @@ const Library: React.FC<{
     const [millis, setMillis] = useState<number>(-1);
     const [count, setCount] = useState<number>(-1);
     const query = useQuery();
-    const currentPage = parseIntWithDefault(query.get("page"), 1);
+    const [currentPage, setCurrentPage] = useState<number>(1);
     const itemPrePage = parseIntWithDefault(
         query.get("prepage"),
         props.briefMsg ? 5 : 10
@@ -32,6 +32,7 @@ const Library: React.FC<{
             setMillis={setMillis}
             setCount={setCount}
             itemPrePage={itemPrePage}
+            setCurrentPage={setCurrentPage}
             initCurrentPage={currentPage}
             listMode={wrapperProps.listMode}
         />
