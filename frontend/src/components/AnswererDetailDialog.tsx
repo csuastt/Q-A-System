@@ -55,7 +55,11 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
                             <StarIcon
                                 style={{ fill: "orange" }}
                                 fontSize={"small"}
+                                sx={{marginRight: 2}}
                             />
+                            <Typography variant="body1">
+                                {"评分次数：" + info.ratingCount}
+                            </Typography>
                         </Box>
                         <TextField
                             label="专业领域"

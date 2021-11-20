@@ -25,6 +25,9 @@ import systemConfigService from "../services/systemConfigService";
 import Rating from "@mui/material/Rating";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
+import {Button, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 
 interface OrderListProps {
     userId?: number;
@@ -36,6 +39,8 @@ interface OrderListProps {
     filterFinished?: boolean;
     initCurrentPage?: number;
     itemPrePage?: number;
+    initSortOrder?: string;
+    initSortProperty?: string;
     listMode?: boolean;
 }
 
@@ -50,6 +55,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [longPending, setLongPending] = useState(false);
     const [errorFlag, setErrorFlag] = useState(false);
     const [maxMsgCount, setMaxMsgCount] = useState<number>();
+    const [sortProperty, setSortProperty] = useState(_.defaultTo(props.initSortProperty, "createTime"));
+    const [sortOrder, setSortOrder] = useState(_.defaultTo(props.initSortProperty, "DESC"));
 
     // if match the mobile size
     const theme = useTheme();
@@ -69,7 +76,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 .getPublicOrderListBySearch(
                     props.keywords,
                     currentPage,
-                    itemPrePage
+                    itemPrePage,
+                    sortOrder,
+                    sortProperty
                 )
                 .then(
                     (res) => {
@@ -95,7 +104,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     props.userId,
                     currentPage,
                     itemPrePage,
-                    props.filterFinished
+                    props.filterFinished,
+                    sortOrder,
+                    sortProperty
                 );
             } else {
                 fetchPromise = questionService.getOrdersOfUser(
@@ -103,7 +114,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     undefined,
                     currentPage,
                     itemPrePage,
-                    props.filterFinished
+                    props.filterFinished,
+                    sortOrder,
+                    sortProperty
                 );
             }
             fetchPromise.then(acceptOrderList, () => {
@@ -113,16 +126,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         setTimeout(() => {
             setLongPending(true);
         }, 500);
-    }, [
-        currentPage,
-        itemPrePage,
-        props.filterFinished,
-        props.showAnswerer,
-        props.userId,
-        props.keywords,
-        props.setMillis,
-        props.setCount
-    ]);
+    }, [currentPage, itemPrePage, props.filterFinished, props.showAnswerer, props.userId, props.keywords, props.setMillis, props.setCount, sortOrder, sortProperty]);
 
     useEffect(() => {
         systemConfigService.getSystemConfig().then(
@@ -388,7 +392,46 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }
     return (
         <Box>
-            {questionList && <Stack spacing={2}>{renderQuestionList()}</Stack>}
+            {questionList &&
+                <>
+                    {
+                        !props.listMode && typeof props.keywords === "undefined" &&
+                        <Stack
+                            direction={"row"}
+                            justifyContent="flex-start"
+                            alignItems="center"
+                            spacing={2}
+                            mb={2}
+                        >
+                            <FormControl variant="outlined" sx={{ minWidth: 120 }} size={"small"}>
+                                <InputLabel id="demo-simple-select-label">排序依据</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={sortProperty}
+                                    label="sort-property"
+                                    onChange={(e) => {setSortProperty(e.target.value);}}
+                                >
+                                    <MenuItem value={"createTime"}>创建时间</MenuItem>
+                                    <MenuItem value={"expireTime"}>超时时间</MenuItem>
+                                    <MenuItem value={"price"}>成交价格</MenuItem>
+                                    <MenuItem value={"messageCount"}>聊天条数</MenuItem>
+                                    <MenuItem value={"rating"}>订单评分</MenuItem>
+                                    <MenuItem value={"state"}>订单状态</MenuItem>
+                                </Select>
+                            </FormControl>
+                            <Button
+                                startIcon={sortOrder === "ASC" ? <TrendingUpIcon/> : <TrendingDownIcon/>}
+                                onClick={() => {(sortOrder === "ASC") ? setSortOrder("DESC") : setSortOrder("ASC");}}
+                                size={"large"}
+                            >
+                                {sortOrder === "ASC" ? "升序" : "降序"}
+                            </Button>
+                        </Stack>
+                    }
+                    <Stack spacing={2}>{renderQuestionList()}</Stack>
+                </>
+            }
         </Box>
     );
 };

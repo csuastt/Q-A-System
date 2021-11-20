@@ -112,7 +112,7 @@ const Library: React.FC<{
                     </Grid>
                 </Grid>
             </form>
-            <Box mt={5}>
+            <Box mt={2}>
                 <PublicOrderListWrapper keywords={keywords} />
             </Box>
         </Box>

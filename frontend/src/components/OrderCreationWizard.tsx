@@ -220,25 +220,26 @@ const OrderCreationWizard: React.FC = (props) => {
         if (result) {
             if (result.message === "SENSITIVE_WORD") {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
-                        <ErrorOutlineIcon
-                            color="error"
-                            sx={
-                                matches
-                                    ? { fontSize: 80 }
-                                    : {
-                                        fontSize: 60,
-                                        marginLeft: 7,
-                                    }
-                            }
-                        />
-                        <Typography
-                            variant={matches ? "h5" : "h6"}
-                            mt={1}
-                            mb={matches ? 4 : 2}
-                        >
-                            {"您的提交中含有敏感词“" + result.state +"”"}
-                        </Typography>
+                    <Stack direction={"column"} alignItems={matches ? "center" : "flex-start"} mt={1}>
+                        <Stack direction={"column"} alignItems="center">
+                            <ErrorOutlineIcon
+                                color="error"
+                                sx={
+                                    matches
+                                        ? { fontSize: 80 }
+                                        : {
+                                            fontSize: 60
+                                        }
+                                }
+                            />
+                            <Typography
+                                variant={matches ? "h5" : "h6"}
+                                mt={1}
+                                mb={matches ? 4 : 2}
+                            >
+                                {"您的提交中含有敏感词“" + result.state +"”"}
+                            </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="error"
@@ -247,20 +248,20 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新填写
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             }
             else if (result.message === "BALANCE_NOT_ENOUGH") {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                    <Stack direction={"column"} alignItems={matches ? "center" : "flex-start"} mt={1}>
+                        <Stack direction={"column"} alignItems="center">
                         <ErrorOutlineIcon
                             color="error"
                             sx={
                                 matches
                                     ? { fontSize: 80 }
                                     : {
-                                          fontSize: 60,
-                                          marginLeft: 7,
+                                          fontSize: 60
                                       }
                             }
                         />
@@ -271,6 +272,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             {"余额不足，请充值后重试"}
                         </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="error"
@@ -280,19 +282,19 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             } else if (result.message === "ASKER_ANSWER_SAME") {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                    <Stack direction={"column"} alignItems={matches ? "center" : "flex-start"} mt={1}>
+                        <Stack direction={"column"} alignItems="center">
                         <ErrorOutlineIcon
                             color="error"
                             sx={
                                 matches
                                     ? { fontSize: 80 }
                                     : {
-                                          fontSize: 60,
-                                          marginLeft: 7,
+                                          fontSize: 60
                                       }
                             }
                         />
@@ -303,6 +305,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             {"不能向自己提问，请选择其他回答者重试"}
                         </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="error"
@@ -312,19 +315,19 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             } else if (result.state === "CREATED") {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                    <Stack direction={"column"} alignItems={matches ? "center" : "flex-start"} mt={1}>
+                        <Stack direction={"column"} alignItems="center">
                         <CheckCircleOutlineIcon
                             color="success"
                             sx={
                                 matches
                                     ? { fontSize: 80 }
                                     : {
-                                          fontSize: 60,
-                                          marginLeft: 8,
+                                          fontSize: 60
                                       }
                             }
                         />
@@ -335,6 +338,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             {"您的问题已经创建成功"}
                         </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="success"
@@ -344,19 +348,19 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             再问一个
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             } else {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                    <Stack direction={"column"} alignItems={matches ? "center" : "flex-start"} mt={1}>
+                        <Stack direction={"column"} alignItems="center">
                         <ErrorOutlineIcon
                             color="error"
                             sx={
                                 matches
                                     ? { fontSize: 80 }
                                     : {
-                                          fontSize: 60,
-                                          marginLeft: 7,
+                                          fontSize: 60
                                       }
                             }
                         />
@@ -367,6 +371,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             {"您的问题创建出错"}
                         </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="error"
@@ -376,7 +381,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>
+                        </Stack>
                 );
             }
         } else {
@@ -462,15 +467,15 @@ const OrderCreationWizard: React.FC = (props) => {
             </>
         ) : (
             <>
-                <Box textAlign={matches ? "center" : "start"} mt={1}>
+                <Stack direction={"column"} alignItems={matches ? "center" : "flex-start"} mt={1}>
+                    <Stack direction={"column"} alignItems="center">
                     <ErrorOutlineIcon
                         color="warning"
                         sx={
                             matches
                                 ? { fontSize: 80 }
                                 : {
-                                      fontSize: 60,
-                                      marginLeft: 7.5,
+                                      fontSize: 60
                                   }
                         }
                     />
@@ -481,6 +486,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     >
                         {"您还没有选择回答者"}
                     </Typography>
+                    </Stack>
                     <Button
                         variant="outlined"
                         color="warning"
@@ -490,7 +496,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     >
                         浏览列表
                     </Button>
-                </Box>
+                </Stack>
             </>
         );
     };
