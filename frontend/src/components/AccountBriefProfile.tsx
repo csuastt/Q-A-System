@@ -22,6 +22,7 @@ import { ConfigInfo, UserRole } from "../services/definations";
 import { renderAnswerHelp } from "./Help";
 import { styled } from "@mui/material/styles";
 import { IconButton } from "@mui/material";
+import {checkSensitiveWords} from "../util";
 
 interface AccountBriefProfileProps {
     id: number | undefined;
@@ -165,6 +166,20 @@ export default class AccountBriefProfile extends Component<
             })
         ) {
             if (typeof this.props.id !== "undefined") {
+                // check sensitive words
+                let word = checkSensitiveWords(
+                        this.state.description +
+                        this.state.profession
+                    );
+                if (word.length !== 0)
+                {
+                    this.props.alertHandler(
+                        "error",
+                        "您的提交中含有敏感词“" + word +"”"
+                    );
+                    return;
+                }
+
                 userService
                     .applyAnswerer(
                         this.props.id,

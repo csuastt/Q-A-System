@@ -40,7 +40,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
-import { formatInterval, formatSize } from "../util";
+import {checkSensitiveWords, formatInterval, formatSize} from "../util";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
@@ -165,6 +165,22 @@ const OrderCreationWizard: React.FC = (props) => {
                 message: "ASKER_ANSWER_SAME",
             });
         } else {
+            // check sensitive words
+            let word = checkSensitiveWords(
+                questionTitle + questionDescription
+            );
+            if (word.length !== 0)
+            {
+                setResult({
+                    id: -1,
+                    type: 1,
+                    state: word,
+                    created_id: -1,
+                    message: "SENSITIVE_WORD",
+                });
+                return;
+            }
+
             questionService
                 .createQuestion(
                     user!.id,
@@ -202,7 +218,39 @@ const OrderCreationWizard: React.FC = (props) => {
 
     const renderResult = () => {
         if (result) {
-            if (result.message === "BALANCE_NOT_ENOUGH") {
+            if (result.message === "SENSITIVE_WORD") {
+                return (
+                    <Box textAlign={matches ? "center" : "start"} mt={1}>
+                        <ErrorOutlineIcon
+                            color="error"
+                            sx={
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                        fontSize: 60,
+                                        marginLeft: 7,
+                                    }
+                            }
+                        />
+                        <Typography
+                            variant={matches ? "h5" : "h6"}
+                            mt={1}
+                            mb={matches ? 4 : 2}
+                        >
+                            {"您的提交中含有敏感词“" + result.state +"”"}
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => {setActiveStep(1);}}
+                            size={matches ? "large" : "medium"}
+                        >
+                            重新填写
+                        </Button>
+                    </Box>
+                );
+            }
+            else if (result.message === "BALANCE_NOT_ENOUGH") {
                 return (
                     <Box textAlign={matches ? "center" : "start"} mt={1}>
                         <ErrorOutlineIcon
