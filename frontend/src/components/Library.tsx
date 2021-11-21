@@ -2,7 +2,16 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import { parseIntWithDefault, useQuery } from "../util";
 import OrderList from "./OrderList";
-import {Box, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Select, Typography} from "@mui/material";
+import {
+    Box,
+    FormControl,
+    Grid,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    Typography,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -124,17 +133,26 @@ const Library: React.FC<{
                     direction="row"
                     justifyContent="flex-start"
                     alignItems="center"
-                    spacing={2} mb={2}
+                    spacing={2}
+                    mb={2}
                     mt={3}
                 >
-                    <FormControl variant="outlined" sx={{ minWidth: 120 }} size={"small"}>
-                        <InputLabel id="demo-simple-select-label">排序依据</InputLabel>
+                    <FormControl
+                        variant="outlined"
+                        sx={{ minWidth: 120 }}
+                        size={"small"}
+                    >
+                        <InputLabel id="demo-simple-select-label">
+                            排序依据
+                        </InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={sortProperty}
                             label="sort-property"
-                            onChange={(e) => {setSortProperty(e.target.value);}}
+                            onChange={(e) => {
+                                setSortProperty(e.target.value);
+                            }}
                         >
                             <MenuItem value={"createTime"}>创建时间</MenuItem>
                             <MenuItem value={"expireTime"}>超时时间</MenuItem>
@@ -145,8 +163,18 @@ const Library: React.FC<{
                         </Select>
                     </FormControl>
                     <Button
-                        startIcon={sortOrder === "ASC" ? <TrendingUpIcon/> : <TrendingDownIcon/>}
-                        onClick={() => {(sortOrder === "ASC") ? setSortOrder("DESC") : setSortOrder("ASC");}}
+                        startIcon={
+                            sortOrder === "ASC" ? (
+                                <TrendingUpIcon />
+                            ) : (
+                                <TrendingDownIcon />
+                            )
+                        }
+                        onClick={() => {
+                            sortOrder === "ASC"
+                                ? setSortOrder("DESC")
+                                : setSortOrder("ASC");
+                        }}
                         size={"large"}
                     >
                         {sortOrder === "ASC" ? "升序" : "降序"}

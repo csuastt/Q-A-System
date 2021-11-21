@@ -153,8 +153,7 @@ const AnswererCard: React.FC<{
             </>
         ) : (
             <>
-                <Card
-                >
+                <Card>
                     <CardActionWrapper>
                         <CardContent
                             sx={

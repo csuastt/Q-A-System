@@ -95,12 +95,11 @@ export function formatInterval(seconds: number) {
 }
 
 export function checkSensitiveWords(text: string) {
-    let words: Array<string> = require('./sensitive_word.json');
+    let words: Array<string> = require("./sensitive_word.json");
     console.log(text);
     let dirty = "";
     words.forEach((word) => {
-        if (text.indexOf(word) !== -1 && dirty.length === 0)
-            dirty = word;
-    })
+        if (text.indexOf(word) !== -1 && dirty.length === 0) dirty = word;
+    });
     return dirty;
 }

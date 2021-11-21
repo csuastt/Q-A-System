@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import {useTheme} from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 export interface PaginationProp {
@@ -47,29 +47,34 @@ const Pagination: React.FC<PaginationProp> = (props) => {
     };
 
     return (
-        <Stack direction="row" spacing={2} sx={{ justifyContent: "center" }} mt={matches?0:2}>
-            {
-                matches ?
-                    <MuiPagination
-                        count={props.maxPage}
-                        page={props.currentPage}
-                        onChange={(_, value) => props.onPageChanged(value)}
-                        showFirstButton
-                        showLastButton
-                        sx={{ my: "auto" }}
-                    />:
-                    <MuiPagination
-                        count={props.maxPage}
-                        page={props.currentPage}
-                        onChange={(_, value) => props.onPageChanged(value)}
-                        showFirstButton
-                        showLastButton
-                        siblingCount={0}
-                        size="large"
-                        sx={{ my: "auto" }}
-                    />
-            }
-            {matches &&
+        <Stack
+            direction="row"
+            spacing={2}
+            sx={{ justifyContent: "center" }}
+            mt={matches ? 0 : 2}
+        >
+            {matches ? (
+                <MuiPagination
+                    count={props.maxPage}
+                    page={props.currentPage}
+                    onChange={(_, value) => props.onPageChanged(value)}
+                    showFirstButton
+                    showLastButton
+                    sx={{ my: "auto" }}
+                />
+            ) : (
+                <MuiPagination
+                    count={props.maxPage}
+                    page={props.currentPage}
+                    onChange={(_, value) => props.onPageChanged(value)}
+                    showFirstButton
+                    showLastButton
+                    siblingCount={0}
+                    size="large"
+                    sx={{ my: "auto" }}
+                />
+            )}
+            {matches && (
                 <>
                     <TextField
                         value={gotoFieldText}
@@ -88,7 +93,7 @@ const Pagination: React.FC<PaginationProp> = (props) => {
                         跳转
                     </Button>
                 </>
-            }
+            )}
         </Stack>
     );
 };

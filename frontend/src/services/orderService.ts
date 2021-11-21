@@ -17,7 +17,7 @@ class OrderService {
         prePage?: number,
         finished?: boolean,
         sortOrder?: string,
-        sortProperty? :string
+        sortProperty?: string
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
@@ -28,7 +28,7 @@ class OrderService {
                     pageSize: prePage,
                     finished: finished,
                     sortDirection: sortOrder,
-                    sortProperty: sortProperty
+                    sortProperty: sortProperty,
                 },
             })
             .then((response) => response.data);
@@ -97,7 +97,7 @@ class OrderService {
         page?: number,
         prePage?: number,
         sortOrder?: string,
-        sortProperty? :string
+        sortProperty?: string
     ): Promise<SearchResult> {
         if (keywords.length === 0) {
             return axios
@@ -107,7 +107,7 @@ class OrderService {
                         page: page,
                         pageSize: prePage,
                         sortDirection: sortOrder,
-                        sortProperty: sortProperty
+                        sortProperty: sortProperty,
                     },
                 })
                 .then((response) => response.data);

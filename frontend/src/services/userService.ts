@@ -24,7 +24,7 @@ class UserService {
                     page: page,
                     pageSize: prePage,
                     sortDirection: sortOrder,
-                    sortProperty: sortProperty
+                    sortProperty: sortProperty,
                 },
             })
             .then((response) => response.data);

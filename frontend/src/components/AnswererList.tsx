@@ -8,9 +8,17 @@ import Typography from "@mui/material/Typography";
 import UserList from "./UserList";
 import { parseIntWithDefault, useQuery } from "../util";
 import Pagination from "./Pagination";
-import {Button, FormControl, InputLabel, List, MenuItem, Select, Stack} from "@mui/material";
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import {
+    Button,
+    FormControl,
+    InputLabel,
+    List,
+    MenuItem,
+    Select,
+    Stack,
+} from "@mui/material";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 
 const AnswererList: React.FC<{
     selectModel?: boolean;
@@ -119,14 +127,22 @@ const AnswererList: React.FC<{
                 spacing={2}
                 mb={2}
             >
-                <FormControl variant="outlined" sx={{ minWidth: 120 }} size={"small"}>
-                    <InputLabel id="demo-simple-select-label">排序依据</InputLabel>
+                <FormControl
+                    variant="outlined"
+                    sx={{ minWidth: 120 }}
+                    size={"small"}
+                >
+                    <InputLabel id="demo-simple-select-label">
+                        排序依据
+                    </InputLabel>
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={sortProperty}
                         label="sort-property"
-                        onChange={(e) => {setSortProperty(e.target.value);}}
+                        onChange={(e) => {
+                            setSortProperty(e.target.value);
+                        }}
                     >
                         <MenuItem value={"id"}>ID</MenuItem>
                         <MenuItem value={"price"}>定价</MenuItem>
@@ -136,8 +152,18 @@ const AnswererList: React.FC<{
                     </Select>
                 </FormControl>
                 <Button
-                    startIcon={sortOrder === "ASC" ? <TrendingUpIcon/> : <TrendingDownIcon/>}
-                    onClick={() => {(sortOrder === "ASC") ? setSortOrder("DESC") : setSortOrder("ASC");}}
+                    startIcon={
+                        sortOrder === "ASC" ? (
+                            <TrendingUpIcon />
+                        ) : (
+                            <TrendingDownIcon />
+                        )
+                    }
+                    onClick={() => {
+                        sortOrder === "ASC"
+                            ? setSortOrder("DESC")
+                            : setSortOrder("ASC");
+                    }}
                     size={"large"}
                 >
                     {sortOrder === "ASC" ? "升序" : "降序"}
@@ -146,13 +172,7 @@ const AnswererList: React.FC<{
             {answerList && (
                 <Grid container spacing={3} marginBottom={3}>
                     {answerList.map((user: UserBasicInfo, index: number) => (
-                        <Grid
-                            item
-                            key={index}
-                            lg={4}
-                            md={6}
-                            xs={12}
-                        >
+                        <Grid item key={index} lg={4} md={6} xs={12}>
                             <AnswererCard
                                 userInfo={user}
                                 nextUrl={

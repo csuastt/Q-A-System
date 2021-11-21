@@ -43,7 +43,7 @@ import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import Box from "@mui/material/Box";
-import {useTheme} from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
@@ -131,7 +131,7 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     };
 
     const renderNormalControl = () => (
-        <Stack direction="row" spacing={matches?3: 2} mt={3}>
+        <Stack direction="row" spacing={matches ? 3 : 2} mt={3}>
             <ToggleButtonGroup
                 value={filterUnread}
                 exclusive
@@ -159,20 +159,20 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
             >
                 删除已读
             </Button>
-            {
-                matches ?
-                    <Button
-                        onClick={refresh}
-                        startIcon={<RefreshIcon />}
-                        variant="outlined"
-                        size="small"
-                    >
-                        刷新
-                    </Button>:
-                    <IconButton onClick={refresh} size="small" color={"primary"}>
-                        <RefreshIcon />
-                    </IconButton>
-            }
+            {matches ? (
+                <Button
+                    onClick={refresh}
+                    startIcon={<RefreshIcon />}
+                    variant="outlined"
+                    size="small"
+                >
+                    刷新
+                </Button>
+            ) : (
+                <IconButton onClick={refresh} size="small" color={"primary"}>
+                    <RefreshIcon />
+                </IconButton>
+            )}
         </Stack>
     );
 

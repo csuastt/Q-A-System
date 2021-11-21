@@ -24,8 +24,14 @@ import styled from "@emotion/styled";
 import systemConfigService from "../services/systemConfigService";
 import Rating from "@mui/material/Rating";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {useTheme} from "@mui/material/styles";
-import {Button, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import {
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+} from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 
@@ -55,8 +61,12 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [longPending, setLongPending] = useState(false);
     const [errorFlag, setErrorFlag] = useState(false);
     const [maxMsgCount, setMaxMsgCount] = useState<number>();
-    const [sortProperty, setSortProperty] = useState(_.defaultTo(props.initSortProperty, "createTime"));
-    const [sortOrder, setSortOrder] = useState(_.defaultTo(props.initSortOrder, "DESC"));
+    const [sortProperty, setSortProperty] = useState(
+        _.defaultTo(props.initSortProperty, "createTime")
+    );
+    const [sortOrder, setSortOrder] = useState(
+        _.defaultTo(props.initSortOrder, "DESC")
+    );
 
     // if match the mobile size
     const theme = useTheme();
@@ -126,7 +136,18 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         setTimeout(() => {
             setLongPending(true);
         }, 500);
-    }, [currentPage, itemPrePage, props.filterFinished, props.showAnswerer, props.userId, props.keywords, props.setMillis, props.setCount, sortOrder, sortProperty]);
+    }, [
+        currentPage,
+        itemPrePage,
+        props.filterFinished,
+        props.showAnswerer,
+        props.userId,
+        props.keywords,
+        props.setMillis,
+        props.setCount,
+        sortOrder,
+        sortProperty,
+    ]);
 
     useEffect(() => {
         systemConfigService.getSystemConfig().then(
@@ -138,8 +159,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }, []);
 
     const onPageChanged = (newPage: number) => {
-        if (props.setCurrentPage)
-            props.setCurrentPage(newPage);
+        if (props.setCurrentPage) props.setCurrentPage(newPage);
         else {
             setCurrentPage(newPage);
         }
@@ -211,9 +231,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         if (order.state === OrderState.ANSWERED) {
             return (
                 <Stack direction={"row"} alignItems="center" spacing={1}>
-                    <ChatIcon fontSize="small" sx={
-                        matches? { ml: 1 } : { ml: 0 }
-                    } color="info" />
+                    <ChatIcon
+                        fontSize="small"
+                        sx={matches ? { ml: 1 } : { ml: 0 }}
+                        color="info"
+                    />
                     <Typography variant="caption" color="info">
                         {maxMsgCount
                             ? `${order.messageCount}/${maxMsgCount}`
@@ -263,11 +285,14 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         {order.questionTitle}
                                     </Typography>
                                     <Box sx={{ paddingRight: 1 }} />
-                                    {matches && (order.showPublic ? (
-                                        <PublicIcon color={"primary"} />
-                                    ) : (
-                                        <PrivacyTipIcon color={"secondary"} />
-                                    ))}
+                                    {matches &&
+                                        (order.showPublic ? (
+                                            <PublicIcon color={"primary"} />
+                                        ) : (
+                                            <PrivacyTipIcon
+                                                color={"secondary"}
+                                            />
+                                        ))}
                                     <Box sx={{ flexGrow: 1 }} />
                                     {!props.listMode && (
                                         <OrderStateChip state={order.state} />
@@ -300,20 +325,23 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                 </Box>
                                 <Box
                                     sx={
-                                        matches ?{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        mt: 1,
-                                        mb: -1,
-                                        }:
-                                            {
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                mt: 1,
-                                                mb: -1,
-                                            }
+                                        matches
+                                            ? {
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  mt: 1,
+                                                  mb: -1,
+                                              }
+                                            : {
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                  mt: 1,
+                                                  mb: -1,
+                                              }
                                     }
-                                    alignItems={matches ? "center": "flex-start"}
+                                    alignItems={
+                                        matches ? "center" : "flex-start"
+                                    }
                                 >
                                     <Typography variant="caption">
                                         创建时间：
@@ -330,9 +358,12 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                                 未评价
                                             </Typography>
                                         ) : (
-                                            <Box sx={{display: "flex",
-                                                flexDirection: "row",}}
-                                                 justifyContent="center"
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                }}
+                                                justifyContent="center"
                                             >
                                                 <Typography variant="caption">
                                                     评分：
@@ -392,10 +423,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     }
     return (
         <Box>
-            {questionList &&
+            {questionList && (
                 <>
-                    {
-                        !props.listMode && typeof props.keywords === "undefined" &&
+                    {!props.listMode && typeof props.keywords === "undefined" && (
                         <Stack
                             direction={"row"}
                             justifyContent="flex-start"
@@ -403,35 +433,65 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                             spacing={2}
                             mb={2}
                         >
-                            <FormControl variant="outlined" sx={{ minWidth: 120 }} size={"small"}>
-                                <InputLabel id="demo-simple-select-label">排序依据</InputLabel>
+                            <FormControl
+                                variant="outlined"
+                                sx={{ minWidth: 120 }}
+                                size={"small"}
+                            >
+                                <InputLabel id="demo-simple-select-label">
+                                    排序依据
+                                </InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     value={sortProperty}
                                     label="sort-property"
-                                    onChange={(e) => {setSortProperty(e.target.value);}}
+                                    onChange={(e) => {
+                                        setSortProperty(e.target.value);
+                                    }}
                                 >
-                                    <MenuItem value={"createTime"}>创建时间</MenuItem>
-                                    <MenuItem value={"expireTime"}>超时时间</MenuItem>
-                                    <MenuItem value={"price"}>成交价格</MenuItem>
-                                    <MenuItem value={"messageCount"}>聊天条数</MenuItem>
-                                    <MenuItem value={"rating"}>订单评分</MenuItem>
-                                    <MenuItem value={"state"}>订单状态</MenuItem>
+                                    <MenuItem value={"createTime"}>
+                                        创建时间
+                                    </MenuItem>
+                                    <MenuItem value={"expireTime"}>
+                                        超时时间
+                                    </MenuItem>
+                                    <MenuItem value={"price"}>
+                                        成交价格
+                                    </MenuItem>
+                                    <MenuItem value={"messageCount"}>
+                                        聊天条数
+                                    </MenuItem>
+                                    <MenuItem value={"rating"}>
+                                        订单评分
+                                    </MenuItem>
+                                    <MenuItem value={"state"}>
+                                        订单状态
+                                    </MenuItem>
                                 </Select>
                             </FormControl>
                             <Button
-                                startIcon={sortOrder === "ASC" ? <TrendingUpIcon/> : <TrendingDownIcon/>}
-                                onClick={() => {(sortOrder === "ASC") ? setSortOrder("DESC") : setSortOrder("ASC");}}
+                                startIcon={
+                                    sortOrder === "ASC" ? (
+                                        <TrendingUpIcon />
+                                    ) : (
+                                        <TrendingDownIcon />
+                                    )
+                                }
+                                onClick={() => {
+                                    sortOrder === "ASC"
+                                        ? setSortOrder("DESC")
+                                        : setSortOrder("ASC");
+                                }}
                                 size={"large"}
                             >
                                 {sortOrder === "ASC" ? "升序" : "降序"}
                             </Button>
                         </Stack>
-                    }
+                    )}
                     <Stack spacing={2}>{renderQuestionList()}</Stack>
                 </>
-            }
+            )}
         </Box>
     );
 };

@@ -255,7 +255,7 @@ export default class AccountProfile extends Component<
                 price: 50,
                 role: UserRole.ANSWERER,
                 rating: 0.5,
-                ratingCount: 10
+                ratingCount: 10,
             };
             this.setState({
                 user: currentUser,
