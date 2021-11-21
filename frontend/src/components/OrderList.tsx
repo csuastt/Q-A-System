@@ -56,7 +56,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [errorFlag, setErrorFlag] = useState(false);
     const [maxMsgCount, setMaxMsgCount] = useState<number>();
     const [sortProperty, setSortProperty] = useState(_.defaultTo(props.initSortProperty, "createTime"));
-    const [sortOrder, setSortOrder] = useState(_.defaultTo(props.initSortProperty, "DESC"));
+    const [sortOrder, setSortOrder] = useState(_.defaultTo(props.initSortOrder, "DESC"));
 
     // if match the mobile size
     const theme = useTheme();
