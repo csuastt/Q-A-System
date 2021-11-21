@@ -13,7 +13,9 @@ class UserService {
     getUserList(
         answerer: boolean,
         page?: number,
-        prePage?: number
+        prePage?: number,
+        sortOrder?: string,
+        sortProperty?: string
     ): Promise<PagedList<UserBasicInfo>> {
         return axios
             .get("/users", {
@@ -21,6 +23,8 @@ class UserService {
                     role: answerer ? "ANSWERER" : "USER",
                     page: page,
                     pageSize: prePage,
+                    sortDirection: sortOrder,
+                    sortProperty: sortProperty,
                 },
             })
             .then((response) => response.data);

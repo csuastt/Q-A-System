@@ -40,7 +40,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
-import { formatInterval, formatSize } from "../util";
+import { checkSensitiveWords, formatInterval, formatSize } from "../util";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
@@ -165,6 +165,19 @@ const OrderCreationWizard: React.FC = (props) => {
                 message: "ASKER_ANSWER_SAME",
             });
         } else {
+            // check sensitive words
+            let word = checkSensitiveWords(questionTitle + questionDescription);
+            if (word.length !== 0) {
+                setResult({
+                    id: -1,
+                    type: 1,
+                    state: word,
+                    created_id: -1,
+                    message: "SENSITIVE_WORD",
+                });
+                return;
+            }
+
             questionService
                 .createQuestion(
                     user!.id,
@@ -202,27 +215,70 @@ const OrderCreationWizard: React.FC = (props) => {
 
     const renderResult = () => {
         if (result) {
-            if (result.message === "BALANCE_NOT_ENOUGH") {
+            if (result.message === "SENSITIVE_WORD") {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
-                        <ErrorOutlineIcon
+                    <Stack
+                        direction={"column"}
+                        alignItems={matches ? "center" : "flex-start"}
+                        mt={1}
+                    >
+                        <Stack direction={"column"} alignItems="center">
+                            <ErrorOutlineIcon
+                                color="error"
+                                sx={
+                                    matches
+                                        ? { fontSize: 80 }
+                                        : {
+                                              fontSize: 60,
+                                          }
+                                }
+                            />
+                            <Typography
+                                variant={matches ? "h5" : "h6"}
+                                mt={1}
+                                mb={matches ? 4 : 2}
+                            >
+                                {"您的提交中含有敏感词“" + result.state + "”"}
+                            </Typography>
+                        </Stack>
+                        <Button
+                            variant="outlined"
                             color="error"
-                            sx={
-                                matches
-                                    ? { fontSize: 80 }
-                                    : {
-                                          fontSize: 60,
-                                          marginLeft: 7,
-                                      }
-                            }
-                        />
-                        <Typography
-                            variant={matches ? "h5" : "h6"}
-                            mt={1}
-                            mb={matches ? 4 : 2}
+                            onClick={() => {
+                                setActiveStep(1);
+                            }}
+                            size={matches ? "large" : "medium"}
                         >
-                            {"余额不足，请充值后重试"}
-                        </Typography>
+                            重新填写
+                        </Button>
+                    </Stack>
+                );
+            } else if (result.message === "BALANCE_NOT_ENOUGH") {
+                return (
+                    <Stack
+                        direction={"column"}
+                        alignItems={matches ? "center" : "flex-start"}
+                        mt={1}
+                    >
+                        <Stack direction={"column"} alignItems="center">
+                            <ErrorOutlineIcon
+                                color="error"
+                                sx={
+                                    matches
+                                        ? { fontSize: 80 }
+                                        : {
+                                              fontSize: 60,
+                                          }
+                                }
+                            />
+                            <Typography
+                                variant={matches ? "h5" : "h6"}
+                                mt={1}
+                                mb={matches ? 4 : 2}
+                            >
+                                {"余额不足，请充值后重试"}
+                            </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="error"
@@ -232,29 +288,34 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             } else if (result.message === "ASKER_ANSWER_SAME") {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
-                        <ErrorOutlineIcon
-                            color="error"
-                            sx={
-                                matches
-                                    ? { fontSize: 80 }
-                                    : {
-                                          fontSize: 60,
-                                          marginLeft: 7,
-                                      }
-                            }
-                        />
-                        <Typography
-                            variant={matches ? "h5" : "h6"}
-                            mt={1}
-                            mb={matches ? 4 : 2}
-                        >
-                            {"不能向自己提问，请选择其他回答者重试"}
-                        </Typography>
+                    <Stack
+                        direction={"column"}
+                        alignItems={matches ? "center" : "flex-start"}
+                        mt={1}
+                    >
+                        <Stack direction={"column"} alignItems="center">
+                            <ErrorOutlineIcon
+                                color="error"
+                                sx={
+                                    matches
+                                        ? { fontSize: 80 }
+                                        : {
+                                              fontSize: 60,
+                                          }
+                                }
+                            />
+                            <Typography
+                                variant={matches ? "h5" : "h6"}
+                                mt={1}
+                                mb={matches ? 4 : 2}
+                            >
+                                {"不能向自己提问，请选择其他回答者重试"}
+                            </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="error"
@@ -264,29 +325,34 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             } else if (result.state === "CREATED") {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
-                        <CheckCircleOutlineIcon
-                            color="success"
-                            sx={
-                                matches
-                                    ? { fontSize: 80 }
-                                    : {
-                                          fontSize: 60,
-                                          marginLeft: 8,
-                                      }
-                            }
-                        />
-                        <Typography
-                            variant={matches ? "h5" : "h6"}
-                            mt={1}
-                            mb={matches ? 4 : 2}
-                        >
-                            {"您的问题已经创建成功"}
-                        </Typography>
+                    <Stack
+                        direction={"column"}
+                        alignItems={matches ? "center" : "flex-start"}
+                        mt={1}
+                    >
+                        <Stack direction={"column"} alignItems="center">
+                            <CheckCircleOutlineIcon
+                                color="success"
+                                sx={
+                                    matches
+                                        ? { fontSize: 80 }
+                                        : {
+                                              fontSize: 60,
+                                          }
+                                }
+                            />
+                            <Typography
+                                variant={matches ? "h5" : "h6"}
+                                mt={1}
+                                mb={matches ? 4 : 2}
+                            >
+                                {"您的问题已经创建成功"}
+                            </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="success"
@@ -296,29 +362,34 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             再问一个
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             } else {
                 return (
-                    <Box textAlign={matches ? "center" : "start"} mt={1}>
-                        <ErrorOutlineIcon
-                            color="error"
-                            sx={
-                                matches
-                                    ? { fontSize: 80 }
-                                    : {
-                                          fontSize: 60,
-                                          marginLeft: 7,
-                                      }
-                            }
-                        />
-                        <Typography
-                            variant={matches ? "h5" : "h6"}
-                            mt={1}
-                            mb={matches ? 4 : 2}
-                        >
-                            {"您的问题创建出错"}
-                        </Typography>
+                    <Stack
+                        direction={"column"}
+                        alignItems={matches ? "center" : "flex-start"}
+                        mt={1}
+                    >
+                        <Stack direction={"column"} alignItems="center">
+                            <ErrorOutlineIcon
+                                color="error"
+                                sx={
+                                    matches
+                                        ? { fontSize: 80 }
+                                        : {
+                                              fontSize: 60,
+                                          }
+                                }
+                            />
+                            <Typography
+                                variant={matches ? "h5" : "h6"}
+                                mt={1}
+                                mb={matches ? 4 : 2}
+                            >
+                                {"您的问题创建出错"}
+                            </Typography>
+                        </Stack>
                         <Button
                             variant="outlined"
                             color="error"
@@ -328,7 +399,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             重新选择
                         </Button>
-                    </Box>
+                    </Stack>
                 );
             }
         } else {
@@ -414,25 +485,30 @@ const OrderCreationWizard: React.FC = (props) => {
             </>
         ) : (
             <>
-                <Box textAlign={matches ? "center" : "start"} mt={1}>
-                    <ErrorOutlineIcon
-                        color="warning"
-                        sx={
-                            matches
-                                ? { fontSize: 80 }
-                                : {
-                                      fontSize: 60,
-                                      marginLeft: 7.5,
-                                  }
-                        }
-                    />
-                    <Typography
-                        variant={matches ? "h5" : "h6"}
-                        mt={1}
-                        mb={matches ? 4 : 2}
-                    >
-                        {"您还没有选择回答者"}
-                    </Typography>
+                <Stack
+                    direction={"column"}
+                    alignItems={matches ? "center" : "flex-start"}
+                    mt={1}
+                >
+                    <Stack direction={"column"} alignItems="center">
+                        <ErrorOutlineIcon
+                            color="warning"
+                            sx={
+                                matches
+                                    ? { fontSize: 80 }
+                                    : {
+                                          fontSize: 60,
+                                      }
+                            }
+                        />
+                        <Typography
+                            variant={matches ? "h5" : "h6"}
+                            mt={1}
+                            mb={matches ? 4 : 2}
+                        >
+                            {"您还没有选择回答者"}
+                        </Typography>
+                    </Stack>
                     <Button
                         variant="outlined"
                         color="warning"
@@ -442,7 +518,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     >
                         浏览列表
                     </Button>
-                </Box>
+                </Stack>
             </>
         );
     };
@@ -472,36 +548,46 @@ const OrderCreationWizard: React.FC = (props) => {
                     alignItems={"center"}
                     justifyContent="space-between"
                 >
-                    <Stack spacing={2} alignItems={"center"} direction="row">
+                    <Stack
+                        spacing={matches ? 2 : 0}
+                        alignItems={"flex-start"}
+                        direction={matches ? "row" : "column"}
+                    >
                         <Typography>上传附件(小于300M):</Typography>
-                        <label htmlFor="contained-button-file">
-                            <Input
-                                accept="*"
-                                id="contained-button-file"
-                                type="file"
-                                name="attachments"
-                                multiple={true}
-                                onChange={handleFilesUpload}
-                            />
-                            <Link component="span">添加</Link>
-                        </label>
-                        <Link
-                            component="button"
-                            variant="body1"
-                            color={"error"}
-                            onClick={handleFilesClear}
+                        <Stack
+                            spacing={matches ? 2 : 2}
+                            alignItems={"flex-start"}
+                            direction={"row"}
                         >
-                            清空
-                        </Link>
-                        {files.length > 0 && (
+                            <label htmlFor="contained-button-file">
+                                <Input
+                                    accept="*"
+                                    id="contained-button-file"
+                                    type="file"
+                                    name="attachments"
+                                    multiple={true}
+                                    onChange={handleFilesUpload}
+                                />
+                                <Link component="span">添加</Link>
+                            </label>
                             <Link
                                 component="button"
                                 variant="body1"
-                                onClick={handleOpen}
+                                color={"error"}
+                                onClick={handleFilesClear}
                             >
-                                查看
+                                清空
                             </Link>
-                        )}
+                            {files.length > 0 && (
+                                <Link
+                                    component="button"
+                                    variant="body1"
+                                    onClick={handleOpen}
+                                >
+                                    查看
+                                </Link>
+                            )}
+                        </Stack>
                     </Stack>
                     <Stack
                         direction="row"

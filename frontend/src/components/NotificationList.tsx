@@ -43,6 +43,8 @@ import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -56,6 +58,8 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     const [loading, setLoading] = useState(true);
     const [newNotif, setNewNotif] = useState(false);
     const [notifList, setNotifList] = useState<PagedList<Notification>>();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
 
     useEffect(() => {
         if (!user) {
@@ -127,7 +131,7 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     };
 
     const renderNormalControl = () => (
-        <Stack direction="row" spacing={3} mt={3}>
+        <Stack direction="row" spacing={matches ? 3 : 2} mt={3}>
             <ToggleButtonGroup
                 value={filterUnread}
                 exclusive
@@ -155,14 +159,20 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
             >
                 删除已读
             </Button>
-            <Button
-                onClick={refresh}
-                startIcon={<RefreshIcon />}
-                variant="outlined"
-                size="small"
-            >
-                刷新
-            </Button>
+            {matches ? (
+                <Button
+                    onClick={refresh}
+                    startIcon={<RefreshIcon />}
+                    variant="outlined"
+                    size="small"
+                >
+                    刷新
+                </Button>
+            ) : (
+                <IconButton onClick={refresh} size="small" color={"primary"}>
+                    <RefreshIcon />
+                </IconButton>
+            )}
         </Stack>
     );
 

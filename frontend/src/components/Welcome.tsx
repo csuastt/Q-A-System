@@ -143,7 +143,13 @@ export default function Welcome() {
                             </Typography>
                         </Box>
                     </Box>
-                    <Box>
+                    <Box
+                        sx={{
+                            alignItems: "center",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
                         <List dense={true} sx={{ paddingBottom: 0 }}>
                             <ListItem sx={{ paddingBottom: 0 }}>
                                 <ListItemIcon sx={{ minWidth: 30 }}>

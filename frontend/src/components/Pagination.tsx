@@ -4,6 +4,8 @@ import TextField from "@mui/material/TextField";
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export interface PaginationProp {
     currentPage: number;
@@ -15,6 +17,10 @@ export interface PaginationProp {
 
 const Pagination: React.FC<PaginationProp> = (props) => {
     const [gotoFieldText, setGotoFieldText] = useState<string>("");
+    // if match the mobile size
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
+
     useEffect(() => {
         setGotoFieldText(props.currentPage.toString());
     }, [props.currentPage]);
@@ -41,31 +47,53 @@ const Pagination: React.FC<PaginationProp> = (props) => {
     };
 
     return (
-        <Stack direction="row" spacing={2} sx={{ justifyContent: "center" }}>
-            <MuiPagination
-                count={props.maxPage}
-                page={props.currentPage}
-                onChange={(_, value) => props.onPageChanged(value)}
-                showFirstButton
-                showLastButton
-                sx={{ my: "auto" }}
-            />
-            <TextField
-                value={gotoFieldText}
-                onChange={onGotoFieldChanged}
-                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                onKeyDown={checkEnter}
-                size="small"
-                sx={{ width: "6ch" }}
-            />
-            <Button
-                endIcon={<KeyboardReturnIcon />}
-                onClick={gotoPage}
-                variant="outlined"
-                size="small"
-            >
-                跳转
-            </Button>
+        <Stack
+            direction="row"
+            spacing={2}
+            sx={{ justifyContent: "center" }}
+            mt={matches ? 0 : 2}
+        >
+            {matches ? (
+                <MuiPagination
+                    count={props.maxPage}
+                    page={props.currentPage}
+                    onChange={(_, value) => props.onPageChanged(value)}
+                    showFirstButton
+                    showLastButton
+                    sx={{ my: "auto" }}
+                />
+            ) : (
+                <MuiPagination
+                    count={props.maxPage}
+                    page={props.currentPage}
+                    onChange={(_, value) => props.onPageChanged(value)}
+                    showFirstButton
+                    showLastButton
+                    siblingCount={0}
+                    size="large"
+                    sx={{ my: "auto" }}
+                />
+            )}
+            {matches && (
+                <>
+                    <TextField
+                        value={gotoFieldText}
+                        onChange={onGotoFieldChanged}
+                        inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                        onKeyDown={checkEnter}
+                        size="small"
+                        sx={{ width: "6ch" }}
+                    />
+                    <Button
+                        endIcon={<KeyboardReturnIcon />}
+                        onClick={gotoPage}
+                        variant="outlined"
+                        size="small"
+                    >
+                        跳转
+                    </Button>
+                </>
+            )}
         </Stack>
     );
 };

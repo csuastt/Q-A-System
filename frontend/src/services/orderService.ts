@@ -15,7 +15,9 @@ class OrderService {
         answerer?: number,
         page?: number,
         prePage?: number,
-        finished?: boolean
+        finished?: boolean,
+        sortOrder?: string,
+        sortProperty?: string
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
@@ -25,6 +27,8 @@ class OrderService {
                     page: page,
                     pageSize: prePage,
                     finished: finished,
+                    sortDirection: sortOrder,
+                    sortProperty: sortProperty,
                 },
             })
             .then((response) => response.data);
@@ -91,7 +95,9 @@ class OrderService {
     getPublicOrderListBySearch(
         keywords: string,
         page?: number,
-        prePage?: number
+        prePage?: number,
+        sortOrder?: string,
+        sortProperty?: string
     ): Promise<SearchResult> {
         if (keywords.length === 0) {
             return axios
@@ -100,6 +106,8 @@ class OrderService {
                         showPublic: 1,
                         page: page,
                         pageSize: prePage,
+                        sortDirection: sortOrder,
+                        sortProperty: sortProperty,
                     },
                 })
                 .then((response) => response.data);
