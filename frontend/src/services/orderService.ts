@@ -5,6 +5,7 @@ import {
     OrderInfo,
     OrderState,
     PagedList,
+    SearchResult,
     SortDirection,
 } from "./definations";
 
@@ -14,7 +15,9 @@ class OrderService {
         answerer?: number,
         page?: number,
         prePage?: number,
-        finished?: boolean
+        finished?: boolean,
+        sortOrder?: string,
+        sortProperty?: string
     ): Promise<PagedList<OrderInfo>> {
         return axios
             .get("/orders", {
@@ -24,6 +27,8 @@ class OrderService {
                     page: page,
                     pageSize: prePage,
                     finished: finished,
+                    sortDirection: sortOrder,
+                    sortProperty: sortProperty,
                 },
             })
             .then((response) => response.data);
@@ -90,8 +95,10 @@ class OrderService {
     getPublicOrderListBySearch(
         keywords: string,
         page?: number,
-        prePage?: number
-    ): Promise<PagedList<OrderInfo>> {
+        prePage?: number,
+        sortOrder?: string,
+        sortProperty?: string
+    ): Promise<SearchResult> {
         if (keywords.length === 0) {
             return axios
                 .get("/orders", {
@@ -99,6 +106,8 @@ class OrderService {
                         showPublic: 1,
                         page: page,
                         pageSize: prePage,
+                        sortDirection: sortOrder,
+                        sortProperty: sortProperty,
                     },
                 })
                 .then((response) => response.data);

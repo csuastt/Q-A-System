@@ -255,6 +255,7 @@ export default class AccountProfile extends Component<
                 price: 50,
                 role: UserRole.ANSWERER,
                 rating: 0.5,
+                ratingCount: 10,
             };
             this.setState({
                 user: currentUser,
@@ -472,7 +473,7 @@ export default class AccountProfile extends Component<
                     </Grid>
                 ) : (
                     this.state.config && (
-                        <Grid item md={4} xs={8} mt={2}>
+                        <Grid item md={4} xs={12} mt={2}>
                             <AccountBriefProfile
                                 id={this.state.user?.id}
                                 nickname={this.now_nickname}

@@ -11,7 +11,7 @@ import CardContent from "@mui/material/CardContent";
 import userService from "../services/userService";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Rating } from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
 
 const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
     props
@@ -44,19 +44,22 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
                             sx={{
                                 display: "flex",
                                 flexDirection: "row",
+                                alignItems: "center",
                             }}
                             mb={4}
                             mt={-1}
                         >
                             <Typography variant="body1">
-                                {"平均评分："}
+                                {"平均评分：" + info.rating.toFixed(2)}
                             </Typography>
-                            <Rating
-                                value={info.rating}
-                                precision={0.1}
-                                readOnly
-                                size="small"
+                            <StarIcon
+                                style={{ fill: "orange" }}
+                                fontSize={"small"}
+                                sx={{ marginRight: 2 }}
                             />
+                            <Typography variant="body1">
+                                {"评分次数：" + info.ratingCount}
+                            </Typography>
                         </Box>
                         <TextField
                             label="专业领域"

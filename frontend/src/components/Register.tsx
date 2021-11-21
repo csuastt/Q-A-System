@@ -324,6 +324,8 @@ export default class Register extends Component<any, RegisterState> {
                                         href={
                                             "https://www.kuaishou.com/about/policy"
                                         }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                     >
                                         《快手用户服务协议》
                                     </Link>

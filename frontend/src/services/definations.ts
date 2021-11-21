@@ -43,6 +43,7 @@ export interface UserBasicInfo {
     price: number;
     role: UserRole;
     rating: number;
+    ratingCount: number;
 }
 
 export type ManagerInfoList = Array<ManagerInfo>;
@@ -70,6 +71,7 @@ export interface UserInfo {
     description: string;
     role: UserRole;
     rating: number;
+    ratingCount: number;
 }
 
 export interface UserFullyInfo {
@@ -86,6 +88,7 @@ export interface UserFullyInfo {
     price: number;
     role: UserRole;
     rating: number;
+    ratingCount: number;
 }
 
 export enum OrderState {
@@ -167,6 +170,15 @@ export interface PagedList<T> {
     page: number;
     totalPages: number;
     totalCount: number;
+}
+
+export interface SearchResult {
+    data: Array<OrderInfo>;
+    pageSize: number;
+    page: number;
+    totalPages: number;
+    totalCount: number;
+    timeMillis: number;
 }
 
 export interface EarningsMonthly {

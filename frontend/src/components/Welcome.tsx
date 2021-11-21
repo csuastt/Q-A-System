@@ -17,6 +17,7 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
+    Stack,
 } from "@mui/material";
 import IncomeStatistics from "./IncomeStatistics";
 import Avatar from "@mui/material/Avatar";
@@ -37,6 +38,7 @@ import MoneyIcon from "@mui/icons-material/Money";
 import AnswererList from "./AnswererList";
 import Library from "./Library";
 import NotificationList from "./NotificationList";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 export default function Welcome() {
     const theme = useTheme();
@@ -141,7 +143,13 @@ export default function Welcome() {
                             </Typography>
                         </Box>
                     </Box>
-                    <Box>
+                    <Box
+                        sx={{
+                            alignItems: "center",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
                         <List dense={true} sx={{ paddingBottom: 0 }}>
                             <ListItem sx={{ paddingBottom: 0 }}>
                                 <ListItemIcon sx={{ minWidth: 30 }}>
@@ -331,9 +339,15 @@ export default function Welcome() {
                             {user ? (
                                 <>
                                     <Typography align="left" variant="body2">
-                                        下方显示了您的消息列表
+                                        这是您的消息列表，
+                                        <Link
+                                            variant="body2"
+                                            component={RouterLink}
+                                            to="/notif"
+                                        >
+                                            点此查看更多
+                                        </Link>
                                     </Typography>
-                                    <NotificationList compact />
                                 </>
                             ) : (
                                 <Typography align="left" variant="body2">
@@ -351,6 +365,26 @@ export default function Welcome() {
                         </>
                     }
                 />
+                <CardContent>
+                    {user ? (
+                        <NotificationList compact />
+                    ) : (
+                        <Stack
+                            direction="column"
+                            justifyContent="center"
+                            alignItems="center"
+                            spacing={2}
+                        >
+                            <ErrorOutlineIcon
+                                color="warning"
+                                sx={{ fontSize: 60 }}
+                            />
+                            <Typography variant={"h6"} mt={1} mb={4}>
+                                {"请登录后重试"}
+                            </Typography>
+                        </Stack>
+                    )}
+                </CardContent>
             </Card>
         );
     };

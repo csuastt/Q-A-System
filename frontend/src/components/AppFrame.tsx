@@ -16,8 +16,15 @@ import List from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Badge, FormControlLabel, ListItemButton, Switch } from "@mui/material";
+import {
+    Badge,
+    FormControlLabel,
+    ListItemButton,
+    SwipeableDrawer,
+    Switch,
+} from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
+import { makeStyles } from "@mui/styles";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -42,6 +49,7 @@ import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useNotification } from "./NotificationController";
 import { ColorModeContext } from "../App";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const drawerWidth = 240;
 
@@ -92,6 +100,12 @@ const Drawer = styled(MuiDrawer, {
     }),
 }));
 
+const useStyles = makeStyles({
+    paper: {
+        width: 240,
+    },
+});
+
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }
@@ -121,13 +135,18 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
     const { unreadCount } = useNotification();
 
     const theme = useTheme();
-
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
+    const classes = useStyles();
     const handleDrawerOpen = () => {
         setDrawerOpen(true);
     };
 
     const handleDrawerClose = () => {
         setDrawerOpen(false);
+    };
+
+    const handleDrawerToggle = () => {
+        setDrawerOpen(!drawerOpen);
     };
 
     const renderListItem = (
@@ -177,21 +196,86 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
         ];
     };
 
+    const renderDrawerContent = (
+        <>
+            <DrawerHeader>
+                <IconButton onClick={handleDrawerClose}>
+                    {theme.direction === "rtl" ? (
+                        <ChevronRightIcon />
+                    ) : (
+                        <ChevronLeftIcon />
+                    )}
+                </IconButton>
+            </DrawerHeader>
+            <Divider />
+            {renderDrawerList(
+                props.isAdmin
+                    ? [["管理员主页", "/admins/", <HomeIcon />]]
+                    : [["主页", "/", <HomeIcon />]]
+            )}
+            <Divider />
+            {renderDrawerList(
+                props.isAdmin
+                    ? manager
+                        ? [
+                              [
+                                  "修改密码",
+                                  "/admins/change_password",
+                                  <VpnKeyIcon />,
+                              ],
+                              ["登出", "/admins/logout", <LogoutIcon />],
+                          ]
+                        : [["登录", "/admins/login", <LoginIcon />]]
+                    : user
+                    ? [
+                          ["个人信息", "/profile", <AccountCircleIcon />],
+                          ["登出", "/logout", <LogoutIcon />],
+                      ]
+                    : [
+                          ["登录", "/login", <LoginIcon />],
+                          ["注册", "/register", <PersonAddIcon />],
+                      ]
+            )}
+            <Divider />
+            {props.isAdmin
+                ? renderDrawerList([
+                      ["审核列表", "/admins/review", <FactCheckIcon />],
+                      ["用户列表", "/admins/users", <GroupIcon />],
+                      ["回答者列表", "/admins/answerers", <SchoolIcon />],
+                      ["订单列表", "/admins/orders", <LibraryBooksIcon />],
+                  ])
+                : renderDrawerList(drawerList3())}
+            <Divider />
+            {manager?.role === ManagerRole.SUPER_ADMIN
+                ? renderDrawerList([
+                      ["系统参数", "/admins/settings", <SettingsIcon />],
+                      ["管理员列表", "/admins/managers", <HowToRegIcon />],
+                      ["创建", "/admins/create", <PersonAddIcon />],
+                      ["收入统计", "/admins/income", <EqualizerIcon />],
+                  ])
+                : renderDrawerList([["平台须知", "/help", <HelpIcon />]])}
+        </>
+    );
+
     return (
         <Box sx={{ display: "flex" }}>
             <CssBaseline />{" "}
-            <AppBar open={drawerOpen}>
+            <AppBar open={matches ? drawerOpen : undefined}>
                 <Toolbar>
                     <IconButton
                         size="large"
                         edge="start"
                         color="inherit"
                         aria-label="open drawer"
-                        sx={{
-                            mr: 5,
-                            ...(drawerOpen && { display: "none" }),
-                        }}
-                        onClick={handleDrawerOpen}
+                        sx={
+                            matches
+                                ? {
+                                      mr: 5,
+                                      ...(drawerOpen && { display: "none" }),
+                                  }
+                                : { mr: 5 }
+                        }
+                        onClick={handleDrawerToggle}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -206,6 +290,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     >
                         {props.isAdmin ? "问客管理员系统" : "问客"}
                     </Typography>
+                    <Box sx={{ flexGrow: 1 }} />
                     {!props.isAdmin && user && (
                         <IconButton
                             component={RouterLink}
@@ -233,64 +318,20 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     )}
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={drawerOpen}>
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === "rtl" ? (
-                            <ChevronRightIcon />
-                        ) : (
-                            <ChevronLeftIcon />
-                        )}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                {renderDrawerList(
-                    props.isAdmin
-                        ? [["管理员主页", "/admins/", <HomeIcon />]]
-                        : [["主页", "/", <HomeIcon />]]
-                )}
-                <Divider />
-                {renderDrawerList(
-                    props.isAdmin
-                        ? manager
-                            ? [
-                                  [
-                                      "修改密码",
-                                      "/admins/change_password",
-                                      <VpnKeyIcon />,
-                                  ],
-                                  ["登出", "/admins/logout", <LogoutIcon />],
-                              ]
-                            : [["登录", "/admins/login", <LoginIcon />]]
-                        : user
-                        ? [
-                              ["个人信息", "/profile", <AccountCircleIcon />],
-                              ["登出", "/logout", <LogoutIcon />],
-                          ]
-                        : [
-                              ["登录", "/login", <LoginIcon />],
-                              ["注册", "/register", <PersonAddIcon />],
-                          ]
-                )}
-                <Divider />
-                {props.isAdmin
-                    ? renderDrawerList([
-                          ["审核列表", "/admins/review", <FactCheckIcon />],
-                          ["用户列表", "/admins/users", <GroupIcon />],
-                          ["回答者列表", "/admins/answerers", <SchoolIcon />],
-                          ["订单列表", "/admins/orders", <LibraryBooksIcon />],
-                      ])
-                    : renderDrawerList(drawerList3())}
-                <Divider />
-                {manager?.role === ManagerRole.SUPER_ADMIN
-                    ? renderDrawerList([
-                          ["系统参数", "/admins/settings", <SettingsIcon />],
-                          ["管理员列表", "/admins/managers", <HowToRegIcon />],
-                          ["创建", "/admins/create", <PersonAddIcon />],
-                          ["收入统计", "/admins/income", <EqualizerIcon />],
-                      ])
-                    : renderDrawerList([["平台须知", "/help", <HelpIcon />]])}
-            </Drawer>
+            {matches ? (
+                <Drawer variant="permanent" open={drawerOpen}>
+                    {renderDrawerContent}
+                </Drawer>
+            ) : (
+                <SwipeableDrawer
+                    open={drawerOpen}
+                    onClose={handleDrawerClose}
+                    onOpen={handleDrawerOpen}
+                    classes={{ paper: classes.paper }}
+                >
+                    {renderDrawerContent}
+                </SwipeableDrawer>
+            )}
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 {props.children}

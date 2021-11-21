@@ -43,6 +43,8 @@ import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -56,6 +58,8 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     const [loading, setLoading] = useState(true);
     const [newNotif, setNewNotif] = useState(false);
     const [notifList, setNotifList] = useState<PagedList<Notification>>();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
 
     useEffect(() => {
         if (!user) {
@@ -127,7 +131,7 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     };
 
     const renderNormalControl = () => (
-        <Stack direction="row" spacing={3} mt={3}>
+        <Stack direction="row" spacing={matches ? 3 : 2} mt={3}>
             <ToggleButtonGroup
                 value={filterUnread}
                 exclusive
@@ -155,20 +159,26 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
             >
                 删除已读
             </Button>
-            <Button
-                onClick={refresh}
-                startIcon={<RefreshIcon />}
-                variant="outlined"
-                size="small"
-            >
-                刷新
-            </Button>
+            {matches ? (
+                <Button
+                    onClick={refresh}
+                    startIcon={<RefreshIcon />}
+                    variant="outlined"
+                    size="small"
+                >
+                    刷新
+                </Button>
+            ) : (
+                <IconButton onClick={refresh} size="small" color={"primary"}>
+                    <RefreshIcon />
+                </IconButton>
+            )}
         </Stack>
     );
 
     const renderCompactControl = () => (
-        <Stack direction="row">
-            <FormControl variant="standard">
+        <Stack direction="row" justifyContent="space-between">
+            <FormControl variant="outlined" size={"small"}>
                 <Select
                     value={filterUnread ? "true" : "false"}
                     onChange={onFilterSelectChanged}
@@ -177,9 +187,6 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
                     <MenuItem value={"false"}>全部消息</MenuItem>
                 </Select>
             </FormControl>
-            <Button onClick={() => routerHistory.push("/notif")}>
-                查看完整列表
-            </Button>
             <IconButton onClick={refresh} size="small">
                 <RefreshIcon />
             </IconButton>
@@ -263,7 +270,7 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
 
     return (
         <>
-            {props.compact ? renderCompactControl() : renderNormalControl()}
+            {!props.compact && renderNormalControl()}
             {newNotif && (
                 <Alert severity="info" sx={{ mt: 2 }}>
                     有新通知，请刷新
@@ -272,9 +279,16 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
             {loading ? (
                 <List>{renderSkeletonItem()}</List>
             ) : notifList?.totalCount === 0 ? (
-                <Box textAlign={"center"} mt={6}>
-                    <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
-                    <Typography variant={"h5"} mt={1} mb={4}>
+                <Box textAlign={"center"} mt={props.compact ? 0 : 6}>
+                    <ErrorOutlineIcon
+                        color="warning"
+                        sx={props.compact ? { fontSize: 60 } : { fontSize: 80 }}
+                    />
+                    <Typography
+                        variant={props.compact ? "h6" : "h5"}
+                        mt={1}
+                        mb={4}
+                    >
                         {filterUnread ? "您没有新的未读通知" : "您没有新的通知"}
                     </Typography>
                 </Box>
@@ -290,6 +304,7 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
                     onPageChanged={onPageChanged}
                 />
             )}
+            {props.compact && renderCompactControl()}
         </>
     );
 };
