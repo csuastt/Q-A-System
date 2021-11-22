@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional
     Page<User> findAllByRoleIn(Collection<User.Role> role, Pageable pageable);
+
+    @Transactional
+    Page<User> findAllByApplying(boolean applying, Pageable pageable);
 }

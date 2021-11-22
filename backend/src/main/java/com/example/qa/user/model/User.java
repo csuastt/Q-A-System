@@ -42,6 +42,7 @@ public class User {
     private ZonedDateTime createTime;
 
     private Role role = Role.USER;
+    private boolean applying = false;
 
     private int balance = 100;
 

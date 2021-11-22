@@ -4,6 +4,7 @@ import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.order.model.Order;
 import com.example.qa.user.model.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,10 @@ public class UserService {
 
     public Page<User> listByRole(Collection<User.Role> role, Pageable pageable) {
         return role == null ? userRepository.findAll(pageable) : userRepository.findAllByRoleIn(role, pageable);
+    }
+
+    public Page<User> listByApplying(PageRequest pageRequest) {
+        return userRepository.findAllByApplying(true, pageRequest);
     }
 
     public User refund(User user, int value) {

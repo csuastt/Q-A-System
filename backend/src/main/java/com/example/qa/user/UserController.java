@@ -1,11 +1,14 @@
 package com.example.qa.user;
 
+import com.example.qa.admin.AdminService;
+import com.example.qa.admin.model.Admin;
 import com.example.qa.config.SystemConfig;
 import com.example.qa.errorhandling.ApiException;
 import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.EarningsResponse;
 import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.exchange.ValueRequest;
+import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
 import org.springframework.core.io.ByteArrayResource;
@@ -33,10 +36,12 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final AdminService adminService;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, AdminService adminService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.adminService = adminService;
     }
 
     @PostMapping
@@ -52,26 +57,29 @@ public class UserController {
     @GetMapping
     public UserListResponse listUsers(
             @RequestParam(required = false) List<User.Role> role,
+            @RequestParam(required = false) Boolean applying,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(required = false) Sort.Direction sortDirection,
             @RequestParam(required = false) String sortProperty
     ) {
         boolean isAdmin = authLogin() && authIsAdmin();
-        if (!isAdmin) {
-            role = List.of(User.Role.ANSWERER);
-        }
         page = Math.max(page, 1);
         pageSize = Math.max(pageSize, 1);
         pageSize = Math.min(pageSize, SystemConfig.USER_LIST_MAX_PAGE_SIZE);
+        if (isAdmin && Boolean.TRUE.equals(applying)) {
+            return new UserListResponse(userService.listByApplying(PageRequest.of(page - 1, pageSize)), 2);
+        }
+        if (!isAdmin) {
+            role = List.of(User.Role.ANSWERER);
+        }
         if (!hasField(User.class, sortProperty)) {
             sortProperty = "id";
         }
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize,
                 Objects.requireNonNullElse(sortDirection, Sort.Direction.ASC), sortProperty);
         Page<User> result = userService.listByRole(role, pageRequest);
-        int userResponseLevel = isAdmin ? 2 : 0;
-        return new UserListResponse(result, userResponseLevel);
+        return new UserListResponse(result, isAdmin ? 2 : 0);
     }
 
     @GetMapping("/{id}")
@@ -156,12 +164,31 @@ public class UserController {
         authLoginOrThrow();
         authUserOrThrow(id);
         User user = getUserOrThrow(id, false);
-        if (user.getRole() == User.Role.ANSWERER) {
+        if (user.getRole() == User.Role.ANSWERER || user.isApplying()) {
             throw new ApiException(403, "ALREADY_ANSWERER");
         }
         applyRequest.validateOrThrow();
         user.update(applyRequest);
-        user.setRole(User.Role.ANSWERER);
+        user.setApplying(true);
+        userService.save(user);
+    }
+
+    @PostMapping("/{id}/review")
+    public void review(@PathVariable(value = "id") long id, @RequestBody AcceptRequest acceptRequest) {
+        authLoginOrThrow();
+        authAdminOrThrow();
+        if (adminService.getById(authGetId(), false).getRole() == Admin.Role.ADMIN) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+        User user = getUserOrThrow(id, false);
+        if (!user.isApplying()) {
+            throw new ApiException(403);
+        }
+        user.setApplying(false);
+        if (acceptRequest.isAccept()) {
+            user.setRole(User.Role.ANSWERER);
+            // 发送消息
+        }
         userService.save(user);
     }
 
