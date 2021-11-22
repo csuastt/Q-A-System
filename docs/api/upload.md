@@ -15,6 +15,22 @@ POST /api/orders/{id}/attachments
 | file     | MultipartFile |          |
 
 
+### 上传图片
+
+```
+POST /api/orders/{id}/pictures
+```
+参数：
+
+| 名称      | 类型           | 说明     |
+| -------- | ------        | -------  |
+| pic     | MultipartFile |          |
+
+返回：
+- 200 uuid
+- 403没有权限
+
+
 ### 上传头像
 
 ```

@@ -23,17 +23,21 @@ import java.util.stream.Stream;
 public class FileSystemStorageService implements StorageService{
 
     private final Path rootLocation;
+    private final Path rootLocationPic;
     private static HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
+    private static HashMap<UUID, String> uuidStringHashMapPic = new HashMap<>();
 
     @Autowired
     public FileSystemStorageService(StorageProperties properties, OrderService orderService){
         this.rootLocation = Paths.get(properties.getLocation());
+        this.rootLocationPic = Paths.get(properties.getLocationPic());
     }
 
     @Override
     public void init() {
         try {
             Files.createDirectories(rootLocation);
+            Files.createDirectories(rootLocationPic);
         }
         catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
@@ -66,6 +70,31 @@ public class FileSystemStorageService implements StorageService{
     }
 
     @Override
+    public void storePic(MultipartFile file, UUID uuid) {
+        try {
+            if (file.isEmpty()) {
+                throw new StorageException("Failed to store empty pic.");
+            }
+            uuidStringHashMapPic.put(uuid, file.getOriginalFilename());
+            Path destinationFile = this.rootLocationPic.resolve(
+                            Paths.get(uuid.toString()))
+                    .normalize().toAbsolutePath();
+            if (!destinationFile.getParent().equals(this.rootLocationPic.toAbsolutePath())) {
+                // This is a security check
+                throw new StorageException(
+                        "Cannot store file outside current directory.");
+            }
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile,
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        catch (IOException e) {
+            throw new StorageException("Failed to store pic.", e);
+        }
+    }
+
+    @Override
     public Stream<Path> loadAll() {
         try {
             return Files.walk(this.rootLocation, 1)
@@ -80,6 +109,11 @@ public class FileSystemStorageService implements StorageService{
     @Override
     public Path load(UUID uuid) {
         return rootLocation.resolve(uuid.toString());
+    }
+
+    @Override
+    public Path loadPic(UUID uuid) {
+        return rootLocationPic.resolve(uuid.toString());
     }
 
     @Override
@@ -98,6 +132,25 @@ public class FileSystemStorageService implements StorageService{
         }
         catch (MalformedURLException e) {
             throw new StorageFileNotFoundException("Could not read file: " + uuid, e);
+        }
+    }
+
+    @Override
+    public Resource loadAsResourcePic(UUID uuid) {
+        try {
+            Path file = loadPic(uuid);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            }
+            else {
+                throw new StorageFileNotFoundException(
+                        "Could not read pic: " + uuid);
+
+            }
+        }
+        catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException("Could not read pic: " + uuid, e);
         }
     }
 
@@ -121,5 +174,10 @@ public class FileSystemStorageService implements StorageService{
     @Override
     public String getNameByUUID(UUID uuid) {
         return uuidStringHashMap.get(uuid);
+    }
+
+    @Override
+    public String getNameByUUIDPic(UUID uuid) {
+        return uuidStringHashMapPic.get(uuid);
     }
 }

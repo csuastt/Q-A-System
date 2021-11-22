@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -48,6 +49,9 @@ public class Order {
 
     @ElementCollection
     private List<Attachment> attachmentList;
+
+    @ElementCollection
+    private List<UUID> pics;
 
     // 传 data 前先用 checkOrderData 检查
     public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {

@@ -118,6 +118,14 @@ public class OrderController {
                 "attachment; filename*=UTF-8''" + storageService.getNameByUUID(uuid)).body(file);
     }
 
+    @GetMapping("/{id}/pictures/{uuid}")
+    @ResponseBody
+    public ResponseEntity<Resource> servePic(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid) {
+        Resource file = storageService.loadAsResourcePic(uuid);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename*=UTF-8''" + storageService.getNameByUUIDPic(uuid)).body(file);
+    }
+
     @PostMapping("/{id}/attachments")
     @ResponseBody
     public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile) {
@@ -131,6 +139,21 @@ public class OrderController {
         orderService.save(order);
         storageService.store(multipartFile, attachment.getUuid());
         return attachment;
+    }
+
+    @PostMapping("/{id}/pictures")
+    @ResponseBody
+    public UUID uploadPic(@PathVariable(value = "id") long id, @RequestParam(value = "pic") MultipartFile multipartFile) {
+//        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+//        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
+//            throw new ApiException(403, ApiException.NO_PERMISSION);
+//        }
+        UUID uuid = UUID.randomUUID();
+        order.getPics().add(uuid);
+        orderService.save(order);
+        storageService.storePic(multipartFile, uuid);
+        return uuid;
     }
 
     @PutMapping("/{id}")
