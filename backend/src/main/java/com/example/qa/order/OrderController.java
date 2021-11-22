@@ -247,12 +247,14 @@ public class OrderController {
     @PostMapping("/{id}/rate")
     public void rateOrder(@PathVariable(value = "id") long id, @RequestBody ValueRequest request) {
         authLoginOrThrow();
+        request.checkRatingOrThrow();
         Order order = getByIdOrThrow(id, false);
         authUserOrThrow(order.getAsker().getId());
         if (order.getRating() > 0 || !Order.State.completedOrderStates.contains(order.getState())) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_RATE");
         }
         order.setRating(request.getValue());
+        order.setRatingText(request.getText());
         order = orderService.save(order);
         User answerer = order.getAnswerer();
         answerer.addRating(request.getValue());

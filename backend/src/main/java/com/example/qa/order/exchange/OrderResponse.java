@@ -33,6 +33,7 @@ public class OrderResponse {
     private Boolean showPublic;
     private Integer messageCount;
     private Integer rating;
+    private String ratingText;
 
     public OrderResponse(Order order) {
         this(order, 0);
@@ -55,6 +56,7 @@ public class OrderResponse {
         if (level >= 1) {
             this.questionDescription = order.getQuestionDescription();
             this.answer = order.getAnswer();
+            this.ratingText = order.getRatingText();
         }
         if (level >= 2) {
             this.deleted = order.isDeleted();
