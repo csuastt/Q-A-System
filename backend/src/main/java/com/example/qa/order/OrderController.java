@@ -144,11 +144,11 @@ public class OrderController {
     @PostMapping("/{id}/pictures")
     @ResponseBody
     public UUID uploadPic(@PathVariable(value = "id") long id, @RequestParam(value = "pic") MultipartFile multipartFile) {
-//        authLoginOrThrow();
+        authLoginOrThrow();
         Order order = getByIdOrThrow(id, false);
-//        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
-//            throw new ApiException(403, ApiException.NO_PERMISSION);
-//        }
+        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
         UUID uuid = UUID.randomUUID();
         order.getPics().add(uuid);
         orderService.save(order);
