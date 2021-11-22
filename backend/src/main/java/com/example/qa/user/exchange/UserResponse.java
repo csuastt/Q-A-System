@@ -26,6 +26,7 @@ public class UserResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
     private User.Role role;
+    private Boolean applying;
     private Integer balance;
     private Integer askCount;
     private Integer answerCount;
@@ -53,6 +54,7 @@ public class UserResponse {
             phone = user.getPhone();
             gender = user.getGender();
             role = user.getRole();
+            applying = user.isApplying();
             balance = user.getBalance();
             askCount = user.getAskCount();
             answerCount = user.getAnswerCount();
