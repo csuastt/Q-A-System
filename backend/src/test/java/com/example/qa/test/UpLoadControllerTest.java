@@ -229,7 +229,7 @@ class UpLoadControllerTest {
     }
 
     @Test
-    void testRating() throws Exception {
+    void testPurchasing() throws Exception {
         long id = createOrder();
 
         OrderRequest request = new OrderRequest();
@@ -237,8 +237,51 @@ class UpLoadControllerTest {
         request.setPublicPrice(2);
         request.setState(Order.State.CHAT_ENDED);
         edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setShowPublic(false);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setShowPublic(true);
+        request.setPublicPrice(-1);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setShowPublic(false);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setState(Order.State.ACCEPTED);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+    }
 
+    @Test
+    void testRating() throws Exception {
+
+        long id = createOrder();
+
+        OrderRequest request = new OrderRequest();
+        request.setShowPublic(true);
+        request.setPublicPrice(2);
+        request.setState(Order.State.CHAT_ENDED);
+        edit(id, request);
+        
+        ValueRequest request1 = new ValueRequest();
+        request1.setValue(6);
+        request1.setText("12345");
+
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+        request1.setValue(1);
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
     }
 
     void edit(long id, OrderRequest data) throws Exception {
