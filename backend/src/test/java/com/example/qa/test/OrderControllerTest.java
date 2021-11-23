@@ -136,6 +136,7 @@ class OrderControllerTest {
         request.setAnswerer(answererId);
         request.setTitle(question);
         request.setDescription(description);
+        mockUtils.postUrl("/api/orders",adminToken, request, status().isForbidden());
         OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
         mockUtils.postUrl("/api/orders",answererToken, request, status().isForbidden());
 //        mockUtils.postUrl("/api/orders",answererToken2, request, status().isForbidden());
