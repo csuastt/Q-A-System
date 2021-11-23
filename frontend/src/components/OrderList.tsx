@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
-import { Link as RouterLink } from "react-router-dom";
+import {Link as RouterLink, Redirect} from "react-router-dom";
 import { OrderInfo, OrderState, PagedList } from "../services/definations";
 import questionService from "../services/orderService";
 import Card from "@mui/material/Card";
@@ -26,7 +26,7 @@ import Rating from "@mui/material/Rating";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import {
-    Button,
+    Button, Dialog, DialogTitle,
     FormControl,
     InputLabel,
     MenuItem,
@@ -34,6 +34,8 @@ import {
 } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 
 interface OrderListProps {
     userId?: number;
@@ -49,6 +51,7 @@ interface OrderListProps {
     initSortProperty?: string;
     listMode?: boolean;
     purchased?: boolean;
+    alertHandler?: (msg: string) => void
 }
 
 const OrderList: React.FC<OrderListProps> = (props) => {
@@ -68,6 +71,31 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [sortOrder, setSortOrder] = useState(
         _.defaultTo(props.initSortOrder, "DESC")
     );
+    const [open, setOpen] = useState(false);
+    const [chosenOrder, setChosenOrder] = useState(-1);
+
+    const handleOpen = (id: number) => {
+        setOpen(true);
+        setChosenOrder(id);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleSubmit = () => {
+        questionService.purchaseOrder(chosenOrder).then(
+            () => {
+                return <Redirect to={`/orders/${chosenOrder}`} />;
+            },
+            (error) => {
+                if (error.response.status === 403) {
+                    if (props.alertHandler)
+                        props.alertHandler("余额不足");
+                }
+            }
+        )
+    }
 
     // if match the mobile size
     const theme = useTheme();
@@ -217,11 +245,20 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         );
     };
 
-    const CardActionWrapper: React.FC<{}> = (wrapperProps) => {
-        return props.listMode ? (
-            <CardContentNoPadding>{wrapperProps.children}</CardContentNoPadding>
+    const CardActionWrapper: React.FC<{order: OrderInfo}> = (wrapperProps) => {
+        return wrapperProps.order.publicPrice === 0 ||
+            (props.userId && props.userId === wrapperProps.order.answerer.id) ||
+        (props.userId && props.userId === wrapperProps.order.asker.id) ||
+        (typeof (wrapperProps.order.purchased) !== "undefined" && wrapperProps.order.purchased)
+            ? (
+            <CardActionArea
+                component={RouterLink}
+                to={`/orders/${wrapperProps.order.id}`}
+            >{wrapperProps.children}</CardActionArea>
         ) : (
-            <CardContent>{wrapperProps.children}</CardContent>
+            <CardActionArea
+                onClick={() => {handleOpen(wrapperProps.order.id);}}
+            >{wrapperProps.children}</CardActionArea>
         );
     };
 
@@ -275,9 +312,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                             : {}
                     }
                 >
-                    <CardActionArea
-                        component={RouterLink}
-                        to={`/orders/${order.id}`}
+                    <CardActionWrapper
+                        order={order}
                     >
                         <CardContentWrapper>
                             <Box
@@ -414,7 +450,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                 </Box>
                             </Box>
                         </CardContentWrapper>
-                    </CardActionArea>
+                    </CardActionWrapper>
                 </Card>
             ))}
             {maxPage > 1 && !props.listMode && (
@@ -524,6 +560,24 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                         </Stack>
                     )}
                     <Stack spacing={2}>{renderQuestionList()}</Stack>
+                    <Dialog
+                        fullWidth
+                        open={open}
+                        onClose={handleClose}
+                    >
+                        <DialogTitle>确认支付</DialogTitle>
+                        <DialogContent>
+                            您是否确认支付此问题？
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleSubmit}>
+                                确定
+                            </Button>
+                            <Button onClick={handleClose} color={"error"}>
+                                取消
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </>
             )}
         </Box>

@@ -795,7 +795,15 @@ const OrderCreationWizard: React.FC = (props) => {
                     <DialogContent>
                         <DialogContentText mb={3}>
                             请设置您的问题分享价格。在当前机制下，
-                            定价最高不能超过回答者的价格（更高的价格将会被截断为此价格），最低为￥0，即为免费公开。
+                            定价最高不能超过回答者的价格￥
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {chosenAnswer?.price ? chosenAnswer?.price : ""}
+                            </Box>
+                            /次， 最低为￥
+                            <Box component="span" fontWeight="fontWeightBold">
+                                0
+                            </Box>
+                            /次，即为免费公开。
                         </DialogContentText>
                         <TextField
                             fullWidth

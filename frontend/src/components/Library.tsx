@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import TextField from "@mui/material/TextField";
 import { parseIntWithDefault, useQuery } from "../util";
 import OrderList from "./OrderList";
@@ -19,6 +19,9 @@ import { useTheme } from "@mui/material/styles";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import Stack from "@mui/material/Stack";
+import UserContext from "../AuthContext";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 const Library: React.FC<{
     briefMsg?: boolean;
@@ -36,12 +39,21 @@ const Library: React.FC<{
     const matches = useMediaQuery(theme.breakpoints.up("md"));
     const [sortProperty, setSortProperty] = useState("createTime");
     const [sortOrder, setSortOrder] = useState("DESC");
+    const { user } = useContext(UserContext);
+    const [alertFlag, setAlertFlag] = useState(false);
+    const [alertMsg, setAlertMsg] = useState("");
+
+    const alertHandler = (msg: string) => {
+        setAlertFlag(true);
+        setAlertMsg(msg);
+    }
 
     const PublicOrderListWrapper: React.FC<{
         keywords: string;
         listMode?: boolean;
     }> = (wrapperProps) => (
         <OrderList
+            userId={user?.id}
             keywords={keywords}
             setMillis={setMillis}
             setCount={setCount}
@@ -51,6 +63,7 @@ const Library: React.FC<{
             listMode={wrapperProps.listMode}
             initSortOrder={sortOrder}
             initSortProperty={sortProperty}
+            alertHandler={alertHandler}
         />
     );
 
@@ -183,6 +196,25 @@ const Library: React.FC<{
                 </Stack>
                 <PublicOrderListWrapper keywords={keywords} />
             </Box>
+            <Snackbar
+                autoHideDuration={2000}
+                open={alertFlag}
+                onClose={() => {
+                    setAlertFlag(false);
+                }}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                }}
+                sx={{ width: "30%" }}
+            >
+                <Alert
+                    severity={"error"}
+                    sx={{ width: "100%" }}
+                >
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
