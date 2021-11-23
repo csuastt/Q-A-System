@@ -6,9 +6,11 @@ import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.exchange.ValueRequest;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.Attachment;
+import com.example.qa.order.model.Order;
 import com.example.qa.order.storage.StorageProperties;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
@@ -33,7 +35,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.UUID;
 
 import static com.example.qa.utils.JsonUtils.mapper;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -225,5 +226,22 @@ class UpLoadControllerTest {
         mockUtils.getUrl("/api/users/" + askerId + "/stats",answererToken,null,null,status().isForbidden());
         mockUtils.getUrl("/api/users/" + askerId + "/stats",adminToken,null,null,status().isOk());
         mockUtils.getUrl("/api/users/" + askerId + "/stats",null,null,null,status().isUnauthorized());
+    }
+
+    @Test
+    void testRating() throws Exception {
+        long id = createOrder();
+
+        OrderRequest request = new OrderRequest();
+        request.setShowPublic(true);
+        request.setPublicPrice(2);
+        request.setState(Order.State.CHAT_ENDED);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isOk());
+
+    }
+
+    void edit(long id, OrderRequest data) throws Exception {
+        mockUtils.putUrl("/api/orders/" + id, superAdminToken, data, status().isOk());
     }
 }

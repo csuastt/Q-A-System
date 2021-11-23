@@ -6,6 +6,7 @@ import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.exchange.ValueRequest;
 import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.order.exchange.AnswerRequest;
 import com.example.qa.order.exchange.OrderRequest;
@@ -356,10 +357,20 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setState(Order.State.ANSWERED);
         edit(id, request);
+        ValueRequest request1 = new ValueRequest();
+        request1.setValue(6);
+        request1.setText("12345");
         mockUtils.postUrl("/api/orders/" + id + "/end", answererToken2, null, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/end", askerToken2, null, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/end", null, null, status().isUnauthorized());
         mockUtils.postUrl("/api/orders/" + id + "/end", askerToken, null, status().isOk());
+
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+        request1.setValue(1);
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
         assertEquals(Order.State.CHAT_ENDED, query(id).getState());
     }
 
