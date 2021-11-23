@@ -8,6 +8,7 @@ import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
+import com.example.qa.order.model.Attachment;
 import com.example.qa.order.storage.StorageProperties;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
@@ -29,6 +30,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
+import java.util.UUID;
+
+import static com.example.qa.utils.JsonUtils.mapper;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -179,12 +183,25 @@ class UpLoadControllerTest {
         mockUtils.multiPart("/api/users/" + answererId + "/avatar",askerToken,avatars,"multipartFile",status().isForbidden());
         mockUtils.multiPart("/api/users/" + answererId + "/avatar",null,avatars,"multipartFile",status().isUnauthorized());
 
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken,file,"file",status().isOk());
+        Attachment attachment = mapper.readValue(mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken,file,"file",status().isOk()).getResponse().getContentAsString(), Attachment.class);
+        mockUtils.getUrl("/api/orders/" + id + "/attachments/" + attachment.getUuid(), answererToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments/" + attachment.getUuid(), answererToken2, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments/" + attachment.getUuid(), null, null, null, status().isOk());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken,file,"file",status().isOk());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",adminToken,file,"file",status().isOk());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken2,file,"file",status().isForbidden());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken2,file,"file",status().isForbidden());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",null,file,"file",status().isUnauthorized());
+
+        UUID uuid = mapper.readValue(mockUtils.multiPart("/api/orders/" + id + "/pictures",askerToken,avatars,"pic",status().isOk()).getResponse().getContentAsString(), UUID.class);
+        mockUtils.getUrl("/api/orders/" + id + "/pictures/" + uuid, answererToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/pictures/" + uuid, answererToken2, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/pictures/" + uuid, null, null, null, status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",answererToken,avatars,"pic",status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",adminToken,avatars,"pic",status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",answererToken2,avatars,"pic",status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",askerToken2,avatars,"pic",status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",null,avatars,"pic",status().isUnauthorized());
 
         mockUtils.getUrl("/api/orders/" + id + "/attachments",askerToken,null,null,status().isOk());
         mockUtils.getUrl("/api/orders/" + id + "/attachments",answererToken,null,null,status().isOk());

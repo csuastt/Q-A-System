@@ -209,6 +209,7 @@ class IMControllerTest {
         storageService.init();
         UUID uuid = UUID.randomUUID();
         UUID uuid2 = UUID.randomUUID();
+        UUID uuid1 = UUID.randomUUID();
         MockMultipartFile file
                 = new MockMultipartFile(
                 "file",
@@ -216,6 +217,13 @@ class IMControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes()
         );
+        MockMultipartFile file1 =
+                new MockMultipartFile(
+                        "picture",
+                        "hello.png",
+                        MediaType.IMAGE_PNG_VALUE,
+                        "Hello, World!".getBytes()
+                );
         storageService.store(file, uuid);
         storageService.load(uuid);
         storageService.loadAll();
@@ -224,6 +232,11 @@ class IMControllerTest {
         storageService.delete(uuid);
         storageService.deleteAll();
         storageService.getNameByUUID(uuid);
+
+        storageService.storePic(file1, uuid1);
+        storageService.loadPic(uuid1);
+        storageService.loadAsResourcePic(uuid1);
+        storageService.getNameByUUIDPic(uuid1);
 
         try{
             storageService.load(uuid2);
@@ -239,6 +252,18 @@ class IMControllerTest {
 
         try{
             storageService.getNameByUUID(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.loadPic(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.loadAsResourcePic(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.getNameByUUIDPic(uuid2);
         }catch (Exception exception){}
 
         StorageProperties properties = new StorageProperties();
