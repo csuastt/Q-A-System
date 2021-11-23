@@ -22,6 +22,7 @@ interface SystemSettingsState {
     error_msg_maxChatMessages: string;
     error_msg_maxChatTimeSeconds: string;
     error_msg_feeRate: string;
+    error_msg_askerFeeRate: string;
 }
 
 export default class SystemSettings extends Component<
@@ -44,6 +45,7 @@ export default class SystemSettings extends Component<
             error_msg_maxChatMessages: "",
             error_msg_maxChatTimeSeconds: "",
             error_msg_feeRate: "",
+            error_msg_askerFeeRate: "",
         };
         this.fetchConfigInfo = this.fetchConfigInfo.bind(this);
         this.handleChangeConfig = this.handleChangeConfig.bind(this);
@@ -108,6 +110,8 @@ export default class SystemSettings extends Component<
             new_config["maxChatTimeSeconds"] = e.target.value;
         else if (e.target.name === "feeRate" && e.target.value >= 0)
             new_config["feeRate"] = e.target.value;
+        else if (e.target.name === "askerFeeRate" && e.target.value >= 0)
+            new_config["askerFeeRate"] = e.target.value;
         this.setState({ config: new_config });
     }
 
@@ -260,6 +264,20 @@ export default class SystemSettings extends Component<
                                     readOnly: false,
                                 }}
                                 value={this.state.config?.feeRate || ""}
+                                onChange={this.handleChangeConfig}
+                                required
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item md={6} xs={12}>
+                            <TextField
+                                fullWidth
+                                label="公开问题提问者抽成比例 (%)"
+                                name="askerFeeRate"
+                                InputProps={{
+                                    readOnly: false,
+                                }}
+                                value={this.state.config?.askerFeeRate || ""}
                                 onChange={this.handleChangeConfig}
                                 required
                                 variant="outlined"

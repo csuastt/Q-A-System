@@ -239,17 +239,21 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
             )}
             <Divider />
             {props.isAdmin
-                ? renderDrawerList([
-                      ["审核列表", "/admins/review", <FactCheckIcon />],
-                      [
-                          "审核回答者列表",
-                          "/admins/usersReview",
-                          <FaceRetouchingNaturalIcon />,
-                      ],
-                      ["用户列表", "/admins/users", <GroupIcon />],
-                      ["回答者列表", "/admins/answerers", <SchoolIcon />],
-                      ["订单列表", "/admins/orders", <LibraryBooksIcon />],
-                  ])
+                ? manager
+                    ? renderDrawerList([
+                          ["审核列表", "/admins/review", <FactCheckIcon />],
+                          [
+                              "审核回答者列表",
+                              "/admins/usersReview",
+                              <FaceRetouchingNaturalIcon />,
+                          ],
+                          ["用户列表", "/admins/users", <GroupIcon />],
+                          ["回答者列表", "/admins/answerers", <SchoolIcon />],
+                          ["订单列表", "/admins/orders", <LibraryBooksIcon />],
+                      ])
+                    : renderDrawerList([
+                          ["回答者列表", "/admins/answerers", <SchoolIcon />],
+                      ])
                 : renderDrawerList(drawerList3())}
             <Divider />
             {manager?.role === ManagerRole.SUPER_ADMIN

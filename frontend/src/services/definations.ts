@@ -214,6 +214,7 @@ export interface ConfigInfo {
     maxChatMessages: number;
     maxChatTimeSeconds: number;
     feeRate: number;
+    askerFeeRate: number;
 }
 
 export enum NotificationType {
