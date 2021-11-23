@@ -73,7 +73,8 @@ class OrderService {
         answerer: number,
         questionTitle: string,
         questionDescription: string,
-        showPublic: boolean
+        showPublic: boolean,
+        price: number
     ): Promise<CreationResult> {
         return axios
             .post("/orders", {
@@ -82,6 +83,7 @@ class OrderService {
                 title: questionTitle,
                 description: questionDescription,
                 showPublic: showPublic,
+                publicPrice: price
             })
             .then((response) => response.data);
     }
@@ -97,7 +99,8 @@ class OrderService {
         page?: number,
         prePage?: number,
         sortOrder?: string,
-        sortProperty?: string
+        sortProperty?: string,
+        purchased?: boolean
     ): Promise<SearchResult> {
         if (keywords.length === 0) {
             return axios
@@ -108,6 +111,7 @@ class OrderService {
                         pageSize: prePage,
                         sortDirection: sortOrder,
                         sortProperty: sortProperty,
+                        purchased: purchased
                     },
                 })
                 .then((response) => response.data);

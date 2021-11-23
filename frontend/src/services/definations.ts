@@ -152,6 +152,7 @@ export interface OrderInfo {
     rating: number;
     showPublic: boolean;
     ratingText: string;
+    publicPrice: number;
 }
 
 export enum CreationResultType {

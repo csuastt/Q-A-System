@@ -139,11 +139,11 @@ const OrderCreationWizard: React.FC = (props) => {
     };
 
     const handleOpenPrice = () => {
-        setOpenHelp(true);
+        setOpenPrice(true);
     };
 
     const handleClosePrice = () => {
-        setOpenHelp(false);
+        setOpenPrice(false);
     };
 
     const handleQuestionDescriptionChange = (newValue: string) =>
@@ -196,7 +196,8 @@ const OrderCreationWizard: React.FC = (props) => {
                     answerer,
                     questionTitle,
                     questionDescription,
-                    showPublic
+                    showPublic,
+                    price
                 )
                 .then(
                     (res) => {
@@ -613,6 +614,7 @@ const OrderCreationWizard: React.FC = (props) => {
                                     checked={showPublic}
                                     onChange={(e) => {
                                         setShowPublic(e.target.checked);
+                                        e.target.checked && setOpenPrice(true);
                                     }}
                                     inputProps={{ "aria-label": "controlled" }}
                                 />
@@ -620,6 +622,14 @@ const OrderCreationWizard: React.FC = (props) => {
                             label="是否公开"
                             sx={{ marginRight: 1 }}
                         />
+                        {
+                            showPublic &&
+                            <IconButton aria-label="set" onClick={handleOpenPrice}
+                                        color={"primary"}
+                            >
+                                <PaymentIcon />
+                            </IconButton>
+                        }
                         <IconButton aria-label="help" onClick={handleOpenHelp}>
                             <HelpOutlineIcon />
                         </IconButton>
@@ -727,7 +737,12 @@ const OrderCreationWizard: React.FC = (props) => {
                             </Box>
                             的。
                             一旦创建问题，您不可以再修改此问题的可见性。请仔细考虑。
-                            公开问题后，您可以随时通过点击按钮设置定价。
+                            公开问题后，您可以随时通过点击按钮设置定价。公开问题是付费可见的，所支付费用的
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {typeof config !== "undefined" ? config.askerFeeRate
+                                    : ""}
+                            </Box>
+                            %将会直接支付给您。
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -749,7 +764,7 @@ const OrderCreationWizard: React.FC = (props) => {
                     <DialogContent>
                         <DialogContentText mb={3}>
                             请设置您的问题分享价格。在当前机制下，
-                            定价最高不能超过回答者的价格，最低为￥0，即为免费公开。
+                            定价最高不能超过回答者的价格（更高的价格将会被截断为此价格），最低为￥0，即为免费公开。
                         </DialogContentText>
                         <TextField
                             fullWidth

@@ -182,7 +182,7 @@ const Help: React.FC<{}> = (props) => {
                                     {config?.askerFeeRate ? config?.askerFeeRate
                                         : ""}
                                 </Box>
-                                %将会直接支付给您
+                                %将会直接支付给您。
                             </Typography>
                         </ListItem>
                         <ListItem>

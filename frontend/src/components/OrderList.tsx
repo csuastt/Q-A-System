@@ -48,6 +48,7 @@ interface OrderListProps {
     initSortOrder?: string;
     initSortProperty?: string;
     listMode?: boolean;
+    purchased?: boolean;
 }
 
 const OrderList: React.FC<OrderListProps> = (props) => {
@@ -88,7 +89,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     currentPage,
                     itemPrePage,
                     sortOrder,
-                    sortProperty
+                    sortProperty,
+                    props.purchased
                 )
                 .then(
                     (res) => {
@@ -143,6 +145,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.showAnswerer,
         props.userId,
         props.keywords,
+        props.purchased,
         props.setMillis,
         props.setCount,
         sortOrder,
@@ -322,6 +325,21 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     >
                                         {order.answerer.nickname}
                                     </Typography>
+                                    {
+                                        typeof props.keywords !== "undefined" &&
+                                            <>
+                                                <Box sx={{ flexGrow: 1 }} />
+                                                <Typography
+                                                    variant="body1"
+                                                    color="primary"
+                                                    style={{ fontWeight: 600 }}
+                                                    sx={{ mr: 1 }}
+                                                >
+                                                    {"￥" + order.publicPrice + "/次"}
+                                                </Typography>
+                                            </>
+                                    }
+
                                 </Box>
                                 <Box
                                     sx={
