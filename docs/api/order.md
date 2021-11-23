@@ -168,12 +168,10 @@ GET /api/orders
 ?showPublic={true,yes,1}&keyword={关键词}
 ```
 
-获取问答库/搜索问答库。（无需登录）
-
-**每个需付费订单，如果其 purchased 属性设为 true，表示已购买。免费问题无需购买。**
+获取问答库/搜索问答库。（无需登录）**登录后，每个需付费订单，如果其 purchased 属性设为 true，表示已购买。免费问题无需购买，不会有 purchased 属性。**
 
 ```
-?puchased={true,yes,1}
+?purchased={true,yes,1}
 ```
 
 查询已购买订单。
