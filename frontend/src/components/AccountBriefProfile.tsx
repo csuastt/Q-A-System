@@ -29,6 +29,7 @@ interface AccountBriefProfileProps {
     nickname: string | undefined;
     username: string | undefined;
     role: UserRole | undefined;
+    applying: boolean | undefined;
     alertHandler: (
         arg1: "success" | "info" | "warning" | "error",
         arg2: string
@@ -367,8 +368,10 @@ export default class AccountBriefProfile extends Component<
                                     variant="body1"
                                 >
                                     {this.props.role === UserRole.USER
-                                        ? "你还不是回答者，快去申请吧~"
-                                        : "你已经是回答者了，快去回答问题吧~"}
+                                        ? this.props.applying
+                                            ? "您的申请正在审核中，请耐心等待~"
+                                            : "您还不是回答者，快去申请吧~"
+                                        : "您已经是回答者了，快去回答问题吧~"}
                                 </Typography>
                             </Box>
                         </Box>
@@ -381,6 +384,7 @@ export default class AccountBriefProfile extends Component<
                                 fullWidth
                                 variant="text"
                                 onClick={this.handleOpenTipsDialog}
+                                disabled={this.props.applying}
                             >
                                 回答者申请
                             </Button>

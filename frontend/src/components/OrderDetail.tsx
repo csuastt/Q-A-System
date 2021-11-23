@@ -53,6 +53,7 @@ import systemConfigService from "../services/systemConfigService";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
+import TextField from "@mui/material/TextField";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -71,6 +72,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [openRatingDialog, setOpenRatingDialog] = useState(false);
     const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
     const [rating, setRating] = useState<number>(0);
+    const [ratingText, setRatingText] = useState<string>("");
 
     const handleOpen = () => {
         setOpen(true);
@@ -406,7 +408,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     ];
     const confirmRating = () => {
         orderService
-            .rateOrder(orderInfo!.id, rating)
+            .rateOrder(orderInfo!.id, rating, ratingText)
             .then(() => setNeedReload(true));
     };
     const renderRating = () => {
@@ -422,6 +424,21 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         }
                         size="large"
                     />
+                    <Box mt={1} />
+                    <TextField
+                        fullWidth
+                        label="留言反馈"
+                        name="ratingText"
+                        multiline
+                        onChange={(e) => {
+                            setRatingText(e.target.value);
+                        }}
+                        rows={4}
+                        value={ratingText}
+                        placeholder="请留下您的宝贵意见~"
+                        variant="outlined"
+                        inputProps={{ maxLength: 200 }}
+                    />
                 </Stack>
             );
         } else {
@@ -431,7 +448,24 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         {ratingMsg[orderInfo.rating]}
                     </Typography>
                     <Rating value={orderInfo.rating} size="large" readOnly />
-                    <Typography variant="subtitle1">已评价</Typography>
+                    <Box mt={1} />
+                    <TextField
+                        fullWidth
+                        label="留言反馈"
+                        name="ratingText"
+                        multiline
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        rows={4}
+                        value={
+                            orderInfo.ratingText
+                                ? orderInfo.ratingText
+                                : "暂无评价~"
+                        }
+                        variant="outlined"
+                        inputProps={{ maxLength: 200 }}
+                    />
                 </Stack>
             );
         }
