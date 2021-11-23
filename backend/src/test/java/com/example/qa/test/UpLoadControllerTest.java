@@ -271,7 +271,7 @@ class UpLoadControllerTest {
         request.setPublicPrice(2);
         request.setState(Order.State.CHAT_ENDED);
         edit(id, request);
-        
+
         ValueRequest request1 = new ValueRequest();
         request1.setValue(6);
         request1.setText("12345");
@@ -282,6 +282,35 @@ class UpLoadControllerTest {
         request1.setValue(1);
         mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isOk());
         mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+
+        request1.setText(null);
+
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+
+        request1.setText("01234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                         "01234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                         "01234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                         "01234567890123456789012345678901234567890123456789012345678901234567890123456789");
+
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+
+        request1.setText("1");
+        request.setState(Order.State.ACCEPTED);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+    }
+
+    @Test
+    void testConfig() throws Exception {
+        mockUtils.getUrl("/api/config/stats", superAdminToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/config/stats", askerToken2, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/config/stats", null, null, null, status().isUnauthorized());
     }
 
     void edit(long id, OrderRequest data) throws Exception {
