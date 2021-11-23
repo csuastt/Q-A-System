@@ -15,15 +15,13 @@ class UserService {
         page?: number,
         prePage?: number,
         sortOrder?: string,
-        sortProperty?: string,
-        applying?: boolean
+        sortProperty?: string
     ): Promise<PagedList<UserBasicInfo>> {
         return axios
             .get("/users", {
                 params: {
                     role: answerer ? "ANSWERER" : "USER",
                     page: page,
-                    applying: applying,
                     pageSize: prePage,
                     sortDirection: sortOrder,
                     sortProperty: sortProperty,
@@ -31,6 +29,22 @@ class UserService {
             })
             .then((response) => response.data);
     }
+    getReviewUserList(
+        page?: number,
+        prePage?: number,
+        applying?: boolean
+    ): Promise<PagedList<UserBasicInfo>> {
+        return axios
+            .get("/users", {
+                params: {
+                    page: page,
+                    pageSize: prePage,
+                    applying: applying,
+                },
+            })
+            .then((response) => response.data);
+    }
+
     getAllUserList(
         page?: number,
         prePage?: number
