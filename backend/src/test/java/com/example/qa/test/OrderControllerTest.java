@@ -237,15 +237,6 @@ class OrderControllerTest {
     }
 
     @Test
-    void deleteOrder() throws Exception {
-        long id = createOrder();
-        mockUtils.deleteUrl("/api/orders/" + id, askerToken, null, status().isForbidden());
-        mockUtils.deleteUrl("/api/orders/" + id, superAdminToken, null, status().isOk());
-        mockUtils.deleteUrl("/api/orders/" + id, superAdminToken, null, status().isForbidden());
-        mockUtils.deleteUrl("/api/orders/" + id, null, null, status().isUnauthorized());
-    }
-
-    @Test
     void queryOrder() throws Exception {
         query(createOrder());
     }

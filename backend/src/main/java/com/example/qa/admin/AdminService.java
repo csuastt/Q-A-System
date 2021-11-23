@@ -39,16 +39,12 @@ public class AdminService {
         return adminRepository.findAllByRoleIn(role, pageable);
     }
 
-    public Admin getById(long id, boolean allowDeleted) {
+    public Admin getById(long id) {
         Optional<Admin> adminOptional = adminRepository.findById(id);
         if (adminOptional.isEmpty()) {
             throw new UsernameNotFoundException(null);
         }
-        Admin admin = adminOptional.get();
-        if (admin.isDeleted() && !allowDeleted) {
-            throw new UsernameNotFoundException(null);
-        }
-        return admin;
+        return adminOptional.get();
     }
 
     public boolean existsByUsername(String username) {

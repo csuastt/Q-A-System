@@ -8,7 +8,6 @@
 | 属性       | 类型          | JSON              | 说明                             |
 | ---------- | ------------- | ----------------- | -------------------------------- |
 | id         | long          |                   |                                  |
-| deleted    | boolean       |                   | 删除标记                         |
 | username   | string        |                   | Unique，不可修改                 |
 | password   | string        | 不返回            | 只写不读                         |
 | role       | enum          | string            | { ADMIN, REVIEWER, SUPER_ADMIN } |
@@ -100,28 +99,6 @@ GET /api/admins?role=SUPER_ADMIN&role=REVIEWER&role=ADMIN  => 获取多个权限
 - `400` 格式错误
 - `401` 未登录
 - `403` 权限不足
-
-### 删除
-
-（仅限超级管理员）
-
-```
-DELETE /api/admins/{id}
-```
-
-返回值：
-
-- `200` OK
-- `401` 未登录
-
-- `403` 错误
-  
-  | message 属性      | 说明           |
-  | ----------------- | -------------- |
-  | `NO_PERMISSION`   | 不是超级管理员 |
-  | `ALREADY_DELETED` | 已经删除       |
-  
-- `404` 用户不存在
 
 ### 查询
 

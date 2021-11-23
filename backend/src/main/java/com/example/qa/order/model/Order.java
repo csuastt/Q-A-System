@@ -21,7 +21,6 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private boolean deleted = false;
     @ManyToOne
     private User asker;
     @ManyToOne

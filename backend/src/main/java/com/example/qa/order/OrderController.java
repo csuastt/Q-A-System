@@ -77,23 +77,10 @@ public class OrderController {
         return new OrderResponse(order, isAdmin ? 2 : 1);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable(value = "id") long id) {
-        authLoginOrThrow();
-        authSuperAdminOrThrow();
-        Order order = getByIdOrThrow(id, true);
-        if (order.isDeleted()) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
-        }
-        order.setDeleted(true);
-        order.setExpireTime(null);
-        orderService.save(order);
-    }
-
     @GetMapping("/{id}")
     public OrderResponse queryOrder(@PathVariable(value = "id") long id) {
         boolean isAdmin = authLogin() && authIsAdmin();
-        Order order = getByIdOrThrow(id, isAdmin);
+        Order order = getByIdOrThrow(id);
         if (isAdmin) {
             return new OrderResponse(order, 2);
         } else if (!order.isShowPublic() || order.getPublicPrice() > 0) {
@@ -108,7 +95,7 @@ public class OrderController {
 
     @GetMapping("/{id}/attachments")
     public List<Attachment> queryAttachmentList(@PathVariable(value = "id") long id) {
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         return order.getAttachmentList();
     }
 
@@ -132,7 +119,7 @@ public class OrderController {
     @ResponseBody
     public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
@@ -147,7 +134,7 @@ public class OrderController {
     @ResponseBody
     public UUID uploadPic(@PathVariable(value = "id") long id, @RequestParam(value = "pic") MultipartFile multipartFile) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
@@ -162,7 +149,7 @@ public class OrderController {
     public void editOrder(@PathVariable(value = "id") long id, @RequestBody OrderRequest data) {
         authLoginOrThrow();
         authSuperAdminOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         order.update(data);
         orderService.save(order);
     }
@@ -170,10 +157,10 @@ public class OrderController {
     @PostMapping("/{id}/review")
     public void reviewOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         authLoginOrThrow();
-        if (!authIsAdmin() || adminService.getById(authGetId(), false).getRole() == Admin.Role.ADMIN) {
+        if (!authIsAdmin() || adminService.getById(authGetId()).getRole() == Admin.Role.ADMIN) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         if (order.getState() != Order.State.CREATED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
         }
@@ -193,7 +180,7 @@ public class OrderController {
     @PostMapping("/{id}/respond")
     public void respondOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         authUserOrThrow(order.getAnswerer().getId());
         if (order.getState() != Order.State.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
@@ -212,7 +199,7 @@ public class OrderController {
     @PostMapping("/{id}/end")
     public void endChat(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         Order.EndReason reason;
         if (authIsUser(order.getAsker().getId())) {
             reason = Order.EndReason.ASKER;
@@ -236,7 +223,7 @@ public class OrderController {
     @PostMapping("/{id}/cancel")
     public void cancelOrder(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         User asker = order.getAsker();
         authUserOrThrow(asker.getId());
         if (order.getState() != Order.State.CREATED
@@ -251,7 +238,7 @@ public class OrderController {
     @PostMapping("/{id}/answer")
     public void answerOrder(@PathVariable(value = "id") long id, @RequestBody AnswerRequest request) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         User answerer = order.getAnswerer();
         authUserOrThrow(answerer.getId());
         if (order.getState() != Order.State.ACCEPTED) {
@@ -273,7 +260,7 @@ public class OrderController {
     public void rateOrder(@PathVariable(value = "id") long id, @RequestBody ValueRequest request) {
         authLoginOrThrow();
         request.checkRatingOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         authUserOrThrow(order.getAsker().getId());
         if (order.getRating() > 0 || !Order.State.completedOrderStates.contains(order.getState())) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_RATE");
@@ -289,7 +276,7 @@ public class OrderController {
     @PostMapping("/{id}/purchase")
     public void purchase(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         if (!order.isShowPublic() || order.getPublicPrice() == 0 || !Order.State.completedOrderStates.contains(order.getState())) {
             throw new ApiException(403);
         }
@@ -381,9 +368,9 @@ public class OrderController {
         }
     }
 
-    private Order getByIdOrThrow(long id, boolean allowDeleted) {
+    private Order getByIdOrThrow(long id) {
         Optional<Order> order = orderService.findById(id);
-        if (order.isEmpty() || (order.get().isDeleted() && !allowDeleted)) {
+        if (order.isEmpty()) {
             throw new ApiException(HttpStatus.NOT_FOUND);
         }
         return order.get();
