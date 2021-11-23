@@ -16,6 +16,7 @@ import List from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
+import FaceRetouchingNaturalIcon from "@mui/icons-material/FaceRetouchingNatural";
 import {
     Badge,
     FormControlLabel,
@@ -240,6 +241,11 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
             {props.isAdmin
                 ? renderDrawerList([
                       ["审核列表", "/admins/review", <FactCheckIcon />],
+                      [
+                          "审核回答者列表",
+                          "/admins/usersReview",
+                          <FaceRetouchingNaturalIcon />,
+                      ],
                       ["用户列表", "/admins/users", <GroupIcon />],
                       ["回答者列表", "/admins/answerers", <SchoolIcon />],
                       ["订单列表", "/admins/orders", <LibraryBooksIcon />],

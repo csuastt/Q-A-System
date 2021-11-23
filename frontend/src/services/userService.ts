@@ -11,7 +11,7 @@ import {
 
 class UserService {
     getUserList(
-        answerer: boolean,
+        answerer?: boolean,
         page?: number,
         prePage?: number,
         sortOrder?: string,
@@ -29,6 +29,22 @@ class UserService {
             })
             .then((response) => response.data);
     }
+    getReviewUserList(
+        page?: number,
+        prePage?: number,
+        applying?: boolean
+    ): Promise<PagedList<UserBasicInfo>> {
+        return axios
+            .get("/users", {
+                params: {
+                    page: page,
+                    pageSize: prePage,
+                    applying: applying,
+                },
+            })
+            .then((response) => response.data);
+    }
+
     getAllUserList(
         page?: number,
         prePage?: number
@@ -128,6 +144,10 @@ class UserService {
         return axios
             .get(`/users/${id}/stats`)
             .then((response) => response.data);
+    }
+
+    reviewUserToAnswer(id: number, accept: boolean): Promise<any> {
+        return axios.post(`/users/${id}/review`, { accept: accept });
     }
 }
 

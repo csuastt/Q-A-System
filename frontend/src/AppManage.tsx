@@ -21,6 +21,7 @@ import OrderDetailForAdmin from "./components/OrderDetailForAdmin";
 import SystemSettings from "./components/SystemSettings";
 import IncomeStatistics from "./components/IncomeStatistics";
 import Help from "./components/Help";
+import ReviewUserList from "./components/ReviewUserList";
 
 const managerTheme: Theme = createTheme({
     palette: {
@@ -66,7 +67,7 @@ export default function AppManage() {
         ["/admins/orders", <AdminOrderList />],
 
         ["/admins/review", <ReviewList />],
-
+        ["/admins/usersReview", <ReviewUserList />],
         ["/admins/login", <Login redirect={"/admins/"} isAdmin={true} />],
         ["/admins/logout", <Logout redirect={"/admins/"} isAdmin={true} />],
         ["/admins/create", <Create />],
