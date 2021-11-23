@@ -184,7 +184,6 @@ GET /api/orders
 (无参数)
 ?state=CREATED  => 获取待审核订单
 ?state=CREATED&state=CANCELLED  => 筛选多个状态
-?reviewed={true,yes,1}&sortDirection=DESC  => 获取已审核订单（reviewed 不可设为 false）
 ```
 
 返回值：

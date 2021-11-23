@@ -15,8 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findAllByStateIn(Collection<Order.State> state, Pageable pageable);
 
-    Page<Order> findAllByReviewed(boolean reviewed, Pageable pageable);
-
     Page<Order> findAllByAsker(User asker, Pageable pageable);
 
     Page<Order> findAllByAskerAndFinished(User asker, boolean finished, Pageable pageable);

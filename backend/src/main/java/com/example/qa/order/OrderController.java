@@ -304,7 +304,6 @@ public class OrderController {
             @RequestParam(required = false) Long asker,
             @RequestParam(required = false) Long answerer,
             @RequestParam(required = false) Boolean finished,
-            @RequestParam(required = false) Boolean reviewed,
             @RequestParam(required = false) Boolean purchased,
             @RequestParam(required = false) List<Order.State> state,
             @RequestParam(defaultValue = "20") int pageSize,
@@ -339,12 +338,8 @@ public class OrderController {
         if (authIsAdmin()) {
             pageRequest = pageRequest.withSort(Objects.requireNonNullElse(sortDirection, Sort.Direction.ASC), sortProperty);
             orderService.setPageRequest(pageRequest);
-            if (Boolean.TRUE.equals(reviewed)) {
-                result = orderService.listByReviewed();
-            } else {
-                // state == null 时列出所有订单，包含已删除
-                result = orderService.listByState(state);
-            }
+            // state == null 时列出所有订单，包含已删除
+            result = orderService.listByState(state);
             orderResponseLevel = 2;
         } else {
             result = userOrderList(asker, answerer, finished, purchased);

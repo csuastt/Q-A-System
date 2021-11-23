@@ -66,10 +66,6 @@ public class OrderService {
                 orderRepository.findAllByStateIn(state, pageRequest);
     }
 
-    public Page<Order> listByReviewed() {
-        return orderRepository.findAllByReviewed(true, pageRequest);
-    }
-
     public Page<Order> listByPublic(String keyword) {
         return keyword == null ?
                 orderRepository.findAllByStateInAndShowPublic(completedOrderStates, true, pageRequest) :
