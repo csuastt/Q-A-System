@@ -11,17 +11,19 @@ import {
 
 class UserService {
     getUserList(
-        answerer: boolean,
+        answerer?: boolean,
         page?: number,
         prePage?: number,
         sortOrder?: string,
-        sortProperty?: string
+        sortProperty?: string,
+        applying?: boolean
     ): Promise<PagedList<UserBasicInfo>> {
         return axios
             .get("/users", {
                 params: {
                     role: answerer ? "ANSWERER" : "USER",
                     page: page,
+                    applying: applying,
                     pageSize: prePage,
                     sortDirection: sortOrder,
                     sortProperty: sortProperty,
@@ -128,6 +130,10 @@ class UserService {
         return axios
             .get(`/users/${id}/stats`)
             .then((response) => response.data);
+    }
+
+    reviewUserToAnswer(id: number, accept: boolean): Promise<any> {
+        return axios.post(`/users/${id}/review`, { accept: accept });
     }
 }
 
