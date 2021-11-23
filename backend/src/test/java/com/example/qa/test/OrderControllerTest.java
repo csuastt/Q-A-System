@@ -6,6 +6,7 @@ import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.exchange.ValueRequest;
 import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.order.exchange.AnswerRequest;
 import com.example.qa.order.exchange.OrderRequest;
@@ -135,6 +136,7 @@ class OrderControllerTest {
         request.setAnswerer(answererId);
         request.setTitle(question);
         request.setDescription(description);
+        mockUtils.postUrl("/api/orders",adminToken, request, status().isForbidden());
         OrderResponse result = mockUtils.postAndDeserialize("/api/orders", askerToken, request, status().isOk(), OrderResponse.class);
         mockUtils.postUrl("/api/orders",answererToken, request, status().isForbidden());
 //        mockUtils.postUrl("/api/orders",answererToken2, request, status().isForbidden());
@@ -356,6 +358,7 @@ class OrderControllerTest {
         OrderRequest request = new OrderRequest();
         request.setState(Order.State.ANSWERED);
         edit(id, request);
+
         mockUtils.postUrl("/api/orders/" + id + "/end", answererToken2, null, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/end", askerToken2, null, status().isForbidden());
         mockUtils.postUrl("/api/orders/" + id + "/end", null, null, status().isUnauthorized());

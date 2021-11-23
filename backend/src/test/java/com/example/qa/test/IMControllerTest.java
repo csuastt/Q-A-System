@@ -3,9 +3,11 @@ package com.example.qa.test;
 import com.example.qa.admin.AdminRepository;
 import com.example.qa.admin.exchange.AdminRequest;
 import com.example.qa.admin.model.Admin;
+import com.example.qa.config.SystemConfig;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.im.IMService;
+import com.example.qa.im.MessageRepository;
 import com.example.qa.notification.NotificationRepository;
 import com.example.qa.order.OrderRepository;
 import com.example.qa.order.OrderService;
@@ -59,19 +61,21 @@ class IMControllerTest {
     private final OrderService orderService;
     private final FileSystemStorageService storageService;
     private final NotificationRepository noRepo;
+    private final MessageRepository meRepo;
     private final OrderRepository orderRepo;
     private final UserRepository userRepo;
     private final AdminRepository adminRepo;
 
 
     IMControllerTest(@Autowired IMService imService, @Autowired OrderService orderService, @Autowired FileSystemStorageService storageService, @Autowired NotificationRepository notificationRepository,
-                     @Autowired OrderRepository orderRepository,
+                     @Autowired MessageRepository meRepo, @Autowired OrderRepository orderRepository,
                      @Autowired UserRepository userRepository,
                      @Autowired AdminRepository adminRepository) {
         this.imService = imService;
         this.orderService = orderService;
         this.storageService = storageService;
         noRepo = notificationRepository;
+        this.meRepo = meRepo;
         orderRepo = orderRepository;
         userRepo = userRepository;
         adminRepo = adminRepository;
@@ -191,9 +195,12 @@ class IMControllerTest {
 
         order.setState(Order.State.ACCEPTED);
         orderRepo.save(order);
+        orderService.handleExpiration(order);
 
         order.setState(Order.State.REVIEWED);
+
         orderRepo.save(order);
+        orderService.handleExpiration(order);
 
         order.setState(Order.State.ANSWERED);
         orderRepo.save(order);
@@ -202,13 +209,20 @@ class IMControllerTest {
         order.setState(Order.State.CHAT_ENDED);
         orderRepo.save(order);
         imService.sendFromUser(order, asker, ZonedDateTime.now(), "1234567");
+        orderService.handleExpiration(order);
 
         order.setState(Order.State.CANCELLED);
+        orderRepo.save(order);
+
+        orderService.handleExpiration(order);
+        order.setState(Order.State.ANSWERED);
+        order.setMessageCount(SystemConfig.getMaxChatMessages()-1);
         orderRepo.save(order);
 
         storageService.init();
         UUID uuid = UUID.randomUUID();
         UUID uuid2 = UUID.randomUUID();
+        UUID uuid1 = UUID.randomUUID();
         MockMultipartFile file
                 = new MockMultipartFile(
                 "file",
@@ -216,6 +230,13 @@ class IMControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes()
         );
+        MockMultipartFile file1 =
+                new MockMultipartFile(
+                        "picture",
+                        "hello.png",
+                        MediaType.IMAGE_PNG_VALUE,
+                        "Hello, World!".getBytes()
+                );
         storageService.store(file, uuid);
         storageService.load(uuid);
         storageService.loadAll();
@@ -224,6 +245,11 @@ class IMControllerTest {
         storageService.delete(uuid);
         storageService.deleteAll();
         storageService.getNameByUUID(uuid);
+
+        storageService.storePic(file1, uuid1);
+        storageService.loadPic(uuid1);
+        storageService.loadAsResourcePic(uuid1);
+        storageService.getNameByUUIDPic(uuid1);
 
         try{
             storageService.load(uuid2);
@@ -241,8 +267,21 @@ class IMControllerTest {
             storageService.getNameByUUID(uuid2);
         }catch (Exception exception){}
 
+        try{
+            storageService.loadPic(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.loadAsResourcePic(uuid2);
+        }catch (Exception exception){}
+
+        try{
+            storageService.getNameByUUIDPic(uuid2);
+        }catch (Exception exception){}
+
         StorageProperties properties = new StorageProperties();
         properties.setLocation("1234");
+        properties.setLocationPic("12345");
 
         mockUtils.getUrl("/api/im/history/" + order.getId(), askerToken, null, null, status().isOk());
         mockUtils.getUrl("/api/im/history/" + order.getId(), answererToken, null, null, status().isOk());

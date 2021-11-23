@@ -104,6 +104,9 @@ public class Order {
         questionTitle = Objects.requireNonNullElse(data.getTitle(), questionTitle);
         questionDescription = Objects.requireNonNullElse(data.getDescription(), questionDescription);
         price = Objects.requireNonNullElse(data.getPrice(), price);
+        showPublic = Objects.requireNonNullElse(data.getShowPublic(), showPublic);
+        publicPrice = Objects.requireNonNullElse(data.getPublicPrice(), publicPrice);
+
     }
 
     @RequiredArgsConstructor
