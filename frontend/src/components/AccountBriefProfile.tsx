@@ -368,11 +368,9 @@ export default class AccountBriefProfile extends Component<
                                     variant="body1"
                                 >
                                     {this.props.role === UserRole.USER
-                                        ? (
-                                            this.props.applying ?
-                                                "您的申请正在审核中，请耐心等待~" :
-                                            "您还不是回答者，快去申请吧~"
-                                        )
+                                        ? this.props.applying
+                                            ? "您的申请正在审核中，请耐心等待~"
+                                            : "您还不是回答者，快去申请吧~"
                                         : "您已经是回答者了，快去回答问题吧~"}
                                 </Typography>
                             </Box>

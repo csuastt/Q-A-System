@@ -171,8 +171,15 @@ class OrderService {
         );
     }
 
-    rateOrder(orderId: number, rating: number, ratingText: string): Promise<any> {
-        return axios.post(`/orders/${orderId}/rate`, { value: rating, text: ratingText });
+    rateOrder(
+        orderId: number,
+        rating: number,
+        ratingText: string
+    ): Promise<any> {
+        return axios.post(`/orders/${orderId}/rate`, {
+            value: rating,
+            text: ratingText,
+        });
     }
 }
 

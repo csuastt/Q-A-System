@@ -424,13 +424,15 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         }
                         size="large"
                     />
-                    <Box mt={1}/>
+                    <Box mt={1} />
                     <TextField
                         fullWidth
                         label="留言反馈"
                         name="ratingText"
                         multiline
-                        onChange={(e) => {setRatingText(e.target.value);}}
+                        onChange={(e) => {
+                            setRatingText(e.target.value);
+                        }}
                         rows={4}
                         value={ratingText}
                         placeholder="请留下您的宝贵意见~"
@@ -446,7 +448,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         {ratingMsg[orderInfo.rating]}
                     </Typography>
                     <Rating value={orderInfo.rating} size="large" readOnly />
-                    <Box mt={1}/>
+                    <Box mt={1} />
                     <TextField
                         fullWidth
                         label="留言反馈"
@@ -456,7 +458,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             readOnly: true,
                         }}
                         rows={4}
-                        value={orderInfo.ratingText ? orderInfo.ratingText : "暂无评价~"}
+                        value={
+                            orderInfo.ratingText
+                                ? orderInfo.ratingText
+                                : "暂无评价~"
+                        }
                         variant="outlined"
                         inputProps={{ maxLength: 200 }}
                     />
