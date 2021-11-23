@@ -190,7 +190,6 @@ class IMControllerTest {
 
         orderService.listByAsker(asker, true);
         orderService.listByAsker(asker, false);
-        orderService.listByReviewed();
         orderService.clearExpirations();
 
         order.setState(Order.State.ACCEPTED);
