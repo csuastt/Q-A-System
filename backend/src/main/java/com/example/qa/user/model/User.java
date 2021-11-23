@@ -1,5 +1,6 @@
 package com.example.qa.user.model;
 
+import com.example.qa.order.model.Order;
 import com.example.qa.user.exchange.ApplyRequest;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.exchange.UserRequest;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -57,6 +59,14 @@ public class User {
     private int ratingCount = 0;
     private int ratingTotal = 0;
     private double rating = 0.0;
+
+    @ManyToMany
+    @JoinTable(
+            name = "app_user_purchased_orders",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "order_id")
+    )
+    private Set<Order> purchasedOrders;
 
     public User(RegisterRequest registerRequest) {
         username = registerRequest.getUsername();

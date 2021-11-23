@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -54,6 +55,10 @@ public class Order {
     @ElementCollection
     private List<UUID> pics;
 
+    private int publicPrice = 0;
+    @ManyToMany(mappedBy = "purchasedOrders")
+    private Set<User> paidUsers;
+
     // 传 data 前先用 checkOrderData 检查
     public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {
         this.asker = asker;
@@ -63,6 +68,9 @@ public class Order {
         createTime = ZonedDateTime.now();
         price = answerer.getPrice();
         showPublic = Objects.requireNonNullElse(data.getShowPublic(), false);
+        if (showPublic && data.getPublicPrice() != null) {
+            publicPrice = Math.min(price, data.getPublicPrice());
+        }
         if (allProperties) {
             setState(data.getState());
             endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);

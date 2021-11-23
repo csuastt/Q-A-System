@@ -18,4 +18,5 @@ public class OrderRequest {
     private String answer;
     private Integer price;
     private Boolean showPublic;
+    private Integer publicPrice;
 }

@@ -11,7 +11,8 @@
     "fulfillExpirationSeconds": 259200,  // 3 days
     "maxChatMessages": 9999,       // unlimited, ≥ 2
     "maxChatTimeSeconds": 604800,  // 7 days (after answering)
-    "feeRate": 30  // 0 < feeRate < 100
+    "feeRate": 30,      // 0 < feeRate < 100
+    "askerFeeRate": 20  // 公开问题提问者抽成比例
 }
 ```
 

@@ -76,6 +76,10 @@ public class OrderService {
                 orderRepository.findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(false, completedOrderStates, true, keyword, pageRequest);
     }
 
+    public Page<Order> listByPaidUser(User user) {
+        return orderRepository.findAllByPaidUsers(user, pageRequest);
+    }
+
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds
     public void clearExpirations() {
         List<Order> notifyList = orderRepository.findAllByNotifyTimeBefore(ZonedDateTime.now());

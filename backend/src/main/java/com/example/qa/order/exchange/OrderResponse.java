@@ -2,6 +2,7 @@ package com.example.qa.order.exchange;
 
 import com.example.qa.order.model.Order;
 import com.example.qa.user.exchange.UserResponse;
+import com.example.qa.user.model.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -34,12 +35,14 @@ public class OrderResponse {
     private Integer messageCount;
     private Integer rating;
     private String ratingText;
-
-    public OrderResponse(Order order) {
-        this(order, 0);
-    }
+    private Integer publicPrice;
+    private Boolean purchased;
 
     public OrderResponse(Order order, int level) {
+        this(order, level, null);
+    }
+
+    public OrderResponse(Order order, int level, User user) {
         this.id = order.getId();
         this.asker = new UserResponse(order.getAsker());
         this.answerer = new UserResponse(order.getAnswerer());
@@ -53,6 +56,10 @@ public class OrderResponse {
         this.showPublic = order.isShowPublic();
         this.messageCount = order.getMessageCount();
         this.rating = order.getRating();
+        this.publicPrice = order.getPublicPrice();
+        if (this.publicPrice > 0 && user != null) {
+            this.purchased = user.getPurchasedOrders().contains(order);
+        }
         if (level >= 1) {
             this.questionDescription = order.getQuestionDescription();
             this.answer = order.getAnswer();
