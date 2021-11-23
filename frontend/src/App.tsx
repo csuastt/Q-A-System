@@ -30,6 +30,7 @@ import NotificationList from "./components/NotificationList";
 import { grey } from "@mui/material/colors";
 import { SimplePaletteColorOptions } from "@mui/material/styles/createPalette";
 import Library from "./components/Library";
+import UserPurchasedList from "./components/UserPurchasedList";
 
 export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -141,6 +142,7 @@ export default function App() {
             />,
         ],
         ["/orders", <UserOrderList />],
+        ["/purchased", <UserPurchasedList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
         ["/profile", <AccountProfile isAdmin={false} />],

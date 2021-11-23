@@ -9,7 +9,7 @@ import {
     InputAdornment,
     InputLabel,
     MenuItem,
-    Select, ToggleButton,
+    Select,
     Typography,
 } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -19,7 +19,6 @@ import { useTheme } from "@mui/material/styles";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import Stack from "@mui/material/Stack";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 const Library: React.FC<{
     briefMsg?: boolean;
@@ -29,7 +28,6 @@ const Library: React.FC<{
     const [count, setCount] = useState<number>(-1);
     const query = useQuery();
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [filterPurchased, setFilterPurchased] = useState(false);
     const itemPrePage = parseIntWithDefault(
         query.get("prepage"),
         props.briefMsg ? 5 : 10
@@ -38,11 +36,6 @@ const Library: React.FC<{
     const matches = useMediaQuery(theme.breakpoints.up("md"));
     const [sortProperty, setSortProperty] = useState("createTime");
     const [sortOrder, setSortOrder] = useState("DESC");
-
-    const onFilterButtonChanged = (
-        event: React.MouseEvent<HTMLElement>,
-        value: boolean
-    ) => setFilterPurchased(value);
 
     const PublicOrderListWrapper: React.FC<{
         keywords: string;
@@ -58,7 +51,6 @@ const Library: React.FC<{
             listMode={wrapperProps.listMode}
             initSortOrder={sortOrder}
             initSortProperty={sortProperty}
-            purchased={filterPurchased ? filterPurchased : undefined}
         />
     );
 
@@ -188,15 +180,6 @@ const Library: React.FC<{
                     >
                         {sortOrder === "ASC" ? "升序" : "降序"}
                     </Button>
-                    <ToggleButtonGroup
-                        value={filterPurchased}
-                        exclusive
-                        onChange={onFilterButtonChanged}
-                        size="small"
-                    >
-                        <ToggleButton value={true}>筛选已购买</ToggleButton>
-                        <ToggleButton value={false}>显示全部</ToggleButton>
-                    </ToggleButtonGroup>
                 </Stack>
                 <PublicOrderListWrapper keywords={keywords} />
             </Box>

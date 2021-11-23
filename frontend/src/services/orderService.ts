@@ -94,13 +94,31 @@ class OrderService {
             .then((response) => response.data);
     }
 
+    getOrderListPurchased(
+        page?: number,
+        prePage?: number,
+        sortOrder?: string,
+        sortProperty?: string
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    page: page,
+                    pageSize: prePage,
+                    sortDirection: sortOrder,
+                    sortProperty: sortProperty,
+                    purchased: 1
+                },
+            })
+            .then((response) => response.data);
+    }
+
     getPublicOrderListBySearch(
         keywords: string,
         page?: number,
         prePage?: number,
         sortOrder?: string,
-        sortProperty?: string,
-        purchased?: boolean
+        sortProperty?: string
     ): Promise<SearchResult> {
         if (keywords.length === 0) {
             return axios
@@ -110,8 +128,7 @@ class OrderService {
                         page: page,
                         pageSize: prePage,
                         sortDirection: sortOrder,
-                        sortProperty: sortProperty,
-                        purchased: purchased
+                        sortProperty: sortProperty
                     },
                 })
                 .then((response) => response.data);
@@ -122,7 +139,7 @@ class OrderService {
                         showPublic: 1,
                         keyword: keywords,
                         page: page,
-                        pageSize: prePage,
+                        pageSize: prePage
                     },
                 })
                 .then((response) => response.data);
@@ -184,6 +201,12 @@ class OrderService {
             value: rating,
             text: ratingText,
         });
+    }
+
+    purchaseOrder(
+        orderId: number
+    ): Promise<any> {
+        return axios.post(`/orders/${orderId}/purchase`);
     }
 }
 

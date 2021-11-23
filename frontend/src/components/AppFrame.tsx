@@ -38,7 +38,7 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-
+import LocalMallIcon from '@mui/icons-material/LocalMall';
 import AuthContext from "../AuthContext";
 
 import RateReviewIcon from "@mui/icons-material/RateReview";
@@ -182,6 +182,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
         if (user.role === UserRole.USER) {
             return [
                 ["问答库", "/lib", <LocalLibraryIcon />],
+                ["已购买提问", "/purchased", <LocalMallIcon />],
                 ["回答者列表", "/answerers", <SchoolIcon />],
                 ["我的提问", "/orders", <QuestionAnswerIcon />],
                 ["提出问题", "/order/create", <AddCommentIcon />],
@@ -189,6 +190,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
         }
         return [
             ["问答库", "/lib", <LocalLibraryIcon />],
+            ["已购买提问", "/purchased", <LocalMallIcon />],
             ["回答者列表", "/answerers", <SchoolIcon />],
             ["我的提问", "/orders", <QuestionAnswerIcon />],
             ["我的回答", "/orders?answerer=true", <RateReviewIcon />],
@@ -229,7 +231,6 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                         : [["登录", "/admins/login", <LoginIcon />]]
                     : user
                     ? [
-                          ["个人信息", "/profile", <AccountCircleIcon />],
                           ["登出", "/logout", <LogoutIcon />],
                       ]
                     : [
@@ -298,17 +299,28 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     {!props.isAdmin && user && (
-                        <IconButton
-                            component={RouterLink}
-                            to={"/notif"}
-                            color="inherit"
-                            size="large"
-                            sx={{ marginRight: 1 }}
-                        >
-                            <Badge badgeContent={unreadCount} color="warning">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton>
+                        <>
+                            <IconButton
+                                component={RouterLink}
+                                to={"/profile"}
+                                color="inherit"
+                                size="large"
+                                sx={{ marginRight: -1 }}
+                            >
+                                <AccountCircleIcon />
+                            </IconButton>
+                            <IconButton
+                                component={RouterLink}
+                                to={"/notif"}
+                                color="inherit"
+                                size="large"
+                                sx={{ marginRight: 1 }}
+                            >
+                                <Badge badgeContent={unreadCount} color="warning">
+                                    <NotificationsIcon />
+                                </Badge>
+                            </IconButton>
+                        </>
                     )}
                     {!props.isAdmin && (
                         <FormControlLabel

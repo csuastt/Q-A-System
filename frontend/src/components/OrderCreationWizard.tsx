@@ -13,7 +13,7 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
-import { ConfigInfo, CreationResult, FileInfo } from "../services/definations";
+import {ConfigInfo, CreationResult, FileInfo, UserBasicInfo} from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -46,6 +46,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import PaymentIcon from '@mui/icons-material/Payment';
 import InputAdornment from "@mui/material/InputAdornment";
+import userService from "../services/userService";
+import {validate_required} from "./Login";
 
 function processInt(str?: string): number {
     if (str) {
@@ -64,6 +66,8 @@ const OrderCreationWizard: React.FC = (props) => {
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
     const [config, setConfig] = useState<ConfigInfo>();
+    const [chosenAnswer, setChosenAnswer] = useState<UserBasicInfo>();
+    const [errMsg, setErrMsg] = useState("");
     const [files, setFiles] = useState<Array<FileInfo>>([]);
     const [open, setOpen] = useState(false);
     const [showPublic, setShowPublic] = useState(false);
@@ -79,7 +83,11 @@ const OrderCreationWizard: React.FC = (props) => {
         systemConfigService.getSystemConfig().then((configInfo) => {
             setConfig(configInfo);
         });
-    }, []);
+        if (answerer >= 0)
+            userService.getUserBasicInfo(answerer).then((userInfo) => {
+                setChosenAnswer(userInfo);
+            });
+    }, [answerer]);
 
     const nextStep = () => {
         setActiveStep(activeStep + 1);
@@ -143,11 +151,34 @@ const OrderCreationWizard: React.FC = (props) => {
     };
 
     const handleClosePrice = () => {
-        setOpenPrice(false);
+        console.log(price);
+        if (handlePriceChange({
+            target: { value: price },
+        }))
+            setOpenPrice(false);
     };
 
     const handleQuestionDescriptionChange = (newValue: string) =>
         setQuestionDescription(newValue);
+
+    const handlePriceChange = (e: any) => {
+        if (!chosenAnswer)
+            return false;
+        let error = validate_required(e.target.value.toString());
+        let value = e.target.value;
+        if (error) {
+            setErrMsg("价格为空或格式错误");
+            setPrice(value);
+            return false;
+        }
+        setErrMsg("");
+        if (value < 0)
+            value = 0;
+        else if (value > chosenAnswer?.price)
+            value = chosenAnswer?.price;
+        setPrice(value);
+        return true;
+    }
 
     const checkInput = (input: string) => {
         if (input && input.length >= 10) {
@@ -770,11 +801,12 @@ const OrderCreationWizard: React.FC = (props) => {
                             fullWidth
                             label="分享价格"
                             name="price"
-                            onChange={(e) => {setPrice(Number(e.target.value));}}
+                            onChange={handlePriceChange}
                             type="number"
                             InputProps={{
                                 inputProps: {
-                                    min: 0
+                                    min: 0,
+                                    max: chosenAnswer?.price
                                 },
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -783,6 +815,8 @@ const OrderCreationWizard: React.FC = (props) => {
                                 ),
                             }}
                             value={price}
+                            error={errMsg.length !== 0}
+                            helperText={errMsg}
                             variant="outlined"
                         />
                     </DialogContent>

@@ -90,7 +90,6 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                     itemPrePage,
                     sortOrder,
                     sortProperty,
-                    props.purchased
                 )
                 .then(
                     (res) => {
@@ -110,7 +109,15 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 );
         } else {
             let fetchPromise: Promise<PagedList<OrderInfo>>;
-            if (props.showAnswerer) {
+            if (typeof props.purchased !== "undefined") {
+                fetchPromise = questionService.getOrderListPurchased(
+                    currentPage,
+                    itemPrePage,
+                    sortOrder,
+                    sortProperty
+                );
+            }
+            else if (props.showAnswerer) {
                 fetchPromise = questionService.getOrdersOfUser(
                     undefined,
                     props.userId,
@@ -203,6 +210,14 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     `);
 
     const CardContentWrapper: React.FC<{}> = (wrapperProps) => {
+        return props.listMode ? (
+            <CardContentNoPadding>{wrapperProps.children}</CardContentNoPadding>
+        ) : (
+            <CardContent>{wrapperProps.children}</CardContent>
+        );
+    };
+
+    const CardActionWrapper: React.FC<{}> = (wrapperProps) => {
         return props.listMode ? (
             <CardContentNoPadding>{wrapperProps.children}</CardContentNoPadding>
         ) : (
@@ -433,7 +448,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 <ErrorOutlineIcon color="warning" sx={{ fontSize: 80 }} />
                 <Typography variant={"h5"} mt={1} mb={4}>
                     {typeof props.keywords === "undefined"
-                        ? "您还没有订单"
+                        ? (typeof props.purchased === "undefined" ?
+                        "您还没有订单" : "您还没有已购买的问题")
                         : "没有找到匹配的结果"}
                 </Typography>
             </Box>
