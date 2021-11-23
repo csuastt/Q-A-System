@@ -23,6 +23,7 @@
 | messageCount        | int            |                                            | 聊天消息条数         |
 | rating              | int            | Get: > 0 已评分，= 0 未评分                | 评分                 |
 | ratingText          | String         |                                            | 仅限详细信息         |
+| publicPrice         | int            |                                            | 公开问题价格         |
 
 ### OrderState (enum)
 
