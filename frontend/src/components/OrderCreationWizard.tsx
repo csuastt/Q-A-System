@@ -44,6 +44,8 @@ import { checkSensitiveWords, formatInterval, formatSize } from "../util";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
+import PaymentIcon from '@mui/icons-material/Payment';
+import InputAdornment from "@mui/material/InputAdornment";
 
 function processInt(str?: string): number {
     if (str) {
@@ -66,6 +68,8 @@ const OrderCreationWizard: React.FC = (props) => {
     const [open, setOpen] = useState(false);
     const [showPublic, setShowPublic] = useState(false);
     const [openHelp, setOpenHelp] = useState(false);
+    const [openPrice, setOpenPrice] = useState(false);
+    const [price, setPrice] = useState(0);
 
     const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
@@ -131,6 +135,14 @@ const OrderCreationWizard: React.FC = (props) => {
     };
 
     const handleCloseHelp = () => {
+        setOpenHelp(false);
+    };
+
+    const handleOpenPrice = () => {
+        setOpenHelp(true);
+    };
+
+    const handleClosePrice = () => {
         setOpenHelp(false);
     };
 
@@ -715,6 +727,7 @@ const OrderCreationWizard: React.FC = (props) => {
                             </Box>
                             的。
                             一旦创建问题，您不可以再修改此问题的可见性。请仔细考虑。
+                            公开问题后，您可以随时通过点击按钮设置定价。
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -724,6 +737,43 @@ const OrderCreationWizard: React.FC = (props) => {
                             }}
                         >
                             知道了
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog
+                    fullWidth
+                    open={openPrice}
+                    onClose={handleClosePrice}
+                >
+                    <DialogTitle>设置查看问题价格</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText mb={3}>
+                            请设置您的问题分享价格。在当前机制下，
+                            定价最高不能超过回答者的价格，最低为￥0，即为免费公开。
+                        </DialogContentText>
+                        <TextField
+                            fullWidth
+                            label="分享价格"
+                            name="price"
+                            onChange={(e) => {setPrice(Number(e.target.value));}}
+                            type="number"
+                            InputProps={{
+                                inputProps: {
+                                    min: 0
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        ￥/次
+                                    </InputAdornment>
+                                ),
+                            }}
+                            value={price}
+                            variant="outlined"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClosePrice}>
+                            确定
                         </Button>
                     </DialogActions>
                 </Dialog>
