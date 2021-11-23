@@ -21,7 +21,7 @@ public class UserService {
     }
 
     public boolean existsById(long id) {
-        return userRepository.existsByIdAndDeleted(id, false);
+        return userRepository.existsById(id);
     }
 
     public boolean existsByUsername(String username) {
@@ -29,19 +29,11 @@ public class UserService {
     }
 
     public User getById(long id) {
-        return getById(id, false);
-    }
-
-    public User getById(long id, boolean allowDeleted) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException(null);
         }
-        User user = userOptional.get();
-        if (user.isDeleted() && !allowDeleted) {
-            throw new UsernameNotFoundException(null);
-        }
-        return user;
+        return userOptional.get();
     }
 
     public User getByUsername(String username) {

@@ -64,12 +64,10 @@ class AdminBeanTest {
         Admin.Role adminRole = Admin.Role.SUPER_ADMIN;
         AdminResponse adminResponse = new AdminResponse();
         adminResponse.setId(adminId);
-        adminResponse.setDeleted(adminDeleted);
         adminResponse.setUsername(adminUsername);
         adminResponse.setCreateTime(adminCreateTime);
         adminResponse.setRole(adminRole);
         assertEquals(adminId, adminResponse.getId());
-        assertEquals(adminDeleted, adminResponse.getDeleted());
         assertEquals(adminUsername, adminResponse.getUsername());
         assertEquals(adminCreateTime, adminResponse.getCreateTime());
         assertEquals(adminRole, adminResponse.getRole());
@@ -88,7 +86,6 @@ class AdminBeanTest {
         Admin.Role Role = Admin.Role.SUPER_ADMIN;
         Admin admin = new Admin();
         admin.setId(Id);
-        admin.setDeleted(Deleted);
         admin.setUsername(Username);
         admin.setCreateTime(CreateTime);
         admin.setRole(Role);

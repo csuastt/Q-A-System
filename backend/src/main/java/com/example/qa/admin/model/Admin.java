@@ -18,7 +18,6 @@ public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private boolean deleted = false;
 
     @Column(unique = true)
     private String username;  // 删除时手动在之后添加 @{id} 以便允许重新注册

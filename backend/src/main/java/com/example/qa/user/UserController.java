@@ -86,7 +86,7 @@ public class UserController {
     public UserResponse getUser(@PathVariable(value = "id") long id) {
         boolean login = authLogin();
         boolean isAdmin = login && authIsAdmin();
-        User user = getUserOrThrow(id, isAdmin);
+        User user = getUserOrThrow(id);
         int userResponseLevel = 0;
         if (login && authIsUser(id)) {
             userResponseLevel = 1;
@@ -96,25 +96,12 @@ public class UserController {
         return new UserResponse(user, userResponseLevel);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable(value = "id") long id) {
-        authLoginOrThrow();
-        authSuperAdminOrThrow();
-        User user = getUserOrThrow(id, true);
-        if (user.isDeleted()) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
-        }
-        user.setDeleted(true);
-        user.setUsername(user.getUsername() + "@" + user.getId());
-        userService.save(user);
-    }
-
     @PutMapping("/{id}")
     public void editUser(@PathVariable(value = "id") long id, @RequestBody UserRequest userRequest) {
         authLoginOrThrow();
         authUserOrSuperAdminOrThrow(id);
         boolean isAdmin = authIsSuperAdmin();
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         if (user.getRole() != User.Role.ANSWERER) {
             userRequest.setPrice(null);
         }
@@ -135,7 +122,7 @@ public class UserController {
     public void uploadImage(@PathVariable(value = "id") Long id, @RequestParam MultipartFile multipartFile) {
         authLoginOrThrow();
         authUserOrThrow(id);
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         try {
             user.setAvatar(multipartFile.getBytes());
             userService.save(user);
@@ -150,7 +137,7 @@ public class UserController {
         authLoginOrThrow();
         authUserOrSuperAdminOrThrow(id);
         changePasswordRequest.validatePasswordOrThrow();
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         if (!authIsSuperAdmin() && !passwordEncoder.matches(changePasswordRequest.getOriginal(), user.getPassword())) {
             throw new ApiException(403, "WRONG_PASSWORD");
         }
@@ -163,7 +150,7 @@ public class UserController {
                       @RequestBody ApplyRequest applyRequest) {
         authLoginOrThrow();
         authUserOrThrow(id);
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         if (user.getRole() == User.Role.ANSWERER || user.isApplying()) {
             throw new ApiException(403, "ALREADY_ANSWERER");
         }
@@ -177,10 +164,10 @@ public class UserController {
     public void review(@PathVariable(value = "id") long id, @RequestBody AcceptRequest acceptRequest) {
         authLoginOrThrow();
         authAdminOrThrow();
-        if (adminService.getById(authGetId(), false).getRole() == Admin.Role.ADMIN) {
+        if (adminService.getById(authGetId()).getRole() == Admin.Role.ADMIN) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         if (!user.isApplying()) {
             throw new ApiException(403);
         }
@@ -197,7 +184,7 @@ public class UserController {
                          @RequestBody ValueRequest valueRequest) {
         authLoginOrThrow();
         authUserOrThrow(id);
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         valueRequest.checkRechargeOrThrow(user.getBalance());
         user.setBalance(user.getBalance() + valueRequest.getValue());
         userService.save(user);
@@ -207,7 +194,7 @@ public class UserController {
     public EarningsResponse getEarnings(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
         authUserOrAdminOrThrow(id);
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         return new EarningsResponse(user.getEarningsTotal(), MonthlyEarnings.toList(user.getEarningsMonthly()));
     }
 
@@ -215,13 +202,13 @@ public class UserController {
     public UserStatsResponse getStats(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
         authUserOrAdminOrThrow(id);
-        User user = getUserOrThrow(id, false);
+        User user = getUserOrThrow(id);
         return new UserStatsResponse(user);
     }
 
-    private User getUserOrThrow(long id, boolean allowDeleted) {
+    private User getUserOrThrow(long id) {
         try {
-            return userService.getById(id, allowDeleted);
+            return userService.getById(id);
         } catch (UsernameNotFoundException e) {
             throw new ApiException(404);
         }

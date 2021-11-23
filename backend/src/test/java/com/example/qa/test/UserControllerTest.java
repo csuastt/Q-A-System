@@ -105,11 +105,6 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteUser() throws Exception {
-        mockUtils.deleteUrl("/api/users/" + id, token, null, status().isForbidden());
-    }
-
-    @Test
     void editUser() throws Exception {
         UserRequest userRequest = new UserRequest();
         userRequest.setNickname("myNickname");

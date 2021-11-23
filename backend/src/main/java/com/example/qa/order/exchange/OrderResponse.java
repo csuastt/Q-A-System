@@ -17,7 +17,6 @@ import java.time.ZonedDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderResponse {
     private Long id;
-    private Boolean deleted;
     private UserResponse asker;
     private UserResponse answerer;
     private Order.State state;
@@ -64,9 +63,6 @@ public class OrderResponse {
             this.questionDescription = order.getQuestionDescription();
             this.answer = order.getAnswer();
             this.ratingText = order.getRatingText();
-        }
-        if (level >= 2) {
-            this.deleted = order.isDeleted();
         }
     }
 }

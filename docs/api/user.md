@@ -34,10 +34,9 @@
 
 #### 私有属性 (仅限管理员)
 
-| 属性       | 类型          | JSON              | 说明     |
-| ---------- | ------------- | ----------------- | -------- |
-| deleted    | boolean       |                   | 删除标记 |
-| createTime | ZonedDateTime | ISO string in UTC |          |
+| 属性       | 类型          | JSON              | 说明 |
+| ---------- | ------------- | ----------------- | ---- |
+| createTime | ZonedDateTime | ISO string in UTC |      |
 
 ## Authentication
 
@@ -125,28 +124,6 @@ GET /api/users
 - `400` 格式错误
 - `403` 权限不足
 
-### 删除
-
-（仅限管理员）
-
-```
-DELETE /api/users/{id}
-```
-
-返回值：
-
-- `200` OK
-- `401` 未登录
-
-- `403` 错误
-  
-  | message 属性      | 说明       |
-  | ----------------- | ---------- |
-  | `NO_PERMISSION`   | 不是管理员 |
-  | `ALREADY_DELETED` | 已经删除   |
-  
-- `404` 用户不存在
-
 ### 查询
 
 ```
@@ -156,7 +133,7 @@ GET /api/users/{id}
 返回值：
 
 - `200` OK（返回值是单个 User，详细程度见 Model）
-- `404` 用户不存在（或用户已删除且查询者不是管理员）
+- `404` 用户不存在
 
 ### 修改
 
@@ -185,7 +162,7 @@ PUT /api/users/{id}
   | `DESCRIPTION_INVALID` | 个人说明长度错误       |
   | `PRICE_INVALID`       | 价格错误（仅限回答者） |
 
-- `404` 用户已删除或管理员修改用户不存在
+- `404` 管理员修改用户不存在
 
 ### 修改密码
 
@@ -211,7 +188,7 @@ PUT /api/users/{id}/password
   | `NO_PERMISSION`    | 非本用户或管理员 |
   | `WRONG_PASSWORD`   | 原密码错误       |
   | `PASSWORD_INVALID` | 新密码格式错误   |
-- `404` 管理员修改用户不存在或已删除
+- `404` 管理员修改用户不存在
 
 ### 申请成为回答者
 

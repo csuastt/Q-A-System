@@ -6,7 +6,6 @@ import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
 import com.example.qa.security.SecurityConstants;
-import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.exchange.UserRequest;
 import com.example.qa.user.model.User;
 import com.example.qa.utils.MockUtils;
@@ -111,14 +110,6 @@ class AdminControllerTest {
     }
 
     @Test
-    void deleteAdmin() throws Exception {
-        createAdmin();
-        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isOk());
-        mockUtils.deleteUrl("/api/admins/" + 2, superAdminToken, null, status().isForbidden());
-        mockUtils.deleteUrl("/api/admins/" + 2, null, null, status().isUnauthorized());
-    }
-
-    @Test
     void getAdmin() throws Exception {
         mockUtils.getUrl("/api/admins/" + 1, superAdminToken, null, null, status().isOk());
         mockUtils.getUrl("/api/admins/" + Long.MAX_VALUE, superAdminToken, null, null, status().isNotFound());
@@ -149,23 +140,6 @@ class AdminControllerTest {
 
         userRequest.setNickname("");
         mockUtils.putUrl("/api/users/" + 1, superAdminToken, userRequest, status().isOk());
-    }
-
-    @Test
-    void deleteUser() throws Exception {
-        mockUtils.deleteUrl("/api/users/" + 1, superAdminToken, null, status().isOk());
-        mockUtils.getUrl("/api/users/" + 1, superAdminToken, null, null, status().isOk());
-        RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername("useruser");
-        registerRequest.setPassword("password");
-        registerRequest.setEmail("177@qq.com");
-        mockUtils.postUrl("/api/users", null, registerRequest, status().isOk());
-
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(registerRequest.getUsername());
-        loginRequest.setPassword("password");
-        TokenResponse result = mockUtils.postAndDeserialize("/api/user/login", null, loginRequest, status().isOk(), TokenResponse.class);
-        mockUtils.getUrl("/api/users/" + 1, result.getToken(), null, null, status().isNotFound());
     }
 
     @Test
