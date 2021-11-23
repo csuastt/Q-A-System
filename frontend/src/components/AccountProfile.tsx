@@ -254,6 +254,7 @@ export default class AccountProfile extends Component<
                 description: "This is the description",
                 price: 50,
                 role: UserRole.ANSWERER,
+                applying: false,
                 rating: 0.5,
                 ratingCount: 10,
             };
@@ -479,6 +480,7 @@ export default class AccountProfile extends Component<
                                 nickname={this.now_nickname}
                                 username={this.state.user?.username}
                                 role={this.state.user?.role}
+                                applying={this.state.user?.applying}
                                 alertHandler={this.handleAlert}
                                 redirectHandler={this.handleRedirect}
                                 config={this.state.config}

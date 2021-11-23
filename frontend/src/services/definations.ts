@@ -70,6 +70,7 @@ export interface UserInfo {
     balance: number;
     description: string;
     role: UserRole;
+    applying: boolean;
     rating: number;
     ratingCount: number;
 }
@@ -87,6 +88,7 @@ export interface UserFullyInfo {
     description: string;
     price: number;
     role: UserRole;
+    applying: boolean;
     rating: number;
     ratingCount: number;
 }
@@ -149,6 +151,7 @@ export interface OrderInfo {
     messageCount: number;
     rating: number;
     showPublic: boolean;
+    ratingText: string;
 }
 
 export enum CreationResultType {
