@@ -1,19 +1,20 @@
 import React, { Component } from "react";
 import { ConfigInfo } from "../services/definations";
 
-import { Box, Card, CardContent, Grid } from "@mui/material";
+import { Box, Card, CardContent, Container, Grid } from "@mui/material";
 import CardHeader from "@mui/material/CardHeader";
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import configService from "../services/configService";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 interface SystemSettingsState {
     config: ConfigInfo | null;
     alert: boolean;
     alertType: "success" | "info" | "warning" | "error";
     alertContent: string;
-
     error_msg_minPrice: string;
     error_msg_maxPrice: string;
     error_msg_respondExpirationSeconds: string;
@@ -121,19 +122,34 @@ export default class SystemSettings extends Component<
         let temp = this.state.config;
         configService.modifyConfigInfo(temp).then(
             () => {
-                // alert
-                this.handleAlert("success", "修改成功");
-                // get info again
+                this.setState({
+                    alert: true,
+                    alertType: "success",
+                    alertContent: "修改成功",
+                });
+
                 this.fetchConfigInfo();
             },
             (error) => {
                 // show the error message
                 if (error.response.status === 403) {
-                    this.handleAlert("error", "权限不足");
+                    this.setState({
+                        alert: true,
+                        alertType: "error",
+                        alertContent: "权限不足",
+                    });
                 } else if (error.response.status === 401) {
-                    this.handleAlert("error", "尚未登录");
+                    this.setState({
+                        alert: true,
+                        alertType: "error",
+                        alertContent: "尚未登录",
+                    });
                 } else {
-                    this.handleAlert("error", "网络错误");
+                    this.setState({
+                        alert: true,
+                        alertType: "error",
+                        alertContent: "网络错误",
+                    });
                 }
             }
         );
@@ -141,167 +157,196 @@ export default class SystemSettings extends Component<
 
     render() {
         return (
-            <Card>
-                <CardHeader subheader="编辑并保存系统参数" title="系统参数" />
-                <Divider />
-                <CardContent>
-                    <Grid container spacing={3}>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="回答者最低价格"
-                                name="minPrice"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={this.state.config?.minPrice || ""}
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
+            <Container component="main">
+                <Card>
+                    <CardHeader
+                        subheader="编辑并保存系统参数"
+                        title="系统参数"
+                    />
+                    <Divider />
+                    <CardContent>
+                        <Grid container spacing={3}>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="回答者最低价格"
+                                    name="minPrice"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={this.state.config?.minPrice || ""}
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="回答者最高价格"
+                                    name="maxPrice"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={this.state.config?.maxPrice || ""}
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="接单限时 (秒)"
+                                    name="respondExpirationSeconds"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={
+                                        this.state.config
+                                            ?.respondExpirationSeconds || ""
+                                    }
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="回答限时 (秒)"
+                                    name="answerExpirationSeconds"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={
+                                        this.state.config
+                                            ?.answerExpirationSeconds || ""
+                                    }
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="结算延迟 (秒)"
+                                    name="fulfillExpirationSeconds"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={
+                                        this.state.config
+                                            ?.fulfillExpirationSeconds || ""
+                                    }
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="聊天消息数限制"
+                                    name="maxChatMessages"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={
+                                        this.state.config?.maxChatMessages || ""
+                                    }
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="聊天限时 (秒)"
+                                    name="maxChatTimeSeconds"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={
+                                        this.state.config?.maxChatTimeSeconds ||
+                                        ""
+                                    }
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="抽成比例 (%)"
+                                    name="feeRate"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={this.state.config?.feeRate || ""}
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="公开问题提问者抽成比例 (%)"
+                                    name="askerFeeRate"
+                                    InputProps={{
+                                        readOnly: false,
+                                    }}
+                                    value={
+                                        this.state.config?.askerFeeRate || ""
+                                    }
+                                    onChange={this.handleChangeConfig}
+                                    required
+                                    variant="outlined"
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="回答者最高价格"
-                                name="maxPrice"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={this.state.config?.maxPrice || ""}
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="接单限时 (秒)"
-                                name="respondExpirationSeconds"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={
-                                    this.state.config
-                                        ?.respondExpirationSeconds || ""
-                                }
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="回答限时 (秒)"
-                                name="answerExpirationSeconds"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={
-                                    this.state.config
-                                        ?.answerExpirationSeconds || ""
-                                }
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="结算延迟 (秒)"
-                                name="fulfillExpirationSeconds"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={
-                                    this.state.config
-                                        ?.fulfillExpirationSeconds || ""
-                                }
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="聊天消息数限制"
-                                name="maxChatMessages"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={this.state.config?.maxChatMessages || ""}
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="聊天限时 (秒)"
-                                name="maxChatTimeSeconds"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={
-                                    this.state.config?.maxChatTimeSeconds || ""
-                                }
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="抽成比例 (%)"
-                                name="feeRate"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={this.state.config?.feeRate || ""}
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                label="公开问题提问者抽成比例 (%)"
-                                name="askerFeeRate"
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                                value={this.state.config?.askerFeeRate || ""}
-                                onChange={this.handleChangeConfig}
-                                required
-                                variant="outlined"
-                            />
-                        </Grid>
-                    </Grid>
-                </CardContent>
-                <Divider />
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        p: 2,
-                    }}
-                >
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={this.handleSubmit}
+                    </CardContent>
+                    <Divider />
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            p: 2,
+                        }}
                     >
-                        保存信息
-                    </Button>
-                </Box>
-            </Card>
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={this.handleSubmit}
+                        >
+                            保存信息
+                        </Button>
+                    </Box>
+                </Card>
+                <Snackbar
+                    autoHideDuration={2000}
+                    open={this.state.alert}
+                    onClose={() => {
+                        this.setState({ alert: false });
+                    }}
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                    }}
+                    sx={{ width: "30%" }}
+                >
+                    <Alert
+                        severity={this.state.alertType}
+                        sx={{ width: "100%" }}
+                    >
+                        {this.state.alertContent}
+                    </Alert>
+                </Snackbar>
+            </Container>
         );
     }
 }
