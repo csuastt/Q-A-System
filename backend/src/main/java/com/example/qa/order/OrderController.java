@@ -94,14 +94,16 @@ public class OrderController {
     public OrderResponse queryOrder(@PathVariable(value = "id") long id) {
         boolean isAdmin = authLogin() && authIsAdmin();
         Order order = getByIdOrThrow(id, isAdmin);
-        if (!order.isShowPublic()) {
+        if (isAdmin) {
+            return new OrderResponse(order, 2);
+        } else if (!order.isShowPublic() || order.getPublicPrice() > 0) {
             authLoginOrThrow();
-            long userId = authGetId();
-            if (!isAdmin && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
+            User user = userService.getById(authGetId());
+            if (order.getAsker() != user && order.getAnswerer() != user && !user.getPurchasedOrders().contains(order)) {
                 throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
-        return new OrderResponse(order, isAdmin ? 2 : 1);
+        return new OrderResponse(order, 1);
     }
 
     @GetMapping("/{id}/attachments")
@@ -284,6 +286,30 @@ public class OrderController {
         userService.save(answerer);
     }
 
+    @PostMapping("/{id}/purchase")
+    public void purchase(@PathVariable(value = "id") long id) {
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id, false);
+        if (!order.isShowPublic() || order.getPublicPrice() == 0 || !Order.State.completedOrderStates.contains(order.getState())) {
+            throw new ApiException(403);
+        }
+        if (authIsAdmin() || authIsUser(order.getAsker().getId()) || authIsUser(order.getAnswerer().getId())) {
+            throw new ApiException(403);
+        }
+        User user = userService.getById(authGetId());
+        if (user.getPurchasedOrders().contains(order) || user.getBalance() < order.getPublicPrice()) {
+            throw new ApiException(403);
+        }
+        user.setBalance(user.getBalance() - order.getPublicPrice());
+        user.getPurchasedOrders().add(order);
+        userService.save(user);
+        int systemFee = order.getPublicPrice() * SystemConfig.getFeeRate() / 100;
+        SystemConfig.incEarnings(systemFee);
+        int askerFee = order.getPublicPrice() * SystemConfig.getAskerFeeRate() / 100;
+        userService.addEarnings(order.getAsker(), askerFee);
+        userService.addEarnings(order.getAnswerer(), order.getPublicPrice() - systemFee - askerFee);
+    }
+
     @GetMapping
     public OrderListResponse listOrders(
             @RequestParam(required = false) Boolean showPublic,
@@ -292,6 +318,7 @@ public class OrderController {
             @RequestParam(required = false) Long answerer,
             @RequestParam(required = false) Boolean finished,
             @RequestParam(required = false) Boolean reviewed,
+            @RequestParam(required = false) Boolean purchased,
             @RequestParam(required = false) List<Order.State> state,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page,
@@ -312,7 +339,11 @@ public class OrderController {
         if (Boolean.TRUE.equals(showPublic)) {
             // keyword == null 时列出所有公开订单
             result = orderService.listByPublic(keyword);
-            OrderListResponse response = new OrderListResponse(result, 0);
+            User user = null;
+            if (authLogin() && authIsUser()) {
+                user = userService.getById(authGetId());
+            }
+            OrderListResponse response = new OrderListResponse(result, 0, user);
             response.setTimeMillis(System.currentTimeMillis() - startTime);
             return response;
         }
@@ -329,19 +360,25 @@ public class OrderController {
             }
             orderResponseLevel = 2;
         } else {
-            if (asker != null && authIsUser(asker)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAsker(userService.getById(asker), finished);
-            } else if (answerer != null && authIsUser(answerer)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAnswerer(userService.getById(answerer), finished);
-            } else {
-                throw new ApiException(403, ApiException.NO_PERMISSION);
-            }
+            result = userOrderList(asker, answerer, finished, purchased);
         }
         OrderListResponse response = new OrderListResponse(result, orderResponseLevel);
         response.setTimeMillis(System.currentTimeMillis() - startTime);
         return response;
+    }
+
+    private Page<Order> userOrderList(Long asker, Long answerer, Boolean finished, Boolean purchased) {
+        if (Boolean.TRUE.equals(purchased)) {
+            return orderService.listByPaidUser(userService.getById(authGetId()));
+        } else if (asker != null && authIsUser(asker)) {
+            // finished == null 时列出所有该用户的订单
+            return orderService.listByAsker(userService.getById(asker), finished);
+        } else if (answerer != null && authIsUser(answerer)) {
+            // finished == null 时列出所有该用户的订单
+            return orderService.listByAnswerer(userService.getById(answerer), finished);
+        } else {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
     }
 
     private Order getByIdOrThrow(long id, boolean allowDeleted) {

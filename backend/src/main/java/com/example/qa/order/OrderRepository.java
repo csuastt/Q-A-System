@@ -5,6 +5,7 @@ import com.example.qa.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -31,4 +32,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByDeletedAndStateInAndShowPublic(boolean deleted, Collection<Order.State> state, boolean showPublic, Pageable pageable);
 
     Page<Order> findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(boolean deleted, Collection<Order.State> state, boolean showPublic, String keyword, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    Page<Order> findAllByPaidUsers(User user, Pageable pageable);
 }
