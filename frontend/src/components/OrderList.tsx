@@ -281,7 +281,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 OrderState.ACCEPTED,
                 OrderState.ANSWERED,
                 OrderState.CHAT_ENDED,
-            ].indexOf(order.state) !== -1
+            ].indexOf(order.state) !== -1 && matches
         ) {
             return (
                 <Stack direction={"row"} alignItems="center" spacing={1}>
@@ -295,7 +295,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     };
 
     const renderMsgCount = (order: OrderInfo) => {
-        if (order.state === OrderState.ANSWERED) {
+        if (order.state === OrderState.ANSWERED && matches) {
             return (
                 <Stack direction={"row"} alignItems="center" spacing={1}>
                     <ChatIcon
@@ -428,7 +428,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                     </Typography>
                                     <Box ml={1} />
                                     {(order.state === OrderState.CHAT_ENDED ||
-                                        order.state === OrderState.FULFILLED) &&
+                                        order.state === OrderState.FULFILLED) ?
                                         (order.rating === 0 ? (
                                             <Typography
                                                 variant="caption"
@@ -453,7 +453,13 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                                     size="small"
                                                 />
                                             </Box>
-                                        ))}
+                                        )) :
+                                        <Typography
+                                            variant="caption"
+                                        >
+                                            暂无评分
+                                        </Typography>
+                                    }
                                     <Box sx={{ flexGrow: 1 }} />
                                     {renderExpireTime(order)}
                                     {renderMsgCount(order)}
