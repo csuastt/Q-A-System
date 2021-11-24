@@ -29,6 +29,7 @@ public class User {
     private String password;
 
     @Lob
+    @Basic(fetch = FetchType.LAZY)
     private byte[] avatar;
     private String nickname;
     private String email;
