@@ -50,10 +50,7 @@ const Library: React.FC<{
         setAlertMsg(msg);
     };
 
-    const PublicOrderListWrapper: React.FC<{
-        keywords: string;
-        listMode?: boolean;
-    }> = (wrapperProps) => (
+    const renderOrderList = (keywords: string, listMode?: boolean) => (
         <OrderList
             userId={user?.id}
             keywords={keywords}
@@ -62,7 +59,7 @@ const Library: React.FC<{
             itemPrePage={itemPrePage}
             setCurrentPage={setCurrentPage}
             initCurrentPage={currentPage}
-            listMode={wrapperProps.listMode}
+            listMode={listMode}
             initSortOrder={sortOrder}
             initSortProperty={sortProperty}
             alertHandler={alertHandler}
@@ -76,7 +73,7 @@ const Library: React.FC<{
 
     return props.briefMsg ? (
         <>
-            <PublicOrderListWrapper keywords={""} listMode={true} />
+            {renderOrderList("", true)}
             <Snackbar
                 autoHideDuration={2000}
                 open={alertFlag}
@@ -217,7 +214,7 @@ const Library: React.FC<{
                         {sortOrder === "ASC" ? "升序" : "降序"}
                     </Button>
                 </Stack>
-                <PublicOrderListWrapper keywords={keywords} />
+                {renderOrderList(keywords)}
             </Box>
             <Snackbar
                 autoHideDuration={2000}
