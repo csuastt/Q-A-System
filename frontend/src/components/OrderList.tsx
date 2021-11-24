@@ -77,6 +77,13 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [open, setOpen] = useState(false);
     const [chosenOrder, setChosenOrder] = useState(-1);
 
+    // Sync props change
+    useEffect(() => {
+        setCurrentPage(_.defaultTo(props.initCurrentPage, 1));
+        setSortProperty(_.defaultTo(props.initSortProperty, "createTime"));
+        setSortOrder(_.defaultTo(props.initSortOrder, "DESC"));
+    }, [props.initCurrentPage, props.initSortOrder, props.initSortProperty]);
+
     const handleOpen = (id: number) => {
         setOpen(true);
         setChosenOrder(id);
