@@ -368,9 +368,9 @@ export default class Login extends Component<LoginProps, LoginState> {
                     }}
                     sx={
                         typeof this.props.matches === "undefined" ||
-                            this.props.matches?
-                        { width: "30%" }:
-                            { width: "60%" }
+                        this.props.matches
+                            ? { width: "30%" }
+                            : { width: "60%" }
                     }
                 >
                     <Alert

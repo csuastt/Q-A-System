@@ -90,7 +90,8 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
                 <Typography variant="body1">
                     8、当您回答公开问题时，公开问题的所得将会有
                     <Box component="span" fontWeight="fontWeightBold">
-                        {config?.askerFeeRate ? 100 - config?.feeRate - config?.askerFeeRate
+                        {config?.askerFeeRate
+                            ? 100 - config?.feeRate - config?.askerFeeRate
                             : ""}
                     </Box>
                     %支付给您。需要提醒的是，所有公开问题的问题内容及聊天记录均为付费可见。
@@ -178,8 +179,12 @@ const Help: React.FC<{}> = (props) => {
                             <Typography variant="body1">
                                 7、您可以设置问题为公开问题。公开问题将会被加入问答库，
                                 其问题内容及聊天记录均为付费可见。其他用户需要支付一定费用才能查看公开问题，所支付费用的
-                                <Box component="span" fontWeight="fontWeightBold">
-                                    {config?.askerFeeRate ? config?.askerFeeRate
+                                <Box
+                                    component="span"
+                                    fontWeight="fontWeightBold"
+                                >
+                                    {config?.askerFeeRate
+                                        ? config?.askerFeeRate
                                         : ""}
                                 </Box>
                                 %将会直接支付给您。

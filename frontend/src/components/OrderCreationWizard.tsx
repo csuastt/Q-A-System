@@ -13,7 +13,12 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
-import {ConfigInfo, CreationResult, FileInfo, UserBasicInfo} from "../services/definations";
+import {
+    ConfigInfo,
+    CreationResult,
+    FileInfo,
+    UserBasicInfo,
+} from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -44,10 +49,10 @@ import { checkSensitiveWords, formatInterval, formatSize } from "../util";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
-import PaymentIcon from '@mui/icons-material/Payment';
+import PaymentIcon from "@mui/icons-material/Payment";
 import InputAdornment from "@mui/material/InputAdornment";
 import userService from "../services/userService";
-import {validate_required} from "./Login";
+import { validate_required } from "./Login";
 
 function processInt(str?: string): number {
     if (str) {
@@ -152,9 +157,11 @@ const OrderCreationWizard: React.FC = (props) => {
 
     const handleClosePrice = () => {
         console.log(price);
-        if (handlePriceChange({
-            target: { value: price },
-        }))
+        if (
+            handlePriceChange({
+                target: { value: price },
+            })
+        )
             setOpenPrice(false);
     };
 
@@ -162,8 +169,7 @@ const OrderCreationWizard: React.FC = (props) => {
         setQuestionDescription(newValue);
 
     const handlePriceChange = (e: any) => {
-        if (!chosenAnswer)
-            return false;
+        if (!chosenAnswer) return false;
         let error = validate_required(e.target.value.toString());
         let value = e.target.value;
         if (error) {
@@ -172,13 +178,11 @@ const OrderCreationWizard: React.FC = (props) => {
             return false;
         }
         setErrMsg("");
-        if (value < 0)
-            value = 0;
-        else if (value > chosenAnswer?.price)
-            value = chosenAnswer?.price;
+        if (value < 0) value = 0;
+        else if (value > chosenAnswer?.price) value = chosenAnswer?.price;
         setPrice(value);
         return true;
-    }
+    };
 
     const checkInput = (input: string) => {
         if (input && input.length >= 10) {
@@ -653,14 +657,15 @@ const OrderCreationWizard: React.FC = (props) => {
                             label="是否公开"
                             sx={{ marginRight: 1 }}
                         />
-                        {
-                            showPublic &&
-                            <IconButton aria-label="set" onClick={handleOpenPrice}
-                                        color={"primary"}
+                        {showPublic && (
+                            <IconButton
+                                aria-label="set"
+                                onClick={handleOpenPrice}
+                                color={"primary"}
                             >
                                 <PaymentIcon />
                             </IconButton>
-                        }
+                        )}
                         <IconButton aria-label="help" onClick={handleOpenHelp}>
                             <HelpOutlineIcon />
                         </IconButton>
@@ -770,7 +775,8 @@ const OrderCreationWizard: React.FC = (props) => {
                             一旦创建问题，您不可以再修改此问题的可见性。请仔细考虑。
                             公开问题后，您可以随时通过点击按钮设置定价。公开问题是付费可见的，所支付费用的
                             <Box component="span" fontWeight="fontWeightBold">
-                                {typeof config !== "undefined" ? config.askerFeeRate
+                                {typeof config !== "undefined"
+                                    ? config.askerFeeRate
                                     : ""}
                             </Box>
                             %将会直接支付给您。
@@ -786,11 +792,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         </Button>
                     </DialogActions>
                 </Dialog>
-                <Dialog
-                    fullWidth
-                    open={openPrice}
-                    onClose={handleClosePrice}
-                >
+                <Dialog fullWidth open={openPrice} onClose={handleClosePrice}>
                     <DialogTitle>设置查看问题价格</DialogTitle>
                     <DialogContent>
                         <DialogContentText mb={3}>
@@ -814,7 +816,7 @@ const OrderCreationWizard: React.FC = (props) => {
                             InputProps={{
                                 inputProps: {
                                     min: 0,
-                                    max: chosenAnswer?.price
+                                    max: chosenAnswer?.price,
                                 },
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -829,9 +831,7 @@ const OrderCreationWizard: React.FC = (props) => {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClosePrice}>
-                            确定
-                        </Button>
+                        <Button onClick={handleClosePrice}>确定</Button>
                     </DialogActions>
                 </Dialog>
             </>

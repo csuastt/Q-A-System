@@ -83,7 +83,7 @@ class OrderService {
                 title: questionTitle,
                 description: questionDescription,
                 showPublic: showPublic,
-                publicPrice: price
+                publicPrice: price,
             })
             .then((response) => response.data);
     }
@@ -107,7 +107,7 @@ class OrderService {
                     pageSize: prePage,
                     sortDirection: sortOrder,
                     sortProperty: sortProperty,
-                    purchased: 1
+                    purchased: 1,
                 },
             })
             .then((response) => response.data);
@@ -128,7 +128,7 @@ class OrderService {
                         page: page,
                         pageSize: prePage,
                         sortDirection: sortOrder,
-                        sortProperty: sortProperty
+                        sortProperty: sortProperty,
                     },
                 })
                 .then((response) => response.data);
@@ -139,7 +139,7 @@ class OrderService {
                         showPublic: 1,
                         keyword: keywords,
                         page: page,
-                        pageSize: prePage
+                        pageSize: prePage,
                     },
                 })
                 .then((response) => response.data);
@@ -203,9 +203,7 @@ class OrderService {
         });
     }
 
-    purchaseOrder(
-        orderId: number
-    ): Promise<any> {
+    purchaseOrder(orderId: number): Promise<any> {
         return axios.post(`/orders/${orderId}/purchase`);
     }
 }

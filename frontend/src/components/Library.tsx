@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { parseIntWithDefault, useQuery } from "../util";
 import OrderList from "./OrderList";
@@ -22,7 +22,7 @@ import Stack from "@mui/material/Stack";
 import UserContext from "../AuthContext";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
-import {Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 const Library: React.FC<{
     briefMsg?: boolean;
@@ -48,7 +48,7 @@ const Library: React.FC<{
     const alertHandler = (msg: string) => {
         setAlertFlag(true);
         setAlertMsg(msg);
-    }
+    };
 
     const PublicOrderListWrapper: React.FC<{
         keywords: string;
@@ -87,16 +87,9 @@ const Library: React.FC<{
                     vertical: "bottom",
                     horizontal: "center",
                 }}
-                sx={
-                    matches?
-                        { width: "30%" }:
-                        { width: "60%" }
-                }
+                sx={matches ? { width: "30%" } : { width: "60%" }}
             >
-                <Alert
-                    severity={"error"}
-                    sx={{ width: "100%" }}
-                >
+                <Alert severity={"error"} sx={{ width: "100%" }}>
                     {alertMsg}
                 </Alert>
             </Snackbar>
@@ -238,10 +231,7 @@ const Library: React.FC<{
                 }}
                 sx={{ width: "30%" }}
             >
-                <Alert
-                    severity={"error"}
-                    sx={{ width: "100%" }}
-                >
+                <Alert severity={"error"} sx={{ width: "100%" }}>
                     {alertMsg}
                 </Alert>
             </Snackbar>

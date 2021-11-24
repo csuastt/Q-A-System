@@ -362,9 +362,9 @@ export default class ChangePassword extends Component<
                     }}
                     sx={
                         typeof this.props.matches === "undefined" ||
-                        this.props.matches?
-                            { width: "30%" }:
-                            { width: "60%" }
+                        this.props.matches
+                            ? { width: "30%" }
+                            : { width: "60%" }
                     }
                 >
                     <Alert

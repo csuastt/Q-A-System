@@ -38,7 +38,7 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import LocalMallIcon from '@mui/icons-material/LocalMall';
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 import AuthContext from "../AuthContext";
 
 import RateReviewIcon from "@mui/icons-material/RateReview";
@@ -230,9 +230,7 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                           ]
                         : [["登录", "/admins/login", <LoginIcon />]]
                     : user
-                    ? [
-                          ["登出", "/logout", <LogoutIcon />],
-                      ]
+                    ? [["登出", "/logout", <LogoutIcon />]]
                     : [
                           ["登录", "/login", <LoginIcon />],
                           ["注册", "/register", <PersonAddIcon />],
@@ -316,7 +314,10 @@ const AppFrame: React.FC<{ isAdmin: boolean }> = (props) => {
                                 size="large"
                                 sx={{ marginRight: 1 }}
                             >
-                                <Badge badgeContent={unreadCount} color="warning">
+                                <Badge
+                                    badgeContent={unreadCount}
+                                    color="warning"
+                                >
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>

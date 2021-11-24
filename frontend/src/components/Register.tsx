@@ -61,7 +61,7 @@ interface RegisterState {
 }
 
 interface RegisterProps {
-    matches? :boolean;
+    matches?: boolean;
 }
 
 export default class Register extends Component<RegisterProps, RegisterState> {
@@ -375,9 +375,9 @@ export default class Register extends Component<RegisterProps, RegisterState> {
                     }}
                     sx={
                         typeof this.props.matches === "undefined" ||
-                        this.props.matches?
-                            { width: "30%" }:
-                            { width: "60%" }
+                        this.props.matches
+                            ? { width: "30%" }
+                            : { width: "60%" }
                     }
                 >
                     <Alert
