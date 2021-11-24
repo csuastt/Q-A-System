@@ -67,15 +67,7 @@ public class IMService {
 
     private void processNewMessage(Message msg) {
         repo.saveAndFlush(msg);
-        var notif =
-                Notification.builder()
-                        .type(Notification.Type.NEW_MESSAGE)
-                        .haveRead(false)
-                        .createTime(ZonedDateTime.now())
-                        .target(msg.getOrder())
-                        .msgSummary(msg.getBody())
-                        .build();
-        notif.setReceiver(msg.getOrder().getAnswerer());
+        var notif = Notification.ofNewMessage(msg.getOrder().getAnswerer(), msg.getOrder(), msg.getBody());
         notifService.send(notif);
         notif.setReceiver(msg.getOrder().getAsker());
         notifService.send(notif);

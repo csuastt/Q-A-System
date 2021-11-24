@@ -8,6 +8,8 @@ import com.example.qa.exchange.ChangePasswordRequest;
 import com.example.qa.exchange.EarningsResponse;
 import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.exchange.ValueRequest;
+import com.example.qa.notification.NotificationService;
+import com.example.qa.notification.model.Notification;
 import com.example.qa.order.exchange.AcceptRequest;
 import com.example.qa.user.exchange.*;
 import com.example.qa.user.model.User;
@@ -37,11 +39,13 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final AdminService adminService;
+    private final NotificationService notificationService;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, AdminService adminService) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, AdminService adminService, NotificationService notificationService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.adminService = adminService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping
@@ -174,9 +178,10 @@ public class UserController {
         user.setApplying(false);
         if (acceptRequest.isAccept()) {
             user.setRole(User.Role.ANSWERER);
-            // 发送消息
         }
-        userService.save(user);
+        user = userService.save(user);
+        notificationService.send(Notification.ofPlain(user, null,
+                acceptRequest.isAccept() ? Notification.Type.ANSWERER_APPLICATION_PASSED : Notification.Type.ANSWERER_APPLICATION_REJECTED));
     }
 
     @PostMapping("/{id}/recharge")

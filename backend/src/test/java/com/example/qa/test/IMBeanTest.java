@@ -159,7 +159,7 @@ class IMBeanTest {
         notification.setTarget(target);
         notification.setType(type);
 
-        Notification.ofPlain(answerer, "111");
+        Notification.ofPlain(answerer, "111", Notification.Type.PLAIN);
         Notification.ofNewMessage(answerer, target, "111");
         Notification.ofOrderStateChanged(answerer, target);
         Notification.ofDeadlineOrTimeout(answerer, target, type, deadline);
