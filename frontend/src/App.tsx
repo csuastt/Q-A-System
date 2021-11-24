@@ -195,7 +195,10 @@ export default function App() {
                         <SnackbarProvider maxSnack={4}>
                             <NotificationController wsAvailable={wsAvailable}>
                                 <AppFrame isAdmin={false}>
-                                    <Container maxWidth="md">
+                                    <Container
+                                        maxWidth="md"
+                                        sx={matches ? {} : { px: 0 }}
+                                    >
                                         <Switch>
                                             {routes.map((routeItem) => {
                                                 return (
