@@ -83,6 +83,22 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                 </Button>
             );
 
+            const ToUserProfileAction: React.FC<{
+                snackbarKey: SnackbarKey;
+            }> = (subProps) => (
+                <Button
+                    onClick={() => {
+                        closeSnackbar(subProps.snackbarKey);
+                        redirect("/profile");
+                    }}
+                    sx={{
+                        color: "white",
+                    }}
+                >
+                    查看
+                </Button>
+            );
+
             const successOrderState: Array<OrderState> = [
                 OrderState.CREATED,
                 OrderState.REVIEWED,
@@ -159,6 +175,22 @@ const NotificationController: React.FC<{ wsAvailable: boolean }> = (props) => {
                                 orderId={notif.targetId}
                                 snackbarKey={key}
                             />
+                        ),
+                    });
+                    break;
+                case NotificationType.ANSWERER_APPLICATION_PASSED:
+                    enqueueSnackbar(notifStr, {
+                        variant: "success",
+                        action: (key) => (
+                            <ToUserProfileAction snackbarKey={key} />
+                        ),
+                    });
+                    break;
+                case NotificationType.ANSWERER_APPLICATION_REJECTED:
+                    enqueueSnackbar(notifStr, {
+                        variant: "error",
+                        action: (key) => (
+                            <ToUserProfileAction snackbarKey={key} />
                         ),
                     });
                     break;
