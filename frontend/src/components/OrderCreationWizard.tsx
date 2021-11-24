@@ -592,8 +592,8 @@ const OrderCreationWizard: React.FC = (props) => {
                 />
                 <Stack
                     sx={{ mt: 2, mb: 2 }}
-                    direction={matches ? "row":"column"}
-                    alignItems={matches ? "center":"flex-start"}
+                    direction={matches ? "row" : "column"}
+                    alignItems={matches ? "center" : "flex-start"}
                     justifyContent="space-between"
                 >
                     <Stack

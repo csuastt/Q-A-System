@@ -253,8 +253,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     ) => {
         return wrapperProps.order.publicPrice === 0 ||
             typeof props.userId === "undefined" ||
-            (props.userId === wrapperProps.order.answerer.id) ||
-            (props.userId === wrapperProps.order.asker.id) ||
+            props.userId === wrapperProps.order.answerer.id ||
+            props.userId === wrapperProps.order.asker.id ||
             props.purchased ||
             (typeof wrapperProps.order.purchased !== "undefined" &&
                 wrapperProps.order.purchased) ? (
