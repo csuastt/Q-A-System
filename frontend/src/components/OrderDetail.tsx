@@ -54,6 +54,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
+import { Image } from "mdast";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -118,6 +119,28 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             setMaxMsgCount(config.maxChatMessages);
         });
     }, []);
+
+    // Upload Image
+    const uploadImage = React.useCallback<
+        (files: File[]) => Promise<Pick<Image, "url" | "alt" | "title">[]>
+    >(
+        (files: File[]) =>
+            Promise.all(
+                files.map((file) =>
+                    orderService
+                        .uploadPicture(props.orderId, file)
+                        .then((uuid) =>
+                            orderService.getPictureUrl(props.orderId, uuid)
+                        )
+                        .then((url) => ({
+                            url: url,
+                            alt: file.name,
+                            title: file.name,
+                        }))
+                )
+            ),
+        [props.orderId]
+    );
 
     // Answerering helper functions
     const handleAnswerChange = (newValue: string) => {
@@ -364,7 +387,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     : "";
                 return (
                     <Card>
-                        <Markdown value={message} onChange={setMessage} />
+                        <Markdown
+                            value={message}
+                            onChange={setMessage}
+                            uploadImages={uploadImage}
+                        />
                         <CardActions>
                             <Button
                                 onClick={sendMessage}

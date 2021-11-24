@@ -247,7 +247,7 @@ export interface IMMessage {
 }
 
 export interface AttachmentInfo {
-    uuid: number;
+    uuid: string;
     filename: string;
     size: number;
 }

@@ -20,15 +20,15 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
-public class FileSystemStorageService implements StorageService{
+public class FileSystemStorageService implements StorageService {
 
-    private final Path rootLocation;
-    private final Path rootLocationPic;
     private static HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
     private static HashMap<UUID, String> uuidStringHashMapPic = new HashMap<>();
+    private final Path rootLocation;
+    private final Path rootLocationPic;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties, OrderService orderService){
+    public FileSystemStorageService(StorageProperties properties, OrderService orderService) {
         this.rootLocation = Paths.get(properties.getLocation());
         this.rootLocationPic = Paths.get(properties.getLocationPic());
     }
@@ -38,8 +38,7 @@ public class FileSystemStorageService implements StorageService{
         try {
             Files.createDirectories(rootLocation);
             Files.createDirectories(rootLocationPic);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }
     }
@@ -63,8 +62,7 @@ public class FileSystemStorageService implements StorageService{
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Failed to store file.", e);
         }
     }
@@ -85,11 +83,9 @@ public class FileSystemStorageService implements StorageService{
                         "Cannot store file outside current directory.");
             }
             try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, destinationFile,
-                        StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Failed to store pic.", e);
         }
     }
@@ -100,8 +96,7 @@ public class FileSystemStorageService implements StorageService{
             return Files.walk(this.rootLocation, 1)
                     .filter(path -> !path.equals(this.rootLocation))
                     .map(this.rootLocation::relativize);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Failed to read stored files", e);
         }
     }
@@ -121,16 +116,12 @@ public class FileSystemStorageService implements StorageService{
         try {
             Path file = load(uuid);
             Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
+            if (resource.exists() && resource.isReadable()) {
                 return resource;
+            } else {
+                throw new StorageFileNotFoundException("Could not read file: " + uuid);
             }
-            else {
-                throw new StorageFileNotFoundException(
-                        "Could not read file: " + uuid);
-
-            }
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new StorageFileNotFoundException("Could not read file: " + uuid, e);
         }
     }
@@ -140,16 +131,12 @@ public class FileSystemStorageService implements StorageService{
         try {
             Path file = loadPic(uuid);
             Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
+            if (resource.exists() && resource.isReadable()) {
                 return resource;
+            } else {
+                throw new StorageFileNotFoundException("Could not read pic: " + uuid);
             }
-            else {
-                throw new StorageFileNotFoundException(
-                        "Could not read pic: " + uuid);
-
-            }
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new StorageFileNotFoundException("Could not read pic: " + uuid, e);
         }
     }
@@ -166,7 +153,7 @@ public class FileSystemStorageService implements StorageService{
                 .normalize().toAbsolutePath();
         try {
             FileSystemUtils.deleteRecursively(destinationFile);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             throw new StorageFileNotFoundException("Could not find file" + uuid, exception);
         }
     }
