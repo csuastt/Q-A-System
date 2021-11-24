@@ -30,6 +30,7 @@ public class User {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
+    @Type(type = "org.hibernate.type.ImageType")
     private byte[] avatar;
     private String nickname;
     private String email;

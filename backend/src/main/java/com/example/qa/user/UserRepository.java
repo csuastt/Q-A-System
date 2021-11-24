@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -17,9 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    @Transactional
     Page<User> findAllByRoleIn(Collection<User.Role> role, Pageable pageable);
 
-    @Transactional
     Page<User> findAllByApplying(boolean applying, Pageable pageable);
 }
