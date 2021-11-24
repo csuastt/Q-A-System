@@ -16,4 +16,5 @@ public class Configurable {
     private Integer maxChatMessages;
     private Integer maxChatTimeSeconds;
     private Integer feeRate;
+    private Integer askerFeeRate;
 }

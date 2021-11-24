@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    boolean existsByIdAndDeleted(long id, boolean deleted);
+    boolean existsById(long id);
 
     boolean existsByUsername(String username);
 
@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional
     Page<User> findAllByRoleIn(Collection<User.Role> role, Pageable pageable);
+
+    @Transactional
+    Page<User> findAllByApplying(boolean applying, Pageable pageable);
 }

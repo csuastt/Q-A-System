@@ -13,7 +13,12 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import questionService from "../services/orderService";
-import { ConfigInfo, CreationResult, FileInfo } from "../services/definations";
+import {
+    ConfigInfo,
+    CreationResult,
+    FileInfo,
+    UserBasicInfo,
+} from "../services/definations";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -44,6 +49,10 @@ import { checkSensitiveWords, formatInterval, formatSize } from "../util";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
+import PaymentIcon from "@mui/icons-material/Payment";
+import InputAdornment from "@mui/material/InputAdornment";
+import userService from "../services/userService";
+import { validate_required } from "./Login";
 
 function processInt(str?: string): number {
     if (str) {
@@ -62,10 +71,14 @@ const OrderCreationWizard: React.FC = (props) => {
     const [questionError, setQuestionError] = useState(false);
     const [result, setResult] = useState<CreationResult>();
     const [config, setConfig] = useState<ConfigInfo>();
+    const [chosenAnswer, setChosenAnswer] = useState<UserBasicInfo>();
+    const [errMsg, setErrMsg] = useState("");
     const [files, setFiles] = useState<Array<FileInfo>>([]);
     const [open, setOpen] = useState(false);
     const [showPublic, setShowPublic] = useState(false);
     const [openHelp, setOpenHelp] = useState(false);
+    const [openPrice, setOpenPrice] = useState(false);
+    const [price, setPrice] = useState(0);
 
     const { user } = useContext(UserContext);
     const routerParam = useParams<{ answerer?: string }>();
@@ -75,7 +88,11 @@ const OrderCreationWizard: React.FC = (props) => {
         systemConfigService.getSystemConfig().then((configInfo) => {
             setConfig(configInfo);
         });
-    }, []);
+        if (answerer >= 0)
+            userService.getUserBasicInfo(answerer).then((userInfo) => {
+                setChosenAnswer(userInfo);
+            });
+    }, [answerer]);
 
     const nextStep = () => {
         setActiveStep(activeStep + 1);
@@ -134,8 +151,38 @@ const OrderCreationWizard: React.FC = (props) => {
         setOpenHelp(false);
     };
 
+    const handleOpenPrice = () => {
+        setOpenPrice(true);
+    };
+
+    const handleClosePrice = () => {
+        console.log(price);
+        if (
+            handlePriceChange({
+                target: { value: price },
+            })
+        )
+            setOpenPrice(false);
+    };
+
     const handleQuestionDescriptionChange = (newValue: string) =>
         setQuestionDescription(newValue);
+
+    const handlePriceChange = (e: any) => {
+        if (!chosenAnswer) return false;
+        let error = validate_required(e.target.value.toString());
+        let value = e.target.value;
+        if (error) {
+            setErrMsg("价格为空或格式错误");
+            setPrice(value);
+            return false;
+        }
+        setErrMsg("");
+        if (value < 0) value = 0;
+        else if (value > chosenAnswer?.price) value = chosenAnswer?.price;
+        setPrice(value);
+        return true;
+    };
 
     const checkInput = (input: string) => {
         if (input && input.length >= 10) {
@@ -184,7 +231,8 @@ const OrderCreationWizard: React.FC = (props) => {
                     answerer,
                     questionTitle,
                     questionDescription,
-                    showPublic
+                    showPublic,
+                    price
                 )
                 .then(
                     (res) => {
@@ -429,7 +477,7 @@ const OrderCreationWizard: React.FC = (props) => {
         return answerer >= 0 ? (
             <>
                 <Grid container justifyContent={"center"} spacing={4}>
-                    <Grid item md={4} xs={8}>
+                    <Grid item md={4} xs={12}>
                         <AnswererCard userId={answerer} briefMsg={true} />
                     </Grid>
                     <Grid item md={8} xs={12}>
@@ -601,6 +649,7 @@ const OrderCreationWizard: React.FC = (props) => {
                                     checked={showPublic}
                                     onChange={(e) => {
                                         setShowPublic(e.target.checked);
+                                        e.target.checked && setOpenPrice(true);
                                     }}
                                     inputProps={{ "aria-label": "controlled" }}
                                 />
@@ -608,6 +657,15 @@ const OrderCreationWizard: React.FC = (props) => {
                             label="是否公开"
                             sx={{ marginRight: 1 }}
                         />
+                        {showPublic && (
+                            <IconButton
+                                aria-label="set"
+                                onClick={handleOpenPrice}
+                                color={"primary"}
+                            >
+                                <PaymentIcon />
+                            </IconButton>
+                        )}
                         <IconButton aria-label="help" onClick={handleOpenHelp}>
                             <HelpOutlineIcon />
                         </IconButton>
@@ -715,6 +773,13 @@ const OrderCreationWizard: React.FC = (props) => {
                             </Box>
                             的。
                             一旦创建问题，您不可以再修改此问题的可见性。请仔细考虑。
+                            公开问题后，您可以随时通过点击按钮设置定价。公开问题是付费可见的，所支付费用的
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {typeof config !== "undefined"
+                                    ? config.askerFeeRate
+                                    : ""}
+                            </Box>
+                            %将会直接支付给您。
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -725,6 +790,48 @@ const OrderCreationWizard: React.FC = (props) => {
                         >
                             知道了
                         </Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog fullWidth open={openPrice} onClose={handleClosePrice}>
+                    <DialogTitle>设置查看问题价格</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText mb={3}>
+                            请设置您的问题分享价格。在当前机制下，
+                            定价最高不能超过回答者的价格￥
+                            <Box component="span" fontWeight="fontWeightBold">
+                                {chosenAnswer?.price ? chosenAnswer?.price : ""}
+                            </Box>
+                            /次， 最低为￥
+                            <Box component="span" fontWeight="fontWeightBold">
+                                0
+                            </Box>
+                            /次，即为免费公开。
+                        </DialogContentText>
+                        <TextField
+                            fullWidth
+                            label="分享价格"
+                            name="price"
+                            onChange={handlePriceChange}
+                            type="number"
+                            InputProps={{
+                                inputProps: {
+                                    min: 0,
+                                    max: chosenAnswer?.price,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        ￥/次
+                                    </InputAdornment>
+                                ),
+                            }}
+                            value={price}
+                            error={errMsg.length !== 0}
+                            helperText={errMsg}
+                            variant="outlined"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClosePrice}>确定</Button>
                     </DialogActions>
                 </Dialog>
             </>

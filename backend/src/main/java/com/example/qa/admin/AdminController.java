@@ -12,7 +12,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -75,7 +74,7 @@ public class AdminController {
     public AdminResponse getAdmin(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
         authAdminOrSuperAdminOrThrow(id);
-        Admin admin = getAdminOrThrow(id, authIsSuperAdmin());
+        Admin admin = getAdminOrThrow(id);
         return new AdminResponse(admin);
     }
 
@@ -86,7 +85,7 @@ public class AdminController {
         if (id == 1 || request.getRole() == Admin.Role.SUPER_ADMIN) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
-        Admin admin = getAdminOrThrow(id, false);
+        Admin admin = getAdminOrThrow(id);
         if (request.getPassword() != null) {
             request.setPassword(passwordEncoder.encode(request.getPassword()));
         }
@@ -98,7 +97,7 @@ public class AdminController {
     public void changePassword(@PathVariable(value = "id") long id, @RequestBody ChangePasswordRequest request) {
         authLoginOrThrow();
         authAdminOrSuperAdminOrThrow(id);
-        Admin admin = getAdminOrThrow(id, false);
+        Admin admin = getAdminOrThrow(id);
         if (!authIsSuperAdmin() && !passwordEncoder.matches(request.getOriginal(), admin.getPassword())) {
             throw new ApiException(403, "WRONG_PASSWORD");
         }
@@ -106,22 +105,9 @@ public class AdminController {
         adminService.save(admin);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteAdmin(@PathVariable(value = "id") long id) {
-        authLoginOrThrow();
-        authSuperAdminOrThrow();
-        Admin admin = getAdminOrThrow(id, true);
-        if (admin.isDeleted()) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
-        }
-        admin.setDeleted(true);
-        admin.setUsername(admin.getUsername() + "@" + admin.getId());
-        adminService.save(admin);
-    }
-
-    private Admin getAdminOrThrow(long id, boolean allowDeleted) {
+    private Admin getAdminOrThrow(long id) {
         try {
-            return adminService.getById(id, allowDeleted);
+            return adminService.getById(id);
         } catch (UsernameNotFoundException e) {
             throw new ApiException(404);
         }

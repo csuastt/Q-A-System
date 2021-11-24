@@ -16,6 +16,7 @@ class ConfigService {
             maxChatMessages: info.maxChatMessages,
             maxChatTimeSeconds: info.maxChatTimeSeconds,
             feeRate: info.feeRate,
+            askerFeeRate: info.askerFeeRate,
         });
     }
 

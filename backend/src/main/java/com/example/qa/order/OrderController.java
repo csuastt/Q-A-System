@@ -77,36 +77,25 @@ public class OrderController {
         return new OrderResponse(order, isAdmin ? 2 : 1);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable(value = "id") long id) {
-        authLoginOrThrow();
-        authSuperAdminOrThrow();
-        Order order = getByIdOrThrow(id, true);
-        if (order.isDeleted()) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "ALREADY_DELETED");
-        }
-        order.setDeleted(true);
-        order.setExpireTime(null);
-        orderService.save(order);
-    }
-
     @GetMapping("/{id}")
     public OrderResponse queryOrder(@PathVariable(value = "id") long id) {
         boolean isAdmin = authLogin() && authIsAdmin();
-        Order order = getByIdOrThrow(id, isAdmin);
-        if (!order.isShowPublic()) {
+        Order order = getByIdOrThrow(id);
+        if (isAdmin) {
+            return new OrderResponse(order, 2);
+        } else if (!order.isShowPublic() || order.getPublicPrice() > 0) {
             authLoginOrThrow();
-            long userId = authGetId();
-            if (!isAdmin && order.getAsker().getId() != userId && order.getAnswerer().getId() != userId) {
+            User user = userService.getById(authGetId());
+            if (order.getAsker() != user && order.getAnswerer() != user && !user.getPurchasedOrders().contains(order)) {
                 throw new ApiException(403, ApiException.NO_PERMISSION);
             }
         }
-        return new OrderResponse(order, isAdmin ? 2 : 1);
+        return new OrderResponse(order, 1);
     }
 
     @GetMapping("/{id}/attachments")
     public List<Attachment> queryAttachmentList(@PathVariable(value = "id") long id) {
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         return order.getAttachmentList();
     }
 
@@ -118,11 +107,19 @@ public class OrderController {
                 "attachment; filename*=UTF-8''" + storageService.getNameByUUID(uuid)).body(file);
     }
 
+    @GetMapping("/{id}/pictures/{uuid}")
+    @ResponseBody
+    public ResponseEntity<Resource> servePic(@PathVariable(value = "id") long id, @PathVariable(value = "uuid") UUID uuid) {
+        Resource file = storageService.loadAsResourcePic(uuid);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename*=UTF-8''" + storageService.getNameByUUIDPic(uuid)).body(file);
+    }
+
     @PostMapping("/{id}/attachments")
     @ResponseBody
     public Attachment uploadFile(@PathVariable(value = "id") long id, @RequestParam(value = "file") MultipartFile multipartFile) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
@@ -133,11 +130,26 @@ public class OrderController {
         return attachment;
     }
 
+    @PostMapping("/{id}/pictures")
+    @ResponseBody
+    public UUID uploadPic(@PathVariable(value = "id") long id, @RequestParam(value = "pic") MultipartFile multipartFile) {
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id);
+        if (!authIsAdmin() && order.getAsker().getId() != authGetId() && order.getAnswerer().getId() != authGetId()) {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+        UUID uuid = UUID.randomUUID();
+        order.getPics().add(uuid);
+        orderService.save(order);
+        storageService.storePic(multipartFile, uuid);
+        return uuid;
+    }
+
     @PutMapping("/{id}")
     public void editOrder(@PathVariable(value = "id") long id, @RequestBody OrderRequest data) {
         authLoginOrThrow();
         authSuperAdminOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         order.update(data);
         orderService.save(order);
     }
@@ -145,10 +157,10 @@ public class OrderController {
     @PostMapping("/{id}/review")
     public void reviewOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         authLoginOrThrow();
-        if (!authIsAdmin() || adminService.getById(authGetId(), false).getRole() == Admin.Role.ADMIN) {
+        if (!authIsAdmin() || adminService.getById(authGetId()).getRole() == Admin.Role.ADMIN) {
             throw new ApiException(403, ApiException.NO_PERMISSION);
         }
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         if (order.getState() != Order.State.CREATED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_REVIEWED");
         }
@@ -168,7 +180,7 @@ public class OrderController {
     @PostMapping("/{id}/respond")
     public void respondOrder(@PathVariable(value = "id") long id, @RequestBody AcceptRequest data) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         authUserOrThrow(order.getAnswerer().getId());
         if (order.getState() != Order.State.REVIEWED) {
             throw new ApiException(HttpStatus.FORBIDDEN, "NOT_TO_BE_RESPONDED");
@@ -187,7 +199,7 @@ public class OrderController {
     @PostMapping("/{id}/end")
     public void endChat(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         Order.EndReason reason;
         if (authIsUser(order.getAsker().getId())) {
             reason = Order.EndReason.ASKER;
@@ -211,7 +223,7 @@ public class OrderController {
     @PostMapping("/{id}/cancel")
     public void cancelOrder(@PathVariable(value = "id") long id) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         User asker = order.getAsker();
         authUserOrThrow(asker.getId());
         if (order.getState() != Order.State.CREATED
@@ -226,7 +238,7 @@ public class OrderController {
     @PostMapping("/{id}/answer")
     public void answerOrder(@PathVariable(value = "id") long id, @RequestBody AnswerRequest request) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        Order order = getByIdOrThrow(id);
         User answerer = order.getAnswerer();
         authUserOrThrow(answerer.getId());
         if (order.getState() != Order.State.ACCEPTED) {
@@ -247,16 +259,42 @@ public class OrderController {
     @PostMapping("/{id}/rate")
     public void rateOrder(@PathVariable(value = "id") long id, @RequestBody ValueRequest request) {
         authLoginOrThrow();
-        Order order = getByIdOrThrow(id, false);
+        request.checkRatingOrThrow();
+        Order order = getByIdOrThrow(id);
         authUserOrThrow(order.getAsker().getId());
         if (order.getRating() > 0 || !Order.State.completedOrderStates.contains(order.getState())) {
             throw new ApiException(HttpStatus.FORBIDDEN, "CANNOT_RATE");
         }
         order.setRating(request.getValue());
+        order.setRatingText(request.getText());
         order = orderService.save(order);
         User answerer = order.getAnswerer();
         answerer.addRating(request.getValue());
         userService.save(answerer);
+    }
+
+    @PostMapping("/{id}/purchase")
+    public void purchase(@PathVariable(value = "id") long id) {
+        authLoginOrThrow();
+        Order order = getByIdOrThrow(id);
+        if (!order.isShowPublic() || order.getPublicPrice() == 0 || !Order.State.completedOrderStates.contains(order.getState())) {
+            throw new ApiException(403);
+        }
+        if (authIsAdmin() || authIsUser(order.getAsker().getId()) || authIsUser(order.getAnswerer().getId())) {
+            throw new ApiException(403);
+        }
+        User user = userService.getById(authGetId());
+        if (user.getPurchasedOrders().contains(order) || user.getBalance() < order.getPublicPrice()) {
+            throw new ApiException(403);
+        }
+        user.setBalance(user.getBalance() - order.getPublicPrice());
+        user.getPurchasedOrders().add(order);
+        userService.save(user);
+        int systemFee = order.getPublicPrice() * SystemConfig.getFeeRate() / 100;
+        SystemConfig.incEarnings(systemFee);
+        int askerFee = order.getPublicPrice() * SystemConfig.getAskerFeeRate() / 100;
+        userService.addEarnings(order.getAsker(), askerFee);
+        userService.addEarnings(order.getAnswerer(), order.getPublicPrice() - systemFee - askerFee);
     }
 
     @GetMapping
@@ -266,7 +304,7 @@ public class OrderController {
             @RequestParam(required = false) Long asker,
             @RequestParam(required = false) Long answerer,
             @RequestParam(required = false) Boolean finished,
-            @RequestParam(required = false) Boolean reviewed,
+            @RequestParam(required = false) Boolean purchased,
             @RequestParam(required = false) List<Order.State> state,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "1") int page,
@@ -287,7 +325,11 @@ public class OrderController {
         if (Boolean.TRUE.equals(showPublic)) {
             // keyword == null 时列出所有公开订单
             result = orderService.listByPublic(keyword);
-            OrderListResponse response = new OrderListResponse(result, 0);
+            User user = null;
+            if (authLogin() && authIsUser()) {
+                user = userService.getById(authGetId());
+            }
+            OrderListResponse response = new OrderListResponse(result, 0, user);
             response.setTimeMillis(System.currentTimeMillis() - startTime);
             return response;
         }
@@ -296,32 +338,34 @@ public class OrderController {
         if (authIsAdmin()) {
             pageRequest = pageRequest.withSort(Objects.requireNonNullElse(sortDirection, Sort.Direction.ASC), sortProperty);
             orderService.setPageRequest(pageRequest);
-            if (Boolean.TRUE.equals(reviewed)) {
-                result = orderService.listByReviewed();
-            } else {
-                // state == null 时列出所有订单，包含已删除
-                result = orderService.listByState(state);
-            }
+            // state == null 时列出所有订单，包含已删除
+            result = orderService.listByState(state);
             orderResponseLevel = 2;
         } else {
-            if (asker != null && authIsUser(asker)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAsker(userService.getById(asker), finished);
-            } else if (answerer != null && authIsUser(answerer)) {
-                // finished == null 时列出所有该用户的订单
-                result = orderService.listByAnswerer(userService.getById(answerer), finished);
-            } else {
-                throw new ApiException(403, ApiException.NO_PERMISSION);
-            }
+            result = userOrderList(asker, answerer, finished, purchased);
         }
         OrderListResponse response = new OrderListResponse(result, orderResponseLevel);
         response.setTimeMillis(System.currentTimeMillis() - startTime);
         return response;
     }
 
-    private Order getByIdOrThrow(long id, boolean allowDeleted) {
+    private Page<Order> userOrderList(Long asker, Long answerer, Boolean finished, Boolean purchased) {
+        if (Boolean.TRUE.equals(purchased)) {
+            return orderService.listByPaidUser(userService.getById(authGetId()));
+        } else if (asker != null && authIsUser(asker)) {
+            // finished == null 时列出所有该用户的订单
+            return orderService.listByAsker(userService.getById(asker), finished);
+        } else if (answerer != null && authIsUser(answerer)) {
+            // finished == null 时列出所有该用户的订单
+            return orderService.listByAnswerer(userService.getById(answerer), finished);
+        } else {
+            throw new ApiException(403, ApiException.NO_PERMISSION);
+        }
+    }
+
+    private Order getByIdOrThrow(long id) {
         Optional<Order> order = orderService.findById(id);
-        if (order.isEmpty() || (order.get().isDeleted() && !allowDeleted)) {
+        if (order.isEmpty()) {
             throw new ApiException(HttpStatus.NOT_FOUND);
         }
         return order.get();

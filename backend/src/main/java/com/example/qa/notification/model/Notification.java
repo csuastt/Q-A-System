@@ -3,6 +3,7 @@ package com.example.qa.notification.model;
 import com.example.qa.order.model.Order;
 import com.example.qa.user.model.User;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -32,6 +33,8 @@ public class Notification {
     private Order target;
     private boolean haveRead;
 
+    @Lob
+    @org.hibernate.annotations.Type(type = "text")
     private String msgSummary;
     @Enumerated(EnumType.STRING)
     private Order.State newState;

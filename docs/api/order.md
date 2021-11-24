@@ -7,7 +7,6 @@
 | 属性                | 类型           | JSON                                       | 说明                 |
 | ------------------- | -------------- | ------------------------------------------ | -------------------- |
 | id                  | long           |                                            |                      |
-| deleted             | boolean        |                                            | 删除标记（仅管理员） |
 | asker               | User           | Get: User, Set: number                     |                      |
 | answerer            | User           | Get: User, Set: number                     |                      |
 | state               | OrderState     | string                                     |                      |
@@ -22,6 +21,8 @@
 | showPublic          | boolean        |                                            | 公开问题             |
 | messageCount        | int            |                                            | 聊天消息条数         |
 | rating              | int            | Get: > 0 已评分，= 0 未评分                | 评分                 |
+| ratingText          | String         |                                            | 仅限详细信息         |
+| publicPrice         | int            |                                            | 公开问题价格         |
 
 ### OrderState (enum)
 
@@ -58,11 +59,12 @@ POST /api/orders
 
 参数：（用户）
 
-| 名称       | 类型    | 说明     |
-| ---------- | ------- | -------- |
-| answerer   | number  | 用户 ID  |
-| question   | string  | 问题     |
-| showPublic | boolean | 是否公开 |
+| 名称        | 类型    | 说明                                                         |
+| ----------- | ------- | ------------------------------------------------------------ |
+| answerer    | number  | 用户 ID                                                      |
+| question    | string  | 问题                                                         |
+| showPublic  | boolean | 是否公开                                                     |
+| publicPrice | number  | 问题公开价格，最低为 0，最高为回答者价格（本问题价格），传入更高会直接截断为问题价格 |
 
 参数：（超级管理员）
 
@@ -87,29 +89,7 @@ POST /api/orders
   | `QUESTION_INVALID`   | 问题字数不符合系统要求                         |
   | `BALANCE_NOT_ENOUGH` | 余额不足                                       |
 
-### 删除订单
-
-（仅限超级管理员）
-
-```
-DELETE /api/orders/{id}
-```
-
-返回值：
-
-- `200` OK
-- `401` 未登录
-- `403` 错误
-  
-  | message 属性      | 说明       |
-  | ----------------- | ---------- |
-  | `NO_PERMISSION`   | 不是管理员 |
-  | `ALREADY_DELETED` | 已经删除   |
-- `404` 订单不存在
-
 ### 获取订单信息
-
-（管理员可以查询已删除订单，普通用户会报 404）
 
 ```
 GET /api/orders/{id}
@@ -120,11 +100,11 @@ GET /api/orders/{id}
 - `200` OK，内容为 Order
 - `401` 未登录
 - `403` 错误（没权限）
-- `404` 订单不存在或已删除
+- `404` 订单不存在
 
 ### 修改订单信息
 
-（仅限管理员，已删除的订单不能修改）
+（仅限管理员）
 
 ```
 PUT /api/orders/{id}
@@ -146,7 +126,7 @@ PUT /api/orders/{id}
 
 - `403` 错误（仅限管理员，无权限）
 
-- `404` 订单不存在或已删除
+- `404` 订单不存在
 
 ### 查询订单列表
 
@@ -188,7 +168,15 @@ GET /api/orders
 ?showPublic={true,yes,1}&keyword={关键词}
 ```
 
-获取问答库/搜索问答库。（无需登录）
+获取问答库/搜索问答库。（无需登录）**登录后，每个需付费订单，如果其 purchased 属性设为 true，表示已购买。免费问题无需购买，不会有 purchased 属性。**
+
+```
+?purchased={true,yes,1}
+```
+
+查询已购买订单。
+
+
 
 参数：（管理员）
 
@@ -196,7 +184,6 @@ GET /api/orders
 (无参数)
 ?state=CREATED  => 获取待审核订单
 ?state=CREATED&state=CANCELLED  => 筛选多个状态
-?reviewed={true,yes,1}&sortDirection=DESC  => 获取已审核订单（reviewed 不可设为 false）
 ```
 
 返回值：
@@ -226,7 +213,7 @@ POST /api/orders/{id}/review
 - `400` 格式错误
 - `401` 未登录
 - `403` 错误（`{message: "NOT_TO_BE_REVIEWED"}` 订单不是待审核状态 或者没权限）
-- `404` 订单不存在或已删除
+- `404` 订单不存在
 
 ### 回答者接单
 
@@ -246,7 +233,7 @@ POST /api/orders/{id}/respond
 - `400` 格式错误
 - `401` 未登录
 - `403` 错误（`{message: "NOT_TO_BE_RESPONDED"}` 订单不是待接单状态 或者没权限）
-- `404` 订单不存在或已删除
+- `404` 订单不存在
 
 ### 回答者首次回答
 
@@ -270,7 +257,7 @@ POST /api/orders/{id}/answer
 - `400` 格式错误
 - `401` 未登录
 - `403` 错误（订单不是待回答状态  或者没权限）
-- `404` 订单不存在或已删除
+- `404` 订单不存在
 
 ### 结束服务
 
@@ -283,7 +270,7 @@ POST /api/orders/{id}/end
 - `200` OK
 - `401` 未登录
 - `403` 错误（`{message: "NOT_TO_BE_ENDED"}`订单不是聊天对话状态  或者没权限）
-- `404` 订单不存在或已删除
+- `404` 订单不存在
 
 ### 取消订单
 
@@ -300,7 +287,7 @@ POST /api/orders/{id}/cancel
   | --------------- | -------------- |
   | `NO_PERMISSION` | 不是提问者     |
   | `CANNOT_CANCEL` | 已接单无法取消 |
-- `404` 订单不存在或已删除
+- `404` 订单不存在
 
 ### 评价订单
 
@@ -311,8 +298,10 @@ POST /api/orders/{id}/rate
 参数：
 
 ```json
-{ "value": 5 }
+{ "value": 5, "text": "Very good!" }
 ```
+
+（text 限 200 字，如果传 null 则获取时也会返回 null）
 
 返回值：
 
@@ -322,10 +311,28 @@ POST /api/orders/{id}/rate
 
 - `403` 错误
 
-  | message 属性    | 说明                           |
-  | --------------- | ------------------------------ |
-  | `NO_PERMISSION` | 不是提问者                     |
-  | `CANNOT_RATE`   | 不能评分（聊天未结束或已评分） |
+  | message 属性     | 说明                           |
+  | ---------------- | ------------------------------ |
+  | `NO_PERMISSION`  | 不是提问者                     |
+  | `CANNOT_RATE`    | 不能评分（聊天未结束或已评分） |
+  | `RATING_INVALID` | 不是 1~5                       |
+  | `TEXT_INVALID`   | 超过 200 字                    |
 
-- `404` 订单不存在或已删除
+- `404` 订单不存在
+
+### 购买付费公开问题
+
+```
+POST /api/orders/{id}/purchase
+```
+
+返回值：
+
+- `200` OK
+
+- `401` 未登录
+
+- `403` 错误（订单非公开/订单免费/订单未结束/是管理员/是提问者/是回答者/已购买/余额不足）
+
+- `404` 订单不存在
 

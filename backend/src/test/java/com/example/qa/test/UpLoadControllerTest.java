@@ -6,8 +6,11 @@ import com.example.qa.admin.exchange.PasswordResponse;
 import com.example.qa.admin.model.Admin;
 import com.example.qa.exchange.LoginRequest;
 import com.example.qa.exchange.TokenResponse;
+import com.example.qa.exchange.ValueRequest;
 import com.example.qa.order.exchange.OrderRequest;
 import com.example.qa.order.exchange.OrderResponse;
+import com.example.qa.order.model.Attachment;
+import com.example.qa.order.model.Order;
 import com.example.qa.order.storage.StorageProperties;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
@@ -29,7 +32,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
+import java.util.UUID;
 
+import static com.example.qa.utils.JsonUtils.mapper;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -179,12 +184,25 @@ class UpLoadControllerTest {
         mockUtils.multiPart("/api/users/" + answererId + "/avatar",askerToken,avatars,"multipartFile",status().isForbidden());
         mockUtils.multiPart("/api/users/" + answererId + "/avatar",null,avatars,"multipartFile",status().isUnauthorized());
 
-        mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken,file,"file",status().isOk());
+        Attachment attachment = mapper.readValue(mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken,file,"file",status().isOk()).getResponse().getContentAsString(), Attachment.class);
+        mockUtils.getUrl("/api/orders/" + id + "/attachments/" + attachment.getUuid(), answererToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments/" + attachment.getUuid(), answererToken2, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/attachments/" + attachment.getUuid(), null, null, null, status().isOk());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken,file,"file",status().isOk());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",adminToken,file,"file",status().isOk());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",answererToken2,file,"file",status().isForbidden());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",askerToken2,file,"file",status().isForbidden());
         mockUtils.multiPart("/api/orders/" + id + "/attachments",null,file,"file",status().isUnauthorized());
+
+        UUID uuid = mapper.readValue(mockUtils.multiPart("/api/orders/" + id + "/pictures",askerToken,avatars,"pic",status().isOk()).getResponse().getContentAsString(), UUID.class);
+        mockUtils.getUrl("/api/orders/" + id + "/pictures/" + uuid, answererToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/pictures/" + uuid, answererToken2, null, null, status().isOk());
+        mockUtils.getUrl("/api/orders/" + id + "/pictures/" + uuid, null, null, null, status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",answererToken,avatars,"pic",status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",adminToken,avatars,"pic",status().isOk());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",answererToken2,avatars,"pic",status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",askerToken2,avatars,"pic",status().isForbidden());
+        mockUtils.multiPart("/api/orders/" + id + "/pictures",null,avatars,"pic",status().isUnauthorized());
 
         mockUtils.getUrl("/api/orders/" + id + "/attachments",askerToken,null,null,status().isOk());
         mockUtils.getUrl("/api/orders/" + id + "/attachments",answererToken,null,null,status().isOk());
@@ -208,5 +226,94 @@ class UpLoadControllerTest {
         mockUtils.getUrl("/api/users/" + askerId + "/stats",answererToken,null,null,status().isForbidden());
         mockUtils.getUrl("/api/users/" + askerId + "/stats",adminToken,null,null,status().isOk());
         mockUtils.getUrl("/api/users/" + askerId + "/stats",null,null,null,status().isUnauthorized());
+    }
+
+    @Test
+    void testPurchasing() throws Exception {
+        long id = createOrder();
+
+        OrderRequest request = new OrderRequest();
+        request.setShowPublic(true);
+        request.setPublicPrice(2);
+        request.setState(Order.State.CHAT_ENDED);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setShowPublic(false);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setShowPublic(true);
+        request.setPublicPrice(-1);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setShowPublic(false);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+        request.setState(Order.State.ACCEPTED);
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", null, null, status().isUnauthorized());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken2, null, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/purchase", askerToken, null, status().isForbidden());
+    }
+
+    @Test
+    void testRating() throws Exception {
+
+        long id = createOrder();
+
+        OrderRequest request = new OrderRequest();
+        request.setShowPublic(true);
+        request.setPublicPrice(2);
+        request.setState(Order.State.CHAT_ENDED);
+        edit(id, request);
+
+        ValueRequest request1 = new ValueRequest();
+        request1.setValue(6);
+        request1.setText("12345");
+
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+        request1.setValue(1);
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isOk());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+
+        request1.setText(null);
+
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+
+        request1.setText("01234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                         "01234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                         "01234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                         "01234567890123456789012345678901234567890123456789012345678901234567890123456789");
+
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+
+        request1.setText("1");
+        request.setState(Order.State.ACCEPTED);
+        edit(id, request);
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",askerToken2, request1, status().isForbidden());
+        mockUtils.postUrl("/api/orders/" + id + "/rate",answererToken, request1, status().isForbidden());
+    }
+
+    @Test
+    void testConfig() throws Exception {
+        mockUtils.getUrl("/api/config/stats", superAdminToken, null, null, status().isOk());
+        mockUtils.getUrl("/api/config/stats", askerToken2, null, null, status().isForbidden());
+        mockUtils.getUrl("/api/config/stats", null, null, null, status().isUnauthorized());
+    }
+
+    void edit(long id, OrderRequest data) throws Exception {
+        mockUtils.putUrl("/api/orders/" + id, superAdminToken, data, status().isOk());
     }
 }

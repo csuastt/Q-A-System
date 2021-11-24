@@ -73,7 +73,8 @@ class OrderService {
         answerer: number,
         questionTitle: string,
         questionDescription: string,
-        showPublic: boolean
+        showPublic: boolean,
+        price: number
     ): Promise<CreationResult> {
         return axios
             .post("/orders", {
@@ -82,6 +83,7 @@ class OrderService {
                 title: questionTitle,
                 description: questionDescription,
                 showPublic: showPublic,
+                publicPrice: price,
             })
             .then((response) => response.data);
     }
@@ -89,6 +91,25 @@ class OrderService {
     getOrderInfo(orderId: number): Promise<OrderInfo> {
         return axios
             .get(`/orders/${orderId}`)
+            .then((response) => response.data);
+    }
+
+    getOrderListPurchased(
+        page?: number,
+        prePage?: number,
+        sortOrder?: string,
+        sortProperty?: string
+    ): Promise<PagedList<OrderInfo>> {
+        return axios
+            .get("/orders", {
+                params: {
+                    page: page,
+                    pageSize: prePage,
+                    sortDirection: sortOrder,
+                    sortProperty: sortProperty,
+                    purchased: 1,
+                },
+            })
             .then((response) => response.data);
     }
 
@@ -165,14 +186,41 @@ class OrderService {
             .then((response) => response.data);
     }
 
-    getAttachmentUrl(orderId: number, uuid: number) {
+    getAttachmentUrl(orderId: number, uuid: string) {
         return (
             axios.defaults.baseURL + `/orders/${orderId}/attachments/${uuid}`
         );
     }
 
-    rateOrder(orderId: number, rating: number): Promise<any> {
-        return axios.post(`/orders/${orderId}/rate`, { value: rating });
+    uploadPicture(orderId: number, file: File): Promise<string> {
+        const formData = new FormData();
+        formData.append("pic", file);
+        return axios
+            .post(`/orders/${orderId}/pictures`, formData, {
+                headers: {
+                    "content-type": "multipart/form-data",
+                },
+            })
+            .then((response) => response.data);
+    }
+
+    getPictureUrl(orderId: number, uuid: string) {
+        return axios.defaults.baseURL + `/orders/${orderId}/pictures/${uuid}`;
+    }
+
+    rateOrder(
+        orderId: number,
+        rating: number,
+        ratingText: string
+    ): Promise<any> {
+        return axios.post(`/orders/${orderId}/rate`, {
+            value: rating,
+            text: ratingText,
+        });
+    }
+
+    purchaseOrder(orderId: number): Promise<any> {
+        return axios.post(`/orders/${orderId}/purchase`);
     }
 }
 

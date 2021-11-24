@@ -12,7 +12,6 @@
 | id          | long   |      |                                      |
 | username    | string |      | Unique，不可修改                     |
 | nickname    | string |      | 默认设成与 username 相同             |
-| avatar      | string |      | 未上传则为空                         |
 | description | string |      |                                      |
 | price       | int    |      | 回答问题定价（仅回答者）             |
 | ratingCount | int    |      | 评分次数（有可能为 0，代表没有评分） |
@@ -21,23 +20,23 @@
 
 #### 私有属性 (仅限本用户)
 
-| 属性        | 类型   | JSON   | 说明                                              |
-| ----------- | ------ | ------ | ------------------------------------------------- |
-| password    | string | 不返回 | 只写不读                                          |
-| email       | string |        | 有数据验证                                        |
-| phone       | string |        | 可随意修改                                        |
-| gender      | enum   | string | { UNKNOWN, MALE, FEMALE }                         |
-| role        | enum   | string | { USER, ANSWERER }                                |
-| balance     | int    |        | 余额                                              |
-| askCount    | int    |        | 提问单数（仅计算有效单数，回答者第一次回答时 +1） |
-| answerCount | int    |        | 回答单数（仅计算有效单数，每单第一次回答时 +1）   |
+| 属性        | 类型    | JSON   | 说明                                              |
+| ----------- | ------- | ------ | ------------------------------------------------- |
+| password    | string  | 不返回 | 只写不读                                          |
+| email       | string  |        | 有数据验证                                        |
+| phone       | string  |        | 可随意修改                                        |
+| gender      | enum    | string | { UNKNOWN, MALE, FEMALE }                         |
+| role        | enum    | string | { USER, ANSWERER }                                |
+| applying    | boolean |        | USER + 设为 true 代表正在申请成为回答者           |
+| balance     | int     |        | 余额                                              |
+| askCount    | int     |        | 提问单数（仅计算有效单数，回答者第一次回答时 +1） |
+| answerCount | int     |        | 回答单数（仅计算有效单数，每单第一次回答时 +1）   |
 
 #### 私有属性 (仅限管理员)
 
-| 属性       | 类型          | JSON              | 说明     |
-| ---------- | ------------- | ----------------- | -------- |
-| deleted    | boolean       |                   | 删除标记 |
-| createTime | ZonedDateTime | ISO string in UTC |          |
+| 属性       | 类型          | JSON              | 说明 |
+| ---------- | ------------- | ----------------- | ---- |
+| createTime | ZonedDateTime | ISO string in UTC |      |
 
 ## Authentication
 
@@ -110,41 +109,20 @@ GET /api/users
 
 参数：
 
-| 属性          | 类型   | 说明                                          |
-| ------------- | ------ | --------------------------------------------- |
-| role          | enum   | 用户只能填 ANSWERER，管理员任意（可重复多个） |
-| pageSize      | int    | 单页用户数，默认为 20                         |
-| page          | int    | 页数，默认为 1                                |
-| sortDirection | enum   | { ASC, DESC } 默认 ASC                        |
-| sortProperty  | String | 默认 id                                       |
+| 属性          | 类型    | 说明                                               |
+| ------------- | ------- | -------------------------------------------------- |
+| role          | enum    | 用户只能填 ANSWERER，管理员任意（可重复多个）      |
+| applying      | boolean | 设为 {1,true,yes} 列出待审核用户，忽略 role 和排序 |
+| pageSize      | int     | 单页用户数，默认为 20                              |
+| page          | int     | 页数，默认为 1                                     |
+| sortDirection | enum    | { ASC, DESC } 默认 ASC                             |
+| sortProperty  | String  | 默认 id                                            |
 
 返回值：
 
 - `200` OK `{ pageSize: 20, page: 1, totalPages: 2, totalCount: 999, data: [...] }`
 - `400` 格式错误
 - `403` 权限不足
-
-### 删除
-
-（仅限管理员）
-
-```
-DELETE /api/users/{id}
-```
-
-返回值：
-
-- `200` OK
-- `401` 未登录
-
-- `403` 错误
-  
-  | message 属性      | 说明       |
-  | ----------------- | ---------- |
-  | `NO_PERMISSION`   | 不是管理员 |
-  | `ALREADY_DELETED` | 已经删除   |
-  
-- `404` 用户不存在
 
 ### 查询
 
@@ -155,7 +133,7 @@ GET /api/users/{id}
 返回值：
 
 - `200` OK（返回值是单个 User，详细程度见 Model）
-- `404` 用户不存在（或用户已删除且查询者不是管理员）
+- `404` 用户不存在
 
 ### 修改
 
@@ -184,7 +162,7 @@ PUT /api/users/{id}
   | `DESCRIPTION_INVALID` | 个人说明长度错误       |
   | `PRICE_INVALID`       | 价格错误（仅限回答者） |
 
-- `404` 用户已删除或管理员修改用户不存在
+- `404` 管理员修改用户不存在
 
 ### 修改密码
 
@@ -210,7 +188,7 @@ PUT /api/users/{id}/password
   | `NO_PERMISSION`    | 非本用户或管理员 |
   | `WRONG_PASSWORD`   | 原密码错误       |
   | `PASSWORD_INVALID` | 新密码格式错误   |
-- `404` 管理员修改用户不存在或已删除
+- `404` 管理员修改用户不存在
 
 ### 申请成为回答者
 
@@ -314,8 +292,28 @@ GET /api/users/{id}/stats
 
 ```json
 {
-	"askCount": 0,
+    "askCount": 0,
     "answerCount": 0
 }
 ```
+
+### 审核回答者申请
+
+```
+POST /api/users/{id}/review
+```
+
+参数：
+
+| 属性   | 类型    | 说明                      |
+| ------ | ------- | ------------------------- |
+| accept | boolean | true 为通过，false 为拒绝 |
+
+返回值：
+
+- `200` OK
+
+- `401` 未登录
+
+- `403` 错误（只允许审核员或超级管理员）
 

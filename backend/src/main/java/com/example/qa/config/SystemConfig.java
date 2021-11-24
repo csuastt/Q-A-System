@@ -47,6 +47,8 @@ public class SystemConfig {
     private static int maxChatTimeSeconds = 604800;  // 7 days (after answering)
     @Getter
     private static int feeRate = 30;  // in percentage
+    @Getter
+    private static int askerFeeRate = 20;
 
     @Getter
     private static int earningsTotal = 0;
@@ -63,6 +65,7 @@ public class SystemConfig {
         result.setMaxChatMessages(maxChatMessages);
         result.setMaxChatTimeSeconds(maxChatTimeSeconds);
         result.setFeeRate(feeRate);
+        result.setAskerFeeRate(askerFeeRate);
         return result;
     }
 
@@ -75,6 +78,7 @@ public class SystemConfig {
         maxChatMessages = Objects.requireNonNullElse(configurable.getMaxChatMessages(), maxChatMessages);
         maxChatTimeSeconds = Objects.requireNonNullElse(configurable.getMaxChatTimeSeconds(), maxChatTimeSeconds);
         feeRate = Objects.requireNonNullElse(configurable.getFeeRate(), feeRate);
+        askerFeeRate = Objects.requireNonNullElse(configurable.getAskerFeeRate(), askerFeeRate);
     }
 
     public static void incEarnings(int value) {

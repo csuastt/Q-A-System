@@ -70,6 +70,7 @@ export interface UserInfo {
     balance: number;
     description: string;
     role: UserRole;
+    applying: boolean;
     rating: number;
     ratingCount: number;
 }
@@ -87,6 +88,7 @@ export interface UserFullyInfo {
     description: string;
     price: number;
     role: UserRole;
+    applying: boolean;
     rating: number;
     ratingCount: number;
 }
@@ -149,6 +151,9 @@ export interface OrderInfo {
     messageCount: number;
     rating: number;
     showPublic: boolean;
+    ratingText: string;
+    publicPrice: number;
+    purchased: boolean;
 }
 
 export enum CreationResultType {
@@ -211,6 +216,7 @@ export interface ConfigInfo {
     maxChatMessages: number;
     maxChatTimeSeconds: number;
     feeRate: number;
+    askerFeeRate: number;
 }
 
 export enum NotificationType {
@@ -243,7 +249,7 @@ export interface IMMessage {
 }
 
 export interface AttachmentInfo {
-    uuid: number;
+    uuid: string;
     filename: string;
     size: number;
 }

@@ -57,6 +57,7 @@ interface ProfileState {
 // props interface
 interface ProfileProps {
     isAdmin: boolean;
+    matches?: boolean;
 }
 
 // gender options
@@ -254,6 +255,7 @@ export default class AccountProfile extends Component<
                 description: "This is the description",
                 price: 50,
                 role: UserRole.ANSWERER,
+                applying: false,
                 rating: 0.5,
                 ratingCount: 10,
             };
@@ -479,6 +481,7 @@ export default class AccountProfile extends Component<
                                 nickname={this.now_nickname}
                                 username={this.state.user?.username}
                                 role={this.state.user?.role}
+                                applying={this.state.user?.applying}
                                 alertHandler={this.handleAlert}
                                 redirectHandler={this.handleRedirect}
                                 config={this.state.config}
@@ -929,7 +932,12 @@ export default class AccountProfile extends Component<
                         vertical: "bottom",
                         horizontal: "center",
                     }}
-                    sx={{ width: "30%" }}
+                    sx={
+                        typeof this.props.matches === "undefined" ||
+                        this.props.matches
+                            ? { width: "30%" }
+                            : { width: "60%" }
+                    }
                 >
                     <Alert
                         severity={this.state.alertType}

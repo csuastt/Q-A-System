@@ -13,7 +13,6 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 public class AdminResponse {
     private Long id;
-    private Boolean deleted;
     private String username;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
@@ -21,7 +20,6 @@ public class AdminResponse {
 
     public AdminResponse(Admin admin) {
         id = admin.getId();
-        deleted = admin.isDeleted();
         username = admin.getUsername();
         createTime = admin.getCreateTime();
         role = admin.getRole();

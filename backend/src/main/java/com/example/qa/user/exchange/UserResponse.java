@@ -15,7 +15,6 @@ import java.time.ZonedDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponse {
     private Long id;
-    private Boolean deleted;
     private String username;
     private String nickname;
     private String email;
@@ -26,6 +25,7 @@ public class UserResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ZonedDateTime createTime;
     private User.Role role;
+    private Boolean applying;
     private Integer balance;
     private Integer askCount;
     private Integer answerCount;
@@ -53,12 +53,12 @@ public class UserResponse {
             phone = user.getPhone();
             gender = user.getGender();
             role = user.getRole();
+            applying = user.isApplying();
             balance = user.getBalance();
             askCount = user.getAskCount();
             answerCount = user.getAnswerCount();
         }
         if (level >= 2) {  // 管理员
-            deleted = user.isDeleted();
             createTime = user.getCreateTime();
         }
     }

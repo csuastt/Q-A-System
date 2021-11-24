@@ -34,6 +34,7 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
@@ -53,6 +54,8 @@ import systemConfigService from "../services/systemConfigService";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
+import TextField from "@mui/material/TextField";
+import { Image } from "mdast";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -71,6 +74,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [openRatingDialog, setOpenRatingDialog] = useState(false);
     const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
     const [rating, setRating] = useState<number>(0);
+    const [ratingText, setRatingText] = useState<string>("");
 
     const handleOpen = () => {
         setOpen(true);
@@ -116,6 +120,49 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             setMaxMsgCount(config.maxChatMessages);
         });
     }, []);
+
+    // Upload Image
+    const uploadImage = React.useCallback<
+        (files: File[]) => Promise<Pick<Image, "url" | "alt" | "title">[]>
+    >(
+        (files: File[]) =>
+            Promise.all(
+                files.map((file) =>
+                    orderService
+                        .uploadPicture(props.orderId, file)
+                        .then((uuid) =>
+                            orderService.getPictureUrl(props.orderId, uuid)
+                        )
+                        .then((url) => ({
+                            url: url,
+                            alt: file.name,
+                            title: file.name,
+                        }))
+                )
+            ),
+        [props.orderId]
+    );
+    // Upload Attachment
+    const uploadAttachments = React.useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const files = event.target.files;
+            let promises: Promise<any>[] = [];
+            if (files) {
+                for (let i = 0; i < files.length; i++) {
+                    if (files.item(i)) {
+                        promises.push(
+                            orderService.uploadAttachment(
+                                props.orderId,
+                                files.item(i)!
+                            )
+                        );
+                    }
+                }
+            }
+            Promise.all(promises).then(() => setNeedReload(true));
+        },
+        [props.orderId]
+    );
 
     // Answerering helper functions
     const handleAnswerChange = (newValue: string) => {
@@ -257,6 +304,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             startIcon={<CheckIcon />}
                             onClick={() => respondOrder(true)}
                             color="success"
+                            sx={{ marginLeft: 1, marginBottom: 1 }}
                         >
                             确认接单
                         </Button>
@@ -265,6 +313,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             startIcon={<DeleteIcon />}
                             onClick={() => respondOrder(false)}
                             color="error"
+                            sx={{ marginLeft: 1, marginBottom: 1 }}
                         >
                             拒绝接单
                         </Button>
@@ -292,6 +341,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 variant="contained"
                                 startIcon={<CheckIcon />}
                                 onClick={commitAnswer}
+                                sx={{ marginLeft: 1, marginBottom: 1 }}
                             >
                                 确认回答
                             </Button>
@@ -300,6 +350,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 startIcon={<CancelIcon />}
                                 onClick={cancelAnswering}
                                 color="warning"
+                                sx={{ marginLeft: 1, marginBottom: 1 }}
                             >
                                 取消回答
                             </Button>
@@ -310,6 +361,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 variant="outlined"
                                 startIcon={<SettingsIcon />}
                                 onClick={startAnswering}
+                                sx={{ marginLeft: 1, marginBottom: 1 }}
                             >
                                 开始回答
                             </Button>
@@ -354,15 +406,20 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             if (msgCount && maxMsgCount && msgCount === maxMsgCount) {
                 return <Alert security="warning">聊天次数已用完</Alert>;
             } else {
-                const msgCountUsage = msgCount
-                    ? "聊天次数使用：" +
-                      (maxMsgCount
-                          ? `${msgCount}/${maxMsgCount}`
-                          : `${msgCount}`)
-                    : "";
+                const msgCountUsage =
+                    msgCount != null
+                        ? "聊天次数使用：" +
+                          (maxMsgCount
+                              ? `${msgCount}/${maxMsgCount}`
+                              : `${msgCount}`)
+                        : "";
                 return (
                     <Card>
-                        <Markdown value={message} onChange={setMessage} />
+                        <Markdown
+                            value={message}
+                            onChange={setMessage}
+                            uploadImages={uploadImage}
+                        />
                         <CardActions>
                             <Button
                                 onClick={sendMessage}
@@ -370,6 +427,23 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             >
                                 发送消息
                             </Button>
+                            <label htmlFor="upload-attachment">
+                                <input
+                                    style={{ display: "none" }}
+                                    accept="*"
+                                    id="upload-attachment"
+                                    type="file"
+                                    name="upload-attachment"
+                                    multiple={true}
+                                    onChange={uploadAttachments}
+                                />
+                                <Button
+                                    startIcon={<UploadFileIcon />}
+                                    component="span"
+                                >
+                                    上传附件
+                                </Button>
+                            </label>
                             <Button
                                 onClick={endOrder}
                                 startIcon={<CloseIcon />}
@@ -406,7 +480,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     ];
     const confirmRating = () => {
         orderService
-            .rateOrder(orderInfo!.id, rating)
+            .rateOrder(orderInfo!.id, rating, ratingText)
             .then(() => setNeedReload(true));
     };
     const renderRating = () => {
@@ -422,6 +496,21 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         }
                         size="large"
                     />
+                    <Box mt={1} />
+                    <TextField
+                        fullWidth
+                        label="留言反馈"
+                        name="ratingText"
+                        multiline
+                        onChange={(e) => {
+                            setRatingText(e.target.value);
+                        }}
+                        rows={4}
+                        value={ratingText}
+                        placeholder="请留下您的宝贵意见~"
+                        variant="outlined"
+                        inputProps={{ maxLength: 200 }}
+                    />
                 </Stack>
             );
         } else {
@@ -431,7 +520,24 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                         {ratingMsg[orderInfo.rating]}
                     </Typography>
                     <Rating value={orderInfo.rating} size="large" readOnly />
-                    <Typography variant="subtitle1">已评价</Typography>
+                    <Box mt={1} />
+                    <TextField
+                        fullWidth
+                        label="留言反馈"
+                        name="ratingText"
+                        multiline
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        rows={4}
+                        value={
+                            orderInfo.ratingText
+                                ? orderInfo.ratingText
+                                : "暂无评价~"
+                        }
+                        variant="outlined"
+                        inputProps={{ maxLength: 200 }}
+                    />
                 </Stack>
             );
         }

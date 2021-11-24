@@ -88,7 +88,18 @@ export const renderAnswerHelp = (config: ConfigInfo | undefined) => {
             </ListItem>
             <ListItem>
                 <Typography variant="body1">
-                    8、更多疑问请咨询平台管理员。
+                    8、当您回答公开问题时，公开问题的所得将会有
+                    <Box component="span" fontWeight="fontWeightBold">
+                        {config?.askerFeeRate
+                            ? 100 - config?.feeRate - config?.askerFeeRate
+                            : ""}
+                    </Box>
+                    %支付给您。需要提醒的是，所有公开问题的问题内容及聊天记录均为付费可见。
+                </Typography>
+            </ListItem>
+            <ListItem>
+                <Typography variant="body1">
+                    9、更多疑问请咨询平台管理员。
                 </Typography>
             </ListItem>
         </List>
@@ -166,7 +177,22 @@ const Help: React.FC<{}> = (props) => {
                         </ListItem>
                         <ListItem>
                             <Typography variant="body1">
-                                7、更多疑问请咨询平台管理员。
+                                7、您可以设置问题为公开问题。公开问题将会被加入问答库，
+                                其问题内容及聊天记录均为付费可见。其他用户需要支付一定费用才能查看公开问题，所支付费用的
+                                <Box
+                                    component="span"
+                                    fontWeight="fontWeightBold"
+                                >
+                                    {config?.askerFeeRate
+                                        ? config?.askerFeeRate
+                                        : ""}
+                                </Box>
+                                %将会直接支付给您。
+                            </Typography>
+                        </ListItem>
+                        <ListItem>
+                            <Typography variant="body1">
+                                8、更多疑问请咨询平台管理员。
                             </Typography>
                         </ListItem>
                     </List>

@@ -4,6 +4,7 @@ import com.example.qa.exchange.MonthlyEarnings;
 import com.example.qa.order.model.Order;
 import com.example.qa.user.model.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class UserService {
     }
 
     public boolean existsById(long id) {
-        return userRepository.existsByIdAndDeleted(id, false);
+        return userRepository.existsById(id);
     }
 
     public boolean existsByUsername(String username) {
@@ -28,19 +29,11 @@ public class UserService {
     }
 
     public User getById(long id) {
-        return getById(id, false);
-    }
-
-    public User getById(long id, boolean allowDeleted) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException(null);
         }
-        User user = userOptional.get();
-        if (user.isDeleted() && !allowDeleted) {
-            throw new UsernameNotFoundException(null);
-        }
-        return user;
+        return userOptional.get();
     }
 
     public User getByUsername(String username) {
@@ -57,6 +50,10 @@ public class UserService {
 
     public Page<User> listByRole(Collection<User.Role> role, Pageable pageable) {
         return role == null ? userRepository.findAll(pageable) : userRepository.findAllByRoleIn(role, pageable);
+    }
+
+    public Page<User> listByApplying(PageRequest pageRequest) {
+        return userRepository.findAllByApplying(true, pageRequest);
     }
 
     public User refund(User user, int value) {

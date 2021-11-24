@@ -50,30 +50,30 @@ public class OrderService {
 
     public Page<Order> listByAsker(User asker, Boolean finished) {
         return finished == null ?
-                orderRepository.findAllByDeletedAndAsker(false, asker, pageRequest) :
-                orderRepository.findAllByDeletedAndAskerAndFinished(false, asker, finished, pageRequest);
+                orderRepository.findAllByAsker(asker, pageRequest) :
+                orderRepository.findAllByAskerAndFinished(asker, finished, pageRequest);
     }
 
     public Page<Order> listByAnswerer(User answerer, Boolean finished) {
         return finished == null ?
-                orderRepository.findAllByDeletedAndVisibleToAnswererAndAnswerer(false, true, answerer, pageRequest) :
-                orderRepository.findAllByDeletedAndVisibleToAnswererAndAnswererAndFinished(false, true, answerer, finished, pageRequest);
+                orderRepository.findAllByVisibleToAnswererAndAnswerer(true, answerer, pageRequest) :
+                orderRepository.findAllByVisibleToAnswererAndAnswererAndFinished(true, answerer, finished, pageRequest);
     }
 
     public Page<Order> listByState(Collection<Order.State> state) {
         return state == null ?
                 orderRepository.findAll(pageRequest) :
-                orderRepository.findAllByDeletedAndStateIn(false, state, pageRequest);
-    }
-
-    public Page<Order> listByReviewed() {
-        return orderRepository.findAllByDeletedAndReviewed(false, true, pageRequest);
+                orderRepository.findAllByStateIn(state, pageRequest);
     }
 
     public Page<Order> listByPublic(String keyword) {
         return keyword == null ?
-                orderRepository.findAllByDeletedAndStateInAndShowPublic(false, completedOrderStates, true, pageRequest) :
-                orderRepository.findAllByDeletedAndStateInAndShowPublicAndQuestionTitleContains(false, completedOrderStates, true, keyword, pageRequest);
+                orderRepository.findAllByStateInAndShowPublic(completedOrderStates, true, pageRequest) :
+                orderRepository.findAllByStateInAndShowPublicAndQuestionTitleContains(completedOrderStates, true, keyword, pageRequest);
+    }
+
+    public Page<Order> listByPaidUser(User user) {
+        return orderRepository.findAllByPaidUsers(user, pageRequest);
     }
 
     @Scheduled(cron = "*/10 * * * * *")  // every 10 seconds

@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,7 +21,6 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private boolean deleted = false;
     @ManyToOne
     private User asker;
     @ManyToOne
@@ -45,9 +46,17 @@ public class Order {
     private boolean showPublic = false;
     private int messageCount = 0;
     private int rating = 0;
+    private String ratingText;
 
     @ElementCollection
     private List<Attachment> attachmentList;
+
+    @ElementCollection
+    private List<UUID> pics;
+
+    private int publicPrice = 0;
+    @ManyToMany(mappedBy = "purchasedOrders")
+    private Set<User> paidUsers;
 
     // 传 data 前先用 checkOrderData 检查
     public Order(OrderRequest data, User asker, User answerer, boolean allProperties) {
@@ -58,6 +67,9 @@ public class Order {
         createTime = ZonedDateTime.now();
         price = answerer.getPrice();
         showPublic = Objects.requireNonNullElse(data.getShowPublic(), false);
+        if (showPublic && data.getPublicPrice() != null) {
+            publicPrice = Math.min(price, data.getPublicPrice());
+        }
         if (allProperties) {
             setState(data.getState());
             endReason = Objects.requireNonNullElse(data.getEndReason(), endReason);
@@ -92,6 +104,9 @@ public class Order {
         questionTitle = Objects.requireNonNullElse(data.getTitle(), questionTitle);
         questionDescription = Objects.requireNonNullElse(data.getDescription(), questionDescription);
         price = Objects.requireNonNullElse(data.getPrice(), price);
+        showPublic = Objects.requireNonNullElse(data.getShowPublic(), showPublic);
+        publicPrice = Objects.requireNonNullElse(data.getPublicPrice(), publicPrice);
+
     }
 
     @RequiredArgsConstructor

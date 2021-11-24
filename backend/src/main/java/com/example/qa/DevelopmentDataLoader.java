@@ -43,6 +43,9 @@ public class DevelopmentDataLoader implements ApplicationRunner {
         data.setTitle(question);
         data.setDescription("顺便问一下为什么 $ \\int_0^1 x dx = \\frac 1 2 $？");
         data.setState(Order.State.values()[random.nextInt(Order.State.values().length)]);
+        if (data.getState() == Order.State.CREATED && random.nextInt(100) >= 90) {
+            data.setState(Order.State.REVIEWED);
+        }
         if (data.getState() == Order.State.ANSWERED) {
             data.setAnswer(ANSWER);
         } else if (data.getState() == Order.State.CHAT_ENDED || data.getState() == Order.State.FULFILLED) {
@@ -56,7 +59,13 @@ public class DevelopmentDataLoader implements ApplicationRunner {
         if (Order.State.completedOrderStates.contains(order.getState())) {
             order.setRating(random.nextInt(6));
         }
+        if (order.getRating() > 0) {
+            order.setRatingText("好！");
+        }
         order.setShowPublic(random.nextBoolean());
+        if (order.isShowPublic()) {
+            order.setPublicPrice(random.nextBoolean() ? 0 : random.nextInt(order.getPrice()));
+        }
         return order;
     }
 
