@@ -592,18 +592,18 @@ const OrderCreationWizard: React.FC = (props) => {
                 />
                 <Stack
                     sx={{ mt: 2, mb: 2 }}
-                    direction="row"
-                    alignItems={"center"}
+                    direction={matches ? "row" : "column"}
+                    alignItems={matches ? "center" : "flex-start"}
                     justifyContent="space-between"
                 >
                     <Stack
-                        spacing={matches ? 2 : 0}
+                        spacing={matches ? 2 : 1}
                         alignItems={"flex-start"}
-                        direction={matches ? "row" : "column"}
+                        direction={"row"}
                     >
-                        <Typography>上传附件(小于300M):</Typography>
+                        <Typography>上传附件:</Typography>
                         <Stack
-                            spacing={matches ? 2 : 2}
+                            spacing={2}
                             alignItems={"flex-start"}
                             direction={"row"}
                         >
@@ -722,6 +722,11 @@ const OrderCreationWizard: React.FC = (props) => {
                 </Stack>
                 <Dialog onClose={handleClose} open={open}>
                     <DialogTitle>附件列表</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            附件的大小不得大于300M，超过此大小的附件将会被忽略。
+                        </DialogContentText>
+                    </DialogContent>
                     <List sx={{ pt: 0 }}>
                         {files.map((fileInfo) => (
                             <ListItem

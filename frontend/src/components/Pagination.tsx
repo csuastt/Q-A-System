@@ -70,6 +70,7 @@ const Pagination: React.FC<PaginationProp> = (props) => {
                     showFirstButton
                     showLastButton
                     siblingCount={0}
+                    boundaryCount={0}
                     size="large"
                     sx={{ my: "auto" }}
                 />

@@ -494,7 +494,10 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 ) : (
                                     <>
                                         <Box sx={{ flexGrow: 1 }} />
-                                        <Tooltip title={msgCountUsage}>
+                                        <Tooltip
+                                            title={msgCountUsage}
+                                            sx={{ mr: 1 }}
+                                        >
                                             <IconButton>
                                                 <Badge
                                                     badgeContent={
@@ -502,10 +505,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                                     }
                                                     color="secondary"
                                                 >
-                                                    <ChatIcon
-                                                        sx={{ mr: 1 }}
-                                                        color="info"
-                                                    />
+                                                    <ChatIcon color="info" />
                                                 </Badge>
                                             </IconButton>
                                         </Tooltip>
