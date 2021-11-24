@@ -344,7 +344,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         variant={
                                             props.listMode ? "body1" : "h6"
                                         }
-                                        noWrap
+                                        noWrap={matches}
                                         style={{ fontWeight: 600 }}
                                     >
                                         {order.questionTitle}
@@ -359,7 +359,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                             />
                                         ))}
                                     <Box sx={{ flexGrow: 1 }} />
-                                    {!props.listMode && (
+                                    {!props.listMode && matches && (
                                         <OrderStateChip state={order.state} />
                                     )}
                                 </Box>
