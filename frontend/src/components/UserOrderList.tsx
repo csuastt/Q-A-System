@@ -7,10 +7,14 @@ import { Redirect } from "react-router-dom";
 import { parseIntWithDefault, useQuery } from "../util";
 import { UserRole } from "../services/definations";
 import { TabContext, TabList } from "@mui/lab";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 const UserOrderList: React.FC = () => {
     const { user } = useContext(AuthContext);
     const query = useQuery();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
     const [tabValue, setTabValue] = useState("inProgress");
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
         setTabValue(newValue);
@@ -41,10 +45,10 @@ const UserOrderList: React.FC = () => {
                 <Tab label={"进行中的订单"} value={"inProgress"} />
                 <Tab label={"已完成的订单"} value={"finished"} />
             </TabList>
-            <TabPanel value={"inProgress"}>
+            <TabPanel value={"inProgress"} sx={matches ? {} : { px: 0 }}>
                 <OrderListWrapper finished={false} />
             </TabPanel>
-            <TabPanel value={"finished"}>
+            <TabPanel value={"finished"} sx={matches ? {} : { px: 0 }}>
                 <OrderListWrapper finished={true} />
             </TabPanel>
         </TabContext>
