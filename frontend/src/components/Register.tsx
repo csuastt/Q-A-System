@@ -60,7 +60,11 @@ interface RegisterState {
     redirect: string | null;
 }
 
-export default class Register extends Component<any, RegisterState> {
+interface RegisterProps {
+    matches?: boolean;
+}
+
+export default class Register extends Component<RegisterProps, RegisterState> {
     constructor(props: any) {
         super(props);
         // handle register info
@@ -369,7 +373,12 @@ export default class Register extends Component<any, RegisterState> {
                         vertical: "bottom",
                         horizontal: "center",
                     }}
-                    sx={{ width: "30%" }}
+                    sx={
+                        typeof this.props.matches === "undefined" ||
+                        this.props.matches
+                            ? { width: "30%" }
+                            : { width: "60%" }
+                    }
                 >
                     <Alert
                         severity={this.state.alertType}

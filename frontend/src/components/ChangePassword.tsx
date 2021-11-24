@@ -40,6 +40,7 @@ interface ChangePasswordProps {
     isAdmin: boolean;
     redirectConfirm: string;
     redirectCancel: string;
+    matches?: boolean;
 }
 
 // password validator
@@ -359,7 +360,12 @@ export default class ChangePassword extends Component<
                         vertical: "bottom",
                         horizontal: "center",
                     }}
-                    sx={{ width: "30%" }}
+                    sx={
+                        typeof this.props.matches === "undefined" ||
+                        this.props.matches
+                            ? { width: "30%" }
+                            : { width: "60%" }
+                    }
                 >
                     <Alert
                         severity={this.state.alertType}

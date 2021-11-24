@@ -12,6 +12,8 @@ import userService from "../services/userService";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import StarIcon from "@mui/icons-material/Star";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
     props
@@ -24,6 +26,9 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
         description = arr[0];
         profession = arr.length > 1 ? arr[1] : "";
     }
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
+
     return (
         <Dialog {...props}>
             <DialogTitle>回答者信息</DialogTitle>
@@ -40,27 +45,62 @@ const AnswererDetailDialog: React.FC<DialogProps & { info: UserBasicInfo }> = (
                         subheader={info.nickname && "@" + info.username}
                     />
                     <CardContent>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                            }}
-                            mb={4}
-                            mt={-1}
-                        >
-                            <Typography variant="body1">
-                                {"平均评分：" + info.rating.toFixed(2)}
-                            </Typography>
-                            <StarIcon
-                                style={{ fill: "orange" }}
-                                fontSize={"small"}
-                                sx={{ marginRight: 2 }}
-                            />
-                            <Typography variant="body1">
-                                {"评分次数：" + info.ratingCount}
-                            </Typography>
-                        </Box>
+                        {matches ? (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                }}
+                                mb={4}
+                                mt={-1}
+                            >
+                                <Typography variant="body1">
+                                    {"平均评分：" + info.rating.toFixed(2)}
+                                </Typography>
+                                <StarIcon
+                                    style={{ fill: "orange" }}
+                                    fontSize={"small"}
+                                    sx={{ marginRight: 2 }}
+                                />
+                                <Typography variant="body1">
+                                    {"评分次数：" + info.ratingCount}
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                    }}
+                                    mt={-1}
+                                >
+                                    <Typography variant="body1">
+                                        {"平均评分：" + info.rating.toFixed(2)}
+                                    </Typography>
+                                    <StarIcon
+                                        style={{ fill: "orange" }}
+                                        fontSize={"small"}
+                                        sx={{ marginRight: 2 }}
+                                    />
+                                </Box>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                    }}
+                                    mb={4}
+                                >
+                                    <Typography variant="body1">
+                                        {"评分次数：" + info.ratingCount}
+                                    </Typography>
+                                </Box>
+                            </>
+                        )}
+
                         <TextField
                             label="专业领域"
                             contentEditable={false}

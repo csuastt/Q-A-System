@@ -304,6 +304,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             startIcon={<CheckIcon />}
                             onClick={() => respondOrder(true)}
                             color="success"
+                            sx={{ marginLeft: 1, marginBottom: 1 }}
                         >
                             确认接单
                         </Button>
@@ -312,6 +313,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             startIcon={<DeleteIcon />}
                             onClick={() => respondOrder(false)}
                             color="error"
+                            sx={{ marginLeft: 1, marginBottom: 1 }}
                         >
                             拒绝接单
                         </Button>
@@ -339,6 +341,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 variant="contained"
                                 startIcon={<CheckIcon />}
                                 onClick={commitAnswer}
+                                sx={{ marginLeft: 1, marginBottom: 1 }}
                             >
                                 确认回答
                             </Button>
@@ -347,6 +350,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 startIcon={<CancelIcon />}
                                 onClick={cancelAnswering}
                                 color="warning"
+                                sx={{ marginLeft: 1, marginBottom: 1 }}
                             >
                                 取消回答
                             </Button>
@@ -357,6 +361,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                 variant="outlined"
                                 startIcon={<SettingsIcon />}
                                 onClick={startAnswering}
+                                sx={{ marginLeft: 1, marginBottom: 1 }}
                             >
                                 开始回答
                             </Button>
