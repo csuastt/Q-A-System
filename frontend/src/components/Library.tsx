@@ -22,6 +22,7 @@ import Stack from "@mui/material/Stack";
 import UserContext from "../AuthContext";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import {Redirect} from "react-router-dom";
 
 const Library: React.FC<{
     briefMsg?: boolean;
@@ -42,6 +43,7 @@ const Library: React.FC<{
     const { user } = useContext(UserContext);
     const [alertFlag, setAlertFlag] = useState(false);
     const [alertMsg, setAlertMsg] = useState("");
+    const [redirect, setRedirect] = useState("");
 
     const alertHandler = (msg: string) => {
         setAlertFlag(true);
@@ -64,12 +66,36 @@ const Library: React.FC<{
             initSortOrder={sortOrder}
             initSortProperty={sortProperty}
             alertHandler={alertHandler}
+            setRedirect={setRedirect}
         />
     );
+
+    if (redirect) {
+        return <Redirect to={redirect} />;
+    }
 
     return props.briefMsg ? (
         <>
             <PublicOrderListWrapper keywords={""} listMode={true} />
+            <Snackbar
+                autoHideDuration={2000}
+                open={alertFlag}
+                onClose={() => {
+                    setAlertFlag(false);
+                }}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                }}
+                sx={{ width: "30%" }}
+            >
+                <Alert
+                    severity={"error"}
+                    sx={{ width: "100%" }}
+                >
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
         </>
     ) : (
         <Box mt={3}>

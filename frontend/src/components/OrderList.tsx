@@ -51,7 +51,8 @@ interface OrderListProps {
     initSortProperty?: string;
     listMode?: boolean;
     purchased?: boolean;
-    alertHandler?: (msg: string) => void
+    alertHandler?: (msg: string) => void;
+    setRedirect?: (path: string) => void;
 }
 
 const OrderList: React.FC<OrderListProps> = (props) => {
@@ -84,9 +85,11 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     };
 
     const handleSubmit = () => {
+        handleClose();
         questionService.purchaseOrder(chosenOrder).then(
             () => {
-                return <Redirect to={`/orders/${chosenOrder}`} />;
+                if (props.setRedirect)
+                    props.setRedirect(`/orders/${chosenOrder}`);
             },
             (error) => {
                 if (error.response.status === 403) {
@@ -249,7 +252,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         return wrapperProps.order.publicPrice === 0 ||
             (props.userId && props.userId === wrapperProps.order.answerer.id) ||
         (props.userId && props.userId === wrapperProps.order.asker.id) ||
-        (typeof (wrapperProps.order.purchased) !== "undefined" && wrapperProps.order.purchased)
+        (props.purchased || (typeof (wrapperProps.order.purchased) !== "undefined" && wrapperProps.order.purchased))
             ? (
             <CardActionArea
                 component={RouterLink}
