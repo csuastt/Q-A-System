@@ -184,9 +184,7 @@ class OrderService {
     }
 
     getPictureUrl(orderId: number, uuid: string) {
-        return (
-            axios.defaults.baseURL + `/orders/${orderId}/pictures/${uuid}`
-        );
+        return axios.defaults.baseURL + `/orders/${orderId}/pictures/${uuid}`;
     }
 
     rateOrder(
