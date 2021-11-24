@@ -50,10 +50,10 @@ const Library: React.FC<{
         setAlertMsg(msg);
     };
 
-    const renderOrderList = (keywords: string, listMode?: boolean) => (
+    const renderOrderList = (searchKeywords: string, listMode?: boolean) => (
         <OrderList
             userId={user?.id}
-            keywords={keywords}
+            keywords={searchKeywords}
             setMillis={setMillis}
             setCount={setCount}
             itemPrePage={itemPrePage}
