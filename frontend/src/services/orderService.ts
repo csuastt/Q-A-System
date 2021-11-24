@@ -165,10 +165,26 @@ class OrderService {
             .then((response) => response.data);
     }
 
-    getAttachmentUrl(orderId: number, uuid: number) {
+    getAttachmentUrl(orderId: number, uuid: string) {
         return (
             axios.defaults.baseURL + `/orders/${orderId}/attachments/${uuid}`
         );
+    }
+
+    uploadPicture(orderId: number, file: File): Promise<string> {
+        const formData = new FormData();
+        formData.append("pic", file);
+        return axios
+            .post(`/orders/${orderId}/pictures`, formData, {
+                headers: {
+                    "content-type": "multipart/form-data",
+                },
+            })
+            .then((response) => response.data);
+    }
+
+    getPictureUrl(orderId: number, uuid: string) {
+        return axios.defaults.baseURL + `/orders/${orderId}/pictures/${uuid}`;
     }
 
     rateOrder(

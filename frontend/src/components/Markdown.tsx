@@ -18,6 +18,7 @@ import "github-markdown-css/github-markdown.css";
 import "highlight.js/styles/tomorrow.css";
 import "katex/dist/katex.min.css";
 import { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
+import { Image } from "mdast";
 
 const plugins = [
     breaks(),
@@ -35,6 +36,9 @@ interface MarkdownProps {
     editorMode?: "split" | "tab" | "auto";
     viewOnly?: boolean;
     height?: StandardCSSProperties["height"];
+    uploadImages?: (
+        files: File[]
+    ) => Promise<Pick<Image, "url" | "alt" | "title">[]>;
 }
 
 const Markdown: React.FC<MarkdownProps> = (props) => {
@@ -48,6 +52,7 @@ const Markdown: React.FC<MarkdownProps> = (props) => {
                 plugins={plugins}
                 mode={props.editorMode}
                 locale={editor_locales}
+                uploadImages={props.uploadImages}
             />
             {props.height && (
                 <style

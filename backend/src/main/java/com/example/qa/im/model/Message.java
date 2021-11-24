@@ -3,6 +3,7 @@ package com.example.qa.im.model;
 import com.example.qa.order.model.Order;
 import com.example.qa.user.model.User;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -30,5 +31,7 @@ public class Message {
     @Nullable
     @ManyToOne
     private User sender;
+    @Lob
+    @Type(type = "text")
     private String body;
 }

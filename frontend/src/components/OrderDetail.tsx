@@ -34,6 +34,7 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
@@ -54,6 +55,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
+import { Image } from "mdast";
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -118,6 +120,49 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             setMaxMsgCount(config.maxChatMessages);
         });
     }, []);
+
+    // Upload Image
+    const uploadImage = React.useCallback<
+        (files: File[]) => Promise<Pick<Image, "url" | "alt" | "title">[]>
+    >(
+        (files: File[]) =>
+            Promise.all(
+                files.map((file) =>
+                    orderService
+                        .uploadPicture(props.orderId, file)
+                        .then((uuid) =>
+                            orderService.getPictureUrl(props.orderId, uuid)
+                        )
+                        .then((url) => ({
+                            url: url,
+                            alt: file.name,
+                            title: file.name,
+                        }))
+                )
+            ),
+        [props.orderId]
+    );
+    // Upload Attachment
+    const uploadAttachments = React.useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const files = event.target.files;
+            let promises: Promise<any>[] = [];
+            if (files) {
+                for (let i = 0; i < files.length; i++) {
+                    if (files.item(i)) {
+                        promises.push(
+                            orderService.uploadAttachment(
+                                props.orderId,
+                                files.item(i)!
+                            )
+                        );
+                    }
+                }
+            }
+            Promise.all(promises).then(() => setNeedReload(true));
+        },
+        [props.orderId]
+    );
 
     // Answerering helper functions
     const handleAnswerChange = (newValue: string) => {
@@ -356,15 +401,20 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             if (msgCount && maxMsgCount && msgCount === maxMsgCount) {
                 return <Alert security="warning">聊天次数已用完</Alert>;
             } else {
-                const msgCountUsage = msgCount
-                    ? "聊天次数使用：" +
-                      (maxMsgCount
-                          ? `${msgCount}/${maxMsgCount}`
-                          : `${msgCount}`)
-                    : "";
+                const msgCountUsage =
+                    msgCount != null
+                        ? "聊天次数使用：" +
+                          (maxMsgCount
+                              ? `${msgCount}/${maxMsgCount}`
+                              : `${msgCount}`)
+                        : "";
                 return (
                     <Card>
-                        <Markdown value={message} onChange={setMessage} />
+                        <Markdown
+                            value={message}
+                            onChange={setMessage}
+                            uploadImages={uploadImage}
+                        />
                         <CardActions>
                             <Button
                                 onClick={sendMessage}
@@ -372,6 +422,23 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             >
                                 发送消息
                             </Button>
+                            <label htmlFor="upload-attachment">
+                                <input
+                                    style={{ display: "none" }}
+                                    accept="*"
+                                    id="upload-attachment"
+                                    type="file"
+                                    name="upload-attachment"
+                                    multiple={true}
+                                    onChange={uploadAttachments}
+                                />
+                                <Button
+                                    startIcon={<UploadFileIcon />}
+                                    component="span"
+                                >
+                                    上传附件
+                                </Button>
+                            </label>
                             <Button
                                 onClick={endOrder}
                                 startIcon={<CloseIcon />}
