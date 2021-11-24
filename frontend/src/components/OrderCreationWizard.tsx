@@ -473,7 +473,7 @@ const OrderCreationWizard: React.FC = (props) => {
         return answerer >= 0 ? (
             <>
                 <Grid container justifyContent={"center"} spacing={4}>
-                    <Grid item md={4} xs={8}>
+                    <Grid item md={4} xs={12}>
                         <AnswererCard userId={answerer} briefMsg={true} />
                     </Grid>
                     <Grid item md={8} xs={12}>

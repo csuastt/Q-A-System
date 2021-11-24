@@ -24,6 +24,8 @@ import {
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AnswererDetailDialog from "./AnswererDetailDialog";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import {useTheme} from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const AnswererCard: React.FC<{
     userInfo?: UserBasicInfo;
@@ -35,6 +37,8 @@ const AnswererCard: React.FC<{
 }> = (props) => {
     const [userInfo, setUserInfo] = useState<UserBasicInfo>();
     const [dialogOpen, setDialogOpen] = useState(false);
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
 
     useEffect(() => {
         if (props.placeholder) {
@@ -99,27 +103,58 @@ const AnswererCard: React.FC<{
                                 >
                                     {"@" + userInfo.username}
                                 </Typography>
-                                {" — " + profession + "；" + description}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                    }}
-                                >
-                                    <Typography variant="body2" color="primary">
-                                        {"￥" + userInfo.price + "/次"}
-                                    </Typography>
-                                    <Box ml={2} />
-                                    <Typography variant="caption">
-                                        评分：
-                                    </Typography>
-                                    <Rating
-                                        value={userInfo.rating}
-                                        precision={0.1}
-                                        readOnly
-                                        size="small"
-                                    />
-                                </Box>
+                                {
+                                    matches ?
+                                        <>
+                                            {" — " + profession + "；" + description}
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                }}
+                                            >
+                                                <Typography variant="body2" color="primary">
+                                                    {"￥" + userInfo.price + "/次"}
+                                                </Typography>
+                                                <Box ml={2} />
+                                                <Typography variant="caption">
+                                                    评分：
+                                                </Typography>
+                                                <Rating
+                                                    value={userInfo.rating}
+                                                    precision={0.1}
+                                                    readOnly
+                                                    size="small"
+                                                />
+                                            </Box>
+                                        </>
+                                        :
+                                        <>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                }}
+                                            >
+                                                <Typography variant="body2" color="primary">
+                                                    {"￥" + userInfo.price + "/次"}
+                                                </Typography>
+                                            </Box>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                }}
+                                            >
+                                                <Rating
+                                                    value={userInfo.rating}
+                                                    precision={0.1}
+                                                    readOnly
+                                                    size="small"
+                                                />
+                                            </Box>
+                                        </>
+                                }
                             </React.Fragment>
                         }
                     />

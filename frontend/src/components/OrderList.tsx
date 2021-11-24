@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
-import {Link as RouterLink, Redirect} from "react-router-dom";
+import {Link as RouterLink } from "react-router-dom";
 import { OrderInfo, OrderState, PagedList } from "../services/definations";
 import questionService from "../services/orderService";
 import Card from "@mui/material/Card";

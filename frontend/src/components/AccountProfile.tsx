@@ -57,6 +57,7 @@ interface ProfileState {
 // props interface
 interface ProfileProps {
     isAdmin: boolean;
+    matches?: boolean;
 }
 
 // gender options
@@ -931,7 +932,12 @@ export default class AccountProfile extends Component<
                         vertical: "bottom",
                         horizontal: "center",
                     }}
-                    sx={{ width: "30%" }}
+                    sx={
+                        typeof this.props.matches === "undefined" ||
+                        this.props.matches?
+                            { width: "30%" }:
+                            { width: "60%" }
+                    }
                 >
                     <Alert
                         severity={this.state.alertType}

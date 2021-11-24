@@ -31,6 +31,7 @@ import { grey } from "@mui/material/colors";
 import { SimplePaletteColorOptions } from "@mui/material/styles/createPalette";
 import Library from "./components/Library";
 import UserPurchasedList from "./components/UserPurchasedList";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -105,6 +106,9 @@ export default function App() {
         [mode]
     );
 
+    // if match the mobile size
+    const matches = useMediaQuery(theme.breakpoints.up("md"));
+
     useEffect(() => {
         websocketService.onConnected = () => {
             console.log("WebSocket connection established");
@@ -145,16 +149,17 @@ export default function App() {
         ["/purchased", <UserPurchasedList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
-        ["/profile", <AccountProfile isAdmin={false} />],
-        ["/login", <Login redirect={"/"} isAdmin={false} />],
+        ["/profile", <AccountProfile isAdmin={false} matches={matches}/>],
+        ["/login", <Login redirect={"/"} isAdmin={false} matches={matches} />],
         ["/logout", <Logout redirect={"/"} isAdmin={false} />],
-        ["/register", <Register />],
+        ["/register", <Register matches={matches}/>],
         [
             "/change_password",
             <ChangePassword
                 redirectConfirm={"/logout"}
                 redirectCancel={"/profile"}
                 isAdmin={false}
+                matches={matches}
             />,
         ],
         ["/notif", <NotificationList />],

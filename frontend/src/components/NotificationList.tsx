@@ -131,49 +131,66 @@ const NotificationList: React.FC<{ compact?: boolean }> = (props) => {
     };
 
     const renderNormalControl = () => (
-        <Stack direction="row" spacing={matches ? 3 : 2} mt={3}>
-            <ToggleButtonGroup
-                value={filterUnread}
-                exclusive
-                onChange={onFilterButtonChanged}
-                size="small"
-            >
-                <ToggleButton value={true}>筛选未读</ToggleButton>
-                <ToggleButton value={false}>显示全部</ToggleButton>
-            </ToggleButtonGroup>
-            <Button
-                onClick={readAll}
-                startIcon={<DoneAllIcon />}
-                color="success"
-                variant="contained"
-                size="small"
-            >
-                全部已读
-            </Button>
-            <Button
-                onClick={deleteRead}
-                startIcon={<DeleteOutlineIcon />}
-                color="warning"
-                variant="outlined"
-                size="small"
-            >
-                删除已读
-            </Button>
-            {matches ? (
-                <Button
-                    onClick={refresh}
-                    startIcon={<RefreshIcon />}
-                    variant="outlined"
-                    size="small"
-                >
-                    刷新
-                </Button>
-            ) : (
-                <IconButton onClick={refresh} size="small" color={"primary"}>
-                    <RefreshIcon />
-                </IconButton>
-            )}
-        </Stack>
+            matches ?
+                <Stack direction="row" spacing={3} mt={3}>
+                    <ToggleButtonGroup
+                        value={filterUnread}
+                        exclusive
+                        onChange={onFilterButtonChanged}
+                        size="small"
+                    >
+                        <ToggleButton value={true}>筛选未读</ToggleButton>
+                        <ToggleButton value={false}>显示全部</ToggleButton>
+                    </ToggleButtonGroup>
+                    <Button
+                        onClick={readAll}
+                        startIcon={<DoneAllIcon />}
+                        color="success"
+                        variant="contained"
+                        size="small"
+                    >
+                        全部已读
+                    </Button>
+                    <Button
+                        onClick={deleteRead}
+                        startIcon={<DeleteOutlineIcon />}
+                        color="error"
+                        variant="outlined"
+                        size="small"
+                    >
+                        删除已读
+                    </Button>
+                    <Button
+                        onClick={refresh}
+                        startIcon={<RefreshIcon />}
+                        variant="outlined"
+                        size="small"
+                    >
+                        刷新
+                    </Button>
+                </Stack> :
+                <>
+                    <Stack direction="row" spacing={2} mt={3}>
+                        <ToggleButtonGroup
+                            value={filterUnread}
+                            exclusive
+                            onChange={onFilterButtonChanged}
+                            size="small"
+                        >
+                            <ToggleButton value={true}>筛选未读</ToggleButton>
+                            <ToggleButton value={false}>显示全部</ToggleButton>
+                        </ToggleButtonGroup>
+                        <IconButton onClick={readAll} size="small" color={"success"}>
+                            <DoneAllIcon />
+                        </IconButton>
+                        <IconButton onClick={deleteRead} size="small" color={"error"}>
+                            <DeleteOutlineIcon />
+                        </IconButton>
+                        <IconButton onClick={refresh} size="small" color={"primary"}>
+                            <RefreshIcon />
+                        </IconButton>
+                    </Stack>
+                </>
     );
 
     const renderCompactControl = () => (

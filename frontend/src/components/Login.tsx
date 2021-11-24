@@ -65,6 +65,7 @@ interface LoginState {
 interface LoginProps {
     isAdmin: boolean;
     redirect: string;
+    matches?: boolean;
 }
 
 export default class Login extends Component<LoginProps, LoginState> {
@@ -365,7 +366,12 @@ export default class Login extends Component<LoginProps, LoginState> {
                         vertical: "bottom",
                         horizontal: "center",
                     }}
-                    sx={{ width: "30%" }}
+                    sx={
+                        typeof this.props.matches === "undefined" ||
+                            this.props.matches?
+                        { width: "30%" }:
+                            { width: "60%" }
+                    }
                 >
                     <Alert
                         severity={this.state.alertType}

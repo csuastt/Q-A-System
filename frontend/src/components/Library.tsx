@@ -87,7 +87,11 @@ const Library: React.FC<{
                     vertical: "bottom",
                     horizontal: "center",
                 }}
-                sx={{ width: "30%" }}
+                sx={
+                    matches?
+                        { width: "30%" }:
+                        { width: "60%" }
+                }
             >
                 <Alert
                     severity={"error"}
