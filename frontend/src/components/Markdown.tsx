@@ -10,15 +10,14 @@ import * as math_locales from "@bytemd/plugin-math/lib/locales/zh_Hans.json";
 import * as mermaid_locales from "@bytemd/plugin-mermaid/lib/locales/zh_Hans.json";
 import * as editor_locales from "bytemd/lib/locales/zh_Hans.json";
 import { Editor, Viewer } from "@bytemd/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 // Import css
 import "bytemd/dist/index.min.css";
-import "github-markdown-css/github-markdown.css";
-import "highlight.js/styles/tomorrow.css";
 import "katex/dist/katex.min.css";
 import { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
 import { Image } from "mdast";
+import { useTheme } from "@mui/material/styles";
 
 const plugins = [
     breaks(),
@@ -42,6 +41,21 @@ interface MarkdownProps {
 }
 
 const Markdown: React.FC<MarkdownProps> = (props) => {
+    const theme = useTheme();
+    const mode = theme.palette.mode;
+
+    useEffect(() => {
+        if (mode === "light") {
+            require("github-markdown-css/github-markdown-light.css");
+            require("highlight.js/styles/tomorrow.css");
+        }
+        if (mode === "dark") {
+            require("./dark-mode-markdown-patch.css");
+            require("github-markdown-css/github-markdown-dark.css");
+            require("highlight.js/styles/tomorrow-night.css");
+        }
+    }, [mode]);
+
     return props.viewOnly ? (
         <Viewer value={props.value} plugins={plugins} />
     ) : (
