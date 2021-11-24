@@ -3,7 +3,6 @@ package com.example.qa.notification.model;
 import com.example.qa.order.model.Order;
 import com.example.qa.user.model.User;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -40,10 +39,10 @@ public class Notification {
     private Order.State newState;
     private ZonedDateTime deadline;
 
-    public static Notification ofPlain(User receiver, String msg) {
+    public static Notification ofPlain(User receiver, String msg, Type notifType) {
         return Notification.builder()
                 .createTime(ZonedDateTime.now())
-                .type(Type.PLAIN)
+                .type(notifType)
                 .receiver(receiver)
                 .haveRead(false)
                 .msgSummary(msg)
@@ -93,6 +92,8 @@ public class Notification {
         ACCEPT_DEADLINE,
         ACCEPT_TIMEOUT,
         ANSWER_DEADLINE,
-        ANSWER_TIMEOUT
+        ANSWER_TIMEOUT,
+        ANSWERER_APPLICATION_PASSED,
+        ANSWERER_APPLICATION_REJECTED
     }
 }
