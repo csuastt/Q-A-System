@@ -1,5 +1,4 @@
 import Button from "@mui/material/Button";
-import CardActionArea from "@mui/material/CardActionArea";
 import React, { useContext, useEffect, useState } from "react";
 import { parseIntWithDefault, useQuery } from "../util";
 import { ManagerRole, PagedList, UserBasicInfo } from "../services/definations";
@@ -8,11 +7,9 @@ import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
 import Pagination from "./Pagination";
 import Stack from "@mui/material/Stack";
 import userService from "../services/userService";
-import { Link as RouterLink } from "react-router-dom";
 import AuthContext from "../AuthContext";
 
 interface ReviewListProps {

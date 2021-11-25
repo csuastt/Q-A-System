@@ -77,6 +77,13 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     const [open, setOpen] = useState(false);
     const [chosenOrder, setChosenOrder] = useState(-1);
 
+    // Sync props change
+    useEffect(() => {
+        setCurrentPage(_.defaultTo(props.initCurrentPage, 1));
+        setSortProperty(_.defaultTo(props.initSortProperty, "createTime"));
+        setSortOrder(_.defaultTo(props.initSortOrder, "DESC"));
+    }, [props.initCurrentPage, props.initSortOrder, props.initSortProperty]);
+
     const handleOpen = (id: number) => {
         setOpen(true);
         setChosenOrder(id);
@@ -252,8 +259,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         wrapperProps
     ) => {
         return wrapperProps.order.publicPrice === 0 ||
-            (props.userId && props.userId === wrapperProps.order.answerer.id) ||
-            (props.userId && props.userId === wrapperProps.order.asker.id) ||
+            typeof props.userId === "undefined" ||
+            props.userId === wrapperProps.order.answerer.id ||
+            props.userId === wrapperProps.order.asker.id ||
             props.purchased ||
             (typeof wrapperProps.order.purchased !== "undefined" &&
                 wrapperProps.order.purchased) ? (
@@ -281,7 +289,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                 OrderState.ACCEPTED,
                 OrderState.ANSWERED,
                 OrderState.CHAT_ENDED,
-            ].indexOf(order.state) !== -1
+            ].indexOf(order.state) !== -1 &&
+            matches
         ) {
             return (
                 <Stack direction={"row"} alignItems="center" spacing={1}>
@@ -295,7 +304,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     };
 
     const renderMsgCount = (order: OrderInfo) => {
-        if (order.state === OrderState.ANSWERED) {
+        if (order.state === OrderState.ANSWERED && matches) {
             return (
                 <Stack direction={"row"} alignItems="center" spacing={1}>
                     <ChatIcon
@@ -343,7 +352,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         variant={
                                             props.listMode ? "body1" : "h6"
                                         }
-                                        noWrap
+                                        noWrap={matches}
                                         style={{ fontWeight: 600 }}
                                     >
                                         {order.questionTitle}
@@ -358,7 +367,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                             />
                                         ))}
                                     <Box sx={{ flexGrow: 1 }} />
-                                    {!props.listMode && (
+                                    {!props.listMode && matches && (
                                         <OrderStateChip state={order.state} />
                                     )}
                                 </Box>
@@ -427,9 +436,9 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                         {formatTimestamp(order.createTime)}
                                     </Typography>
                                     <Box ml={1} />
-                                    {(order.state === OrderState.CHAT_ENDED ||
-                                        order.state === OrderState.FULFILLED) &&
-                                        (order.rating === 0 ? (
+                                    {order.state === OrderState.CHAT_ENDED ||
+                                    order.state === OrderState.FULFILLED ? (
+                                        order.rating === 0 ? (
                                             <Typography
                                                 variant="caption"
                                                 color="error"
@@ -453,7 +462,12 @@ const OrderList: React.FC<OrderListProps> = (props) => {
                                                     size="small"
                                                 />
                                             </Box>
-                                        ))}
+                                        )
+                                    ) : (
+                                        <Typography variant="caption">
+                                            暂无评分
+                                        </Typography>
+                                    )}
                                     <Box sx={{ flexGrow: 1 }} />
                                     {renderExpireTime(order)}
                                     {renderMsgCount(order)}

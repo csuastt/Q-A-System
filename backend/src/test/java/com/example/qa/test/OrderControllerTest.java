@@ -14,6 +14,7 @@ import com.example.qa.order.exchange.OrderResponse;
 import com.example.qa.order.model.Order;
 import com.example.qa.security.SecurityConstants;
 import com.example.qa.user.UserRepository;
+import com.example.qa.user.exchange.ApplyRequest;
 import com.example.qa.user.exchange.RegisterRequest;
 import com.example.qa.user.model.User;
 import com.example.qa.utils.MockUtils;
@@ -435,6 +436,40 @@ class OrderControllerTest {
 
     void edit(long id, OrderRequest data) throws Exception {
         mockUtils.putUrl("/api/orders/" + id, superAdminToken, data, status().isOk());
+    }
+
+
+    @Test
+    void testReviewing() throws Exception {
+
+        AcceptRequest request = new AcceptRequest(false);
+
+        mockUtils.postUrl("/api/users/" + askerId + "/review", superAdminToken, request, status().isForbidden());
+        mockUtils.postUrl("/api/users/" + askerId + "/review", adminToken, request, status().isForbidden());
+        mockUtils.postUrl("/api/users/" + askerId + "/review", askerToken, request, status().isForbidden());
+        mockUtils.postUrl("/api/users/" + askerId + "/review", null, request, status().isUnauthorized());
+
+        ApplyRequest request1 = new ApplyRequest();
+        request1.setDescription("MyDescription");
+        request1.setPrice(null);
+        mockUtils.postUrl("/api/users/" + askerId + "/apply", askerToken, request1, status().isForbidden());
+        request1.setPrice(101);
+        mockUtils.postUrl("/api/users/" + askerId + "/apply", askerToken, request1, status().isForbidden());
+        request1.setPrice(-1);
+        mockUtils.postUrl("/api/users/" + askerId + "/apply", askerToken, request1, status().isForbidden());
+        request1.setPrice(50);
+        mockUtils.postUrl("/api/users/" + askerId + "/apply", askerToken, request1, status().isOk());
+        mockUtils.postUrl("/api/users/" + answererId + "/apply", answererToken, request1, status().isForbidden());
+
+
+        mockUtils.postUrl("/api/users/" + askerId + "/review", superAdminToken, request, status().isOk());
+        mockUtils.postUrl("/api/users/" + askerId + "/review", adminToken, request, status().isForbidden());
+        mockUtils.postUrl("/api/users/" + askerId + "/review", askerToken, request, status().isForbidden());
+        mockUtils.postUrl("/api/users/" + askerId + "/review", null, request, status().isUnauthorized());
+
+        mockUtils.postUrl("/api/users/" + askerId + "/apply", askerToken, request1, status().isOk());
+        request.setAccept(true);
+        mockUtils.postUrl("/api/users/" + askerId + "/review", superAdminToken, request, status().isOk());
     }
 
 }

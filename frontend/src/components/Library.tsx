@@ -50,19 +50,16 @@ const Library: React.FC<{
         setAlertMsg(msg);
     };
 
-    const PublicOrderListWrapper: React.FC<{
-        keywords: string;
-        listMode?: boolean;
-    }> = (wrapperProps) => (
+    const renderOrderList = (searchKeywords: string, listMode?: boolean) => (
         <OrderList
             userId={user?.id}
-            keywords={keywords}
+            keywords={searchKeywords}
             setMillis={setMillis}
             setCount={setCount}
             itemPrePage={itemPrePage}
             setCurrentPage={setCurrentPage}
             initCurrentPage={currentPage}
-            listMode={wrapperProps.listMode}
+            listMode={listMode}
             initSortOrder={sortOrder}
             initSortProperty={sortProperty}
             alertHandler={alertHandler}
@@ -76,7 +73,7 @@ const Library: React.FC<{
 
     return props.briefMsg ? (
         <>
-            <PublicOrderListWrapper keywords={""} listMode={true} />
+            {renderOrderList("", true)}
             <Snackbar
                 autoHideDuration={2000}
                 open={alertFlag}
@@ -124,7 +121,7 @@ const Library: React.FC<{
                     alignItems="center"
                     justifyContent="center"
                 >
-                    <Grid item xs={7} md={8}>
+                    <Grid item xs={8} md={8}>
                         <TextField
                             label="搜索问答库"
                             fullWidth
@@ -141,7 +138,7 @@ const Library: React.FC<{
                             }}
                         />
                     </Grid>
-                    <Grid item xs={3} md={2}>
+                    <Grid item xs={4} md={2}>
                         <Button
                             color="primary"
                             variant="contained"
@@ -151,7 +148,7 @@ const Library: React.FC<{
                             搜一搜
                         </Button>
                     </Grid>
-                    <Grid item xs={10} md={10} mt={-1}>
+                    <Grid item xs={12} md={10} mt={-1}>
                         <Typography color={"textSecondary"}>
                             {millis !== -1 && count !== -1
                                 ? "问客为您找到相关结果" +
@@ -217,7 +214,7 @@ const Library: React.FC<{
                         {sortOrder === "ASC" ? "升序" : "降序"}
                     </Button>
                 </Stack>
-                <PublicOrderListWrapper keywords={keywords} />
+                {renderOrderList(keywords)}
             </Box>
             <Snackbar
                 autoHideDuration={2000}

@@ -50,6 +50,10 @@ export function describeNotification(notif: Notification) {
             return `编号为${notif.targetId}的订单即将超时，请尽快回答`;
         case NotificationType.ANSWER_TIMEOUT:
             return `编号为${notif.targetId}的订单超时未回答`;
+        case NotificationType.ANSWERER_APPLICATION_PASSED:
+            return "您的回答者申请已通过";
+        case NotificationType.ANSWERER_APPLICATION_REJECTED:
+            return "您的回答者申请被驳回";
     }
 }
 

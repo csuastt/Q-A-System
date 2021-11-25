@@ -14,11 +14,10 @@ import React from "react";
 
 // Import css
 import "bytemd/dist/index.min.css";
-import "github-markdown-css/github-markdown.css";
-import "highlight.js/styles/tomorrow.css";
 import "katex/dist/katex.min.css";
 import { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
 import { Image } from "mdast";
+import { useTheme } from "@mui/material/styles";
 
 const plugins = [
     breaks(),
@@ -42,10 +41,56 @@ interface MarkdownProps {
 }
 
 const Markdown: React.FC<MarkdownProps> = (props) => {
+    const theme = useTheme();
+    const mode = theme.palette.mode;
+
+    const renderTheme = () => {
+        if (mode === "light") {
+            return (
+                <>
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.0.0/github-markdown-light.min.css"
+                    />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/base16/tomorrow.min.css"
+                    />
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <style
+                        dangerouslySetInnerHTML={{
+                            __html: ".markdown-body{background-color:inherit!important}.bytemd{color:inherit!important;border:inherit!important;background-color:#2f3033!important}.bytemd-toolbar{color:inherit!important;background-color:#313336!important}.bytemd-toolbar-icon:hover{background-color:#000000!important}.CodeMirror{color:inherit!important;background-color:inherit!important}.CodeMirror-activeline-background{background-color:#7f7f7f!important}.CodeMirror-selected{background:#646464!important}.CodeMirror-focused .CodeMirror-selected{background:#707070!important}.CodeMirror-line::selection,.CodeMirror-line>span::selection,.CodeMirror-line>span>span::selection{background:#707070!important}.CodeMirror-line::-moz-selection,.CodeMirror-line>span::-moz-selection,.CodeMirror-line>span>span::-moz-selection{background:#707070!important}.CodeMirror-cursor{border-left:1px solid #fff;border-right:none;width:0}",
+                        }}
+                    />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.0.0/github-markdown-dark.min.css"
+                    />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/base16/tomorrow-night.min.css"
+                    />
+                </>
+            );
+        }
+    };
+
     return props.viewOnly ? (
-        <Viewer value={props.value} plugins={plugins} />
+        <>
+            {renderTheme()}
+            <Viewer value={props.value} plugins={plugins} />
+        </>
     ) : (
         <>
+            {renderTheme()}
             <Editor
                 value={props.value}
                 onChange={props.onChange}

@@ -23,7 +23,7 @@ public record NotifPayload(
                 notif.getCreateTime(),
                 notif.getType(),
                 notif.getReceiver().getId(),
-                notif.getTarget().getId(),
+                notif.getTarget() == null ? 0 : notif.getTarget().getId(),
                 notif.isHaveRead(),
                 notif.getMsgSummary(),
                 notif.getNewState(),

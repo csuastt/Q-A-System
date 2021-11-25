@@ -32,6 +32,7 @@ import { SimplePaletteColorOptions } from "@mui/material/styles/createPalette";
 import Library from "./components/Library";
 import UserPurchasedList from "./components/UserPurchasedList";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Helmet } from "react-helmet";
 
 export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -105,6 +106,11 @@ export default function App() {
         () => createTheme(getDesignTokens(mode)),
         [mode]
     );
+    const renderPWAMeta = () => (
+        <Helmet>
+            <meta name="theme-color" content={theme.palette.primary.main} />
+        </Helmet>
+    );
 
     // if match the mobile size
     const matches = useMediaQuery(theme.breakpoints.up("md"));
@@ -149,7 +155,10 @@ export default function App() {
         ["/purchased", <UserPurchasedList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
-        ["/profile", <AccountProfile isAdmin={false} matches={matches} />],
+        [
+            "/profile",
+            <AccountProfile isAdmin={false} matches={matches} theme={theme} />,
+        ],
         ["/login", <Login redirect={"/"} isAdmin={false} matches={matches} />],
         ["/logout", <Logout redirect={"/"} isAdmin={false} />],
         ["/register", <Register matches={matches} />],
@@ -179,42 +188,50 @@ export default function App() {
     return refreshing ? (
         <></>
     ) : (
-        <AuthContext.Provider
-            value={{
-                user: user,
-                setUser: setUser,
-                clearUser: () => setUser(undefined),
-                manager: undefined,
-                setManager: () => {},
-                clearManager: () => {},
-            }}
-        >
-            <ColorModeContext.Provider value={colorMode}>
-                <ThemeProvider theme={theme}>
-                    <BrowserRouter>
-                        <SnackbarProvider maxSnack={4}>
-                            <NotificationController wsAvailable={wsAvailable}>
-                                <AppFrame isAdmin={false}>
-                                    <Container maxWidth="md">
-                                        <Switch>
-                                            {routes.map((routeItem) => {
-                                                return (
-                                                    <Route
-                                                        path={routeItem[0].toString()}
-                                                        key={routeItem[0].toString()}
-                                                    >
-                                                        {routeItem[1]}
-                                                    </Route>
-                                                );
-                                            })}
-                                        </Switch>
-                                    </Container>
-                                </AppFrame>
-                            </NotificationController>
-                        </SnackbarProvider>
-                    </BrowserRouter>
-                </ThemeProvider>
-            </ColorModeContext.Provider>
-        </AuthContext.Provider>
+        <>
+            {renderPWAMeta()}
+            <AuthContext.Provider
+                value={{
+                    user: user,
+                    setUser: setUser,
+                    clearUser: () => setUser(undefined),
+                    manager: undefined,
+                    setManager: () => {},
+                    clearManager: () => {},
+                }}
+            >
+                <ColorModeContext.Provider value={colorMode}>
+                    <ThemeProvider theme={theme}>
+                        <BrowserRouter>
+                            <SnackbarProvider maxSnack={4}>
+                                <NotificationController
+                                    wsAvailable={wsAvailable}
+                                >
+                                    <AppFrame isAdmin={false}>
+                                        <Container
+                                            maxWidth="md"
+                                            sx={matches ? {} : { px: 0 }}
+                                        >
+                                            <Switch>
+                                                {routes.map((routeItem) => {
+                                                    return (
+                                                        <Route
+                                                            path={routeItem[0].toString()}
+                                                            key={routeItem[0].toString()}
+                                                        >
+                                                            {routeItem[1]}
+                                                        </Route>
+                                                    );
+                                                })}
+                                            </Switch>
+                                        </Container>
+                                    </AppFrame>
+                                </NotificationController>
+                            </SnackbarProvider>
+                        </BrowserRouter>
+                    </ThemeProvider>
+                </ColorModeContext.Provider>
+            </AuthContext.Provider>
+        </>
     );
 }

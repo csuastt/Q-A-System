@@ -13,7 +13,7 @@ import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
+import Button, { ButtonProps } from "@mui/material/Button";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
@@ -56,6 +56,25 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import { Image } from "mdast";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { Badge, IconButton, Tooltip } from "@mui/material";
+
+const AutoSizeButton: React.FC<
+    Omit<ButtonProps, "startIcon"> & { icon: React.ReactNode }
+> = (props) => {
+    const theme = useTheme();
+    const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
+    return isLargeScreen ? (
+        <Button {...props} startIcon={props.icon}>
+            {props.children}
+        </Button>
+    ) : (
+        <Tooltip title={`${props.children}`}>
+            <IconButton {...props}>{props.icon}</IconButton>
+        </Tooltip>
+    );
+};
 
 const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const { user } = useContext(AuthContext);
@@ -75,6 +94,9 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
     const [attachments, setAttachments] = useState<Array<AttachmentInfo>>([]);
     const [rating, setRating] = useState<number>(0);
     const [ratingText, setRatingText] = useState<string>("");
+
+    const theme = useTheme();
+    const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
 
     const handleOpen = () => {
         setOpen(true);
@@ -222,7 +244,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<ThumbDownIcon />}
                     color="error"
                 >
-                    该问题被审核员驳回，已全额退款
+                    订单审核不通过，已全额退款
                 </Button>
             );
         } else if (state === OrderState.CREATED) {
@@ -242,7 +264,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<AccessTimeIcon />}
                     color="error"
                 >
-                    该问题因支付超时而失效
+                    订单因支付超时而失效
                 </Button>
             );
         } else if (state === OrderState.RESPOND_TIMEOUT) {
@@ -252,7 +274,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<AccessTimeIcon />}
                     color="error"
                 >
-                    该问题因接单超时而失效，已全额退款
+                    订单因接单超时而失效，已退款
                 </Button>
             );
         } else if (state === OrderState.ANSWER_TIMEOUT) {
@@ -262,7 +284,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<AccessTimeIcon />}
                     color="error"
                 >
-                    该问题因回答超时而失效，已全额退款
+                    订单因回答超时而失效，已退款
                 </Button>
             );
         } else if (state === OrderState.CHAT_ENDED) {
@@ -328,8 +350,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     color="error"
                 >
                     {isAnswerer
-                        ? "您已拒绝接受此问题"
-                        : "回答者拒绝接受此问题，已全额退款"}
+                        ? "您已拒绝接受此订单"
+                        : "回答者拒绝接受此订单，已退款"}
                 </Button>
             );
         } else if (state === OrderState.ACCEPTED) {
@@ -345,15 +367,15 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                             >
                                 确认回答
                             </Button>
-                            <Button
+                            <AutoSizeButton
                                 variant="outlined"
-                                startIcon={<CancelIcon />}
+                                icon={<CancelIcon />}
                                 onClick={cancelAnswering}
                                 color="warning"
                                 sx={{ marginLeft: 1, marginBottom: 1 }}
                             >
                                 取消回答
-                            </Button>
+                            </AutoSizeButton>
                         </>
                     ) : (
                         <>
@@ -437,32 +459,58 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                                     multiple={true}
                                     onChange={uploadAttachments}
                                 />
-                                <Button
-                                    startIcon={<UploadFileIcon />}
-                                    component="span"
-                                >
-                                    上传附件
-                                </Button>
+                                {isLargeScreen ? (
+                                    <Button
+                                        startIcon={<UploadFileIcon />}
+                                        component="span"
+                                    >
+                                        上传附件
+                                    </Button>
+                                ) : (
+                                    <IconButton component="span">
+                                        <UploadFileIcon />
+                                    </IconButton>
+                                )}
                             </label>
-                            <Button
+                            <AutoSizeButton
                                 onClick={endOrder}
-                                startIcon={<CloseIcon />}
+                                icon={<CloseIcon />}
                                 color={"error"}
                             >
                                 结束订单
-                            </Button>
-                            <Box sx={{ flexGrow: 1 }} />
-                            {msgCountUsage && (
-                                <>
-                                    <ChatIcon sx={{ mr: 1 }} color="info" />
-                                    <Typography
-                                        variant="subtitle2"
-                                        color="info"
-                                    >
-                                        {msgCountUsage}
-                                    </Typography>
-                                </>
-                            )}
+                            </AutoSizeButton>
+                            {msgCountUsage &&
+                                (isLargeScreen ? (
+                                    <>
+                                        <Box sx={{ flexGrow: 1 }} />
+                                        <ChatIcon sx={{ mr: 1 }} color="info" />
+                                        <Typography
+                                            variant="subtitle2"
+                                            color="info"
+                                        >
+                                            {msgCountUsage}
+                                        </Typography>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Box sx={{ flexGrow: 1 }} />
+                                        <Tooltip
+                                            title={msgCountUsage}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            <IconButton>
+                                                <Badge
+                                                    badgeContent={
+                                                        maxMsgCount! - msgCount!
+                                                    }
+                                                    color="secondary"
+                                                >
+                                                    <ChatIcon color="info" />
+                                                </Badge>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </>
+                                ))}
                         </CardActions>
                     </Card>
                 );
