@@ -10,7 +10,7 @@ import * as math_locales from "@bytemd/plugin-math/lib/locales/zh_Hans.json";
 import * as mermaid_locales from "@bytemd/plugin-mermaid/lib/locales/zh_Hans.json";
 import * as editor_locales from "bytemd/lib/locales/zh_Hans.json";
 import { Editor, Viewer } from "@bytemd/react";
-import React, { useEffect } from "react";
+import React from "react";
 
 // Import css
 import "bytemd/dist/index.min.css";
@@ -44,22 +44,53 @@ const Markdown: React.FC<MarkdownProps> = (props) => {
     const theme = useTheme();
     const mode = theme.palette.mode;
 
-    useEffect(() => {
+    const renderTheme = () => {
         if (mode === "light") {
-            require("github-markdown-css/github-markdown-light.css");
-            require("highlight.js/styles/tomorrow.css");
+            return (
+                <>
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.0.0/github-markdown-light.min.css"
+                    />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/base16/tomorrow.min.css"
+                    />
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <style
+                        dangerouslySetInnerHTML={{
+                            __html: ".markdown-body{background-color:inherit!important}.bytemd{color:inherit!important;border:inherit!important;background-color:#2f3033!important}.bytemd-toolbar{color:inherit!important;background-color:#313336!important}.bytemd-toolbar-icon:hover{background-color:#000000!important}.CodeMirror{color:inherit!important;background-color:inherit!important}.CodeMirror-activeline-background{background-color:#7f7f7f!important}.CodeMirror-selected{background:#646464!important}.CodeMirror-focused .CodeMirror-selected{background:#707070!important}.CodeMirror-line::selection,.CodeMirror-line>span::selection,.CodeMirror-line>span>span::selection{background:#707070!important}.CodeMirror-line::-moz-selection,.CodeMirror-line>span::-moz-selection,.CodeMirror-line>span>span::-moz-selection{background:#707070!important}.CodeMirror-cursor{border-left:1px solid #fff;border-right:none;width:0}",
+                        }}
+                    />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.0.0/github-markdown-dark.min.css"
+                    />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/base16/tomorrow-night.min.css"
+                    />
+                </>
+            );
         }
-        if (mode === "dark") {
-            require("./dark-mode-markdown-patch.css");
-            require("github-markdown-css/github-markdown-dark.css");
-            require("highlight.js/styles/tomorrow-night.css");
-        }
-    }, [mode]);
+    };
 
     return props.viewOnly ? (
-        <Viewer value={props.value} plugins={plugins} />
+        <>
+            {renderTheme()}
+            <Viewer value={props.value} plugins={plugins} />
+        </>
     ) : (
         <>
+            {renderTheme()}
             <Editor
                 value={props.value}
                 onChange={props.onChange}
