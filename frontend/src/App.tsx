@@ -149,7 +149,10 @@ export default function App() {
         ["/purchased", <UserPurchasedList />],
         ["/order/create/:answerer", <OrderCreationWizard />],
         ["/order/create", <OrderCreationWizard />],
-        ["/profile", <AccountProfile isAdmin={false} matches={matches} />],
+        [
+            "/profile",
+            <AccountProfile isAdmin={false} matches={matches} theme={theme} />,
+        ],
         ["/login", <Login redirect={"/"} isAdmin={false} matches={matches} />],
         ["/logout", <Logout redirect={"/"} isAdmin={false} />],
         ["/register", <Register matches={matches} />],

@@ -33,6 +33,9 @@ import DialogTitle from "@mui/material/DialogTitle";
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@mui/material";
 import systemConfigService from "../services/systemConfigService";
+import styled from "@emotion/styled";
+import { grey } from "@mui/material/colors";
+import { Theme } from "@mui/material/styles";
 
 // state interface
 interface ProfileState {
@@ -58,6 +61,7 @@ interface ProfileState {
 interface ProfileProps {
     isAdmin: boolean;
     matches?: boolean;
+    theme: Theme;
 }
 
 // gender options
@@ -72,6 +76,38 @@ const permission_options = [
     { value: UserRole.USER, label: "提问者" },
     { value: UserRole.ANSWERER, label: "回答者" },
 ];
+
+const CssMuiPhoneNumber = styled(MuiPhoneNumber)({
+    "& label.Mui-focused": {
+        color: "#EA4F1C",
+    },
+    "& label": {
+        color: grey[500],
+    },
+    "& .MuiOutlinedInput-input": {
+        color: "#D9D9D9",
+    },
+    "& .MuiInput-underline:after": {
+        borderBottomColor: "#EA4F1C",
+    },
+    "& .MuiOutlinedInput-root": {
+        "& fieldset": {
+            borderColor: "#696A6C",
+        },
+        "&:hover fieldset": {
+            borderColor: "#D9D9D9",
+        },
+        "&.Mui-focused fieldset": {
+            borderColor: "#EA4F1C",
+        },
+    },
+    "& .MuiPhoneNumber-flagButton": {
+        color: "#EA4F1C",
+    },
+    "&:hover .MuiPhoneNumber-flagButton": {
+        backgroundColor: "rgba(234, 79, 28, 0.1)",
+    },
+});
 
 export default class AccountProfile extends Component<
     ProfileProps,
@@ -290,7 +326,7 @@ export default class AccountProfile extends Component<
 
     // text change handler
     handleChange = (e: any) => {
-        if (e.target.name === "description") {
+        if (typeof e !== "string" && e.target.name === "description") {
             this.setState({
                 personal_description: e.target.value,
             });
@@ -699,21 +735,44 @@ export default class AccountProfile extends Component<
                                         </TextField>
                                     </Grid>
                                     <Grid item md={6} xs={12}>
-                                        <MuiPhoneNumber
-                                            fullWidth
-                                            label="电话"
-                                            name="phone"
-                                            sx={{
-                                                "& .MuiPhoneNumber-flagButton":
-                                                    {
-                                                        "min-width": "30px",
-                                                    },
-                                            }}
-                                            defaultCountry={"cn"}
-                                            onChange={this.handleChange}
-                                            value={this.state.user?.phone || ""}
-                                            variant="outlined"
-                                        />
+                                        {this.props.theme.palette.mode ===
+                                        "dark" ? (
+                                            <CssMuiPhoneNumber
+                                                fullWidth
+                                                label="电话"
+                                                name="phone"
+                                                sx={{
+                                                    "& .MuiPhoneNumber-flagButton":
+                                                        {
+                                                            "min-width": "30px",
+                                                        },
+                                                }}
+                                                defaultCountry={"cn"}
+                                                onChange={this.handleChange}
+                                                value={
+                                                    this.state.user?.phone || ""
+                                                }
+                                                variant="outlined"
+                                            />
+                                        ) : (
+                                            <MuiPhoneNumber
+                                                fullWidth
+                                                label="电话"
+                                                name="phone"
+                                                sx={{
+                                                    "& .MuiPhoneNumber-flagButton":
+                                                        {
+                                                            "min-width": "30px",
+                                                        },
+                                                }}
+                                                defaultCountry={"cn"}
+                                                onChange={this.handleChange}
+                                                value={
+                                                    this.state.user?.phone || ""
+                                                }
+                                                variant="outlined"
+                                            />
+                                        )}
                                     </Grid>
                                     <Grid item md={6} xs={12}>
                                         <TextField

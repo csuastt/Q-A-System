@@ -244,7 +244,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<ThumbDownIcon />}
                     color="error"
                 >
-                    该问题被审核员驳回，已全额退款
+                    订单审核不通过，已全额退款
                 </Button>
             );
         } else if (state === OrderState.CREATED) {
@@ -264,7 +264,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<AccessTimeIcon />}
                     color="error"
                 >
-                    该问题因支付超时而失效
+                    订单因支付超时而失效
                 </Button>
             );
         } else if (state === OrderState.RESPOND_TIMEOUT) {
@@ -274,7 +274,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<AccessTimeIcon />}
                     color="error"
                 >
-                    该问题因接单超时而失效，已全额退款
+                    订单因接单超时而失效，已退款
                 </Button>
             );
         } else if (state === OrderState.ANSWER_TIMEOUT) {
@@ -284,7 +284,7 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     startIcon={<AccessTimeIcon />}
                     color="error"
                 >
-                    该问题因回答超时而失效，已全额退款
+                    订单因回答超时而失效，已退款
                 </Button>
             );
         } else if (state === OrderState.CHAT_ENDED) {
@@ -350,8 +350,8 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
                     color="error"
                 >
                     {isAnswerer
-                        ? "您已拒绝接受此问题"
-                        : "回答者拒绝接受此问题，已全额退款"}
+                        ? "您已拒绝接受此订单"
+                        : "回答者拒绝接受此订单，已退款"}
                 </Button>
             );
         } else if (state === OrderState.ACCEPTED) {
