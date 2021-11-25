@@ -804,6 +804,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             </Stack>
             <Dialog onClose={handleClose} open={open}>
                 <DialogTitle>附件列表</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        附件的大小不得大于300M，超过此大小的附件将会被忽略。
+                    </DialogContentText>
+                </DialogContent>
                 <List sx={{ pt: 0 }}>
                     {attachments.map((attachmentInfo) => (
                         <ListItem

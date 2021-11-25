@@ -172,7 +172,7 @@ const IncomeStatistics: React.FC<{
             </Card>
         </Box>
     ) : (
-        <Box mt={2} sx={{ width: "95%" }}>
+        <Box mt={2}>
             <Card>
                 {props.isAdmin ? (
                     <CardHeader
@@ -239,7 +239,6 @@ const IncomeStatistics: React.FC<{
                                 // @ts-ignore
                                 options={chartOptions}
                                 height={364}
-                                width="94%"
                             />
                         }
                     </Box>
