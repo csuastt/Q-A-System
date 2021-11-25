@@ -55,10 +55,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
+import Badge from "@mui/material/Badge";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import { Image } from "mdast";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Badge, IconButton, Tooltip } from "@mui/material";
 
 const AutoSizeButton: React.FC<
     Omit<ButtonProps, "startIcon"> & { icon: React.ReactNode }

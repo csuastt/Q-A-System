@@ -31,19 +31,17 @@ import Divider from "@mui/material/Divider";
 import Markdown from "./Markdown";
 import systemConfigService from "../services/systemConfigService";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import {
-    Dialog,
-    DialogTitle,
-    FormControlLabel,
-    IconButton,
-    Link,
-    ListItemAvatar,
-    ListItemButton,
-    ListItemText,
-    Switch,
-} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import IconButton from "@mui/material/IconButton";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import Switch from "@mui/material/Switch";
+import Link from "@mui/material/Link";
 import FolderIcon from "@mui/icons-material/Folder";
 import { checkSensitiveWords, formatInterval, formatSize } from "../util";
 import DialogContent from "@mui/material/DialogContent";

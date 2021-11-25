@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 import configService from "../services/configService";
+import { useTheme } from "@mui/material/styles";
 
 const IncomeStatistics: React.FC<{
     userId?: number;
@@ -22,6 +23,8 @@ const IncomeStatistics: React.FC<{
         new Array(monthCount).fill(0)
     );
     const [config, setConfig] = useState<ConfigInfo>();
+    const theme = useTheme();
+    const mode = theme.palette.mode;
 
     // init date list
     let labelsList = useMemo(() => {
@@ -94,6 +97,9 @@ const IncomeStatistics: React.FC<{
                     return y;
                 },
             },
+        },
+        theme: {
+            mode: mode,
         },
     });
 

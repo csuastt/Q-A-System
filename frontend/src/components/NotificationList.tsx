@@ -28,15 +28,13 @@ import { describeNotification, formatTimestamp } from "../util";
 import { Redirect, useHistory } from "react-router-dom";
 import notificationService from "../services/notificationService";
 import Stack from "@mui/material/Stack";
-import {
-    Alert,
-    FormControl,
-    IconButton,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
-    ToggleButton,
-} from "@mui/material";
+import Alert from "@mui/material/Alert";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { SelectChangeEvent } from "@mui/material";
+import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import Pagination from "./Pagination";
 import Typography from "@mui/material/Typography";
