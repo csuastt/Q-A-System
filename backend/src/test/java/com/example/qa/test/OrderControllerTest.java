@@ -459,6 +459,7 @@ class OrderControllerTest {
         mockUtils.postUrl("/api/users/" + askerId + "/apply", askerToken, request1, status().isForbidden());
         request1.setPrice(50);
         mockUtils.postUrl("/api/users/" + askerId + "/apply", askerToken, request1, status().isOk());
+        mockUtils.postUrl("/api/users/" + answererId + "/apply", answererToken, request1, status().isForbidden());
 
 
         mockUtils.postUrl("/api/users/" + askerId + "/review", superAdminToken, request, status().isOk());
