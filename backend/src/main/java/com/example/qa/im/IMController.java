@@ -43,7 +43,7 @@ public class IMController {
     @ResponseBody
     @GetMapping("/api/im/history/{orderId}")
     public List<MessagePayload> getHistory(@PathVariable long orderId, Principal auth) {
-        validator.check(orderId, auth, ApiException::new);
+        validator.check(orderId, auth, true, ApiException::new);
         return imService.getOrderHistoryMessages(orderId)
                 .stream()
                 .map(MessagePayload::new)
