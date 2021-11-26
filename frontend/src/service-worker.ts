@@ -12,7 +12,7 @@ import { clientsClaim } from "workbox-core";
 import { ExpirationPlugin } from "workbox-expiration";
 import { createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import { StaleWhileRevalidate } from "workbox-strategies";
+import { NetworkOnly, StaleWhileRevalidate } from "workbox-strategies";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -23,6 +23,12 @@ clientsClaim();
 // This variable must be present somewhere in your service worker file,
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
+
+registerRoute(({ request, url }: { request: Request; url: URL }) => {
+    return (
+        url.pathname.startsWith("/api") || url.pathname.startsWith("/adminer")
+    );
+}, new NetworkOnly());
 
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
@@ -37,11 +43,8 @@ registerRoute(
         }
 
         // If this is a URL that starts with /_, skip.
-        if (url.pathname.startsWith("/_")) {
-            return false;
-        }
-
         if (
+            url.pathname.startsWith("/_") ||
             url.pathname.startsWith("/api") ||
             url.pathname.startsWith("/adminer")
         ) {
