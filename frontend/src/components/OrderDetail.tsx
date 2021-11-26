@@ -55,10 +55,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
+import Badge from "@mui/material/Badge";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import { Image } from "mdast";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Badge, IconButton, Tooltip } from "@mui/material";
 
 const AutoSizeButton: React.FC<
     Omit<ButtonProps, "startIcon"> & { icon: React.ReactNode }
@@ -802,6 +804,11 @@ const OrderDetail: React.FC<{ orderId: number }> = (props) => {
             </Stack>
             <Dialog onClose={handleClose} open={open}>
                 <DialogTitle>附件列表</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        附件的大小不得大于300M，超过此大小的附件将会被忽略。
+                    </DialogContentText>
+                </DialogContent>
                 <List sx={{ pt: 0 }}>
                     {attachments.map((attachmentInfo) => (
                         <ListItem

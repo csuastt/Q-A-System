@@ -497,14 +497,7 @@ export default class AccountProfile extends Component<
         }
 
         return (
-            <Grid
-                container
-                spacing={4}
-                justifyContent="center"
-                sx={{
-                    width: "100%",
-                }}
-            >
+            <Grid container spacing={4} justifyContent="center">
                 {this.props.isAdmin ? (
                     <Grid item md={1} xs={1} mt={2}>
                         <></>

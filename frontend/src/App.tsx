@@ -109,6 +109,10 @@ export default function App() {
     const renderPWAMeta = () => (
         <Helmet>
             <meta name="theme-color" content={theme.palette.primary.main} />
+            <meta
+                name="background-color"
+                content={theme.palette.primary.main}
+            />
         </Helmet>
     );
 
