@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     IMMessage,
     Notification,
@@ -19,6 +19,7 @@ import Stack from "@mui/material/Stack";
 import { NotifHandlerResult, useNotification } from "./NotificationController";
 import userService from "../services/userService";
 import _ from "lodash";
+import AuthContext from "../AuthContext";
 
 interface IMMessageListProps {
     orderInfo: OrderInfo;
@@ -28,6 +29,7 @@ interface IMMessageListProps {
 const IMMessageList: React.FC<IMMessageListProps> = (props) => {
     const [msgList, setMsgList] = useState<Array<IMMessage>>();
     const { setNotifHandler, resetNotifHandler } = useNotification();
+    const { user } = useContext(AuthContext);
 
     const notifHandler = React.useCallback(
         () => (notif: Notification) =>
@@ -81,20 +83,30 @@ const IMMessageList: React.FC<IMMessageListProps> = (props) => {
         const chatEnded =
             props.orderInfo.state === OrderState.CHAT_ENDED ||
             props.orderInfo.state === OrderState.FULFILLED;
+        const needSubscribe =
+            !chatEnded &&
+            (user?.id === props.orderInfo.asker.id ||
+                user?.id === props.orderInfo.answerer.id);
         imService
             .getOrderIMHistory(props.orderInfo.id)
             .then(setMsgList)
             .then(() => {
-                if (!chatEnded) {
+                if (needSubscribe) {
                     websocketService.subscribeIM(props.orderInfo.id);
                 }
             });
-        return chatEnded
-            ? () => null
-            : () => {
+        return needSubscribe
+            ? () => {
                   websocketService.unsubscribeIM();
-              };
-    }, [props.orderInfo.id, props.orderInfo.state]);
+              }
+            : () => null;
+    }, [
+        props.orderInfo.answerer.id,
+        props.orderInfo.asker.id,
+        props.orderInfo.id,
+        props.orderInfo.state,
+        user?.id,
+    ]);
 
     const SingleMessage: React.FC<{ msg: IMMessage }> = React.memo(
         (subProps) => {
