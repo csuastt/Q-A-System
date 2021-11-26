@@ -108,13 +108,13 @@ const OrderCreationWizard: React.FC = (props) => {
     };
 
     const handleFilesUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let fileList = [];
+        let fileList = [...files];
         if (event.target.files !== null) {
             for (let i = 0; i < event.target.files.length; i++) {
                 fileList.push({
                     file: event.target.files[i],
                     url: URL.createObjectURL(event.target.files[i]),
-                });
+                } as FileInfo);
             }
         }
         setFiles(fileList);
