@@ -110,7 +110,6 @@ const Library: React.FC<{
                     e.preventDefault();
                     // @ts-ignore
                     setKeywords(e.target[0].value);
-                    setCurrentPage(1);
                 }}
             >
                 <Grid
