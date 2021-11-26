@@ -74,6 +74,7 @@ const OrderList: React.FC<OrderListProps> = (props) => {
     );
     const [open, setOpen] = useState(false);
     const [chosenOrder, setChosenOrder] = useState(-1);
+    const [lastKeywords, setLastKeywords] = useState("");
 
     // Sync props change
     useEffect(() => {
@@ -120,6 +121,13 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         if (typeof props.keywords !== "undefined") {
             const setMillis = props.setMillis;
             const setCount = props.setCount;
+            const setCurrent = props.setCurrentPage
+                ? props.setCurrentPage
+                : setCurrentPage;
+            if (props.keywords !== lastKeywords) {
+                setCurrent(1);
+                setLastKeywords(props.keywords);
+            }
             questionService
                 .getPublicOrderListBySearch(
                     props.keywords,
@@ -193,6 +201,8 @@ const OrderList: React.FC<OrderListProps> = (props) => {
         props.setCount,
         sortOrder,
         sortProperty,
+        lastKeywords,
+        props.setCurrentPage,
     ]);
 
     useEffect(() => {
