@@ -1,7 +1,6 @@
 package com.example.qa.order;
 
 import com.example.qa.config.SystemConfig;
-import com.example.qa.im.IMService;
 import com.example.qa.notification.NotificationService;
 import com.example.qa.notification.model.Notification;
 import com.example.qa.order.model.Order;
@@ -9,7 +8,6 @@ import com.example.qa.user.UserService;
 import com.example.qa.user.model.User;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,15 +27,13 @@ public class OrderService {
     private final UserService userService;
     private final OrderRepository orderRepository;
     private final NotificationService notificationService;
-    private final IMService imService;
     @Setter
     private PageRequest pageRequest;
 
-    public OrderService(UserService userService, OrderRepository orderRepository, NotificationService notificationService, @Lazy IMService imService) {
+    public OrderService(UserService userService, OrderRepository orderRepository, NotificationService notificationService) {
         this.userService = userService;
         this.orderRepository = orderRepository;
         this.notificationService = notificationService;
-        this.imService = imService;
     }
 
     public Order save(Order order) {
@@ -115,7 +111,7 @@ public class OrderService {
             order.setEndReason(Order.EndReason.TIME_LIMIT);
             order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
             order = save(order);
-            imService.sendFromSystem(order, "达到聊天时间上限，系统自动结束聊天");
+            // imService sendFromSystem 达到聊天时间上限，系统自动结束聊天
             notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
             notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
         } else if (order.getState() == Order.State.CHAT_ENDED) {
@@ -155,7 +151,7 @@ public class OrderService {
             order.setEndReason(Order.EndReason.MESSAGE_LIMIT);
             order.setExpireTime(ZonedDateTime.now().plusSeconds(SystemConfig.getFulfillExpirationSeconds()));
             order = save(order);
-            imService.sendFromSystem(order, "聊天消息数量达到上限，系统自动结束聊天");
+            // imService sendFromSystem 聊天消息数量达到上限，系统自动结束聊天
             notificationService.send(Notification.ofOrderStateChanged(order.getAsker(), order));
             notificationService.send(Notification.ofOrderStateChanged(order.getAnswerer(), order));
         }
