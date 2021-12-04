@@ -140,6 +140,8 @@ class OrderService {
                         keyword: keywords,
                         page: page,
                         pageSize: prePage,
+                        sortDirection: sortOrder,
+                        sortProperty: sortProperty,
                     },
                 })
                 .then((response) => response.data);
