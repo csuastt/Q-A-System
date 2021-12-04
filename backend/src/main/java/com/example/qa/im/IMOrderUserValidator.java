@@ -25,15 +25,15 @@ public class IMOrderUserValidator {
     }
 
     public Result check(long orderId, Principal auth) {
-        return check(orderId, auth, MessageException::new);
+        return check(orderId, auth, false, MessageException::new);
     }
 
-    public Result check(long orderId, Principal auth, final BiFunction<HttpStatus, String, ? extends RuntimeException> exceptionConstructor) {
+    public Result check(long orderId, Principal auth, boolean allowPublic, final BiFunction<HttpStatus, String, ? extends RuntimeException> exceptionConstructor) {
         var order = orderRepo.findById(orderId).orElseThrow(() -> exceptionConstructor.apply(HttpStatus.NOT_FOUND, "Order"));
         if (auth instanceof UserAuthentication authUser) {
             long userId = (long) authUser.getPrincipal();
             var user = userRepo.findById(userId).orElseThrow(() -> exceptionConstructor.apply(HttpStatus.NOT_FOUND, "User"));
-            if (userId != order.getAsker().getId() && userId != order.getAnswerer().getId()) {
+            if (!(allowPublic && order.isShowPublic()) && !(userId == order.getAsker().getId() || userId == order.getAnswerer().getId())) {
                 throw exceptionConstructor.apply(HttpStatus.FORBIDDEN, "Current user is not related to requested order");
             }
             return new Result(order, user);
